@@ -10,6 +10,7 @@ export interface ShopifyCartAbandonmentRecord {
   missingSizes: string[];
   isFullPrintExempt: boolean;
   isResaleAccessory?: boolean;
+  categoryType?: 'VESTUARIO_LINHA' | 'FULL_PRINT' | 'REVENDA_ACESSORIO' | 'EQUIPAMENTO_PESCA';
   estimatedRevenueLoss: number;
   primaryReason: 'GRADE_FURADA' | 'SEM_FOTO' | 'PRECO_OU_FRETE' | 'OUTRO';
 }
@@ -112,6 +113,7 @@ export function generateShopifyTelemetryAnalysis(
       missingSizes: issue.missingSizes,
       isFullPrintExempt: issue.isFullPrintExempt,
       isResaleAccessory: issue.isResaleAccessory,
+      categoryType: issue.categoryType,
       estimatedRevenueLoss: loss,
       primaryReason
     };

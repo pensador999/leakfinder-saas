@@ -26,7 +26,7 @@ export interface CatalogProductIssue {
   missingSizes: string[];
   isFullPrintExempt: boolean;
   isResaleAccessory?: boolean;
-  categoryType?: 'VESTUARIO_LINHA' | 'FULL_PRINT' | 'REVENDA_ACESSORIO';
+  categoryType?: 'VESTUARIO_LINHA' | 'FULL_PRINT' | 'REVENDA_ACESSORIO' | 'EQUIPAMENTO_PESCA';
   hasDescription: boolean;
   descriptionLength: number;
   hasSizeGuide: boolean;
@@ -331,7 +331,39 @@ async function fetchRealLiveCatalogAudit(
           const productTypeUpper = (p.product_type || '').toUpperCase();
           const tagsUpper = Array.isArray(p.tags) ? p.tags.map((t: string) => t.toUpperCase()) : [];
 
-          const isAccessoryOrResale = 
+          const isFishingGear = 
+            titleUpper.includes('ISCA') ||
+            handleUpper.includes('ISCA') ||
+            titleUpper.includes('ANZOL') ||
+            titleUpper.includes('ANZÓIS') ||
+            titleUpper.includes('ANZOIS') ||
+            titleUpper.includes('VARA DE PESCAR') ||
+            titleUpper.includes('VARA') ||
+            handleUpper.includes('VARA') ||
+            titleUpper.includes('CARRETILHA') ||
+            handleUpper.includes('CARRETILHA') ||
+            titleUpper.includes('MOLINETE') ||
+            handleUpper.includes('MOLINETE') ||
+            titleUpper.includes('LINHA DE PESCA') ||
+            titleUpper.includes('MULTIFILAMENTO') ||
+            titleUpper.includes('FLUOROCARBON') ||
+            titleUpper.includes('ALICATE') ||
+            titleUpper.includes('BOGA') ||
+            titleUpper.includes('PEGA PEIXE') ||
+            titleUpper.includes('GARATEIA') ||
+            titleUpper.includes('GARATÉIA') ||
+            titleUpper.includes('SNAP') ||
+            titleUpper.includes('GIRADOR') ||
+            titleUpper.includes('CHUMBADA') ||
+            titleUpper.includes('PASSAGUÁ') ||
+            titleUpper.includes('PASSAGUA') ||
+            titleUpper.includes('PORTA VARA') ||
+            titleUpper.includes('ESTOJO') ||
+            productTypeUpper.includes('TRALHA') ||
+            productTypeUpper.includes('EQUIPAMENTO') ||
+            tagsUpper.some((t: string) => t.includes('ISCA') || t.includes('VARA') || t.includes('ANZOL') || t.includes('TRALHA') || t.includes('CARRETILHA') || t.includes('MOLINETE'));
+
+          const isAccessoryOrResale = !isFishingGear && (
             titleUpper.includes('BANDANA') ||
             handleUpper.includes('BANDANA') ||
             titleUpper.includes('MANGUITO') ||
@@ -343,7 +375,6 @@ async function fetchRealLiveCatalogAudit(
             titleUpper.includes('CHAVEIRO') ||
             titleUpper.includes('ADESIVO') ||
             titleUpper.includes('COPO') ||
-            titleUpper.includes('ISCA') ||
             titleUpper.includes('MÁSCARA') ||
             titleUpper.includes('MASCARA') ||
             titleUpper.includes('ÓCULOS') ||
@@ -354,7 +385,8 @@ async function fetchRealLiveCatalogAudit(
             titleUpper.includes('CHAPEU') ||
             productTypeUpper.includes('ACESSORIO') ||
             productTypeUpper.includes('REVENDA') ||
-            tagsUpper.some((t: string) => t.includes('REVENDA') || t.includes('ACESSORIO') || t.includes('BANDANA') || t.includes('UNICO'));
+            tagsUpper.some((t: string) => t.includes('REVENDA') || t.includes('ACESSORIO') || t.includes('BANDANA') || t.includes('UNICO'))
+          );
 
           // Extract variants & sizes
           const variants = Array.isArray(p.variants) ? p.variants : [];
@@ -379,9 +411,11 @@ async function fetchRealLiveCatalogAudit(
                                      titleUpper.includes('_FULL') || 
                                      tagsUpper.some((t: string) => t.includes('FULL'));
 
-          const isFullPrintExempt = isFullPrintProduct || isAccessoryOrResale || isOneSizeVariant;
+          const isFullPrintExempt = isFishingGear || isFullPrintProduct || isAccessoryOrResale || isOneSizeVariant;
 
-          const categoryType: 'VESTUARIO_LINHA' | 'FULL_PRINT' | 'REVENDA_ACESSORIO' = isAccessoryOrResale || isOneSizeVariant
+          const categoryType: 'VESTUARIO_LINHA' | 'FULL_PRINT' | 'REVENDA_ACESSORIO' | 'EQUIPAMENTO_PESCA' = isFishingGear
+            ? 'EQUIPAMENTO_PESCA'
+            : isAccessoryOrResale || isOneSizeVariant
             ? 'REVENDA_ACESSORIO'
             : isFullPrintProduct
             ? 'FULL_PRINT'
@@ -405,6 +439,7 @@ async function fetchRealLiveCatalogAudit(
                                descLower.includes('tabela') || 
                                descLower.includes('guia') || 
                                themeHasSizeGuideAddon ||
+                               isFishingGear ||
                                isAccessoryOrResale ||
                                isOneSizeVariant;
 
@@ -419,12 +454,14 @@ async function fetchRealLiveCatalogAudit(
           if (!hasValidImage) criticalIssuesCount += 2;
           if (!isFullPrintExempt && missingSizes.length > 0) criticalIssuesCount += 1;
           if (!hasDescription) criticalIssuesCount += 1;
-          if (!hasSizeGuide && !isAccessoryOrResale) criticalIssuesCount += 1;
+          if (!hasSizeGuide && !isAccessoryOrResale && !isFishingGear) criticalIssuesCount += 1;
           if (imageWeightKb > 350) criticalIssuesCount += 1;
 
           let recommendedAction = 'Catálogo em conformidade.';
           if (!hasValidImage) {
             recommendedAction = 'CRÍTICO: Inserir foto principal em alta resolução na vitrine.';
+          } else if (isFishingGear) {
+            recommendedAction = 'Equipamento / Tralha de pesca verificado (Iscas, Anzóis, Varas). Em conformidade técnica.';
           } else if (isAccessoryOrResale || isOneSizeVariant) {
             recommendedAction = 'Produto de Revenda / Acessório verificado em Tamanho Único (Bandana, Boné, Manguito). Em conformidade.';
           } else if (isFullPrintProduct) {
