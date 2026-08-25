@@ -117,8 +117,8 @@ export function ReportPage() {
         {diagnostic ? (
           <div className="space-y-6">
             
-            {/* Clean Tab Navigation */}
-            <div className="flex items-center gap-1 overflow-x-auto pb-2 border-b border-slate-200 scrollbar-none bg-white p-2 rounded-2xl shadow-xs">
+            {/* Clean Tab Navigation (Wrap Responsive, 100% Visible) */}
+            <div className="flex flex-wrap items-center gap-1.5 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs">
               {tabs.map((tab) => {
                 const TabIcon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -127,15 +127,15 @@ export function ReportPage() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shrink-0 cursor-pointer border ${
+                    className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shrink-0 cursor-pointer border ${
                       isActive
                         ? tab.highlight
                           ? 'bg-[#0056b3] text-white border-[#0056b3] shadow-md shadow-blue-500/20'
                           : 'bg-[#0056b3] text-white border-[#0056b3] shadow-sm'
-                        : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-[#0056b3]'
+                        : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-[#0056b3] hover:bg-slate-50'
                     }`}
                   >
-                    <TabIcon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                    <TabIcon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                     <span>{tab.label}</span>
                     {tab.badge !== undefined && (
                       <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold ${
