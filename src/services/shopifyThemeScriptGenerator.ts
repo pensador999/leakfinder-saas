@@ -16,8 +16,10 @@ export function generateShopifyThemeScripts(domain: string, brandName: string): 
   const isAgro = domainLower.includes('agro');
   const isMotors = domainLower.includes('motors');
   const isFishing = domainLower.includes('fishing');
+  const isNike = domainLower.includes('nike');
+  const isAdidas = domainLower.includes('adidas');
 
-  const primaryColor = isAgro ? '#3a9e35' : isMotors ? '#EA541B' : '#135ed1';
+  const primaryColor = isAgro ? '#3a9e35' : isMotors ? '#EA541B' : isFishing ? '#135ed1' : isNike || isAdidas ? '#111111' : '#0284C7';
   const accentColor = isAgro ? '#70533d' : isMotors ? '#111111' : '#d0473e';
 
   return [

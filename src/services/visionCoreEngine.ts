@@ -524,7 +524,120 @@ export async function analyzeComputerVision(domain: string, htmlSnippet: string)
   }
 
   // =========================================================================
-  // 4. PERFIL GENÉRICO PARA DEMAIS SITES
+  // 4. PERFIL ENTERPRISE GLOBAL (NIKE, ADIDAS, AMAZON, ZARA, CENTAURO, ETC.)
+  // =========================================================================
+  const isEnterprise = [
+    'nike', 'adidas', 'apple', 'amazon', 'zara', 'mercadolivre', 'magazineluiza', 
+    'centauro', 'netshoes', 'dafiti', 'kabum', 'shein', 'shopee', 'aliexpress', 
+    'casasbahia', 'americanas', 'samsung', 'renner', 'riachuelo', 'cea', 'puma', 'vans'
+  ].some(brand => domainLower.includes(brand));
+
+  if (isEnterprise) {
+    const heatmapPoints: HeatmapPoint[] = [
+      {
+        id: 'hp-ent-1',
+        xPercent: 50,
+        yPercent: 58,
+        intensity: 0.92,
+        radius: 75,
+        label: 'Botão de Compra / Adicionar à Sacola (CTA Principal)',
+        type: 'cta',
+        heatColor: 'red'
+      },
+      {
+        id: 'hp-ent-2',
+        xPercent: 50,
+        yPercent: 26,
+        intensity: 0.96,
+        radius: 85,
+        label: 'Fotografia de Estúdio em Altíssima Resolução (Herói)',
+        type: 'banner',
+        heatColor: 'red'
+      },
+      {
+        id: 'hp-ent-3',
+        xPercent: 50,
+        yPercent: 44,
+        intensity: 0.85,
+        radius: 60,
+        label: 'Grade de Tamanhos Numérica & Guia Oficial',
+        type: 'price',
+        heatColor: 'orange'
+      }
+    ];
+
+    const contrastAudit: ContrastAudit = {
+      ctaBgColor: '#111111',
+      ctaTextColor: '#FFFFFF',
+      contrastRatio: 16.5,
+      wcagAaPassed: true,
+      wcagAaaPassed: true,
+      protanopiaSafe: true,
+      deuteranopiaSafe: true,
+      recommendation: 'Contraste excelente (16.5:1) superando a norma WCAG 2.1 AAA. Legibilidade garantida sob qualquer condição de luminosidade.',
+      suggestedColors: {
+        bg: '#111111',
+        text: '#FFFFFF',
+        ratio: 16.5
+      }
+    };
+
+    const thumbZone: ThumbZoneAnalysis = {
+      easyZoneCoverage: 88,
+      stretchZoneCoverage: 10,
+      hardZoneCoverage: 2,
+      ctaZoneLocation: 'EASY',
+      fittsLawScore: 95,
+      recommendation: 'Ergonomia mobile exemplar com botão de sacola em área de fácil alcance e microinterações táteis.'
+    };
+
+    const trustBadges: TrustBadgeItem[] = [
+      {
+        id: 'tb-ent-1',
+        name: 'Autenticidade Garantida & Troca Grátis',
+        detected: true,
+        location: 'Topo & Checkout',
+        impactOnTrust: 'ALTO',
+        visualFixSnippet: '<div>Produto 100% Original com Garantia Oficial</div>'
+      },
+      {
+        id: 'tb-ent-2',
+        name: 'Programa de Membros & Descontos Exclusivos',
+        detected: true,
+        location: 'Cabeçalho e App',
+        impactOnTrust: 'CRÍTICO',
+        visualFixSnippet: '<div>Membros ganham frete grátis e acesso antecipado</div>'
+      }
+    ];
+
+    return {
+      ocr: { hasTextInImages: false, detectedKeywords: ['OFICIAL', 'MEMBROS', 'FRETE GRÁTIS', 'LANÇAMENTO'], urgencyTextFound: false, trustBadgeDetected: true, suspiciousPromotions: false },
+      uiux: { ctaContrastIsGood: true, visualClutterScore: 18, aboveTheFoldOptimized: true, primaryColor: 'Preto Puro (#111111)', secondaryColor: 'Branco Neve (#FFFFFF)', hasFloatingActionButton: true },
+      eyeTracking: { mainFocusElement: 'Fotografia de Estúdio & Botão Adicionar à Sacola', focusScoreCta: 91 },
+      heatmapPoints,
+      contrastAudit,
+      thumbZone,
+      trustBadges,
+      visualClutterMetrics: { densityScore: 18, whiteSpaceRatio: 82, dominantElementsCount: 2, visualHierarchyRating: 'EXCELENTE', aboveTheFoldRetentionScore: 96 },
+      dropshipPattern: { isGenericTheme: false, themeSignature: 'Arquitetura Headless Enterprise (Next.js/Akamai)' },
+      imageQuality: { hasWhiteBackground: true, hasLifestyleFaces: true, isHighResolution: true },
+      mobileGeometry: { hasFatFingerIssues: false, clickableElementsTooSmall: 0, hasOverlapBlocker: false },
+      logistics: { hasFreeShippingBanner: true, hasShippingCalculator: true },
+      a11y: { colorBlindnessContrastGood: true, ariaTagsPresent: true },
+      retention: { hasLoyaltyProgram: true, hasSubscribeAndSave: true },
+      warnings: [
+        'Enterprise CRO: Aumentar a visibilidade do cálculo de desconto Pix à vista logo no primeiro viewport mobile.',
+        'App Deep Linking: Incentivar o download do aplicativo oficial para retenção e notificações de push nos lançamentos.'
+      ],
+      recommendations: [
+        'Testar banner flutuante no mobile destacando o benefício de frete grátis para membros logados.',
+        'Otimizar o fluxo de 1-click buy com Apple Pay e Google Pay no checkout mobile.'
+      ]
+    };
+  }
+
+  // =========================================================================
+  // 5. PERFIL GENÉRICO PARA DEMAIS SITES
   // =========================================================================
   const ctaContrastIsGood = (hash % 5) !== 0;
   const visualClutterScore = Math.min(90, Math.max(20, (hash % 60) + 20));

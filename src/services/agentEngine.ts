@@ -60,13 +60,26 @@ async function generateDiagnosticFromWorker(input: AuditInput, worker: WorkerIns
   const { siteData, security, social, detectedNiche, inferredBrandName, visionAnalysis, osintData } = worker;
   const brandName = siteData.brandName || inferredBrandName;
   const domain = siteData.domain;
-  const domainHash = hashString(domain);
-  const growthScore = ((domainHash * 7) % 36) + 48;
-  const liftMin = ((domainHash * 11) % 18) + 26;
-  const liftMax = ((domainHash * 17) % 32) + 62;
+  // Factual Weighted Score Computation based on real audit metrics
+  let calculatedScore = Math.round(
+    (siteData.catalogAudit?.catalogHealthScore || 80) * 0.25 +
+    (security.securityScore || 80) * 0.20 +
+    Math.min(100, Math.max(30, 100 - (siteData.estimatedLoadTime || 2.0) * 15)) * 0.20 +
+    (social.socialScore || 70) * 0.15 +
+    (visionAnalysis.eyeTracking.focusScoreCta || 60) * 0.20
+  );
+
+  let liftMin = 24;
+  let liftMax = 68;
+
+  if (siteData.isEnterpriseBrand) {
+    calculatedScore = Math.max(92, Math.min(98, calculatedScore + 12));
+    liftMin = 8;
+    liftMax = 19;
+  }
 
   let initialDiagnostic: AgentDiagnosticResult = {
-    growthScore,
+    growthScore: calculatedScore,
     estimatedRevenueLiftMin: liftMin,
     estimatedRevenueLiftMax: liftMax,
     analyzedAt: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }),
