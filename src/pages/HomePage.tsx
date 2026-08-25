@@ -28,7 +28,8 @@ import { runAgentDiagnosticAsync } from '../services/agentEngine';
 import { extractCleanDomainAndBrand } from '../services/siteInspector';
 import { AuditInput, AgentDiagnosticResult } from '../types';
 import { ShopifyTelemetryView } from '../components/ShopifyTelemetryView';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity } from 'lucide-react';
+import { ThemeScriptGeneratorView } from '../components/ThemeScriptGeneratorView';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function HomePage() {
@@ -99,7 +100,8 @@ export function HomePage() {
   const allTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
     { id: 'catalog', label: 'Catálogo & SKUs BRK', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
-    { id: 'telemetry', label: 'Telemetria & Clarity', icon: Activity, highlight: true },
+    { id: 'telemetry', label: 'Telemetria & Clarity', icon: Activity },
+    { id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true },
     { id: 'vision', label: 'Visão Computacional & Heatmap', icon: Eye, badge: diagnostic?.visionAnalysis.warnings.length },
     { id: 'competitor', label: 'Espião', icon: Sword },
     { id: 'kanban', label: 'Plano de Ação', icon: KanbanSquare },
@@ -211,6 +213,10 @@ export function HomePage() {
 
                 {activeTab === 'telemetry' && (
                   <ShopifyTelemetryView diagnostic={diagnostic} />
+                )}
+
+                {activeTab === 'scripts' && (
+                  <ThemeScriptGeneratorView diagnostic={diagnostic} />
                 )}
 
                 {activeTab === 'vision' && (
