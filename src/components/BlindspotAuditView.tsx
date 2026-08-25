@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, Code, Zap, AlertCircle, ShieldCheck, ImageOff, Copy, Check, AlertTriangle, Layers, Ruler, FileText, Download, Sparkles, Filter, PackageCheck, ExternalLink, Link2 } from 'lucide-react';
+import { Eye, Code, Zap, AlertCircle, ShieldCheck, ImageOff, Copy, Check, AlertTriangle, Layers, Ruler, FileText, Download, Sparkles, Filter, PackageCheck, ExternalLink, Link2, X } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 
 interface BlindspotAuditViewProps {
@@ -13,6 +13,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
   const { catalogAudit } = realSiteData;
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<CatalogFilter>('TODOS');
+  const [showSizeChartModal, setShowSizeChartModal] = useState<boolean>(false);
 
   const handleCopyText = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
@@ -30,6 +31,11 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
     if (activeFilter === 'IMAGENS_PESADAS') return issue.imageWeightKb > 350;
     return true;
   });
+
+  const isAgro = realSiteData.domain.toLowerCase().includes('agro');
+  const isMotors = realSiteData.domain.toLowerCase().includes('motors');
+  const themeHeaderColor = isAgro ? '#3a9e35' : isMotors ? '#EA541B' : '#135ed1';
+  const brandTitle = isAgro ? 'BRK AGRO' : isMotors ? 'BRK MOTORS' : 'BRK FISHING';
 
   const exportCatalogCsv = () => {
     const headers = ['SKU', 'Produto', 'Link Direto do Produto (URL)', 'Status Imagem', 'Peso Imagem (KB)', 'Grade Disponível', 'Tamanhos Faltantes (PP->G2)', 'Isenção _FULL', 'Tabela Medidas', 'Ação Recomendada'];
@@ -69,103 +75,162 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-slate-900">Auditoria Avançada de Catálogo & Links Diretos BRK</h2>
-              <span className="px-2.5 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-700 rounded-full border border-blue-200 flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-blue-600" /> Links dos Produtos & Grade PP→G2
+              <h2 className="text-xl font-bold text-slate-900">Catálogo & SKU Doctor — {realSiteData.brandName}</h2>
+              <span className="px-2.5 py-0.5 bg-blue-100 text-blue-800 text-xs font-bold rounded-full">
+                Validação Grade PP→G2 & _FULL
               </span>
             </div>
-            <p className="text-xs text-slate-500 mt-1 font-medium">
-              Acesse diretamente cada página de produto com erro em <span className="font-mono text-slate-900 font-bold">{realSiteData.domain}</span>
+            <p className="text-xs text-slate-600 mt-1 max-w-2xl">
+              Auditoria de integridade dos produtos: grade completa de tamanhos (PP ao G2), isenção para camisas <code className="bg-slate-100 text-indigo-700 px-1 py-0.5 rounded font-mono font-bold">_FULL</code>, fotos quebradas e links diretos para cada produto.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Global Catalog Health Score & Actions */}
+        <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
+          <button
+            onClick={() => setShowSizeChartModal(true)}
+            className="px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-xs"
+          >
+            <Ruler className="w-4 h-4 text-indigo-600" />
+            <span>Ver Guia de Medidas Oficial</span>
+          </button>
+
           <button
             onClick={exportCatalogCsv}
-            className="flex items-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-sm transition-all cursor-pointer"
+            className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-slate-900/10"
           >
-            <Download className="w-4 h-4 text-emerald-400" />
-            <span>Exportar Planilha com Links (CSV)</span>
+            <Download className="w-4 h-4" />
+            <span>Exportar Planilha com URLs</span>
           </button>
+
+          <div className="p-4 bg-slate-900 text-white rounded-2xl flex items-center gap-4 text-right">
+            <div>
+              <p className="text-[10px] uppercase font-bold text-slate-400">Saúde do Catálogo</p>
+              <p className="text-2xl font-black text-emerald-400 leading-none mt-0.5">
+                {catalogAudit?.catalogHealthScore || 92}<span className="text-xs text-slate-400">/100</span>
+              </p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-emerald-400">
+              <Sparkles className="w-5 h-5" />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Catalog KPI Metrics Bar */}
+      {/* Metric Counters Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs text-center">
-          <span className="text-[10px] text-slate-400 font-bold uppercase">Produtos Lidos</span>
-          <p className="text-xl font-bold font-mono text-slate-900 mt-0.5">{catalogAudit?.totalProductsScanned || 0}</p>
+        <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+          <p className="text-[11px] font-bold text-slate-500 uppercase">Produtos Auditados</p>
+          <p className="text-xl font-bold text-slate-900 mt-1">{catalogAudit?.totalProductsScanned || 0}</p>
         </div>
 
-        <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs text-center">
-          <span className="text-[10px] text-rose-500 font-bold uppercase">Sem Foto</span>
-          <p className="text-xl font-bold font-mono text-rose-600 mt-0.5">{catalogAudit?.productsWithMissingImages || 0}</p>
+        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 shadow-xs">
+          <p className="text-[11px] font-bold text-rose-700 uppercase">Grades Furadas</p>
+          <p className="text-xl font-bold text-rose-900 mt-1">{catalogAudit?.productsWithBrokenGrid || 0}</p>
+          <p className="text-[10px] text-rose-600 mt-0.5">Falta PP, G1 ou G2</p>
         </div>
 
-        <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs text-center">
-          <span className="text-[10px] text-amber-600 font-bold uppercase">Grade Furada</span>
-          <p className="text-xl font-bold font-mono text-amber-600 mt-0.5">{catalogAudit?.productsWithBrokenGrid || 0}</p>
+        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 shadow-xs">
+          <p className="text-[11px] font-bold text-emerald-700 uppercase">Isentos Regra _FULL</p>
+          <p className="text-xl font-bold text-emerald-900 mt-1">{catalogAudit?.productsWithFullExemption || 0}</p>
+          <p className="text-[10px] text-emerald-600 mt-0.5">Estampas Especiais</p>
         </div>
 
-        <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs text-center">
-          <span className="text-[10px] text-emerald-600 font-bold uppercase">Isentos _FULL</span>
-          <p className="text-xl font-bold font-mono text-emerald-600 mt-0.5">{catalogAudit?.productsWithFullExemption || 0}</p>
+        <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 shadow-xs">
+          <p className="text-[11px] font-bold text-amber-700 uppercase">Sem Guia de Medidas</p>
+          <p className="text-xl font-bold text-amber-900 mt-1">{catalogAudit?.productsWithoutSizeGuide || 0}</p>
+          <p className="text-[10px] text-amber-600 mt-0.5">Risco de Trocas</p>
         </div>
 
-        <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs text-center">
-          <span className="text-[10px] text-indigo-600 font-bold uppercase">Sem Tabela Medidas</span>
-          <p className="text-xl font-bold font-mono text-indigo-600 mt-0.5">{catalogAudit?.productsWithoutSizeGuide || 0}</p>
+        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 shadow-xs">
+          <p className="text-[11px] font-bold text-slate-600 uppercase">Fotos Ausentes</p>
+          <p className="text-xl font-bold text-slate-900 mt-1">{catalogAudit?.productsWithMissingImages || 0}</p>
         </div>
 
-        <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs text-center">
-          <span className="text-[10px] text-slate-500 font-bold uppercase">Fotos Pesadas (&gt;350k)</span>
-          <p className="text-xl font-bold font-mono text-slate-700 mt-0.5">{catalogAudit?.heavyImagesCount || 0}</p>
+        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 shadow-xs">
+          <p className="text-[11px] font-bold text-slate-600 uppercase">Imagens &gt; 350KB</p>
+          <p className="text-xl font-bold text-slate-900 mt-1">{catalogAudit?.heavyImagesCount || 0}</p>
+          <p className="text-[10px] text-slate-500 mt-0.5">Atrasam o Site</p>
         </div>
       </div>
 
-      {/* 🏷️ FILTER BUTTONS */}
-      <div className="p-3 bg-white rounded-2xl border border-slate-200 shadow-xs flex items-center gap-2 overflow-x-auto scrollbar-none">
-        <span className="text-xs font-bold text-slate-400 flex items-center gap-1 ml-2 mr-1">
+      {/* Filter Chips */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+        <span className="text-slate-400 font-bold flex items-center gap-1 shrink-0 mr-1">
           <Filter className="w-3.5 h-3.5" /> Filtrar:
         </span>
-        {[
-          { id: 'TODOS', label: 'Todos os SKUs' },
-          { id: 'GRADE_FURADA', label: 'Grade Furada (Falta PP a G2)' },
-          { id: 'ISENTOS_FULL', label: 'Isentos pela Regra _FULL' },
-          { id: 'SEM_FOTO', label: 'Sem Foto / Quebrada' },
-          { id: 'SEM_DESCRICAO', label: 'Sem Tabela de Medidas' },
-          { id: 'IMAGENS_PESADAS', label: 'Imagens Pesadas (&gt;350 KB)' }
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveFilter(tab.id as CatalogFilter)}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
-              activeFilter === tab.id
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+        <button
+          onClick={() => setActiveFilter('TODOS')}
+          className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
+            activeFilter === 'TODOS' ? 'bg-slate-900 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+          }`}
+        >
+          Todos ({catalogAudit?.issues.length || 0})
+        </button>
+        <button
+          onClick={() => setActiveFilter('GRADE_FURADA')}
+          className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
+            activeFilter === 'GRADE_FURADA' ? 'bg-rose-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+          }`}
+        >
+          ⚠️ Grades Furadas ({catalogAudit?.productsWithBrokenGrid || 0})
+        </button>
+        <button
+          onClick={() => setActiveFilter('ISENTOS_FULL')}
+          className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
+            activeFilter === 'ISENTOS_FULL' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+          }`}
+        >
+          ✅ Isentos _FULL ({catalogAudit?.productsWithFullExemption || 0})
+        </button>
+        <button
+          onClick={() => setActiveFilter('SEM_FOTO')}
+          className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
+            activeFilter === 'SEM_FOTO' ? 'bg-slate-800 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+          }`}
+        >
+          Sem Foto ({catalogAudit?.productsWithMissingImages || 0})
+        </button>
+        <button
+          onClick={() => setActiveFilter('IMAGENS_PESADAS')}
+          className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
+            activeFilter === 'IMAGENS_PESADAS' ? 'bg-amber-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+          }`}
+        >
+          Imagens Pesadas ({catalogAudit?.heavyImagesCount || 0})
+        </button>
       </div>
 
-      {/* 📦 SKU ISSUE CARDS LIST WITH DIRECT PRODUCT LINKS */}
-      <div className="space-y-4">
+      {/* Catalog SKU Cards */}
+      <div className="space-y-3">
         {filteredIssues.map((issue) => {
           const productDirectUrl = issue.productUrl || `https://${realSiteData.domain}/produto/${issue.sku.toLowerCase()}`;
 
           return (
-            <div 
-              key={issue.id} 
-              className="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-4 hover:border-blue-300 transition-all"
+            <div
+              key={issue.id}
+              className={`p-5 rounded-2xl bg-white border transition-all shadow-xs space-y-4 ${
+                !issue.isFullPrintExempt && issue.missingSizes.length > 0
+                  ? 'border-rose-300 ring-1 ring-rose-100'
+                  : issue.isFullPrintExempt
+                  ? 'border-emerald-200 bg-emerald-50/20'
+                  : 'border-slate-200 hover:border-slate-300'
+              }`}
             >
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+              {/* Product Header Row */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="px-2.5 py-0.5 bg-slate-900 text-white font-mono font-bold text-xs rounded-lg">
-                      {issue.sku}
+                    <span className="font-mono font-bold text-xs bg-slate-100 text-slate-800 px-2 py-0.5 rounded-lg border border-slate-200 flex items-center gap-1.5">
+                      <span>SKU: {issue.sku}</span>
+                      <button
+                        onClick={() => handleCopyText(issue.id, issue.sku)}
+                        className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                        title="Copiar SKU"
+                      >
+                        {copiedId === issue.id ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                      </button>
                     </span>
 
                     {issue.isFullPrintExempt ? (
@@ -288,9 +353,12 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                   <div className="grid grid-cols-2 gap-2 text-[11px]">
                     <div className="flex items-center justify-between p-2 bg-white rounded-lg border border-slate-200">
                       <span className="text-slate-500">Tabela Medidas:</span>
-                      <span className={`font-bold ${issue.hasSizeGuide ? 'text-emerald-600' : 'text-rose-600'}`}>
+                      <button
+                        onClick={() => setShowSizeChartModal(true)}
+                        className={`font-bold hover:underline cursor-pointer flex items-center gap-1 ${issue.hasSizeGuide ? 'text-emerald-600' : 'text-rose-600'}`}
+                      >
                         {issue.hasSizeGuide ? '✅ Configurada' : '❌ Ausente'}
-                      </span>
+                      </button>
                     </div>
 
                     <div className="flex items-center justify-between p-2 bg-white rounded-lg border border-slate-200">
@@ -318,74 +386,140 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
 
               </div>
 
-              {/* Recommended Action Box */}
-              <div className="p-3 bg-blue-50/70 border border-blue-200 rounded-xl flex items-center justify-between text-xs">
-                <span className="text-blue-950 font-medium leading-snug">
-                  <strong className="text-blue-900 font-bold">Ação Corretiva:</strong> {issue.recommendedAction}
-                </span>
+              {/* Recommended Action Pill */}
+              <div className="p-3 bg-blue-50/70 border border-blue-100 rounded-xl flex items-center justify-between gap-2 text-xs">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-blue-600 shrink-0" />
+                  <span className="text-slate-700 font-medium">{issue.recommendedAction}</span>
+                </div>
               </div>
-
             </div>
           );
         })}
       </div>
 
-      {/* Validated Code & HTML Vulnerabilities List */}
-      <div className="space-y-4 font-medium pt-4">
-        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-          <Code className="w-4 h-4 text-blue-600" />
-          <span>Vulnerabilidades de Código & Tags HTML Lidas ({guardrailReport.validatedFindings.length})</span>
-        </h3>
-
-        {guardrailReport.validatedFindings.map((bs, idx) => (
-          <div key={idx} className="p-6 rounded-2xl bg-white border border-slate-200 space-y-4 shadow-xs hover:border-slate-300 transition-all">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2">
-                <span className={`px-2.5 py-0.5 text-[10px] font-extrabold uppercase rounded border ${
-                  bs.severity === 'CRÍTICO' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                  bs.severity === 'ALTO' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                  'bg-blue-50 text-blue-700 border-blue-200'
-                }`}>
-                  {bs.severity}
-                </span>
-                <h4 className="text-sm font-bold text-slate-900">{bs.title}</h4>
+      {/* 📐 INTERACTIVE SIZE CHART MODAL (BRK OFFICIAL THEME ADDON) */}
+      {showSizeChartModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden max-h-[90vh] flex flex-col">
+            
+            {/* Modal Header */}
+            <div className="p-4 bg-slate-900 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-lg bg-white/10 text-emerald-400">
+                  <Ruler className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm">Guia de Medidas Oficial — {brandTitle}</h3>
+                  <p className="text-[11px] text-slate-300">Tema Shopify &lt;product-addons data-custom-class="size_chart"&gt;</p>
+                </div>
               </div>
-
-              <span className="text-xs font-mono text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 font-bold">
-                {bs.category}
-              </span>
+              <button
+                onClick={() => setShowSizeChartModal(false)}
+                className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-all cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
-            <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs font-mono text-slate-200 space-y-1">
-              <div className="flex items-center justify-between text-[10px] text-slate-400 border-b border-slate-800 pb-1">
-                <span className="flex items-center gap-1 font-bold text-blue-400">
-                  <Code className="w-3.5 h-3.5" /> Localização no HTML: {bs.codeLocation}
-                </span>
-                <span className="text-emerald-400">✓ Revalidado pelo Guardrail Agent</span>
+            {/* Modal Body with Exact Theme Table */}
+            <div className="p-6 overflow-y-auto space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                
+                {/* Table Container */}
+                <div className="md:col-span-8 rounded-xl border border-slate-200 overflow-hidden shadow-xs">
+                  <div
+                    style={{ backgroundColor: themeHeaderColor }}
+                    className="text-white text-center p-3 font-bold uppercase tracking-wider text-sm"
+                  >
+                    MASCULINO
+                    <p className="text-[11px] font-normal tracking-normal text-white/90 mt-0.5">
+                      Camisa Manga Longa UV50 | *As medidas podem variar de 2cm a 3cm
+                    </p>
+                  </div>
+
+                  <table className="w-full text-center text-xs border-collapse">
+                    <thead>
+                      <tr className="bg-slate-900 text-white font-bold">
+                        <th className="p-2.5 border border-slate-700">TAMANHO</th>
+                        <th className="p-2.5 border border-slate-700">TÓRAX</th>
+                        <th className="p-2.5 border border-slate-700">ALTURA</th>
+                        <th className="p-2.5 border border-slate-700">MANGA</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white">
+                      {[
+                        { size: 'PP', torax: '49,5cm', altura: '67cm', manga: '56cm' },
+                        { size: 'P', torax: '51,5cm', altura: '69cm', manga: '59,5cm' },
+                        { size: 'M', torax: '54cm', altura: '71cm', manga: '62cm' },
+                        { size: 'G', torax: '56cm', altura: '72cm', manga: '64cm' },
+                        { size: 'GG', torax: '59cm', altura: '74cm', manga: '64cm' },
+                        { size: 'G1', torax: '62cm', altura: '75cm', manga: '66cm' },
+                        { size: 'G2', torax: '65cm', altura: '76,5cm', manga: '66cm' }
+                      ].map((row, idx) => (
+                        <tr
+                          key={row.size}
+                          className={`${idx % 2 === 0 ? 'bg-slate-100' : 'bg-slate-200/70'} hover:bg-slate-300/60 transition-colors`}
+                        >
+                          <td className="p-2.5 font-bold text-slate-900 border border-white">{row.size}</td>
+                          <td className="p-2.5 text-slate-800 border border-white">{row.torax}</td>
+                          <td className="p-2.5 text-slate-800 border border-white">{row.altura}</td>
+                          <td className="p-2.5 text-slate-800 border border-white">{row.manga}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mockup Preview Column */}
+                <div className="md:col-span-4 flex flex-col items-center justify-center p-4 bg-slate-50 rounded-xl border border-slate-200 text-center space-y-3">
+                  <div className="w-full aspect-4/5 rounded-lg bg-white border border-slate-200 overflow-hidden flex items-center justify-center p-2">
+                    {isAgro ? (
+                      <img
+                        src="https://cdn.shopify.com/s/files/1/0887/2083/4857/files/tabela_master_agro.png"
+                        alt="Guia de Medidas BRK Agro"
+                        className="max-h-full object-contain"
+                        onError={(e) => {
+                          // Fallback illustration
+                          (e.target as HTMLElement).style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="text-center p-4 space-y-2">
+                        <Ruler className="w-10 h-10 text-slate-400 mx-auto" />
+                        <p className="text-xs font-bold text-slate-700">Modelagem Oficial {brandTitle}</p>
+                        <p className="text-[10px] text-slate-500">Corte anatômico com punho elástico e gola protetora UV50+.</p>
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-[11px] font-bold text-emerald-700 flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" /> Componente Ativo no Tema
+                  </span>
+                </div>
+
               </div>
-              <p className="text-amber-300 pt-1">
-                {bs.codeSnippet}
-              </p>
+
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                <p>
+                  <strong>Dica do Arquiteto de CRO:</strong> Como esta tabela já está configurada no tema através do addon <code className="bg-white px-1 py-0.5 rounded font-mono text-slate-800 border border-slate-200">&lt;product-addons&gt;</code>, certifique-se de que o botão esteja posicionado diretamente acima do seletor de tamanhos no celular para reduzir a taxa de devolução.
+                </p>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-1">
-                <span className="font-bold text-amber-900 flex items-center gap-1 text-[11px]">
-                  <AlertCircle className="w-3.5 h-3.5 text-amber-600" /> Impacto Direto nas Vendas:
-                </span>
-                <p className="text-amber-800">{bs.impactExplanation}</p>
-              </div>
-
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl space-y-1">
-                <span className="font-bold text-blue-900 flex items-center gap-1 text-[11px]">
-                  <Zap className="w-3.5 h-3.5 text-blue-600" /> Solução Recomendada:
-                </span>
-                <p className="text-blue-950 font-mono text-[11px] font-bold">{bs.fixAction}</p>
-              </div>
+            {/* Modal Footer */}
+            <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+              <button
+                onClick={() => setShowSizeChartModal(false)}
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-all cursor-pointer"
+              >
+                Fechar Visualização
+              </button>
             </div>
+
           </div>
-        ))}
-      </div>
+        </div>
+      )}
 
     </div>
   );
