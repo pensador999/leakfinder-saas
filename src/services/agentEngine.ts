@@ -11,6 +11,8 @@ import {
   buildCompetitorAgentSkill
 } from './agentSkills';
 
+import { analyzeComputerVision } from './visionCoreEngine';
+
 export async function runAgentDiagnosticAsync(input: AuditInput): Promise<AgentDiagnosticResult> {
   const workerResult = await runSiteInspectorWorker(input.siteUrl, input.targetRegion, input.niche, input.instagramHandle, input.manualCnpj);
   return generateDiagnosticFromWorker(input, workerResult);
@@ -39,7 +41,7 @@ export async function runAgentDiagnostic(input: AuditInput, customWorkerResult?:
         src: '/images/products/brkagro-item-1.jpg',
         productTitle: 'BRKAGRO — Sementes de Milho Híbrido sem Alt Text',
         reason: 'SEM_ALT' as const,
-        locationHint: 'Grid Principal de Produtos no HTML'
+        locationHint: 'Carrossel Destaques'
       }
     ],
     typoAlerts: [
@@ -80,18 +82,7 @@ export async function runAgentDiagnostic(input: AuditInput, customWorkerResult?:
       headlineAnalysis: 'N/A',
       recommendations: []
     },
-    visionAnalysis: {
-      ocr: { hasTextInImages: false, detectedKeywords: [], urgencyTextFound: false, trustBadgeDetected: false, suspiciousPromotions: false },
-      uiux: { ctaContrastIsGood: true, visualClutterScore: 50, aboveTheFoldOptimized: true, primaryColor: '#000', secondaryColor: '#FFF', hasFloatingActionButton: true },
-      eyeTracking: { mainFocusElement: 'Botão Comprar', focusScoreCta: 100 },
-      dropshipPattern: { isGenericTheme: false, themeSignature: 'N/A' },
-      imageQuality: { hasWhiteBackground: true, hasLifestyleFaces: true, isHighResolution: true },
-      mobileGeometry: { hasFatFingerIssues: false, clickableElementsTooSmall: 0, hasOverlapBlocker: false },
-      logistics: { hasFreeShippingBanner: true, hasShippingCalculator: false },
-      a11y: { colorBlindnessContrastGood: true, ariaTagsPresent: false },
-      retention: { hasLoyaltyProgram: false, hasSubscribeAndSave: false },
-      warnings: [], recommendations: []
-    },
+    visionAnalysis: await analyzeComputerVision(siteData.domain, ''),
     osintData: {
       cnpjData: { found: false },
       reputation: { reclameAquiScore: 0, trustFactor: 'BAIXA' },

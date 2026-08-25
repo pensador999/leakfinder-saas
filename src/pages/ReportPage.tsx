@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import confetti from 'canvas-confetti';
 import { Header } from '../components/Header';
-import { HeroUrlBar } from '../components/HeroUrlBar';
 import { ExecutiveSummary } from '../components/ExecutiveSummary';
+import { ComputerVisionInspectionView } from '../components/agents/ComputerVisionInspectionView';
 import { BlindspotAuditView } from '../components/BlindspotAuditView';
 import { SecurityAgentView } from '../components/agents/SecurityAgentView';
 import { SocialAgentView } from '../components/agents/SocialAgentView';
@@ -15,26 +14,21 @@ import { CompetitorAgentView } from '../components/agents/CompetitorAgentView';
 import { ActionPlanKanban } from '../components/agents/ActionPlanKanban';
 import { AgentChatView } from '../components/agents/AgentChatView';
 import { RoasCalculator } from '../components/tools/RoasCalculator';
-import { AuditFormModal } from '../components/AuditFormModal';
-import { AnalysisLoadingState } from '../components/AnalysisLoadingState';
 import { ReportExporter } from '../components/tools/ReportExporter';
 import { SettingsModal } from '../components/SettingsModal';
-import { LeadGateModal } from '../components/LeadGateModal';
 import { AdminLeadsDashboard } from '../components/AdminLeadsDashboard';
-import { PricingModal } from '../components/PricingModal';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { CookieBanner } from '../components/CookieBanner';
-import { LegalModal } from '../components/LegalModal';
-import { runAgentDiagnosticAsync } from '../services/agentEngine';
-import { extractCleanDomainAndBrand } from '../services/siteInspector';
-import { AuditInput, AgentDiagnosticResult } from '../types';
-import { LayoutDashboard, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare } from 'lucide-react';
+import { AgentDiagnosticResult } from '../types';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 export function ReportPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [diagnostic, setDiagnostic] = useState<AgentDiagnosticResult | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<string>('summary');
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
@@ -42,17 +36,55 @@ export function ReportPage() {
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
 
   useEffect(() => {
-    // Carrega o relatório da memória (mock do DB)
-    const saved = localStorage.getItem('latestAudit');
-    if (saved) {
-      setDiagnostic(JSON.parse(saved));
-    } else {
-      // Se não tiver, redireciona para o dashboard
-      navigate('/dashboard');
-    }
-  }, [navigate]);
+    const fetchAudit = async () => {
+      if (!id) {
+        navigate('/');
+        return;
+      }
+
+      // Check if it's a fallback ID (from localStorage)
+      if (id.startsWith('fallback-') || id === 'latest') {
+        const saved = localStorage.getItem('latestAudit');
+        if (saved) {
+          setDiagnostic(JSON.parse(saved));
+        } else {
+          navigate('/');
+        }
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('audits')
+          .select('result_data')
+          .eq('id', id)
+          .single();
+
+        if (error || !data) {
+          console.error("Audit not found in DB", error);
+          navigate('/');
+        } else {
+          setDiagnostic(data.result_data);
+        }
+      } catch (err) {
+        console.error("Error fetching audit:", err);
+        navigate('/');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAudit();
+  }, [id, navigate]);
+
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center font-bold text-slate-600">Carregando Relatório...</div>;
+  }
+
   const allTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
+    { id: 'vision', label: 'Visão Computacional & Heatmap', icon: Eye, badge: diagnostic?.visionAnalysis.warnings.length },
     { id: 'competitor', label: 'Espião', icon: Sword },
     { id: 'kanban', label: 'Plano de Ação', icon: KanbanSquare },
     { id: 'code_security', label: 'Código & Segurança', icon: ShieldCheck, badge: diagnostic?.cro.findings.length, advanced: true },
@@ -64,12 +96,12 @@ export function ReportPage() {
   const tabs = isAdvancedMode ? allTabs : allTabs.filter(t => !t.advanced);
 
   return (
-    <div className="min-h-screen bg-white text-slate-800 font-sans antialiased pb-20">
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased pb-20">
       
       {/* Sticky Header Actions */}
       <Header 
         diagnostic={diagnostic} 
-        onOpenAuditModal={() => {}} 
+        onOpenAuditModal={() => navigate('/')} 
         onExportReport={() => setIsExportModalOpen(true)}
         onOpenSettings={() => setIsSettingsModalOpen(true)}
         onOpenAdmin={() => setIsAdminDashboardOpen(true)}
@@ -145,6 +177,10 @@ export function ReportPage() {
                   />
                 )}
 
+                {activeTab === 'vision' && (
+                  <ComputerVisionInspectionView diagnostic={diagnostic} />
+                )}
+
                 {activeTab === 'competitor' && (
                   <CompetitorAgentView diagnostic={diagnostic} />
                 )}
@@ -210,8 +246,8 @@ export function ReportPage() {
       <footer className="max-w-7xl mx-auto py-8 px-4 border-t border-slate-200 mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500">
         <p>© {new Date().getFullYear()} LeakFinder. Todos os direitos reservados.</p>
         <div className="flex items-center gap-4 mt-4 sm:mt-0">
-          <button onClick={() => navigate('/privacy')} className="hover:text-slate-900 transition-colors">Política de Privacidade</button>
-          <button onClick={() => navigate('/terms')} className="hover:text-slate-900 transition-colors">Termos de Uso</button>
+          <button onClick={() => navigate('/privacy')} className="hover:text-slate-900 transition-colors cursor-pointer">Política de Privacidade</button>
+          <button onClick={() => navigate('/terms')} className="hover:text-slate-900 transition-colors cursor-pointer">Termos de Uso</button>
         </div>
       </footer>
 

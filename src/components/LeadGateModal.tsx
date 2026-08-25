@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
 import { getWhiteLabelConfig } from '../services/whiteLabelService';
-import { supabase } from '../services/supabaseClient';
+import { supabase } from '../lib/supabase';
 
 interface LeadGateModalProps {
   onUnlock: (email: string) => void;

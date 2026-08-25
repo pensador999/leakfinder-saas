@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, ShoppingCart, Search, Target, DollarSign, Brain, ShieldAlert, ArrowRight, Zap, Globe, Clock, ShieldCheck, Sparkles, Layers, ShoppingBag } from 'lucide-react';
+import { TrendingUp, Eye, Sparkles, Flame, CheckCircle2, ArrowRight } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 
 interface ExecutiveSummaryProps {
@@ -8,67 +8,7 @@ interface ExecutiveSummaryProps {
 }
 
 export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, onSelectAgentTab }) => {
-  const { growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax, realSiteData, cro, seo, ads, salesCopy, pmGrowth } = diagnostic;
-
-  const agentCards = [
-    {
-      id: 'cro',
-      title: 'CRO & Usabilidade',
-      score: cro.score,
-      subtitle: 'Fricção de Checkout & Mobile',
-      topFinding: cro.quickWins[0] || 'Otimizar chamadas de compra no mobile.',
-      countText: `${cro.findings.length} gargalos encontrados`,
-      actionText: 'Ver relatórios',
-      icon: ShoppingCart,
-      color: 'blue'
-    },
-    {
-      id: 'seo',
-      title: 'SEO & Busca Orgânica',
-      score: seo.score,
-      subtitle: 'Tags On-Page & Schema',
-      topFinding: seo.healthStatus,
-      countText: `${seo.topKeywords.length} palavras de ouro`,
-      actionText: 'Ver palavras',
-      icon: Search,
-      color: 'blue'
-    },
-    {
-      id: 'ads',
-      title: 'Mídia Paga (Ads)',
-      score: Math.round(ads.targetRoas * 20),
-      badgeRoas: `ROAS ${ads.targetRoas}x`,
-      subtitle: 'ROAS & Criativos Meta/Google',
-      topFinding: `CAC Limite recomendado: R$ ${ads.maxCacAllowed}. Orçamento sugerido: R$ ${ads.monthlyAdBudgetSuggested.toLocaleString('pt-BR')}/mês.`,
-      countText: `${ads.creatives.length} ganchos de anúncios`,
-      actionText: 'Ver anúncios',
-      icon: Target,
-      color: 'blue'
-    },
-    {
-      id: 'salesCopy',
-      title: 'Copywriting & Ofertas',
-      score: 74,
-      badgeAov: '+AOV',
-      subtitle: 'Bundles & Objeções',
-      topFinding: salesCopy.offers[0]?.title || 'Order Bump LeakFinder ativo.',
-      countText: `elevação estimada de +${salesCopy.offers[0]?.estimatedAovLift || '14%'} no Ticket Médio`,
-      actionText: 'Ver ofertas',
-      icon: DollarSign,
-      color: 'blue'
-    },
-    {
-      id: 'pmGrowth',
-      title: 'PM & Growth Loops',
-      score: 82,
-      subtitle: 'Matriz ICE & Experimentos',
-      topFinding: `Prioridade #1: ${pmGrowth.iceMatrix[0]?.title || 'Otimizar checkout mobile.'}`,
-      countText: `${pmGrowth.iceMatrix.length} Ideias`,
-      actionText: 'Ver Matriz ICE',
-      icon: Brain,
-      color: 'blue'
-    }
-  ];
+  const { growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax, realSiteData, visionAnalysis } = diagnostic;
 
   return (
     <div className="space-y-6">
@@ -135,6 +75,50 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
             </div>
           </div>
         </div>
+
+        {/* Computer Vision & Heatmap Card */}
+        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-indigo-700 font-mono flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-600" /> Visão Computacional IA
+            </span>
+            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+              <Eye className="w-4 h-4" />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-500 font-medium">Foco no CTA (Eye-Tracking):</span>
+              <span className={`font-mono font-bold ${visionAnalysis.eyeTracking.focusScoreCta >= 70 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                {visionAnalysis.eyeTracking.focusScoreCta}%
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-500 font-medium">Contraste WCAG 2.1:</span>
+              <span className="font-mono font-bold text-slate-900">
+                {visionAnalysis.contrastAudit.contrastRatio}:1 {visionAnalysis.contrastAudit.wcagAaPassed ? '✅' : '⚠️'}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-500 font-medium">Ímã Visual Dominante:</span>
+              <span className="font-bold text-rose-600 truncate max-w-[140px] flex items-center gap-1">
+                <Flame className="w-3 h-3 shrink-0" /> {visionAnalysis.eyeTracking.mainFocusElement}
+              </span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => onSelectAgentTab('vision')}
+            className="w-full py-2.5 px-4 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+          >
+            <span>Ver Heatmap & Ergonomia</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
       </div>
     </div>
   );

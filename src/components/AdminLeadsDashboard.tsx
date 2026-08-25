@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Users, Mail, Globe, Clock, MessageCircle, RefreshCw, X, ShieldCheck } from 'lucide-react';
-import { supabase } from '../services/supabaseClient';
+import { supabase } from '../lib/supabase';
 import { getWhiteLabelConfig } from '../services/whiteLabelService';
 
 interface Lead {
