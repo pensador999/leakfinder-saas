@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, ShieldCheck, Globe, Sparkles } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Globe, Sparkles, Fish, Wheat, Flame, Zap } from 'lucide-react';
 import { AuditInput } from '../types';
 import { getWhiteLabelConfig, WhiteLabelConfig } from '../services/whiteLabelService';
 
@@ -9,6 +9,18 @@ interface HeroUrlBarProps {
   currentUrl?: string;
 }
 
+interface CompanyPreset {
+  id: string;
+  name: string;
+  url: string;
+  niche: string;
+  aov: number;
+  instagram: string;
+  icon: any;
+  accentColor: string;
+  badgeBg: string;
+}
+
 export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, currentUrl }) => {
   const [urlInput, setUrlInput] = useState(currentUrl || '');
   const [nicheInput, setNicheInput] = useState('E-commerce / Vendas');
@@ -16,11 +28,76 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
   const [instagramInput, setInstagramInput] = useState('');
   const [whiteLabel, setWhiteLabel] = useState<WhiteLabelConfig>(getWhiteLabelConfig());
 
+  const presets: CompanyPreset[] = [
+    {
+      id: 'brk-fishing',
+      name: 'BRK Fishing',
+      url: 'https://www.brkfishing.com.br',
+      niche: 'Pesca Esportiva, Vestuário & Aventura',
+      aov: 220,
+      instagram: 'brkfishing',
+      icon: Fish,
+      accentColor: 'text-cyan-700 border-cyan-300 bg-cyan-50 hover:bg-cyan-100',
+      badgeBg: 'bg-cyan-600'
+    },
+    {
+      id: 'brk-agro',
+      name: 'BRK Agro',
+      url: 'https://www.brkagro.com.br',
+      niche: 'Agropecuária, Proteção Solar & Campo',
+      aov: 260,
+      instagram: 'brkagro',
+      icon: Wheat,
+      accentColor: 'text-emerald-700 border-emerald-300 bg-emerald-50 hover:bg-emerald-100',
+      badgeBg: 'bg-emerald-600'
+    },
+    {
+      id: 'brk-motors',
+      name: 'BRK Motors',
+      url: 'https://www.brkmotors.com.br',
+      niche: 'Motociclismo, Off-Road & Automotivo',
+      aov: 240,
+      instagram: 'brkmotors',
+      icon: Flame,
+      accentColor: 'text-orange-700 border-orange-300 bg-orange-50 hover:bg-orange-100',
+      badgeBg: 'bg-orange-600'
+    }
+  ];
+
+  useEffect(() => {
+    if (currentUrl) {
+      setUrlInput(currentUrl);
+    }
+  }, [currentUrl]);
+
   useEffect(() => {
     const handleUpdate = () => setWhiteLabel(getWhiteLabelConfig());
     window.addEventListener('whitelabel-updated', handleUpdate);
     return () => window.removeEventListener('whitelabel-updated', handleUpdate);
   }, []);
+
+  const handleSelectPreset = (preset: CompanyPreset) => {
+    setUrlInput(preset.url);
+    setNicheInput(preset.niche);
+    setAovInput(preset.aov);
+    setInstagramInput(preset.instagram);
+
+    const domainName = preset.url.replace(/^https?:\/\//, '').split('.')[0].toUpperCase();
+
+    onAnalyze({
+      siteUrl: preset.url,
+      businessName: domainName,
+      businessType: 'ecommerce',
+      niche: preset.niche,
+      monthlyRevenue: 'R$ 50k a R$ 200k',
+      averageOrderValue: preset.aov,
+      mainChallenge: 'low_conversion',
+      instagramHandle: preset.instagram,
+      targetRegion: 'Brasil',
+      grossMargin: 45,
+      competitorsUrl: 'https://concorrente.com.br'
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,21 +126,64 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-sm">
-      <div className="max-w-3xl mx-auto text-center space-y-3 mb-6">
+    <div className="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-sm space-y-6">
+      <div className="max-w-3xl mx-auto text-center space-y-3">
         <div 
           className="inline-flex items-center gap-1.5 px-3 py-1 border rounded-full text-xs font-bold uppercase tracking-wider"
           style={{ color: whiteLabel.primaryColor, backgroundColor: `${whiteLabel.primaryColor}15`, borderColor: `${whiteLabel.primaryColor}30` }}
         >
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Motor de Inteligência & Inspeção de URL {whiteLabel.agencyName}</span>
+          <span>Motor de Inteligência & Auditoria BRK Group</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-          Cole o Link do seu Site para Receber o Diagnóstico Real de Vendas
+          Diagnóstico Profundo de Vendas, CRO & Visão Computacional
         </h1>
         <p className="text-sm text-slate-600 max-w-xl mx-auto">
-          Nossa inteligência inspeciona o código HTML, velocidade, metadados e usabilidade do seu site em tempo real para gerar o plano de ação de 6 agentes.
+          Inspecione qualquer uma das lojas BRK com 1 clique ou digite uma nova URL para rodar a auditoria de 6 agentes com Deep Scraping.
         </p>
+      </div>
+
+      {/* 🚀 QUICK PRESET SHORTCUT BUTTONS (BRK FISHING, AGRO, MOTORS) */}
+      <div className="max-w-3xl mx-auto">
+        <div className="flex items-center justify-between mb-2 px-1">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+            <Zap className="w-3.5 h-3.5 text-amber-500" />
+            Lojas BRK (Auditoria Instantânea em 1 Clique):
+          </span>
+          <span className="text-[11px] text-slate-400 font-medium">Selecione para inspecionar</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {presets.map((preset) => {
+            const Icon = preset.icon;
+            const isCurrent = urlInput.includes(preset.url.replace('https://', ''));
+
+            return (
+              <button
+                key={preset.id}
+                type="button"
+                onClick={() => handleSelectPreset(preset)}
+                disabled={isAnalyzing}
+                className={`p-3.5 rounded-2xl border transition-all text-left flex items-center justify-between gap-3 cursor-pointer shadow-xs ${preset.accentColor} ${
+                  isCurrent ? 'ring-2 ring-blue-600 font-bold shadow-md' : ''
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-xl text-white ${preset.badgeBg} shadow-sm`}>
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900 leading-tight">{preset.name}</h4>
+                    <p className="text-[10px] text-slate-500 font-mono mt-0.5 truncate max-w-[120px]">
+                      {preset.url.replace('https://www.', '')}
+                    </p>
+                  </div>
+                </div>
+                <ArrowRight className="w-4 h-4 text-slate-400 shrink-0" />
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Main Single Link Input Form */}
@@ -77,7 +197,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
           <input
             type="text"
             required
-            placeholder="cole o link do seu site aqui (ex: minhaloja.com.br)"
+            placeholder="cole qualquer link aqui (ex: brkfishing.com.br ou concorrente)"
             value={urlInput}
             onChange={(e) => setUrlInput(e.target.value)}
             className="flex-1 px-2 py-3 bg-transparent text-sm font-semibold text-slate-900 placeholder-slate-400 outline-none w-full font-mono"
@@ -88,7 +208,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
             disabled={isAnalyzing || !urlInput.trim()}
             className="w-full sm:w-auto px-6 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-sm rounded-xl transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 shrink-0 cursor-pointer"
           >
-            <span>{isAnalyzing ? 'Inspecionando...' : 'Analisar Site Agora'}</span>
+            <span>{isAnalyzing ? 'Inspecionando...' : 'Auditar Site'}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -101,7 +221,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
               type="text"
               value={nicheInput}
               onChange={(e) => setNicheInput(e.target.value)}
-              className="px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg text-slate-800 font-semibold outline-none text-xs w-36"
+              className="px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg text-slate-800 font-semibold outline-none text-xs w-48"
             />
           </div>
 
@@ -116,7 +236,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span>@ Insta (opc):</span>
+            <span>@ Insta:</span>
             <input
               type="text"
               placeholder="@loja"
@@ -127,7 +247,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
           </div>
 
           <div className="flex items-center gap-1 text-emerald-600 font-medium">
-            <ShieldCheck className="w-3.5 h-3.5" /> Leitura segura e sem login
+            <ShieldCheck className="w-3.5 h-3.5" /> Leitura segura e livre
           </div>
         </div>
       </form>
