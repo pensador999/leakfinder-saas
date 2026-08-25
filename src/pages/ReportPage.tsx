@@ -19,8 +19,9 @@ import { SettingsModal } from '../components/SettingsModal';
 import { AdminLeadsDashboard } from '../components/AdminLeadsDashboard';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { CookieBanner } from '../components/CookieBanner';
+import { ShopifyTelemetryView } from '../components/ShopifyTelemetryView';
 import { AgentDiagnosticResult } from '../types';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
@@ -87,13 +88,14 @@ export function ReportPage() {
   const allTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
     { id: 'catalog', label: 'Catálogo & SKUs BRK', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
+    { id: 'telemetry', label: 'Telemetria & Clarity', icon: Activity, highlight: true },
     { id: 'vision', label: 'Visão Computacional & Heatmap', icon: Eye, badge: diagnostic?.visionAnalysis.warnings.length },
     { id: 'competitor', label: 'Espião', icon: Sword },
     { id: 'kanban', label: 'Plano de Ação', icon: KanbanSquare },
     { id: 'code_security', label: 'Código & Segurança', icon: ShieldCheck, badge: diagnostic?.cro.findings.length, advanced: true },
     { id: 'cro_copy', label: 'CRO & Ofertas', icon: ShoppingCart, advanced: true },
     { id: 'social_pm', label: 'Social & Estratégia', icon: Target, advanced: true },
-    { id: 'tools', label: 'Simulador & War Room', icon: Calculator, highlight: true }
+    { id: 'tools', label: 'Simulador & War Room', icon: Calculator }
   ];
 
   const tabs = isAdvancedMode ? allTabs : allTabs.filter(t => !t.advanced);
@@ -182,6 +184,10 @@ export function ReportPage() {
 
                 {activeTab === 'catalog' && (
                   <BlindspotAuditView diagnostic={diagnostic} />
+                )}
+
+                {activeTab === 'telemetry' && (
+                  <ShopifyTelemetryView diagnostic={diagnostic} />
                 )}
 
                 {activeTab === 'vision' && (
