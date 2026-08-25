@@ -27,7 +27,7 @@ import { CookieBanner } from '../components/CookieBanner';
 import { runAgentDiagnosticAsync } from '../services/agentEngine';
 import { extractCleanDomainAndBrand } from '../services/siteInspector';
 import { AuditInput, AgentDiagnosticResult } from '../types';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function HomePage() {
@@ -92,8 +92,12 @@ export function HomePage() {
     }
   };
 
+  const totalCatalogAlerts = ((diagnostic?.realSiteData.catalogAudit?.productsWithBrokenGrid || 0) + 
+                             (diagnostic?.realSiteData.catalogAudit?.productsWithMissingImages || 0));
+
   const allTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
+    { id: 'catalog', label: 'Catálogo & SKUs BRK', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
     { id: 'vision', label: 'Visão Computacional & Heatmap', icon: Eye, badge: diagnostic?.visionAnalysis.warnings.length },
     { id: 'competitor', label: 'Espião', icon: Sword },
     { id: 'kanban', label: 'Plano de Ação', icon: KanbanSquare },
@@ -199,6 +203,10 @@ export function HomePage() {
                   />
                 )}
 
+                {activeTab === 'catalog' && (
+                  <BlindspotAuditView diagnostic={diagnostic} />
+                )}
+
                 {activeTab === 'vision' && (
                   <ComputerVisionInspectionView diagnostic={diagnostic} />
                 )}
@@ -213,7 +221,6 @@ export function HomePage() {
 
                 {activeTab === 'code_security' && (
                   <div className="space-y-6">
-                    <BlindspotAuditView diagnostic={diagnostic} />
                     <SecurityAgentView diagnostic={diagnostic} />
                     <SeoAgentView diagnostic={diagnostic} />
                   </div>

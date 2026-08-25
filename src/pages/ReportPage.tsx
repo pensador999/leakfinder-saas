@@ -20,7 +20,7 @@ import { AdminLeadsDashboard } from '../components/AdminLeadsDashboard';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { CookieBanner } from '../components/CookieBanner';
 import { AgentDiagnosticResult } from '../types';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
@@ -42,7 +42,6 @@ export function ReportPage() {
         return;
       }
 
-      // Check if it's a fallback ID (from localStorage)
       if (id.startsWith('fallback-') || id === 'latest') {
         const saved = localStorage.getItem('latestAudit');
         if (saved) {
@@ -82,8 +81,12 @@ export function ReportPage() {
     return <div className="min-h-screen flex items-center justify-center font-bold text-slate-600">Carregando Relatório...</div>;
   }
 
+  const totalCatalogAlerts = ((diagnostic?.realSiteData.catalogAudit?.productsWithBrokenGrid || 0) + 
+                             (diagnostic?.realSiteData.catalogAudit?.productsWithMissingImages || 0));
+
   const allTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
+    { id: 'catalog', label: 'Catálogo & SKUs BRK', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
     { id: 'vision', label: 'Visão Computacional & Heatmap', icon: Eye, badge: diagnostic?.visionAnalysis.warnings.length },
     { id: 'competitor', label: 'Espião', icon: Sword },
     { id: 'kanban', label: 'Plano de Ação', icon: KanbanSquare },
@@ -177,6 +180,10 @@ export function ReportPage() {
                   />
                 )}
 
+                {activeTab === 'catalog' && (
+                  <BlindspotAuditView diagnostic={diagnostic} />
+                )}
+
                 {activeTab === 'vision' && (
                   <ComputerVisionInspectionView diagnostic={diagnostic} />
                 )}
@@ -191,7 +198,6 @@ export function ReportPage() {
 
                 {activeTab === 'code_security' && (
                   <div className="space-y-6">
-                    <BlindspotAuditView diagnostic={diagnostic} />
                     <SecurityAgentView diagnostic={diagnostic} />
                     <SeoAgentView diagnostic={diagnostic} />
                   </div>

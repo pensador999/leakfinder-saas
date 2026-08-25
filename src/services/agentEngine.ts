@@ -18,57 +18,15 @@ export async function runAgentDiagnosticAsync(input: AuditInput): Promise<AgentD
   return generateDiagnosticFromWorker(input, workerResult);
 }
 
+import { inspectRealWebsite } from './siteInspector';
+
 export async function runAgentDiagnostic(input: AuditInput, customWorkerResult?: WorkerInspectionResult): Promise<AgentDiagnosticResult> {
   if (customWorkerResult) {
     return generateDiagnosticFromWorker(input, customWorkerResult);
   }
 
   const rawUrl = input.siteUrl || 'https://brkagro.com.br';
-  const siteData = {
-    url: rawUrl,
-    domain: 'brkagro.com.br',
-    brandName: 'BRKAGRO',
-    isHttps: true,
-    title: 'BRKAGRO | Soluções Agropecuárias & Sementes',
-    metaDescription: 'Compre produtos agropecuários e sementes com frete grátis e entrega rápida em BRKAGRO.',
-    h1List: ['BRKAGRO — Tecnologia para o Campo'],
-    h2Count: 6,
-    totalImages: 18,
-    imagesWithoutAlt: 7,
-    brokenProductImages: [
-      {
-        id: 'img-brk-1',
-        src: '/images/products/brkagro-item-1.jpg',
-        productTitle: 'BRKAGRO — Sementes de Milho Híbrido sem Alt Text',
-        reason: 'SEM_ALT' as const,
-        locationHint: 'Carrossel Destaques'
-      }
-    ],
-    typoAlerts: [
-      {
-        id: 'typo-1',
-        foundWord: 'promosão',
-        contextSnippet: '"...aproveite a promosão de sementes..."',
-        suggestedFix: 'promoção',
-        location: 'Banner Principal'
-      }
-    ],
-    hasSchemaJsonLd: false,
-    hasViewportMeta: true,
-    hasOgTags: true,
-    detectedKeywords: ['sementes', 'brkagro', 'agropecuária'],
-    detectedCheckoutTerms: {
-      hasPix: false,
-      hasFrete: true,
-      hasGarantia: false,
-      hasCheckoutTransparente: false,
-      hasCart: true
-    },
-    formCount: 3,
-    buttonCount: 9,
-    estimatedLoadTime: 2.7,
-    inspectionStatus: 'SUCCESS' as const
-  };
+  const siteData = await inspectRealWebsite(rawUrl);
 
   const defaultWorkerResult: WorkerInspectionResult = {
     siteData,
