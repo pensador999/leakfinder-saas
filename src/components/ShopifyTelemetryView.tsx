@@ -256,7 +256,11 @@ export const ShopifyTelemetryView: React.FC<ShopifyTelemetryViewProps> = ({ diag
 
                     {/* Bottleneck */}
                     <td className="p-3">
-                      {item.isFullPrintExempt ? (
+                      {item.isResaleAccessory ? (
+                        <span className="px-2 py-0.5 bg-blue-50 text-blue-700 font-bold text-[10px] rounded-md border border-blue-200">
+                          Acessório / Tamanho Único
+                        </span>
+                      ) : item.isFullPrintExempt ? (
                         <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 font-bold text-[10px] rounded-md border border-emerald-200">
                           Isento pela Regra _FULL
                         </span>

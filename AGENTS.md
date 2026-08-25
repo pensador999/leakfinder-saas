@@ -63,7 +63,7 @@ graph TD
 | Agente | O que PODE afirmar com base real | O que DEVE indicar como Simulação / Requer Acesso |
 | :--- | :--- | :--- |
 | **Arquiteto de CRO** | Falta de tamanhos (PP ao G2), botões fora da área de polegar, ausência de cálculo de Pix. | Taxa de conversão histórica real (requer Shopify Analytics). |
-| **Doctor de Catálogo** | SKUs reais, URLs ativas sem 404, regra `_FULL`, imagens pesadas (>350KB), widget de medidas. | Quantidade exata de peças físicas no galpão de estoque. |
+| **Doctor de Catálogo** | SKUs reais, URLs ativas sem 404, regra `_FULL`, produtos de revenda/tamanho único (Bandanas, Manguitos, Bonés), imagens pesadas (>350KB), widget de medidas. | Quantidade exata de peças físicas no galpão de estoque. |
 | **Media Buyer (Ads)** | Estrutura percentual de funil (60/25/15), roteiros de criativos para o nicho, cálculo dinâmico de CAC. | Orçamento real investido no mês (controlado pelo slider do usuário). |
 | **Engenheiro de Visão** | Contraste de cores WCAG 2.1, mapa de saliência visual dos primeiros 2.500ms. | Cliques reais de usuários (rastreados via Microsoft Clarity). |
 | **Segurança & Legal** | Ausência de CNPJ no rodapé, falta de `rel="noopener"`, HTTPS e scripts terceiros. | Vulnerabilidades internas de banco de dados do servidor da loja. |

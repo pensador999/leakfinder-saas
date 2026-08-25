@@ -9,6 +9,7 @@ export interface ShopifyCartAbandonmentRecord {
   abandonedCount: number;
   missingSizes: string[];
   isFullPrintExempt: boolean;
+  isResaleAccessory?: boolean;
   estimatedRevenueLoss: number;
   primaryReason: 'GRADE_FURADA' | 'SEM_FOTO' | 'PRECO_OU_FRETE' | 'OUTRO';
 }
@@ -110,6 +111,7 @@ export function generateShopifyTelemetryAnalysis(
       abandonedCount: simulatedAbandonCount,
       missingSizes: issue.missingSizes,
       isFullPrintExempt: issue.isFullPrintExempt,
+      isResaleAccessory: issue.isResaleAccessory,
       estimatedRevenueLoss: loss,
       primaryReason
     };

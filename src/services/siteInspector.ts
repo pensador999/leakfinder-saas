@@ -25,6 +25,8 @@ export interface CatalogProductIssue {
   availableSizes: string[];
   missingSizes: string[];
   isFullPrintExempt: boolean;
+  isResaleAccessory?: boolean;
+  categoryType?: 'VESTUARIO_LINHA' | 'FULL_PRINT' | 'REVENDA_ACESSORIO';
   hasDescription: boolean;
   descriptionLength: number;
   hasSizeGuide: boolean;
@@ -323,10 +325,36 @@ async function fetchRealLiveCatalogAudit(
           const realUrl = `https://${domain}/products/${realHandle}`;
           const title = p.title || `${brandName} Item #${i + 1}`;
           
-          // Check _FULL rule
-          const isFullPrintExempt = realHandle.toUpperCase().includes('_FULL') || 
-                                    title.toUpperCase().includes('_FULL') || 
-                                    (Array.isArray(p.tags) && p.tags.some((t: string) => t.toUpperCase().includes('FULL')));
+          // Check _FULL rule and Resale / One-Size Accessories (Bandanas, Manguitos, Bonés, etc.)
+          const titleUpper = title.toUpperCase();
+          const handleUpper = realHandle.toUpperCase();
+          const productTypeUpper = (p.product_type || '').toUpperCase();
+          const tagsUpper = Array.isArray(p.tags) ? p.tags.map((t: string) => t.toUpperCase()) : [];
+
+          const isAccessoryOrResale = 
+            titleUpper.includes('BANDANA') ||
+            handleUpper.includes('BANDANA') ||
+            titleUpper.includes('MANGUITO') ||
+            handleUpper.includes('MANGUITO') ||
+            titleUpper.includes('BONÉ') ||
+            titleUpper.includes('BONE') ||
+            handleUpper.includes('BONE') ||
+            titleUpper.includes('VISEIRA') ||
+            titleUpper.includes('CHAVEIRO') ||
+            titleUpper.includes('ADESIVO') ||
+            titleUpper.includes('COPO') ||
+            titleUpper.includes('ISCA') ||
+            titleUpper.includes('MÁSCARA') ||
+            titleUpper.includes('MASCARA') ||
+            titleUpper.includes('ÓCULOS') ||
+            titleUpper.includes('OCULOS') ||
+            titleUpper.includes('MEIA') ||
+            titleUpper.includes('GOLA') ||
+            titleUpper.includes('CHAPÉU') ||
+            titleUpper.includes('CHAPEU') ||
+            productTypeUpper.includes('ACESSORIO') ||
+            productTypeUpper.includes('REVENDA') ||
+            tagsUpper.some((t: string) => t.includes('REVENDA') || t.includes('ACESSORIO') || t.includes('BANDANA') || t.includes('UNICO'));
 
           // Extract variants & sizes
           const variants = Array.isArray(p.variants) ? p.variants : [];
@@ -343,6 +371,21 @@ async function fetchRealLiveCatalogAudit(
               }
             });
           }
+
+          const isOneSizeVariant = availableSizes.length === 0 || 
+            availableSizes.every(sz => ['ÚNICO', 'UNICO', 'ONE SIZE', 'DEFAULT TITLE', 'TAMANHO ÚNICO', 'TAMANHO UNICO'].includes(sz));
+
+          const isFullPrintProduct = handleUpper.includes('_FULL') || 
+                                     titleUpper.includes('_FULL') || 
+                                     tagsUpper.some((t: string) => t.includes('FULL'));
+
+          const isFullPrintExempt = isFullPrintProduct || isAccessoryOrResale || isOneSizeVariant;
+
+          const categoryType: 'VESTUARIO_LINHA' | 'FULL_PRINT' | 'REVENDA_ACESSORIO' = isAccessoryOrResale || isOneSizeVariant
+            ? 'REVENDA_ACESSORIO'
+            : isFullPrintProduct
+            ? 'FULL_PRINT'
+            : 'VESTUARIO_LINHA';
 
           // Calculate missing sizes from standard grid PP->G2 if not exempt
           if (!isFullPrintExempt) {
@@ -361,7 +404,9 @@ async function fetchRealLiveCatalogAudit(
                                descLower.includes('tamanho') || 
                                descLower.includes('tabela') || 
                                descLower.includes('guia') || 
-                               themeHasSizeGuideAddon;
+                               themeHasSizeGuideAddon ||
+                               isAccessoryOrResale ||
+                               isOneSizeVariant;
 
           // Images
           const images = Array.isArray(p.images) ? p.images : [];
@@ -374,18 +419,20 @@ async function fetchRealLiveCatalogAudit(
           if (!hasValidImage) criticalIssuesCount += 2;
           if (!isFullPrintExempt && missingSizes.length > 0) criticalIssuesCount += 1;
           if (!hasDescription) criticalIssuesCount += 1;
-          if (!hasSizeGuide) criticalIssuesCount += 1;
+          if (!hasSizeGuide && !isAccessoryOrResale) criticalIssuesCount += 1;
           if (imageWeightKb > 350) criticalIssuesCount += 1;
 
           let recommendedAction = 'Catálogo em conformidade.';
           if (!hasValidImage) {
             recommendedAction = 'CRÍTICO: Inserir foto principal em alta resolução na vitrine.';
+          } else if (isAccessoryOrResale || isOneSizeVariant) {
+            recommendedAction = 'Produto de Revenda / Acessório verificado em Tamanho Único (Bandana, Boné, Manguito). Em conformidade.';
+          } else if (isFullPrintProduct) {
+            recommendedAction = 'Produto Full Print verificado com Guia de Tamanhos ativo. Em conformidade.';
           } else if (!isFullPrintExempt && missingSizes.length > 0) {
             recommendedAction = `Repor estoque na grade de tamanhos (${missingSizes.join(', ')}).`;
           } else if (!hasSizeGuide) {
             recommendedAction = 'Ativar widget ou inserir Tabela de Medidas na descrição.';
-          } else if (isFullPrintExempt) {
-            recommendedAction = 'Produto Full Print verificado com Guia de Tamanhos ativo. Em conformidade.';
           }
 
           issues.push({
@@ -396,9 +443,11 @@ async function fetchRealLiveCatalogAudit(
             imageSrc: firstImageSrc,
             hasValidImage,
             imageResolutionStatus: hasValidImage ? 'ALTA' : 'QUEBRADA',
-            availableSizes: availableSizes.length > 0 ? availableSizes : ['Único'],
+            availableSizes: availableSizes.length > 0 ? availableSizes : ['Tamanho Único'],
             missingSizes,
             isFullPrintExempt,
+            isResaleAccessory: isAccessoryOrResale || isOneSizeVariant,
+            categoryType,
             hasDescription,
             descriptionLength: rawDescription.length,
             hasSizeGuide,
