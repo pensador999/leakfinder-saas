@@ -1,7 +1,7 @@
 import { AgentDiagnosticResult, AuditInput } from '../types';
 import { runSiteInspectorWorker, WorkerInspectionResult } from './siteInspectorWorker';
 import { runGuardrailAudit, enforceStrictDomainIsolation } from './agentGuardrail';
-import { hashString } from './siteInspector';
+import { hashString, inspectRealWebsite } from './siteInspector';
 import {
   buildCroAgentSkill,
   buildAdsAgentSkill,
@@ -18,7 +18,10 @@ export async function runAgentDiagnosticAsync(input: AuditInput): Promise<AgentD
   return generateDiagnosticFromWorker(input, workerResult);
 }
 
-import { inspectRealWebsite } from './siteInspector';
+import { auditSiteSecurity } from './securityInspector';
+import { auditSocialConversion } from './socialInspector';
+import { analyzeCopyNLP } from './copyNLPInspector';
+import { analyzeOsint } from './osintEngine';
 
 export async function runAgentDiagnostic(input: AuditInput, customWorkerResult?: WorkerInspectionResult): Promise<AgentDiagnosticResult> {
   if (customWorkerResult) {
@@ -30,56 +33,11 @@ export async function runAgentDiagnostic(input: AuditInput, customWorkerResult?:
 
   const defaultWorkerResult: WorkerInspectionResult = {
     siteData,
-    copyNlp: {
-      score: 50,
-      sentiment: 'Neutro/Descritivo',
-      urgencyDetected: false,
-      scarcityDetected: false,
-      socialProofDetected: false,
-      actionWordsCount: 0,
-      headlineAnalysis: 'N/A',
-      recommendations: []
-    },
-    visionAnalysis: await analyzeComputerVision(siteData.domain, ''),
-    osintData: {
-      cnpjData: { found: false },
-      reputation: { reclameAquiScore: 0, trustFactor: 'BAIXA' },
-      domainAge: { registeredYears: 0, isSuspiciouslyNew: true },
-      warnings: []
-    },
-    security: {
-      securityScore: 82,
-      isHttps: true,
-      hasCspHeader: false,
-      hasXFrameOptions: false,
-      exposedKeysCount: 0,
-      unsafeLinksCount: 2,
-      checks: [
-        {
-          id: 'sec-1',
-          category: 'SSL/HTTPS',
-          severity: 'BAIXO',
-          title: 'Certificado SSL Seguro em brkagro.com.br',
-          description: 'O site brkagro.com.br utiliza conexão segura HTTPS.',
-          riskImpact: 'Proteção adequada para dados do cliente.',
-          recommendation: 'Manter a renovação automática.'
-        }
-      ]
-    },
-    social: {
-      socialScore: 72,
-      hasMetaPixel: true,
-      hasTiktokPixel: false,
-      hasGtm: true,
-      hasOgImage: true,
-      ogTitleDetected: 'BRKAGRO — Soluções Agropecuárias',
-      instagramBioStrategy: {
-        bioCtaHook: '👉 Garanta 10% OFF no primeiro pedido em brkagro.com.br com o cupom AGRO10!',
-        linkInBioType: 'Direcionamento Direto para Catálogo VIP',
-        conversionFunnelTip: 'Utilize o Sticky Buy Button mobile na landing page de destino.'
-      },
-      checks: []
-    },
+    copyNlp: analyzeCopyNLP(siteData),
+    visionAnalysis: await analyzeComputerVision(siteData.domain, siteData.rawHtmlSnippet || ''),
+    osintData: await analyzeOsint(siteData.rawHtmlSnippet || '', siteData.domain, input.manualCnpj),
+    security: auditSiteSecurity(siteData),
+    social: auditSocialConversion(siteData, input.instagramHandle),
     blindspots: [
       {
         id: 'bs-1',

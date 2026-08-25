@@ -2,11 +2,21 @@ import { RealSiteData } from './siteInspector';
 
 export interface SocialAuditItem {
   id: string;
-  category: 'Meta Pixel' | 'OpenGraph' | 'Instagram Bio Link' | 'Rastreamento';
+  category: 'Meta Pixel' | 'Google & GA4' | 'TikTok & Pinterest' | 'Gravação de Sessão (UX)' | 'Automação & E-mail' | 'OpenGraph' | 'Instagram Bio Link';
   status: 'OTIMIZADO' | 'ALERTA' | 'CRÍTICO';
   title: string;
   description: string;
   recommendation: string;
+}
+
+export interface TrackingStack {
+  hasMetaPixel: boolean;
+  hasGoogleAnalytics4: boolean;
+  hasGtm: boolean;
+  hasTiktokPixel: boolean;
+  hasPinterestTag: boolean;
+  hasClarityOrHotjar: boolean;
+  hasEmailMarketingTag: boolean;
 }
 
 export interface SocialAuditResult {
@@ -17,6 +27,7 @@ export interface SocialAuditResult {
   hasOgImage: boolean;
   ogImagePreview?: string;
   ogTitleDetected?: string;
+  trackingStack: TrackingStack;
   instagramBioStrategy: {
     bioCtaHook: string;
     linkInBioType: string;
@@ -27,97 +38,182 @@ export interface SocialAuditResult {
 
 export function auditSocialConversion(siteData: RealSiteData, instagramHandle?: string): SocialAuditResult {
   const checks: SocialAuditItem[] = [];
+  const htmlStr = (siteData.rawHtmlSnippet || '').toLowerCase();
 
-  if (siteData.hasMetaPixel) {
+  // 1. Scanner de MarTech & Pixels
+  const hasMeta = siteData.hasMetaPixel || htmlStr.includes('fbevents.js') || htmlStr.includes('fbq(') || htmlStr.includes('connect.facebook.net');
+  const hasGtm = siteData.hasGtm || htmlStr.includes('googletagmanager.com') || htmlStr.includes('gtm-');
+  const hasGA4 = htmlStr.includes('gtag(') || htmlStr.includes('google-analytics.com') || htmlStr.includes('g-') || htmlStr.includes('analytics.js');
+  const hasTiktok = siteData.hasTiktokPixel || htmlStr.includes('analytics.tiktok.com') || htmlStr.includes('ttq.load');
+  const hasPinterest = htmlStr.includes('pintrk') || htmlStr.includes('pinit.js');
+  const hasClarityOrHotjar = htmlStr.includes('clarity.ms') || htmlStr.includes('hotjar.com') || htmlStr.includes('hj(');
+  const hasEmailMarketingTag = htmlStr.includes('klaviyo') || htmlStr.includes('rdstation') || htmlStr.includes('activecampaign') || htmlStr.includes('mailchimp');
+
+  const trackingStack: TrackingStack = {
+    hasMetaPixel: hasMeta,
+    hasGoogleAnalytics4: hasGA4,
+    hasGtm,
+    hasTiktokPixel: hasTiktok,
+    hasPinterestTag: hasPinterest,
+    hasClarityOrHotjar,
+    hasEmailMarketingTag
+  };
+
+  // Meta Pixel Check
+  if (hasMeta) {
     checks.push({
-      id: 'soc-1-ok',
+      id: 'soc-meta-ok',
       category: 'Meta Pixel',
       status: 'OTIMIZADO',
-      title: `Pixel do Meta Detectado em ${siteData.domain}`,
-      description: 'O rastreador detectou o script de base do Meta Ads (fbevents).',
-      recommendation: 'Assegurar que eventos avançados como AddToCart e Purchase estejam disparando via CAPI (API de Conversões).'
+      title: `Pixel do Meta Ads Detectado em ${siteData.domain}`,
+      description: 'O script de base do Meta Ads (fbevents.js) está ativo no código.',
+      recommendation: 'Recomendamos configurar a API de Conversões (CAPI) via servidor para recuperar até 35% dos eventos bloqueados pelo iOS 14.5+.'
     });
   } else {
     checks.push({
-      id: 'soc-1-alert',
+      id: 'soc-meta-crit',
       category: 'Meta Pixel',
       status: 'CRÍTICO',
-      title: `Nenhum Pixel do Meta Ativo Detectado em ${siteData.domain}`,
-      description: 'O HTML da página não contém o script fbq(\'init\'). Campanhas de conversão no Facebook/Instagram ficarão cegas.',
-      recommendation: 'Instalar o Pixel do Meta via Google Tag Manager ou nativamente no <head>.'
+      title: `Nenhum Pixel do Meta Ads Detectado em ${siteData.domain}`,
+      description: 'O site não possui o script de rastreamento do Facebook/Instagram Ads.',
+      recommendation: 'Instalar o Pixel do Meta imediatamente no GTM para permitir remarketing e criação de públicos semelhantes (Lookalike).'
     });
   }
 
-  // Check 1b: GTM Check
-  if (!siteData.hasGtm) {
+  // Google Analytics 4 & GTM Check
+  if (hasGtm) {
     checks.push({
-      id: 'soc-gtm',
-      category: 'Rastreamento',
+      id: 'soc-gtm-ok',
+      category: 'Google & GA4',
+      status: 'OTIMIZADO',
+      title: 'Google Tag Manager (GTM) Integrado',
+      description: 'Contêiner GTM detectado, permitindo injeção de tags sem reescrever o código do tema.',
+      recommendation: 'Manter a tag de Consent Mode V2 ativada no GTM.'
+    });
+  } else {
+    checks.push({
+      id: 'soc-gtm-alert',
+      category: 'Google & GA4',
       status: 'ALERTA',
-      title: 'Google Tag Manager Não Encontrado',
-      description: 'O contêiner do GTM não foi detectado no código da página.',
-      recommendation: 'Centralizar todos os pixels e tags através do GTM para não pesar o carregamento do site.'
+      title: 'Google Tag Manager (GTM) Ausente',
+      description: 'Tags inseridas diretamente no código-fonte tornam a loja mais lenta e difícil de gerenciar.',
+      recommendation: 'Instalar o GTM no <head> e centralizar todas as tags de tráfego.'
     });
   }
 
-  // Check 2: OpenGraph Card (Como o site aparece quando compartilhado no WhatsApp/Instagram)
+  if (hasGA4) {
+    checks.push({
+      id: 'soc-ga4-ok',
+      category: 'Google & GA4',
+      status: 'OTIMIZADO',
+      title: 'Google Analytics 4 (GA4) Ativo',
+      description: 'Métricas de engajamento e funil de conversão sendo coletadas pelo GA4.',
+      recommendation: 'Verificar se o evento de comércio eletrônico "purchase" com valores monetários está populando.'
+    });
+  } else {
+    checks.push({
+      id: 'soc-ga4-alert',
+      category: 'Google & GA4',
+      status: 'ALERTA',
+      title: 'Google Analytics 4 Não Identificado',
+      description: 'Sem o GA4, a mensuração de canais orgânicos e pagos fica fragmentada.',
+      recommendation: 'Configurar a propriedade GA4 com Enhanced Measurement ativado.'
+    });
+  }
+
+  // UX Heatmap Tools (Clarity / Hotjar)
+  if (hasClarityOrHotjar) {
+    checks.push({
+      id: 'soc-clarity-ok',
+      category: 'Gravação de Sessão (UX)',
+      status: 'OTIMIZADO',
+      title: 'Ferramenta de Gravação de Sessões & Heatmaps Detectada',
+      description: 'O site utiliza gravação de cliques e rolagem (Clarity/Hotjar) para auditoria contínua de UX.',
+      recommendation: 'Analisar mapas de rolagem nas páginas de produtos mais vendidos.'
+    });
+  } else {
+    checks.push({
+      id: 'soc-clarity-alert',
+      category: 'Gravação de Sessão (UX)',
+      status: 'ALERTA',
+      title: 'Sem Gravação de Sessões (Microsoft Clarity Grátis Não Instalado)',
+      description: 'Você não consegue assistir em vídeo onde os clientes estão travando no checkout.',
+      recommendation: 'Instalar o Microsoft Clarity (100% gratuito e sem limite de tráfego) via GTM.'
+    });
+  }
+
+  // Retention / E-mail Marketing Tools
+  if (hasEmailMarketingTag) {
+    checks.push({
+      id: 'soc-email-ok',
+      category: 'Automação & E-mail',
+      status: 'OTIMIZADO',
+      title: 'Tag de Automação de E-mail / CRM Identificada',
+      description: 'Script de captura e recuperação de abandono de carrinho detectado.',
+      recommendation: 'Ativar fluxo de boas-vindas com cupom dinâmico e lembrete de abandono em 1h via WhatsApp/E-mail.'
+    });
+  } else {
+    checks.push({
+      id: 'soc-email-alert',
+      category: 'Automação & E-mail',
+      status: 'ALERTA',
+      title: 'Ausência de Tag de Automação de Abandono de Carrinho',
+      description: 'Clientes que adicionam camisas/produtos e saem do site não recebem lembrete automatizado.',
+      recommendation: 'Integrar Klaviyo ou RD Station para recuperar até 14% dos carrinhos abandonados.'
+    });
+  }
+
+  // OpenGraph Social Share Card Check
   if (siteData.hasOgTags) {
     checks.push({
-      id: 'soc-2',
+      id: 'soc-og-ok',
       category: 'OpenGraph',
       status: 'OTIMIZADO',
       title: 'Tags OpenGraph de Compartilhamento Social Ativas',
-      description: `O site ${siteData.domain} possui meta-tags og:title e og:description configuradas no HTML.`,
-      recommendation: 'Garantir que a imagem og:image esteja em alta resolução (1200x630px).'
+      description: `O site ${siteData.domain} exibe card formatado quando o link é compartilhado no WhatsApp e Direct.`,
+      recommendation: 'Garantir que a imagem og:image esteja em proporção 1.91:1 (1200x630px) com o produto em evidência.'
     });
   } else {
     checks.push({
-      id: 'soc-2-alert',
+      id: 'soc-og-crit',
       category: 'OpenGraph',
       status: 'CRÍTICO',
-      title: 'Ausência de Tags OpenGraph para Compartilhamento em Redes Sociais',
-      description: 'Quando o link do site é enviado no WhatsApp ou Instagram DM, não aparece prévia com foto nem título formatado.',
-      recommendation: 'Adicionar meta-tags og:image, og:title e og:description no head do site.'
+      title: 'Ausência de Tags OpenGraph no Head',
+      description: 'Quando alguém envia o link da sua loja no WhatsApp, aparece apenas um link azul sem foto e sem resumo.',
+      recommendation: 'Inserir meta-tags <meta property="og:image"> e <meta property="og:title">.'
     });
   }
 
-  // Check 3: Instagram Link in Bio Strategy
+  // Instagram Strategy
   let instagramBioStrategy = {
-    bioCtaHook: `👉 Toque no link abaixo e garanta 10% OFF com o cupom INSTA10!`,
-    linkInBioType: 'Página de Destino Direta para Produto/Oferta VIP',
-    conversionFunnelTip: 'Substitua agregadores lentos de links por um redirecionamento direto para a página de vendas com o Sticky Buy Button mobile ativo.'
+    bioCtaHook: `👉 Garanta 10% OFF no primeiro pedido em ${siteData.brandName} com o cupom PRIMEIRACOMPRA!`,
+    linkInBioType: 'Direcionamento Direto para Catálogo VIP & Lançamentos',
+    conversionFunnelTip: 'Substitua árvores lentas de links por uma página de vendas direta com o Sticky Buy Button mobile ativo.'
   };
 
   if (instagramHandle) {
     checks.push({
-      id: 'soc-3-ok',
+      id: 'soc-insta-ok',
       category: 'Instagram Bio Link',
       status: 'OTIMIZADO',
-      title: `Estratégia de Bio para ${instagramHandle}`,
-      description: `Foi identificada a conta ${instagramHandle}. Se a bio usar um agregador de links, a taxa de conversão cai 30%.`,
-      recommendation: `No perfil ${instagramHandle}, direcione a bio para a Landing Page de Oferta de ${siteData.brandName} com Cupom exclusivo.`
+      title: `Estratégia de Bio & Funil para @${instagramHandle.replace('@', '')}`,
+      description: `Identificamos o canal social @${instagramHandle.replace('@', '')} para alavancagem de vendas.`,
+      recommendation: `No perfil @${instagramHandle.replace('@', '')}, utilize Stories diários com Sticker de Link direto para a página do produto com cupom pré-aplicado.`
     });
-    instagramBioStrategy.bioCtaHook = `👉 Siga ${instagramHandle} e toque no link abaixo para 10% OFF no ${siteData.brandName}!`;
-  } else {
-    checks.push({
-      id: 'soc-3-missing',
-      category: 'Instagram Bio Link',
-      status: 'ALERTA',
-      title: 'Análise de Instagram Não Conectada',
-      description: 'Nenhum @ de Instagram foi fornecido na inspeção para cruzar os dados.',
-      recommendation: 'Re-faça a auditoria inserindo o @ do Instagram para receber recomendações exatas de Bio.'
-    });
+    instagramBioStrategy.bioCtaHook = `👉 Siga @${instagramHandle.replace('@', '')} e clique no link para garantir frete facilitado no primeiro pedido!`;
   }
 
-  const socialScore = (siteData.hasOgTags ? 40 : 10) + (siteData.hasMetaPixel ? 30 : 0) + (instagramHandle ? 10 : 0) + (siteData.hasGtm ? 10 : 0);
+  const criticals = checks.filter(c => c.status === 'CRÍTICO').length;
+  const alerts = checks.filter(c => c.status === 'ALERTA').length;
+  const socialScore = Math.max(30, Math.min(98, 100 - (criticals * 30) - (alerts * 10)));
 
   return {
     socialScore,
-    hasMetaPixel: !!siteData.hasMetaPixel,
-    hasTiktokPixel: !!siteData.hasTiktokPixel,
-    hasGtm: !!siteData.hasGtm,
+    hasMetaPixel: hasMeta,
+    hasTiktokPixel: hasTiktok,
+    hasGtm,
     hasOgImage: siteData.hasOgTags,
-    ogTitleDetected: siteData.title,
+    trackingStack,
     instagramBioStrategy,
     checks
   };
