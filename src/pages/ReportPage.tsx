@@ -23,6 +23,7 @@ import { ShopifyTelemetryView } from '../components/ShopifyTelemetryView';
 import { ThemeScriptGeneratorView } from '../components/ThemeScriptGeneratorView';
 import { MarketplaceAuditView } from '../components/MarketplaceAuditView';
 import { CoreWebVitalsAuditView } from '../components/CoreWebVitalsAuditView';
+import { PricingElasticitySimulatorView } from '../components/PricingElasticitySimulatorView';
 import { detectMarketplace } from '../services/marketplaceInspector';
 import { AgentDiagnosticResult } from '../types';
 import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge } from 'lucide-react';
@@ -97,6 +98,7 @@ export function ReportPage() {
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
     ...(isMarketplaceStore ? [{ id: 'marketplace', label: 'Auditoria de Anúncio', icon: Store, highlight: true }] : []),
     { id: 'vitals', label: 'Core Web Vitals 2026', icon: Gauge, highlight: true },
+    { id: 'pricing', label: 'Simulador Pix & Margem', icon: Calculator, highlight: true },
     { id: 'catalog', label: 'Catálogo & SKUs', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
     { id: 'telemetry', label: 'Telemetria & Clarity', icon: Activity },
     ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : []),
@@ -199,6 +201,10 @@ export function ReportPage() {
 
                 {activeTab === 'vitals' && (
                   <CoreWebVitalsAuditView diagnostic={diagnostic} />
+                )}
+
+                {activeTab === 'pricing' && (
+                  <PricingElasticitySimulatorView diagnostic={diagnostic} />
                 )}
 
                 {activeTab === 'catalog' && (

@@ -7,6 +7,9 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     port: 3005,
-    strictPort: false
+    strictPort: false,
+    watch: {
+      ignored: ['**/*.pdf', '**/node_modules/**', '**/.git/**']
+    }
   }
 })
