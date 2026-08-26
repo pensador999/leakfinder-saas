@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, RefreshCw, Download, Zap, TrendingUp, Layers, CheckCircle2, Search, Settings, Users, Star } from 'lucide-react';
+import { ShieldCheck, RefreshCw, Download, Zap, TrendingUp, Layers, CheckCircle2, Search, Settings, Users, Star, MessageCircle } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { getWhiteLabelConfig, WhiteLabelConfig } from '../services/whiteLabelService';
 
@@ -10,9 +10,18 @@ interface HeaderProps {
   onOpenSettings: () => void;
   onOpenAdmin: () => void;
   onOpenPricing: () => void;
+  onOpenWhatsAppLeadModal?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ diagnostic, onOpenAuditModal, onExportReport, onOpenSettings, onOpenAdmin, onOpenPricing }) => {
+export const Header: React.FC<HeaderProps> = ({ 
+  diagnostic, 
+  onOpenAuditModal, 
+  onExportReport, 
+  onOpenSettings, 
+  onOpenAdmin, 
+  onOpenPricing,
+  onOpenWhatsAppLeadModal 
+}) => {
   const [whiteLabel, setWhiteLabel] = useState<WhiteLabelConfig>(getWhiteLabelConfig());
 
   useEffect(() => {
@@ -116,6 +125,17 @@ export const Header: React.FC<HeaderProps> = ({ diagnostic, onOpenAuditModal, on
             <RefreshCw className="w-3.5 h-3.5" />
             <span>{diagnostic ? 'Analisar Outro Site' : 'Cole o Link do Site'}</span>
           </button>
+
+          {diagnostic && onOpenWhatsAppLeadModal && (
+            <button
+              onClick={onOpenWhatsAppLeadModal}
+              className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl transition-all shadow-md shadow-emerald-600/20 active:scale-[0.98] cursor-pointer"
+              title="Receber Raio-X no WhatsApp"
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">WhatsApp</span>
+            </button>
+          )}
 
           {diagnostic && (
             <button

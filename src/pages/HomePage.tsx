@@ -22,6 +22,8 @@ import { ReportExporter } from '../components/tools/ReportExporter';
 import { SettingsModal } from '../components/SettingsModal';
 import { AdminLeadsDashboard } from '../components/AdminLeadsDashboard';
 import { PricingModal } from '../components/PricingModal';
+import { WhatsAppLeadCaptureModal } from '../components/WhatsAppLeadCaptureModal';
+import { AdminLeadsDrawer } from '../components/AdminLeadsDrawer';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { CookieBanner } from '../components/CookieBanner';
 import { runAgentDiagnosticAsync } from '../services/agentEngine';
@@ -45,6 +47,8 @@ export function HomePage() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
   const [isAdminDashboardOpen, setIsAdminDashboardOpen] = useState<boolean>(false);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState<boolean>(false);
+  const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState<boolean>(false);
+  const [isLeadsDrawerOpen, setIsLeadsDrawerOpen] = useState<boolean>(false);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analyzingUrl, setAnalyzingUrl] = useState<string>('');
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
@@ -133,8 +137,9 @@ export function HomePage() {
         onOpenAuditModal={() => setIsAuditModalOpen(true)} 
         onExportReport={() => setIsExportModalOpen(true)}
         onOpenSettings={() => setIsSettingsModalOpen(true)}
-        onOpenAdmin={() => setIsAdminDashboardOpen(true)}
+        onOpenAdmin={() => setIsLeadsDrawerOpen(true)}
         onOpenPricing={() => setIsPricingModalOpen(true)}
+        onOpenWhatsAppLeadModal={() => setIsWhatsAppModalOpen(true)}
       />
 
       {/* Main Container */}
@@ -317,6 +322,19 @@ export function HomePage() {
       {isPricingModalOpen && (
         <PricingModal onClose={() => setIsPricingModalOpen(false)} />
       )}
+
+      {diagnostic && (
+        <WhatsAppLeadCaptureModal
+          diagnostic={diagnostic}
+          isOpen={isWhatsAppModalOpen}
+          onClose={() => setIsWhatsAppModalOpen(false)}
+        />
+      )}
+
+      <AdminLeadsDrawer
+        isOpen={isLeadsDrawerOpen}
+        onClose={() => setIsLeadsDrawerOpen(false)}
+      />
 
       {/* Footer Legal */}
       <footer className="max-w-7xl mx-auto py-8 px-4 border-t border-slate-200 mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500">
