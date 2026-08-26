@@ -34,6 +34,7 @@ import { ThemeScriptGeneratorView } from '../components/ThemeScriptGeneratorView
 import { MarketplaceAuditView } from '../components/MarketplaceAuditView';
 import { CoreWebVitalsAuditView } from '../components/CoreWebVitalsAuditView';
 import { PricingElasticitySimulatorView } from '../components/PricingElasticitySimulatorView';
+import { TrustBadgeGeneratorView } from '../components/TrustBadgeGeneratorView';
 import { detectMarketplace } from '../services/marketplaceInspector';
 import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -114,6 +115,7 @@ export function HomePage() {
     ...(isMarketplaceStore ? [{ id: 'marketplace', label: 'Auditoria de Anúncio', icon: Store, highlight: true }] : []),
     { id: 'vitals', label: 'Core Web Vitals 2026', icon: Gauge, highlight: true },
     { id: 'pricing', label: 'Simulador Pix & Margem', icon: Calculator, highlight: true },
+    { id: 'trust_badge', label: 'Selo de Confiança', icon: ShieldCheck, highlight: true },
     { id: 'catalog', label: 'Catálogo & SKUs', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
     { id: 'telemetry', label: 'Telemetria & Clarity', icon: Activity },
     ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : []),
@@ -233,6 +235,10 @@ export function HomePage() {
 
                 {activeTab === 'pricing' && (
                   <PricingElasticitySimulatorView diagnostic={diagnostic} />
+                )}
+
+                {activeTab === 'trust_badge' && (
+                  <TrustBadgeGeneratorView diagnostic={diagnostic} />
                 )}
 
                 {activeTab === 'catalog' && (
