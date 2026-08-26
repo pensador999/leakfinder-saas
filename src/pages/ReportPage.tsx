@@ -22,9 +22,10 @@ import { CookieBanner } from '../components/CookieBanner';
 import { ShopifyTelemetryView } from '../components/ShopifyTelemetryView';
 import { ThemeScriptGeneratorView } from '../components/ThemeScriptGeneratorView';
 import { MarketplaceAuditView } from '../components/MarketplaceAuditView';
+import { CoreWebVitalsAuditView } from '../components/CoreWebVitalsAuditView';
 import { detectMarketplace } from '../services/marketplaceInspector';
 import { AgentDiagnosticResult } from '../types';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
@@ -95,6 +96,7 @@ export function ReportPage() {
   const allTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
     ...(isMarketplaceStore ? [{ id: 'marketplace', label: 'Auditoria de Anúncio', icon: Store, highlight: true }] : []),
+    { id: 'vitals', label: 'Core Web Vitals 2026', icon: Gauge, highlight: true },
     { id: 'catalog', label: 'Catálogo & SKUs', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
     { id: 'telemetry', label: 'Telemetria & Clarity', icon: Activity },
     ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : []),
@@ -193,6 +195,10 @@ export function ReportPage() {
 
                 {activeTab === 'marketplace' && (
                   <MarketplaceAuditView diagnostic={diagnostic} />
+                )}
+
+                {activeTab === 'vitals' && (
+                  <CoreWebVitalsAuditView diagnostic={diagnostic} />
                 )}
 
                 {activeTab === 'catalog' && (
