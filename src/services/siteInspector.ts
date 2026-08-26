@@ -224,8 +224,8 @@ async function fetchJinaMarkdown(cleanUrl: string): Promise<string> {
       const text = await response.text();
       return text.slice(0, 8000);
     }
-  } catch (e) {
-    console.error('Jina Reader failed:', e);
+  } catch {
+    // Timeout or abort is expected when using fast racing fallbacks
   }
   return '';
 }

@@ -11,6 +11,8 @@ export function setGeminiApiKey(key: string) {
   localStorage.setItem(GEMINI_LOCAL_STORAGE_KEY, key);
 }
 
+let hasWarnedNoApiKey = false;
+
 export async function askGeminiAgent<T>(
   systemPrompt: string,
   input: AuditInput,
@@ -19,7 +21,10 @@ export async function askGeminiAgent<T>(
 ): Promise<T | null> {
   const apiKey = getGeminiApiKey();
   if (!apiKey) {
-    console.warn('No Gemini API Key found. Falling back to heuristic mode.');
+    if (!hasWarnedNoApiKey) {
+      console.info('ℹ️ Modo Heurístico Local Ativo (Sem Chave Gemini configurada)');
+      hasWarnedNoApiKey = true;
+    }
     return null;
   }
 
