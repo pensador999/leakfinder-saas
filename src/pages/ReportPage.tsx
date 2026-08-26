@@ -21,8 +21,10 @@ import { ErrorBoundary } from '../components/ErrorBoundary';
 import { CookieBanner } from '../components/CookieBanner';
 import { ShopifyTelemetryView } from '../components/ShopifyTelemetryView';
 import { ThemeScriptGeneratorView } from '../components/ThemeScriptGeneratorView';
+import { MarketplaceAuditView } from '../components/MarketplaceAuditView';
+import { detectMarketplace } from '../services/marketplaceInspector';
 import { AgentDiagnosticResult } from '../types';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2 } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
@@ -86,11 +88,16 @@ export function ReportPage() {
   const totalCatalogAlerts = ((diagnostic?.realSiteData.catalogAudit?.productsWithBrokenGrid || 0) + 
                              (diagnostic?.realSiteData.catalogAudit?.productsWithMissingImages || 0));
 
+  const isMarketplaceStore = diagnostic 
+    ? detectMarketplace(diagnostic.realSiteData.url, diagnostic.realSiteData.domain).isMarketplace 
+    : false;
+
   const allTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
-    { id: 'catalog', label: 'Catálogo & SKUs BRK', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
+    ...(isMarketplaceStore ? [{ id: 'marketplace', label: 'Auditoria de Anúncio', icon: Store, highlight: true }] : []),
+    { id: 'catalog', label: 'Catálogo & SKUs', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
     { id: 'telemetry', label: 'Telemetria & Clarity', icon: Activity },
-    { id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true },
+    ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : []),
     { id: 'vision', label: 'Visão Computacional & Heatmap', icon: Eye, badge: diagnostic?.visionAnalysis.warnings.length },
     { id: 'competitor', label: 'Espião', icon: Sword },
     { id: 'kanban', label: 'Plano de Ação', icon: KanbanSquare },
@@ -182,6 +189,10 @@ export function ReportPage() {
                     diagnostic={diagnostic}
                     onSelectAgentTab={(tab) => setActiveTab(tab)}
                   />
+                )}
+
+                {activeTab === 'marketplace' && (
+                  <MarketplaceAuditView diagnostic={diagnostic} />
                 )}
 
                 {activeTab === 'catalog' && (
