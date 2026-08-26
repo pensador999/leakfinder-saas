@@ -1,6 +1,25 @@
 import React, { useState } from 'react';
-import { X, Printer, Copy, Check, FileText } from 'lucide-react';
+import { 
+  X, 
+  Printer, 
+  Copy, 
+  Check, 
+  FileText, 
+  Download, 
+  Sparkles, 
+  Layers, 
+  Activity, 
+  TrendingUp, 
+  ShieldCheck, 
+  Eye, 
+  ExternalLink,
+  Store,
+  CheckCircle2,
+  AlertTriangle,
+  Zap
+} from 'lucide-react';
 import { AgentDiagnosticResult } from '../../types';
+import { generateShopifyTelemetryAnalysis } from '../../services/shopifyTelemetryService';
 
 interface ReportExporterProps {
   diagnostic: AgentDiagnosticResult;
@@ -8,58 +27,57 @@ interface ReportExporterProps {
 }
 
 export const ReportExporter: React.FC<ReportExporterProps> = ({ diagnostic, onClose }) => {
-  const { input, cro, seo, ads, salesCopy, pmGrowth } = diagnostic;
+  const { input, realSiteData, growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax, visionAnalysis, security, cro } = diagnostic;
   const [copiedMd, setCopiedMd] = useState(false);
+  const [agencyName, setAgencyName] = useState('LeakFinder Growth Intelligence');
 
-  const markdownContent = `# PLANO ESTRATÉGICO DE CRESCIMENTO E VENDAS - NEXUS GROWTH AI
+  const telemetryData = generateShopifyTelemetryAnalysis(
+    realSiteData.domain,
+    realSiteData.catalogAudit?.issues || [],
+    realSiteData.rawHtmlSnippet
+  );
 
-**Domínio:** ${input.siteUrl}
-**Marca:** ${input.businessName}
-**Nicho:** ${input.niche}
-**Ticket Médio (AOV):** R$ ${input.averageOrderValue}
-**Faturamento Mensal:** ${input.monthlyRevenue}
-**Growth Health Score:** ${diagnostic.growthScore}/100
-**Projeção de Incremento de Receita:** +${diagnostic.estimatedRevenueLiftMin}% a +${diagnostic.estimatedRevenueLiftMax}%
-
----
-
-## 1. DIAGNÓSTICO DE CRO & USUABILIDADE (SITE AUDIT)
-**Score CRO:** ${cro.score}/100 | **Velocidade Mobile:** ${(cro.mobileSpeedMs / 1000).toFixed(1)}s
-
-### Gargalos Críticos Identificados:
-${cro.findings.map(f => `- **[${f.impact}] ${f.title}:** ${f.description}\n  *Recomendação:* ${f.recommendation}`).join('\n')}
-
-### Quick Wins Imediatos:
-${cro.quickWins.map(w => `- [ ] ${w}`).join('\n')}
+  const markdownContent = `# RELATÓRIO EXECUTIVO DE AUDITORIA & TELEMETRIA — LEAKFINDER
+**Data da Auditoria:** ${diagnostic.analyzedAt || new Date().toLocaleDateString('pt-BR')}
+**Loja / Domínio:** ${realSiteData.domain} (${realSiteData.url})
+**Marca:** ${realSiteData.brandName}
+**Plataforma Detectada:** ${realSiteData.ecommercePlatform} (${realSiteData.brandTier})
+**Growth Score Global:** ${growthScore} / 100
+**Projeção de Recuperação de Receita:** +${estimatedRevenueLiftMin}% a +${estimatedRevenueLiftMax}%
 
 ---
 
-## 2. ESTRATÉGIA DE SEO & BUSCA ORGÂNICA
-**Score SEO:** ${seo.score}/100
-
-### Palavras-Chave de Ouro:
-${seo.topKeywords.map(k => `- **"${k.keyword}"** (${k.funnelStage} - ${k.volume}): Título sugerido: "${k.suggestedTitle}"`).join('\n')}
-
----
-
-## 3. PLANO DE MÍDIA PAGA (META & GOOGLE ADS)
-- **ROAS Alvo:** ${ads.targetRoas}x
-- **CAC Limite:** R$ ${ads.maxCacAllowed}
-- **Orçamento Mensal Sugerido:** R$ ${ads.monthlyAdBudgetSuggested.toLocaleString('pt-BR')} (60% Frio / 30% Retargeting / 10% Testes)
-
-### Anúncios Recomendados:
-${ads.creatives.map(c => `#### ${c.angleName} (${c.format})\n- **Gancho:** "${c.hook}"\n- **Corpo:** ${c.bodyCopy}\n- **CTA:** ${c.cta}`).join('\n\n')}
+## 1. RESUMO EXECUTIVO DE IMPACTO FINANCEIRO
+- **Vazamento Financeiro Estimado:** R$ ${telemetryData.totalEstimatedRevenueLoss.toLocaleString('pt-BR')} / mês
+- **Total de Carrinhos com Desistência:** ~${telemetryData.totalCartAbandonments} abandonos identificados
+- **Produtos Auditados no Catálogo:** ${realSiteData.catalogAudit?.totalProductsScanned || 0} SKUs
+- **Grades Furadas Detectadas:** ${realSiteData.catalogAudit?.productsWithBrokenGrid || 0} produtos sem PP, G1 ou G2
+- **Saúde do Catálogo:** ${realSiteData.catalogAudit?.catalogHealthScore || 0} / 100
 
 ---
 
-## 4. COPYWRITING & MATRIZ DE OFERTAS
-### Bundles & Upsells para Aumentar Ticket Médio:
-${salesCopy.offers.map(o => `- **${o.title} (${o.type}):** ${o.description} | Preço: ${o.suggestedPrice} (${o.estimatedAovLift})`).join('\n')}
+## 2. GARGALOS CRÍTICOS IDENTIFICADOS NO CATÁLOGO
+${(realSiteData.catalogAudit?.issues || []).map(i => `- **SKU ${i.sku} (${i.productTitle}):** ${i.isFullPrintExempt ? '[Isento Regra _FULL / Acessório]' : i.missingSizes.length > 0 ? `Faltam tamanhos: ${i.missingSizes.join(', ')}` : 'Grade Completa'} | URL: ${i.productUrl}`).join('\n')}
 
 ---
 
-## 5. MATRIZ ICE DE PRIORIZAÇÃO DE EXPERIMENTOS
-${pmGrowth.iceMatrix.map(i => `- **[Score ICE: ${i.iceScore}]** ${i.title} (${i.category})`).join('\n')}
+## 3. VISÃO COMPUTACIONAL & ERGONOMIA MOBILE
+- **Ímã Visual Dominante:** ${visionAnalysis.eyeTracking.mainFocusElement}
+- **Foco no CTA Principal:** ${visionAnalysis.eyeTracking.focusScoreCta}%
+- **Contraste WCAG 2.1 AAA:** ${visionAnalysis.contrastAudit.contrastRatio}:1 (${visionAnalysis.contrastAudit.wcagAaPassed ? 'Aprovado' : 'Abaixo do Ideal'})
+- **Recomendação Ergonômica:** ${visionAnalysis.thumbZone.recommendation}
+
+---
+
+## 4. PLANO DE AÇÃO & REMEDIAÇÃO IMEDIATA
+1. Reposição de grade nos SKUs com maior volume de carrinhos abandonados.
+2. Implantação de Sticky Buy Button no rodapé mobile do tema.
+3. Ampliação da área de toque dos botões de seleção de tamanho para 48x48px (Lei de Fitts).
+4. Destaque do cálculo de 10% de desconto no Pix logo abaixo do preço.
+5. Inserção de rel="noopener noreferrer" em todos os links externos.
+
+---
+*Relatório gerado por ${agencyName} via LeakFinder SaaS.*
 `;
 
   const copyMarkdown = () => {
@@ -73,20 +91,20 @@ ${pmGrowth.iceMatrix.map(i => `- **[Score ICE: ${i.iceScore}]** ${i.title} (${i.
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden my-8 max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto print:p-0 print:bg-white print:static print:overflow-visible">
+      <div className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden my-8 max-h-[92vh] flex flex-col print:max-h-none print:shadow-none print:my-0 print:border-none">
         
-        {/* Header */}
-        <div className="p-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+        {/* Top Control Bar (Hidden on Print) */}
+        <div className="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white print:hidden shrink-0">
           <div className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-indigo-400" />
-            <h3 className="font-bold text-white text-sm">Relatório Executivo de Crescimento (Print/Export)</h3>
+            <FileText className="w-5 h-5 text-blue-400" />
+            <h3 className="font-bold text-sm">Relatório Executivo Diagramado (Pronto para PDF / Diretoria)</h3>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={copyMarkdown}
-              className="px-3 py-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer"
+              className="px-3 py-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
             >
               {copiedMd ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copiedMd ? 'Copiado!' : 'Copiar Markdown'}</span>
@@ -94,102 +112,186 @@ ${pmGrowth.iceMatrix.map(i => `- **[Score ICE: ${i.iceScore}]** ${i.title} (${i.
 
             <button
               onClick={handlePrint}
-              className="px-3 py-1.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-all flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-1.5 text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-blue-500/20"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Imprimir / Salvar PDF</span>
+              <span>Salvar em PDF / Imprimir</span>
             </button>
 
             <button
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-white bg-slate-800/60 rounded-lg"
+              className="p-1.5 text-slate-400 hover:text-white rounded-lg transition-colors cursor-pointer ml-2"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Document Content View */}
-        <div className="p-8 overflow-y-auto text-slate-200 space-y-6 text-sm font-sans print:p-0 print:text-black">
+        {/* Printable Document Body */}
+        <div className="p-8 sm:p-12 overflow-y-auto space-y-8 print:p-6 print:overflow-visible text-slate-900 font-sans">
           
-          <div className="border-b border-slate-800 pb-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <h1 className="text-2xl font-black text-white">PLANO ESTRATÉGICO DE CRESCIMENTO</h1>
-                <p className="text-xs text-indigo-400 mt-0.5">Gerado por Nexus Growth AI Multi-Agent Suite</p>
-              </div>
-              <div className="text-right">
-                <span className="text-3xl font-extrabold font-mono text-emerald-400">
-                  {diagnostic.growthScore}/100
-                </span>
-                <p className="text-[10px] text-slate-400">Growth Health Score</p>
-              </div>
+          {/* Executive Header */}
+          <div className="border-b border-slate-200 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <span className="text-[10px] font-extrabold font-mono uppercase tracking-widest text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200">
+                AUDITORIA DE PERFORMANCE & CATÁLOGO
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-2">
+                Relatório de Crescimento: {realSiteData.brandName}
+              </h1>
+              <p className="text-xs text-slate-500 font-mono mt-1">
+                Domínio: <strong className="text-slate-800">{realSiteData.domain}</strong> • Plataforma: <strong className="text-slate-800">{realSiteData.ecommercePlatform}</strong> • Data: {diagnostic.analyzedAt || new Date().toLocaleDateString('pt-BR')}
+              </p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 p-4 bg-slate-950 rounded-xl border border-slate-800 text-xs">
-              <div>
-                <span className="text-slate-500 block">Domínio:</span>
-                <span className="font-semibold text-white font-mono">{input.siteUrl}</span>
-              </div>
-              <div>
-                <span className="text-slate-500 block">Nicho:</span>
-                <span className="font-semibold text-white">{input.niche}</span>
-              </div>
-              <div>
-                <span className="text-slate-500 block">Ticket Médio:</span>
-                <span className="font-semibold text-emerald-400 font-mono">R$ {input.averageOrderValue}</span>
-              </div>
-              <div>
-                <span className="text-slate-500 block">Incremento Estimado:</span>
-                <span className="font-semibold text-emerald-400 font-mono">+{diagnostic.estimatedRevenueLiftMin}% a +{diagnostic.estimatedRevenueLiftMax}%</span>
-              </div>
+            {/* Growth Score Badge */}
+            <div className="p-4 bg-slate-900 text-white rounded-2xl text-center shrink-0 min-w-[140px]">
+              <p className="text-[10px] font-mono uppercase font-bold text-slate-400">LeakFinder Score</p>
+              <p className="text-3xl font-black text-emerald-400 leading-none mt-1">
+                {growthScore} <span className="text-xs text-slate-400 font-normal">/ 100</span>
+              </p>
             </div>
           </div>
 
-          {/* Section 1: CRO */}
-          <div className="space-y-3">
-            <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-1">
-              <span>1. Auditoria de CRO & Usabilidade</span>
-            </h2>
-            <div className="space-y-2 text-xs">
-              {cro.findings.map((f, i) => (
-                <div key={i} className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                  <span className="font-bold text-rose-400">[{f.impact}] {f.title}</span>
-                  <p className="text-slate-300 mt-1">{f.description}</p>
-                  <p className="text-indigo-300 mt-1"><strong>Ação:</strong> {f.recommendation}</p>
-                </div>
-              ))}
+          {/* 4-Card Executive KPI Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="p-4 rounded-2xl bg-rose-50/70 border border-rose-200 space-y-1">
+              <p className="text-[10px] font-bold uppercase text-rose-700">Vazamento Financeiro</p>
+              <p className="text-xl font-black text-rose-900 font-mono">
+                R$ {telemetryData.totalEstimatedRevenueLoss.toLocaleString('pt-BR')}
+              </p>
+              <p className="text-[10px] text-rose-600">~{telemetryData.totalCartAbandonments} abandonos/mês</p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-1">
+              <p className="text-[10px] font-bold uppercase text-emerald-700">Lift Projetado</p>
+              <p className="text-xl font-black text-emerald-900 font-mono">
+                +{estimatedRevenueLiftMin}% a +{estimatedRevenueLiftMax}%
+              </p>
+              <p className="text-[10px] text-emerald-600">Recuperação em 90 dias</p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200 space-y-1">
+              <p className="text-[10px] font-bold uppercase text-blue-700">Saúde do Catálogo</p>
+              <p className="text-xl font-black text-blue-900 font-mono">
+                {realSiteData.catalogAudit?.catalogHealthScore || 0}%
+              </p>
+              <p className="text-[10px] text-blue-600">{realSiteData.catalogAudit?.totalProductsScanned || 0} SKUs auditados</p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+              <p className="text-[10px] font-bold uppercase text-slate-600">Contraste WCAG 2.1</p>
+              <p className="text-xl font-black text-slate-900 font-mono">
+                {visionAnalysis.contrastAudit.contrastRatio}:1
+              </p>
+              <p className="text-[10px] text-slate-500">{visionAnalysis.contrastAudit.wcagAaPassed ? 'Aprovado AA' : 'Abaixo do Padrão'}</p>
             </div>
           </div>
 
-          {/* Section 2: SEO */}
+          {/* Section 1: Catalog SKU Doctor Table */}
           <div className="space-y-3">
-            <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-1">
-              <span>2. Estratégia de SEO & Palavras-Chave</span>
-            </h2>
-            <ul className="list-disc pl-5 space-y-1 text-xs text-slate-300">
-              {seo.topKeywords.map((k, i) => (
-                <li key={i}>
-                  <strong className="text-white font-mono">{k.keyword}</strong> ({k.funnelStage} - {k.volume}) — Título sugerido: <em>"{k.suggestedTitle}"</em>
-                </li>
-              ))}
+            <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+              <Layers className="w-4 h-4 text-blue-600" />
+              <h3 className="font-bold text-sm text-slate-900">1. Auditoria Cirúrgica de SKUs e Estoque Ativo</h3>
+            </div>
+
+            <div className="overflow-x-auto rounded-xl border border-slate-200 text-xs">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
+                    <th className="p-2.5">SKU</th>
+                    <th className="p-2.5">Produto</th>
+                    <th className="p-2.5">Diagnóstico de Grade</th>
+                    <th className="p-2.5 text-right">Perda Estimada</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-mono">
+                  {(realSiteData.catalogAudit?.issues || []).slice(0, 6).map((item) => (
+                    <tr key={item.id}>
+                      <td className="p-2.5 font-bold text-slate-900">{item.sku}</td>
+                      <td className="p-2.5 font-sans truncate max-w-xs">{item.productTitle}</td>
+                      <td className="p-2.5 font-sans">
+                        {item.categoryType === 'EQUIPAMENTO_PESCA' ? (
+                          <span className="text-indigo-700 font-bold text-[11px]">Equipamento de Pesca (Conforme)</span>
+                        ) : item.isResaleAccessory ? (
+                          <span className="text-blue-700 font-bold text-[11px]">Acessório / Tamanho Único</span>
+                        ) : item.isFullPrintExempt ? (
+                          <span className="text-emerald-700 font-bold text-[11px]">Isento Regra _FULL</span>
+                        ) : item.missingSizes.length > 0 ? (
+                          <span className="text-rose-600 font-bold text-[11px]">Faltam ({item.missingSizes.join(', ')})</span>
+                        ) : (
+                          <span className="text-emerald-600 font-bold text-[11px]">Grade Completa</span>
+                        )}
+                      </td>
+                      <td className="p-2.5 text-right font-bold text-rose-600">
+                        R$ {Math.round((item.criticalIssuesCount > 0 ? 32 : 8) * 159.90).toLocaleString('pt-BR')}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Section 2: Computer Vision & Mobile Ergonomics */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+              <div className="flex items-center gap-1.5 font-bold text-xs text-slate-900">
+                <Eye className="w-4 h-4 text-indigo-600" />
+                <span>Visão Computacional & Eye-Tracking</span>
+              </div>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                <strong>Ímã Visual Dominante:</strong> {visionAnalysis.eyeTracking.mainFocusElement}.  
+                Foco no CTA de compra avaliado em <strong>{visionAnalysis.eyeTracking.focusScoreCta}%</strong>.
+              </p>
+              <p className="text-xs text-slate-600">
+                {visionAnalysis.contrastAudit.recommendation}
+              </p>
+            </div>
+
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+              <div className="flex items-center gap-1.5 font-bold text-xs text-slate-900">
+                <Zap className="w-4 h-4 text-amber-600" />
+                <span>Ergonomia Mobile (Lei de Fitts)</span>
+              </div>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                <strong>Localização do Botão:</strong> {visionAnalysis.thumbZone.ctaZoneLocation === 'EASY' ? 'Área Natural do Polegar' : 'Área de Estiramento'}.
+              </p>
+              <p className="text-xs text-slate-600">
+                {visionAnalysis.thumbZone.recommendation}
+              </p>
+            </div>
+          </div>
+
+          {/* Section 3: Recommended Action Plan */}
+          <div className="p-5 bg-slate-900 text-white rounded-2xl space-y-3">
+            <h3 className="font-bold text-sm text-emerald-400 flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4" /> Plano de Ação & Remediação Imediata (Códigos Disponíveis)
+            </h3>
+            <ul className="space-y-1.5 text-xs text-slate-300">
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span><strong>Sticky Buy Button Mobile:</strong> Código Liquid pronto para fixar botão no celular (+24% conversão).</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span><strong>Botões de Tamanho 48px:</strong> CSS pronto para expandir área de toque dos tamanhos no mobile.</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span><strong>Desconto Pix 10%:</strong> Box Liquid pronto com cálculo de economia imediata à vista.</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span><strong>Defesa Tabnabbing:</strong> Script de proteção de segurança para links externos.</span>
+              </li>
             </ul>
           </div>
 
-          {/* Section 3: Ads */}
-          <div className="space-y-3">
-            <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-1">
-              <span>3. Mídia Paga & Criativos (ROAS {ads.targetRoas}x)</span>
-            </h2>
-            <div className="space-y-2 text-xs">
-              {ads.creatives.map((c, i) => (
-                <div key={i} className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1">
-                  <span className="font-bold text-pink-400">{c.angleName} ({c.format})</span>
-                  <p className="text-slate-200"><strong>Gancho:</strong> "{c.hook}"</p>
-                  <p className="text-slate-400">{c.bodyCopy}</p>
-                </div>
-              ))}
-            </div>
+          {/* Footer Branding */}
+          <div className="border-t border-slate-200 pt-4 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+            <span>Relatório Oficial emitido por {agencyName}</span>
+            <span>https://leakfinder-saas.vercel.app</span>
           </div>
 
         </div>
