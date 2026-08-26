@@ -227,7 +227,97 @@ export const MarketplaceAuditView: React.FC<MarketplaceAuditViewProps> = ({ diag
 
       </div>
 
-      {/* 💬 4. RESPOSTAS RÁPIDAS PARA QUEBRA DE OBJEÇÕES (< 5 MIN) */}
+      {/* 🧟 MOTOR B: RADAR ANTI-ANÚNCIOS ZUMBIS (DIRETRIZES ALGORÍTMICAS 2026) */}
+      <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-rose-600" />
+            <h3 className="font-bold text-sm text-slate-900">4. Radar Anti-Anúncios Zumbis & Saúde da Conta (Algoritmo 2026)</h3>
+          </div>
+          <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 font-bold text-xs rounded-lg border border-emerald-200">
+            Status: {audit.zombieAudit.status}
+          </span>
+        </div>
+
+        <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-800">Diagnóstico de Risco Operacional:</span>
+            <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">
+              Índice Zumbi: {audit.zombieAudit.zombieScore}/100 (Risco Baixo)
+            </span>
+          </div>
+          <p className="text-xs text-slate-600 leading-relaxed">
+            {audit.zombieAudit.diagnosisReason}
+          </p>
+        </div>
+
+        {/* 7-Day Rescue Plan */}
+        <div className="space-y-2">
+          <p className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+            <Sparkles className="w-4 h-4 text-indigo-600" /> Plano de Ação de 7 Dias para Blindar o Anúncio contra a Zumbificação:
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            {audit.zombieAudit.rescuePlan7Days.map((step, idx) => (
+              <div key={idx} className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="font-extrabold text-blue-700">{step.day}: {step.title}</span>
+                  <span className="px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[9px] font-bold text-slate-600">
+                    {step.badge}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-600 leading-relaxed">{step.action}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* 👑 MOTOR B: SIMULADOR DE DISPUTA DE BUY BOX & CATÁLOGO */}
+      <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div className="flex items-center gap-2">
+            <Tag className="w-5 h-5 text-amber-500" />
+            <h3 className="font-bold text-sm text-slate-900">5. Simulador de Preço & Conquista da Buy Box (Catálogo)</h3>
+          </div>
+          <span className="px-2.5 py-0.5 bg-amber-100 text-amber-900 font-bold text-xs rounded-lg border border-amber-200">
+            {audit.buyBoxAudit.status}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+            <span className="text-[10px] font-bold uppercase text-slate-500">Seu Preço Cadastrado</span>
+            <p className="text-xl font-black text-slate-800 font-mono">
+              R$ {audit.buyBoxAudit.simulatedItemPrice.toFixed(2).replace('.', ',')}
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 space-y-1">
+            <span className="text-[10px] font-bold uppercase text-rose-700">Preço Atual da Buy Box Rival</span>
+            <p className="text-xl font-black text-rose-900 font-mono">
+              R$ {audit.buyBoxAudit.competitorBuyBoxPrice.toFixed(2).replace('.', ',')}
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-300 space-y-1 shadow-xs">
+            <span className="text-[10px] font-bold uppercase text-emerald-800 flex items-center justify-center gap-1">
+              <Sparkles className="w-3 h-3 text-emerald-600" /> Preço Recomendado para Ganhar
+            </span>
+            <p className="text-xl font-black text-emerald-700 font-mono">
+              R$ {audit.buyBoxAudit.recommendedBuyBoxPrice.toFixed(2).replace('.', ',')}
+            </p>
+          </div>
+        </div>
+
+        <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-950 flex items-start gap-2">
+          <Zap className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+          <p className="leading-relaxed">
+            <strong>Estratégia Tática:</strong> {audit.buyBoxAudit.buyBoxAdvantageStrategy} ({audit.buyBoxAudit.marginImpact})
+          </p>
+        </div>
+      </div>
+
+      {/* 💬 6. RESPOSTAS RÁPIDAS PARA QUEBRA DE OBJEÇÕES (< 5 MIN) */}
       <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2">

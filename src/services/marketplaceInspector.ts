@@ -36,6 +36,23 @@ export interface MarketplaceLogisticsAudit {
   sameDayDeliveryAdvantage: string;
 }
 
+export interface ZombieListingAudit {
+  status: 'CAMPEÃO DE VENDAS' | 'EM TRAÇÃO ORGÂNICA' | 'RISCO DE ZUMBIFICAÇÃO' | 'ZUMBI CRÍTICO (0 VENDAS)';
+  accountRiskLevel: 'BAIXO' | 'MÉDIO' | 'CRÍTICO';
+  zombieScore: number; // 0 (Perfeito) to 100 (Totalmente Zumbi)
+  diagnosisReason: string;
+  rescuePlan7Days: { day: string; title: string; action: string; badge: string }[];
+}
+
+export interface BuyBoxCompetitionAudit {
+  status: 'GANHANDO BUY BOX' | 'DISPUTA ACIRRADA' | 'PERDENDO BUY BOX';
+  simulatedItemPrice: number;
+  competitorBuyBoxPrice: number;
+  recommendedBuyBoxPrice: number;
+  marginImpact: string;
+  buyBoxAdvantageStrategy: string;
+}
+
 export interface MarketplaceQaTemplateItem {
   id: string;
   question: string;
@@ -54,6 +71,8 @@ export interface MarketplaceListingAuditResult {
   photoAudit: MarketplacePhotoAudit;
   technicalSheetAudit: MarketplaceTechnicalSheetAudit;
   logisticsAudit: MarketplaceLogisticsAudit;
+  zombieAudit: ZombieListingAudit;
+  buyBoxAudit: BuyBoxCompetitionAudit;
   qaTemplates: MarketplaceQaTemplateItem[];
   topRecommendations: string[];
 }
@@ -180,7 +199,61 @@ export function generateMarketplaceListingAudit(
     sameDayDeliveryAdvantage: 'Anúncios com entrega no dia seguinte (Next Day) recebem até 3x mais cliques no topo dos filtros de busca.'
   };
 
-  // 5. RESPOSTAS PRONTAS (QUEBRA DE OBJEÇÕES EM < 5 MIN)
+  // 5. MOTOR B: DETECTOR DE ANÚNCIOS ZUMBIS (DIRETRIZES 2026)
+  const zombieAudit: ZombieListingAudit = {
+    status: 'EM TRAÇÃO ORGÂNICA',
+    accountRiskLevel: 'BAIXO',
+    zombieScore: 24, // Escala de 0 (ótimo) a 100 (zumbi total)
+    diagnosisReason: 'O anúncio possui tráfego de busca e código EAN ativo, mas pode entrar em zumbificação se o tempo de resposta passar de 5 minutos ou se faltar vídeo demonstrativo.',
+    rescuePlan7Days: [
+      {
+        day: 'Dia 1',
+        title: 'Higienização de Título & EAN',
+        action: 'Aplicar a fórmula algorítmica de 60 caracteres e validar o código GTIN-13 na Ficha Técnica.',
+        badge: 'SEO Crítico'
+      },
+      {
+        day: 'Dia 2',
+        title: 'Upload da Tabela de Medidas (PP-G2)',
+        action: 'Inserir a imagem infográfica de medidas na 3ª foto para estancar perguntas repetidas e devoluções.',
+        badge: 'Conversão'
+      },
+      {
+        day: 'Dia 3',
+        title: 'Ativação do Mercado Envios Full / Flex',
+        action: 'Despachar lote inicial de 20 peças para o centro de distribuição Full para ganhar o selo verde.',
+        badge: 'Logística'
+      },
+      {
+        day: 'Dia 4',
+        title: 'Cupom de Reativação de 5%',
+        action: 'Criar cupom de desconto temporário de 5% no painel da Shopee/Meli para forçar as primeiras 10 vendas.',
+        badge: 'Tração Rápida'
+      },
+      {
+        day: 'Dia 7',
+        title: 'Auditoria de Conversão Final',
+        action: 'Se o anúncio mantiver 0 vendas após 14 dias com tráfego, exclua-o para não puxar a CVR da conta para baixo.',
+        badge: 'Proteção de Conta'
+      }
+    ]
+  };
+
+  // 6. MOTOR B: CALCULADORA DE BUY BOX & PREÇO TÁTICO
+  const simulatedItemPrice = 149.90;
+  const competitorBuyBoxPrice = 144.90;
+  const recommendedBuyBoxPrice = 142.90;
+
+  const buyBoxAudit: BuyBoxCompetitionAudit = {
+    status: 'DISPUTA ACIRRADA',
+    simulatedItemPrice,
+    competitorBuyBoxPrice,
+    recommendedBuyBoxPrice,
+    marginImpact: 'Redução tática de R$ 7,00 compensada por aumento de 3.2x no volume de vendas pelo topo do catálogo.',
+    buyBoxAdvantageStrategy: 'Ajuste de preço para R$ 142,90 + Envio Full garante a liderança da Buy Box sobre o concorrente direto.'
+  };
+
+  // 7. RESPOSTAS PRONTAS (QUEBRA DE OBJEÇÕES EM < 5 MIN)
   const qaTemplates: MarketplaceQaTemplateItem[] = [
     {
       id: 'qa-1',
@@ -219,6 +292,8 @@ export function generateMarketplaceListingAudit(
     photoAudit,
     technicalSheetAudit,
     logisticsAudit,
+    zombieAudit,
+    buyBoxAudit,
     qaTemplates,
     topRecommendations: [
       `Ajuste o título para a estrutura algorítmica de 60 caracteres: "${optimizedTitle}".`,
