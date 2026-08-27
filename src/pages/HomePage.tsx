@@ -47,6 +47,7 @@ import { MarketHunterAgentView } from '../components/agents/MarketHunterAgentVie
 import { ProductEvolutionAgentView } from '../components/agents/ProductEvolutionAgentView';
 import { CustomerSuccessVocAgentView } from '../components/agents/CustomerSuccessVocAgentView';
 import { ChiefExecutiveOrchestratorAgentView } from '../components/agents/ChiefExecutiveOrchestratorAgentView';
+import { CollectionDeepAuditView } from '../components/CollectionDeepAuditView';
 import { detectMarketplace } from '../services/marketplaceInspector';
 import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -130,6 +131,7 @@ export function HomePage() {
   const merchantTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
     { id: 'rupture_monitor', label: 'Vigia 24h Ruptura', icon: Flame, highlight: true },
+    { id: 'collection_audit', label: 'Coleções & Hero Banner', icon: Target, highlight: true },
     { id: 'pricing', label: 'Simulador Pix & Margem', icon: Calculator, highlight: true },
     { id: 'catalog', label: 'Catálogo & Estoque', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
     { id: 'market_hunter', label: 'Caçador de Mercado & Leads', icon: Compass, highlight: true },
@@ -144,6 +146,7 @@ export function HomePage() {
   const warRoomTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
     { id: 'ceo_orchestrator', label: 'Orquestrador CEO', icon: Crown, highlight: true },
+    { id: 'collection_audit', label: 'Coleções & Hero Banner', icon: Target, highlight: true },
     { id: 'orchestrator', label: 'Torre do Maestro', icon: Cpu, highlight: true },
     { id: 'market_hunter', label: 'Caçador de Mercado & Leads', icon: Compass, highlight: true },
     { id: 'product_evolution', label: 'Auto-Evolução do Produto', icon: Wrench, highlight: true },
@@ -299,6 +302,10 @@ export function HomePage() {
 
                 {activeTab === 'ceo_orchestrator' && (
                   <ChiefExecutiveOrchestratorAgentView />
+                )}
+
+                {activeTab === 'collection_audit' && diagnostic && (
+                  <CollectionDeepAuditView diagnostic={diagnostic} />
                 )}
 
                 {activeTab === 'scraper_dossier' && (
