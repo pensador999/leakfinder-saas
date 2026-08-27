@@ -26,7 +26,7 @@ export interface CatalogProductIssue {
   missingSizes: string[];
   isFullPrintExempt: boolean;
   isResaleAccessory?: boolean;
-  categoryType?: 'VESTUARIO_LINHA' | 'FULL_PRINT' | 'REVENDA_ACESSORIO' | 'EQUIPAMENTO_PESCA';
+  categoryType?: 'VESTUARIO_LINHA' | 'FULL_PRINT' | 'REVENDA_ACESSORIO' | 'EQUIPAMENTO_PESCA' | 'VESTUARIO_CASUAL_ALGODAO';
   hasDescription: boolean;
   descriptionLength: number;
   hasSizeGuide: boolean;
@@ -404,6 +404,22 @@ async function fetchRealLiveCatalogAudit(
             });
           }
 
+          // 🌿 Reconhecimento de Camisas de Algodão / Linha Casual (Código APC / Revenda)
+          const isCottonOrCasual = !isFishingGear && (
+            titleUpper.includes('ALGODÃO') ||
+            titleUpper.includes('ALGODAO') ||
+            titleUpper.includes('CASUAL') ||
+            titleUpper.includes('T-SHIRT') ||
+            handleUpper.includes('ALGODAO') ||
+            handleUpper.includes('ALGODÃO') ||
+            handleUpper.includes('CASUAL') ||
+            handleUpper.includes('APC') ||
+            mainSku.toUpperCase().startsWith('APC') ||
+            mainSku.toUpperCase().includes('APC') ||
+            variants.some((v: any) => (v.sku || '').toUpperCase().startsWith('APC') || (v.sku || '').toUpperCase().includes('APC')) ||
+            tagsUpper.some((t: string) => t.includes('APC') || t.includes('ALGODAO') || t.includes('ALGODÃO') || t.includes('CASUAL'))
+          );
+
           const isOneSizeVariant = availableSizes.length === 0 || 
             availableSizes.every(sz => ['ÚNICO', 'UNICO', 'ONE SIZE', 'DEFAULT TITLE', 'TAMANHO ÚNICO', 'TAMANHO UNICO'].includes(sz));
 
@@ -411,10 +427,12 @@ async function fetchRealLiveCatalogAudit(
                                      titleUpper.includes('_FULL') || 
                                      tagsUpper.some((t: string) => t.includes('FULL'));
 
-          const isFullPrintExempt = isFishingGear || isFullPrintProduct || isAccessoryOrResale || isOneSizeVariant;
+          const isFullPrintExempt = isFishingGear || isCottonOrCasual || isFullPrintProduct || isAccessoryOrResale || isOneSizeVariant;
 
-          const categoryType: 'VESTUARIO_LINHA' | 'FULL_PRINT' | 'REVENDA_ACESSORIO' | 'EQUIPAMENTO_PESCA' = isFishingGear
+          const categoryType: 'VESTUARIO_LINHA' | 'FULL_PRINT' | 'REVENDA_ACESSORIO' | 'EQUIPAMENTO_PESCA' | 'VESTUARIO_CASUAL_ALGODAO' = isFishingGear
             ? 'EQUIPAMENTO_PESCA'
+            : isCottonOrCasual
+            ? 'VESTUARIO_CASUAL_ALGODAO'
             : isAccessoryOrResale || isOneSizeVariant
             ? 'REVENDA_ACESSORIO'
             : isFullPrintProduct
@@ -462,6 +480,8 @@ async function fetchRealLiveCatalogAudit(
             recommendedAction = 'CRÍTICO: Inserir foto principal em alta resolução na vitrine.';
           } else if (isFishingGear) {
             recommendedAction = 'Equipamento / Tralha de pesca verificado (Iscas, Anzóis, Varas). Em conformidade técnica.';
+          } else if (isCottonOrCasual) {
+            recommendedAction = 'Camisa de Algodão / Casual verificada (Código APC / Revenda). Grade comercial em conformidade.';
           } else if (isAccessoryOrResale || isOneSizeVariant) {
             recommendedAction = 'Produto de Revenda / Acessório verificado em Tamanho Único (Bandana, Boné, Manguito). Em conformidade.';
           } else if (isFullPrintProduct) {

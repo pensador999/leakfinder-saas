@@ -10,7 +10,7 @@ export interface ShopifyCartAbandonmentRecord {
   missingSizes: string[];
   isFullPrintExempt: boolean;
   isResaleAccessory?: boolean;
-  categoryType?: 'VESTUARIO_LINHA' | 'FULL_PRINT' | 'REVENDA_ACESSORIO' | 'EQUIPAMENTO_PESCA';
+  categoryType?: 'VESTUARIO_LINHA' | 'FULL_PRINT' | 'REVENDA_ACESSORIO' | 'EQUIPAMENTO_PESCA' | 'VESTUARIO_CASUAL_ALGODAO';
   estimatedRevenueLoss: number;
   primaryReason: 'GRADE_FURADA' | 'SEM_FOTO' | 'PRECO_OU_FRETE' | 'OUTRO';
 }
@@ -26,6 +26,8 @@ export interface ClarityDeepLinks {
 
 export interface ShopifyTelemetrySummary {
   isConnected: boolean;
+  isSimulationMode: boolean;
+  simulationNotice: string;
   clarityInfo: ClarityDeepLinks;
   totalSessionsEstimated: number;
   totalCartAbandonments: number;
@@ -80,6 +82,8 @@ export function generateShopifyTelemetryAnalysis(
 
     return {
       isConnected: true,
+      isSimulationMode: false,
+      simulationNotice: 'Dados de telemetria sincronizados diretamente via integração ativa.',
       clarityInfo,
       totalSessionsEstimated: totalCount * 18,
       totalCartAbandonments: totalCount,
@@ -124,6 +128,8 @@ export function generateShopifyTelemetryAnalysis(
 
   return {
     isConnected: clarityInfo.projectId !== 'Não Detectado',
+    isSimulationMode: true,
+    simulationNotice: '[Simulador de Benchmark Dinâmico] Os valores de carrinhos e perda representam uma projeção matemática baseada no tráfego médio e no ticket dos SKUs. Para auditoria contábil oficial, conecte a API Shopify Admin.',
     clarityInfo,
     totalSessionsEstimated: totalCount * 22,
     totalCartAbandonments: totalCount,

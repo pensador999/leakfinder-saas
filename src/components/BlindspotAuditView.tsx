@@ -233,7 +233,11 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                       </button>
                     </span>
 
-                    {issue.categoryType === 'EQUIPAMENTO_PESCA' ? (
+                    {issue.categoryType === 'VESTUARIO_CASUAL_ALGODAO' ? (
+                      <span className="px-2.5 py-0.5 bg-amber-100 text-amber-800 border border-amber-200 font-bold text-[10px] uppercase rounded-lg flex items-center gap-1">
+                        <PackageCheck className="w-3 h-3 text-amber-600" /> Camisa de Algodão / Casual (Código APC)
+                      </span>
+                    ) : issue.categoryType === 'EQUIPAMENTO_PESCA' ? (
                       <span className="px-2.5 py-0.5 bg-indigo-100 text-indigo-800 border border-indigo-200 font-bold text-[10px] uppercase rounded-lg flex items-center gap-1">
                         <PackageCheck className="w-3 h-3 text-indigo-600" /> Equipamento & Tralha de Pesca (Iscas / Varas / Anzóis)
                       </span>

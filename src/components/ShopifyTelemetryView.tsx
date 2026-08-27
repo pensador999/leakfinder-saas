@@ -55,15 +55,15 @@ export const ShopifyTelemetryView: React.FC<ShopifyTelemetryViewProps> = ({ diag
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-slate-900">Telemetria Real & Comportamento (Shopify + Clarity)</h2>
+              <h2 className="text-xl font-bold text-slate-900">Telemetria & Comportamento (Shopify + Clarity)</h2>
               <span className={`px-2.5 py-0.5 text-xs font-bold rounded-full ${
                 clarityDetected ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700'
               }`}>
-                {clarityDetected ? '✅ Microsoft Clarity Conectado' : 'Telemetria por Benchmark'}
+                {clarityDetected ? '✅ Microsoft Clarity Conectado' : 'Simulador Dinâmico'}
               </span>
             </div>
             <p className="text-xs text-slate-600 mt-1 max-w-2xl">
-              Cruzamento de sessões reais, gravações de tela de usuários e carrinhos abandonados com a auditoria de grade furada do catálogo para identificar o vazamento financeiro exato.
+              Projeção de perdas em carrinhos baseada no ticket dos SKUs e na severidade de grade furada. Métricas privadas requerem conexão via Shopify Admin API.
             </p>
           </div>
         </div>
@@ -71,11 +71,12 @@ export const ShopifyTelemetryView: React.FC<ShopifyTelemetryViewProps> = ({ diag
         {/* Global Lost Revenue Metric Card */}
         <div className="p-4 bg-slate-900 text-white rounded-2xl flex items-center gap-4 text-right w-full lg:w-auto justify-between lg:justify-end">
           <div>
-            <p className="text-[10px] uppercase font-bold text-slate-400">Vazamento Financeiro Estimado</p>
-            <p className="text-2xl font-black text-rose-400 leading-none mt-0.5">
+            <p className="text-[10px] uppercase font-bold text-amber-400 font-mono">[Simulador de Impacto]</p>
+            <p className="text-[10px] uppercase font-bold text-slate-400">Vazamento Estimado em Carrinhos</p>
+            <p className="text-2xl font-black text-rose-400 leading-none mt-0.5 font-mono">
               R$ {telemetryData.totalEstimatedRevenueLoss.toLocaleString('pt-BR')}
             </p>
-            <p className="text-[10px] text-slate-400 mt-1">~{telemetryData.totalCartAbandonments} carrinhos abandonados</p>
+            <p className="text-[10px] text-slate-400 mt-1">projeção baseada em ~{telemetryData.totalCartAbandonments} desistências</p>
           </div>
           <div className="w-10 h-10 rounded-xl bg-rose-500/20 flex items-center justify-center text-rose-400">
             <TrendingDown className="w-5 h-5" />
