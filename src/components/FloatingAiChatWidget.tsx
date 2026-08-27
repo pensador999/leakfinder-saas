@@ -11,9 +11,12 @@ import {
   ExternalLink,
   ShieldCheck,
   Flame,
-  Phone
+  Phone,
+  Headphones,
+  RotateCcw
 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { askConciergeNeuralAgent } from '../services/agents/conciergeNeuralAgent';
 
 interface ChatMessage {
   id: string;
@@ -37,12 +40,12 @@ export const FloatingAiChatWidget: React.FC = () => {
     {
       id: 'm-1',
       sender: 'bot',
-      text: '👋 Olá! Sou o Concierge de IA do AdShield. Estou analisando o tráfego e catálogo da sua loja.\n\nComo posso te ajudar a recuperar vendas hoje?',
+      text: '👋 Olá! Sou o Concierge de IA do AdShield.\n\nEstou online 24h para responder qualquer dúvida técnica, de catálogo, instalação em temas ou valores dos planos.\n\nComo posso te ajudar hoje?',
       timestamp: 'Agora',
       quickReplies: [
         'Como funciona a auditoria?',
-        'Qual o plano ideal para mim?',
-        'Preciso de programador para instalar?'
+        'Qual o plano ideal para minha loja?',
+        'Funciona no meu tema Shopify/Nuvemshop?'
       ]
     }
   ]);
@@ -58,7 +61,7 @@ export const FloatingAiChatWidget: React.FC = () => {
     }
   }, [messages, isOpen]);
 
-  const handleSendMessage = (textToSend?: string) => {
+  const handleSendMessage = async (textToSend?: string) => {
     const text = textToSend || inputText;
     if (!text.trim()) return;
 
@@ -73,40 +76,31 @@ export const FloatingAiChatWidget: React.FC = () => {
     setInputText('');
     setIsTyping(true);
 
-    // AI Response Logic based on VoC trained knowledge
-    setTimeout(() => {
-      let botResponse = '';
-      let replies: string[] | undefined = undefined;
-
-      const lower = text.toLowerCase();
-
-      if (lower.includes('como funciona') || lower.includes('auditoria')) {
-        botResponse = 'O AdShield inspeciona a camada pública da sua loja em tempo real. Identificamos produtos anunciados com grade esgotada (PP-G2), botões fora da área de toque mobile e checkout lento, calculando a receita exata que você está perdendo.';
-        replies = ['Quanto custam os planos?', 'Como instalar os scripts?'];
-      } else if (lower.includes('plano') || lower.includes('preço') || lower.includes('quanto custa')) {
-        botResponse = 'Nossos planos foram modelados para gerar ROI imediato:\n\n• Starter (R$ 197/mês): 1 loja monitorada 24/7\n• Pro (R$ 497/mês): 3 lojas + espião de concorrentes\n• Enterprise (R$ 1.290/mês): 10 lojas com White-label para agências.\n\nRecuperar apenas 3 vendas no mês já paga o plano Pro inteiro!';
-        replies = ['Falar com especialista no WhatsApp', 'Testar auditoria grátis'];
-      } else if (lower.includes('programador') || lower.includes('instalar') || lower.includes('código')) {
-        botResponse = 'Não precisa de programador! O AdShield gera blocos de código App Embed prontos para Shopify, Nuvemshop e WooCommerce. Você cola em 1 clique ou nossa equipe faz a instalação guiada gratuita com você.';
-        replies = ['Quero agendar instalação guiada'];
-      } else if (lower.includes('whatsapp') || lower.includes('falar') || lower.includes('agendar')) {
-        botResponse = 'Excelente! Digite seu WhatsApp abaixo para receber o relatório completo da sua loja diretamente no seu celular em menos de 5 minutos:';
-      } else {
-        botResponse = `Entendido! Nosso Enxame de IA está pronto para blindar sua operação. Você pode auditar sua loja agora pelo topo da página ou deixar seu WhatsApp para receber o diagnóstico executivo gratuito.`;
-        replies = ['Qual o plano ideal para mim?', 'Falar com especialista'];
-      }
+    try {
+      const history = messages.map(m => ({ sender: m.sender, text: m.text }));
+      const result = await askConciergeNeuralAgent(text.trim(), history);
 
       const newBotMsg: ChatMessage = {
         id: `b-${Date.now()}`,
         sender: 'bot',
-        text: botResponse,
+        text: result.answerText,
         timestamp: 'Agora',
-        quickReplies: replies
+        quickReplies: result.suggestedQuickReplies
       };
 
       setMessages(prev => [...prev, newBotMsg]);
+    } catch {
+      const fallbackMsg: ChatMessage = {
+        id: `b-err-${Date.now()}`,
+        sender: 'bot',
+        text: 'Estou pronto para ajudar! Você pode auditar sua loja no topo do site ou deixar seu WhatsApp para falarmos diretamente.',
+        timestamp: 'Agora',
+        quickReplies: ['Qual o plano ideal para mim?', 'Falar com especialista']
+      };
+      setMessages(prev => [...prev, fallbackMsg]);
+    } finally {
       setIsTyping(false);
-    }, 800);
+    }
   };
 
   const handleCaptureLeadPhone = async (e: React.FormEvent) => {
@@ -118,7 +112,7 @@ export const FloatingAiChatWidget: React.FC = () => {
         await supabase.from('alert_dispatch_queue').insert([
           {
             phone_number: leadPhone.trim(),
-            message_body: 'Lead capturado via Chatbot Concierge Flutuante',
+            message_body: 'Lead capturado via Chatbot Concierge Flutuante (IA 24h)',
             alert_type: 'CONCIERGE_LEAD',
             priority: 'HIGH',
             status: 'PENDING'
@@ -135,8 +129,9 @@ export const FloatingAiChatWidget: React.FC = () => {
       {
         id: `b-captured-${Date.now()}`,
         sender: 'bot',
-        text: `🎉 Perfeito! Seu número (${leadPhone}) foi registrado no nosso radar. Em instantes nosso especialista enviará seu relatório executivo detalhado no WhatsApp!`,
-        timestamp: 'Agora'
+        text: `🎉 Perfeito! Seu WhatsApp (${leadPhone}) foi registrado. Nosso especialista de CRO entrará em contato para te enviar o relatório detalhado da sua loja!`,
+        timestamp: 'Agora',
+        quickReplies: ['Como funciona a auditoria?', 'Qual o plano ideal?']
       }
     ]);
   };
@@ -160,14 +155,14 @@ export const FloatingAiChatWidget: React.FC = () => {
           )}
 
           <span className="absolute right-full mr-3 px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-lg pointer-events-none">
-            Tire Dúvidas com o Concierge IA 🤖
+            Tire Dúvidas com a IA Online 24h 🤖
           </span>
         </button>
       )}
 
       {/* Floating Chat Modal */}
       {isOpen && (
-        <div className="bg-white border border-slate-200 rounded-3xl w-[360px] sm:w-[400px] h-[520px] shadow-2xl overflow-hidden flex flex-col animate-slideUp">
+        <div className="bg-white border border-slate-200 rounded-3xl w-[360px] sm:w-[410px] h-[540px] shadow-2xl overflow-hidden flex flex-col animate-slideUp">
           
           {/* Header */}
           <div className="p-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
@@ -183,7 +178,7 @@ export const FloatingAiChatWidget: React.FC = () => {
                   AdShield Concierge
                   <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
                 </h3>
-                <p className="text-[10px] text-emerald-400 font-mono">IA Online 24h • Atendimento Imediato</p>
+                <p className="text-[10px] text-emerald-400 font-mono">IA Generativa Online 24h • Qualquer Dúvida</p>
               </div>
             </div>
 
@@ -203,10 +198,10 @@ export const FloatingAiChatWidget: React.FC = () => {
                 className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'} space-y-1.5`}
               >
                 <div
-                  className={`p-3.5 rounded-2xl max-w-[85%] whitespace-pre-wrap leading-relaxed shadow-xs ${
+                  className={`p-3.5 rounded-2xl max-w-[88%] whitespace-pre-wrap leading-relaxed shadow-xs ${
                     msg.sender === 'user'
-                      ? 'bg-blue-600 text-white rounded-br-none'
-                      : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none'
+                      ? 'bg-blue-600 text-white rounded-br-none font-medium'
+                      : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none font-sans'
                   }`}
                 >
                   {msg.text}
@@ -243,17 +238,17 @@ export const FloatingAiChatWidget: React.FC = () => {
 
           {/* WhatsApp Lead Capture Bar inside widget */}
           {!leadCaptured && (
-            <form onSubmit={handleCaptureLeadPhone} className="p-2 bg-emerald-50 border-t border-emerald-200 flex gap-1.5">
+            <form onSubmit={handleCaptureLeadPhone} className="p-2.5 bg-emerald-50 border-t border-emerald-200 flex gap-1.5">
               <input
                 type="tel"
-                placeholder="DDD + WhatsApp para relatório..."
+                placeholder="DDD + WhatsApp para falar com especialista..."
                 value={leadPhone}
                 onChange={(e) => setLeadPhone(e.target.value)}
-                className="flex-1 px-3 py-1.5 text-xs bg-white border border-emerald-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 font-mono"
+                className="flex-1 px-3 py-1.5 text-xs bg-white border border-emerald-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 font-mono text-slate-800"
               />
               <button
                 type="submit"
-                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 transition-all cursor-pointer shrink-0"
+                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 transition-all cursor-pointer shrink-0 shadow-xs"
               >
                 <Phone className="w-3 h-3" />
                 <span>Receber</span>
@@ -265,11 +260,11 @@ export const FloatingAiChatWidget: React.FC = () => {
           <div className="p-3 bg-white border-t border-slate-200 flex items-center gap-2">
             <input
               type="text"
-              placeholder="Digite sua dúvida de catálogo/CRO..."
+              placeholder="Pergunte qualquer coisa sobre sua loja..."
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-              className="flex-1 px-3.5 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-3.5 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800"
             />
             <button
               onClick={() => handleSendMessage()}
