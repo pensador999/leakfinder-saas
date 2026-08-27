@@ -51,8 +51,9 @@ import { CustomerSuccessVocAgentView } from '../components/agents/CustomerSucces
 import { ChiefExecutiveOrchestratorAgentView } from '../components/agents/ChiefExecutiveOrchestratorAgentView';
 import { CollectionDeepAuditView } from '../components/CollectionDeepAuditView';
 import { UniversalNicheRecognitionView } from '../components/agents/UniversalNicheRecognitionView';
+import { SkuAbandonmentCrossAuditView } from '../components/SkuAbandonmentCrossAuditView';
 import { detectMarketplace } from '../services/marketplaceInspector';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function HomePage() {
@@ -135,6 +136,7 @@ export function HomePage() {
   // 🛍️ 1. MODO LOJISTA: As 6 Abas Essenciais de Negócio & Lucro
   const merchantTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
+    { id: 'sku_crossing', label: 'Cruzamento SKUs & Abandonos', icon: GitCompare, highlight: true },
     { id: 'niche_recognition', label: 'Reconhecimento de Nicho', icon: Globe, highlight: true },
     { id: 'rupture_monitor', label: 'Vigia 24h Ruptura', icon: Flame, highlight: true },
     { id: 'collection_audit', label: 'Coleções & Hero Banner', icon: Target, highlight: true },
@@ -151,6 +153,7 @@ export function HomePage() {
   // 🔐 2. MODO ENGENHARIA / WAR ROOM: As 4 Abas Profundas + Especialistas
   const warRoomTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
+    { id: 'sku_crossing', label: 'Cruzamento SKUs & Abandonos', icon: GitCompare, highlight: true },
     { id: 'niche_recognition', label: 'Reconhecimento de Nicho', icon: Globe, highlight: true },
     { id: 'ceo_orchestrator', label: 'Orquestrador CEO', icon: Crown, highlight: true },
     { id: 'collection_audit', label: 'Coleções & Hero Banner', icon: Target, highlight: true },
@@ -317,6 +320,10 @@ export function HomePage() {
                     diagnostic={diagnostic}
                     onSelectAgentTab={(tab) => setActiveTab(tab)}
                   />
+                )}
+
+                {activeTab === 'sku_crossing' && diagnostic && (
+                  <SkuAbandonmentCrossAuditView diagnostic={diagnostic} />
                 )}
 
                 {activeTab === 'niche_recognition' && diagnostic && (
