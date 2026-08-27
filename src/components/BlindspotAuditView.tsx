@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, Code, Zap, AlertCircle, ShieldCheck, ImageOff, Copy, Check, AlertTriangle, Layers, Ruler, FileText, Download, Sparkles, Filter, PackageCheck, ExternalLink, Link2, X } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
+import { SpreadsheetExporter } from '../services/export/spreadsheetExporter';
 
 interface BlindspotAuditViewProps {
   diagnostic: AgentDiagnosticResult;
@@ -38,30 +39,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
   const brandTitle = realSiteData.brandName || 'LOJA OFICIAL';
 
   const exportCatalogCsv = () => {
-    const headers = ['SKU', 'Produto', 'Link Direto do Produto (URL)', 'Status Imagem', 'Peso Imagem (KB)', 'Grade Disponível', 'Tamanhos Faltantes (PP->G2)', 'Isenção _FULL', 'Tabela Medidas', 'Ação Recomendada'];
-    const rows = (catalogAudit?.issues || []).map(i => [
-      `"${i.sku}"`,
-      `"${i.productTitle.replace(/"/g, '""')}"`,
-      `"${i.productUrl || `https://${realSiteData.domain}/produto/${i.sku.toLowerCase()}`}"`,
-      `"${i.imageResolutionStatus}"`,
-      i.imageWeightKb,
-      `"${i.availableSizes.join(', ')}"`,
-      `"${i.isFullPrintExempt ? 'N/A (_FULL)' : i.missingSizes.join(', ') || 'Completa'}"`,
-      `"${i.isFullPrintExempt ? 'SIM (Isento)' : 'NÃO (Obrigatório PP->G2)'}"`,
-      `"${i.hasSizeGuide ? 'Presente' : 'AUSENTE'}"`,
-      `"${i.recommendedAction.replace(/"/g, '""')}"`
-    ]);
-
-    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `Auditoria_Catalogo_SKUs_Links_${realSiteData.brandName}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    SpreadsheetExporter.exportCatalogAudit(realSiteData);
   };
 
   return (

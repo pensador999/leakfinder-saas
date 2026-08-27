@@ -19,6 +19,7 @@ import {
   Settings2
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
+import { SpreadsheetExporter } from '../services/export/spreadsheetExporter';
 
 interface ExecutivePdfExportModalProps {
   isOpen: boolean;
@@ -223,8 +224,29 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
               </label>
             </div>
 
+            {/* Planilhas e Documentos em Excel */}
+            <div className="pt-3 border-t border-slate-200 space-y-2">
+              <h4 className="text-[11px] font-bold text-slate-800 uppercase font-mono flex items-center gap-1.5">
+                <Download className="w-3.5 h-3.5 text-blue-600" /> Planilhas Excel (.CSV)
+              </h4>
+              <button
+                onClick={() => SpreadsheetExporter.exportCatalogAudit(realSiteData)}
+                className="w-full py-2 px-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-[11px] rounded-xl transition-all flex items-center justify-between shadow-2xs cursor-pointer"
+              >
+                <span>📦 Planilha de Catálogo & SKUs</span>
+                <Download className="w-3.5 h-3.5 text-blue-600" />
+              </button>
+              <button
+                onClick={() => SpreadsheetExporter.exportFinancialActionPlan(diagnostic)}
+                className="w-full py-2 px-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-[11px] rounded-xl transition-all flex items-center justify-between shadow-2xs cursor-pointer"
+              >
+                <span>💰 Plano de Ação & Lucro</span>
+                <Download className="w-3.5 h-3.5 text-emerald-600" />
+              </button>
+            </div>
+
             {/* Ação Rápida WhatsApp */}
-            <div className="pt-2 border-t border-slate-100">
+            <div className="pt-2 border-t border-slate-200">
               <button
                 onClick={() => {
                   const msg = `📊 *DIAGNÓSTICO EXECUTIVO DE CRO & ESCALA (${realSiteData.brandName})*\n\nOlá! Concluímos a auditoria profunda da sua operação:\n• *Growth Score Atual:* ${growthScore}/100\n• *Oportunidade de Receita Extra:* +R$ ${estimatedRevenueLiftMin.toLocaleString('pt-BR')} a R$ ${estimatedRevenueLiftMax.toLocaleString('pt-BR')}/mês\n• *Ação Imediata:* Simulador Pix + Reposição de Grade nos Anúncios.\n\nGerado por: ${agencyName} (${consultantName})\n📄 *Relatório Completo em PDF disponível.*`;
