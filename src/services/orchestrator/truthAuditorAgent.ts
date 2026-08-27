@@ -104,9 +104,9 @@ export class TruthAuditorAgent {
     simulationsCount++;
 
     // 4. Artigo 4: Visão Computacional Sem Textos Fixos Descontextualizados
-    const vision = diagnostic.visionAnalysis;
+    const visionWarnings = diagnostic.visionAnalysis?.warnings || [];
     const isDomainFishing = this.dossier.targetDomain.toLowerCase().includes('fishing');
-    const mentionsFishing = vision.warnings.some(w => w.toLowerCase().includes('pesca') || w.toLowerCase().includes('tucunaré'));
+    const mentionsFishing = visionWarnings.some(w => w.toLowerCase().includes('pesca') || w.toLowerCase().includes('tucunaré'));
     const visionClean = !mentionsFishing || isDomainFishing;
 
     claims.push({
