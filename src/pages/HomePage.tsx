@@ -401,7 +401,7 @@ export function HomePage() {
       {/* Footer Legal & Institucional */}
       <footer className="max-w-7xl mx-auto py-8 px-4 border-t border-slate-200 mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
         <div>
-          <p className="font-bold text-slate-700">LeakFinder SaaS • Ecossistema BRK Group</p>
+          <p className="font-bold text-slate-700">LeakFinder • Ecossistema BRK Group</p>
           <p className="text-[11px] text-slate-400">Auditoria 360º de Conversão, Catálogo & Visão Computacional.</p>
         </div>
         <div className="flex flex-wrap items-center gap-4 text-xs">

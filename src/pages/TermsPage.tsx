@@ -99,7 +99,7 @@ export function TermsPage() {
               <span className="text-blue-600 font-mono">2.</span> Escopo dos Serviços & Motor de Diagnóstico
             </h2>
             <p>
-              O LeakFinder é uma plataforma SaaS (Software as a Service) de inteligência analítica, auditoria de catálogo e conversão para e-commerce. A plataforma opera por meio de:
+              O LeakFinder é uma plataforma de inteligência analítica, auditoria de catálogo e conversão para e-commerce. A plataforma opera por meio de:
             </p>
             <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
               <li><strong>Inspeção Pública de DOM e Metadados:</strong> Leitura automatizada e não-intrusiva de tags públicas, scripts de rastreamento e catálogo público (`/products.json`).</li>
@@ -174,7 +174,7 @@ export function TermsPage() {
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-8 px-4 text-center text-xs text-slate-500 mt-12">
         <div className="max-w-4xl mx-auto space-y-2">
-          <p className="font-bold text-slate-700">LeakFinder SaaS • Ecossistema BRK Group</p>
+          <p className="font-bold text-slate-700">LeakFinder • Ecossistema BRK Group</p>
           <div className="flex justify-center gap-4 text-[11px] text-slate-500">
             <Link to="/terms" className="hover:text-blue-600 underline">Termos de Uso</Link>
             <Link to="/privacy" className="hover:text-blue-600 underline">Política de Privacidade</Link>

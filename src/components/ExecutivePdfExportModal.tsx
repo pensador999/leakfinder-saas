@@ -493,7 +493,7 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
                   <p className="text-[10px] text-slate-500">{consultantName} • WhatsApp: {consultantPhone}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-mono text-slate-400">Gerado via LeakFinder SaaS • Engine v2.4</p>
+                  <p className="text-[10px] font-mono text-slate-400">Gerado via LeakFinder • Engine v2.4</p>
                 </div>
               </div>
 

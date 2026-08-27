@@ -182,7 +182,7 @@ export function PrivacyPage() {
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-8 px-4 text-center text-xs text-slate-500 mt-12">
         <div className="max-w-4xl mx-auto space-y-2">
-          <p className="font-bold text-slate-700">LeakFinder SaaS • Ecossistema BRK Group</p>
+          <p className="font-bold text-slate-700">LeakFinder • Ecossistema BRK Group</p>
           <div className="flex justify-center gap-4 text-[11px] text-slate-500">
             <Link to="/terms" className="hover:text-blue-600 underline">Termos de Uso</Link>
             <Link to="/privacy" className="hover:text-blue-600 underline">Política de Privacidade</Link>
