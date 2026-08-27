@@ -26,6 +26,7 @@ import { WhatsAppLeadCaptureModal } from '../components/WhatsAppLeadCaptureModal
 import { AdminLeadsDrawer } from '../components/AdminLeadsDrawer';
 import { MonitoredStoresManagerModal } from '../components/MonitoredStoresManagerModal';
 import { WhatsAppWatchdogSettingsModal } from '../components/WhatsAppWatchdogSettingsModal';
+import { EcommerceIntegrationsHubModal } from '../components/EcommerceIntegrationsHubModal';
 import { FloatingAiChatWidget } from '../components/FloatingAiChatWidget';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { CookieBanner } from '../components/CookieBanner';
@@ -49,7 +50,7 @@ import { CustomerSuccessVocAgentView } from '../components/agents/CustomerSucces
 import { ChiefExecutiveOrchestratorAgentView } from '../components/agents/ChiefExecutiveOrchestratorAgentView';
 import { CollectionDeepAuditView } from '../components/CollectionDeepAuditView';
 import { detectMarketplace } from '../services/marketplaceInspector';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function HomePage() {
@@ -65,6 +66,7 @@ export function HomePage() {
   const [isLeadsDrawerOpen, setIsLeadsDrawerOpen] = useState<boolean>(false);
   const [isStoresManagerOpen, setIsStoresManagerOpen] = useState<boolean>(false);
   const [isWhatsAppWatchdogOpen, setIsWhatsAppWatchdogOpen] = useState<boolean>(false);
+  const [isIntegrationsModalOpen, setIsIntegrationsModalOpen] = useState<boolean>(false);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analyzingUrl, setAnalyzingUrl] = useState<string>('');
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
@@ -250,6 +252,14 @@ export function HomePage() {
                 >
                   <Activity className="w-3.5 h-3.5 text-emerald-600" />
                   <span>📲 Vigia WhatsApp (07:00)</span>
+                </button>
+
+                <button
+                  onClick={() => setIsIntegrationsModalOpen(true)}
+                  className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-500 hover:to-teal-500 transition-all flex items-center gap-1.5 cursor-pointer font-bold shadow-xs"
+                >
+                  <Plug className="w-3.5 h-3.5" />
+                  <span>🔌 Conectar Loja (1-Click)</span>
                 </button>
               </div>
             </div>
@@ -466,6 +476,11 @@ export function HomePage() {
       <WhatsAppWatchdogSettingsModal
         isOpen={isWhatsAppWatchdogOpen}
         onClose={() => setIsWhatsAppWatchdogOpen(false)}
+      />
+
+      <EcommerceIntegrationsHubModal
+        isOpen={isIntegrationsModalOpen}
+        onClose={() => setIsIntegrationsModalOpen(false)}
       />
 
       <FloatingAiChatWidget />
