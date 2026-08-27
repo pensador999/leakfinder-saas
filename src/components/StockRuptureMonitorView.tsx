@@ -13,11 +13,14 @@ import {
   Layers,
   ArrowRight,
   Sparkles,
-  Zap
+  Zap,
+  KeyRound,
+  Sliders
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { analyzeStockRupture, StockRuptureAnalysisResult } from '../services/stockRuptureEngine';
 import { generateWhatsAppLink } from '../services/whatsappLeadService';
+import { OfficialIntegrationConnectModal } from './OfficialIntegrationConnectModal';
 
 interface StockRuptureMonitorViewProps {
   diagnostic: AgentDiagnosticResult;
@@ -34,6 +37,7 @@ export const StockRuptureMonitorView: React.FC<StockRuptureMonitorViewProps> = (
   const [alertPhone, setAlertPhone] = useState<string>('');
   const [copiedAlert, setCopiedAlert] = useState<boolean>(false);
   const [isAlertSubscribed, setIsAlertSubscribed] = useState<boolean>(false);
+  const [isConnectModalOpen, setIsConnectModalOpen] = useState<boolean>(false);
 
   const availableSizes = ['PP', 'P', 'M', 'G', 'GG', 'G1', 'G2'];
 
@@ -106,12 +110,22 @@ export const StockRuptureMonitorView: React.FC<StockRuptureMonitorViewProps> = (
 
       {/* Control Sliders & Size Selection Grid */}
       <div className="p-6 bg-white rounded-3xl border border-slate-200 shadow-xs space-y-6">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2">
             <ShieldAlert className="w-5 h-5 text-rose-600" />
             <h3 className="font-bold text-sm text-slate-900">Simule a Ruptura de Estoque da sua Operação</h3>
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+              SIMULADOR DINÂMICO
+            </span>
           </div>
-          <span className="text-xs text-slate-500">Cálculo dinâmico de tráfego</span>
+          
+          <button
+            onClick={() => setIsConnectModalOpen(true)}
+            className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs cursor-pointer shrink-0"
+          >
+            <KeyRound className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Conectar Meta Ads Real</span>
+          </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -318,6 +332,13 @@ export const StockRuptureMonitorView: React.FC<StockRuptureMonitorViewProps> = (
           </pre>
         </div>
       </div>
+
+      <OfficialIntegrationConnectModal
+        isOpen={isConnectModalOpen}
+        onClose={() => setIsConnectModalOpen(false)}
+        brandName={realSiteData.brandName}
+        domain={realSiteData.domain}
+      />
 
     </div>
   );
