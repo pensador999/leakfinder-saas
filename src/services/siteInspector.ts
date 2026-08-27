@@ -116,7 +116,14 @@ export function extractCleanDomainAndBrand(targetUrl: string): { cleanUrl: strin
     domain = domain.slice(4);
   }
 
-  const rawBrand = domain.split('.')[0] || 'MARCA';
+  const parts = domain.split('.');
+  const commonPrefixes = ['produto', 'loja', 'shop', 'store', 'us', 'br', 'app', 'm', 'mobile', 'secure', 'checkout', 'pt', 'es'];
+  
+  let rawBrand = parts[0] || 'MARCA';
+  if (parts.length > 2 && commonPrefixes.includes(rawBrand.toLowerCase())) {
+    rawBrand = parts[1] || rawBrand;
+  }
+
   const brandName = rawBrand.toUpperCase();
 
   return { cleanUrl, domain, brandName };
