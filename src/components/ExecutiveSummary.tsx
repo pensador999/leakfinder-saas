@@ -1,5 +1,18 @@
 import React from 'react';
-import { TrendingUp, Eye, Sparkles, Flame, Activity, ArrowRight, TrendingDown } from 'lucide-react';
+import { 
+  TrendingUp, 
+  Eye, 
+  Sparkles, 
+  Flame, 
+  Activity, 
+  ArrowRight, 
+  TrendingDown,
+  ShieldCheck,
+  AlertTriangle,
+  CheckCircle2,
+  AlertCircle,
+  BarChart3
+} from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { generateShopifyTelemetryAnalysis } from '../services/shopifyTelemetryService';
 
@@ -44,8 +57,9 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
             />
           </div>
 
-          <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
-            <span className="font-bold text-amber-700">⚠️ Oportunidades críticas</span> detectadas em <span className="font-bold font-mono text-slate-900">{realSiteData.domain}</span>.
+          <p className="text-[11px] text-slate-600 leading-relaxed font-medium flex items-center gap-1.5">
+            <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+            <span>Oportunidades em <strong className="font-mono text-slate-900">{realSiteData.domain}</strong></span>
           </p>
         </div>
 
@@ -104,8 +118,13 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
 
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-500 font-medium">Contraste:</span>
-              <span className="font-mono font-bold text-slate-900">
-                {visionAnalysis.contrastAudit.contrastRatio}:1 {visionAnalysis.contrastAudit.wcagAaPassed ? '✅' : '⚠️'}
+              <span className="font-mono font-bold text-slate-900 flex items-center gap-1">
+                {visionAnalysis.contrastAudit.contrastRatio}:1
+                {visionAnalysis.contrastAudit.wcagAaPassed ? (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 inline" />
+                ) : (
+                  <AlertCircle className="w-3.5 h-3.5 text-amber-600 inline" />
+                )}
               </span>
             </div>
 
@@ -139,10 +158,10 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
 
           <div>
             <span className="text-2xl font-black font-mono text-rose-600 tracking-tight">
-              R$ {telemetryData.totalEstimatedRevenueLoss.toLocaleString('pt-BR')}
+              R$ {telemetryData.totalEstimatedRevenueLoss.toLocaleString('pt-BR')} / mês
             </span>
             <p className="text-[11px] text-slate-500 mt-0.5">
-              Perda mensal em ~{telemetryData.totalCartAbandonments} carrinhos por falta de tamanhos e fotos.
+              Perda projetada em ~{telemetryData.totalCartAbandonments} carrinhos por falta de tamanhos e fotos.
             </p>
           </div>
 

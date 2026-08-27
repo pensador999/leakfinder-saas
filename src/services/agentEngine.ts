@@ -69,19 +69,48 @@ async function generateDiagnosticFromWorker(input: AuditInput, worker: WorkerIns
     (visionAnalysis.eyeTracking.focusScoreCta || 60) * 0.20
   );
 
-  let liftMin = 24;
-  let liftMax = 68;
+  // Dynamic Revenue Lift Calculation based on audited store bottlenecks
+  let calculatedLiftMin = 0;
+  let calculatedLiftMax = 0;
+
+  const catalogIssues = siteData.catalogAudit?.issues || [];
+  const brokenSizeCount = catalogIssues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0).length;
+
+  if (brokenSizeCount > 0) {
+    calculatedLiftMin += Math.min(22, 6 + brokenSizeCount * 2);
+    calculatedLiftMax += Math.min(38, 14 + brokenSizeCount * 3);
+  }
+
+  // Mobile speed penalty/lift
+  const loadTime = siteData.estimatedLoadTime || 2.2;
+  if (loadTime > 2.0) {
+    calculatedLiftMin += Math.round((loadTime - 2.0) * 4);
+    calculatedLiftMax += Math.round((loadTime - 2.0) * 8);
+  }
+
+  // Vision / Contrast lift
+  if (!visionAnalysis.contrastAudit.wcagAaPassed) {
+    calculatedLiftMin += 4;
+    calculatedLiftMax += 9;
+  }
+
+  // Base Conversion & Pix elasticity lift
+  calculatedLiftMin += 5;
+  calculatedLiftMax += 14;
 
   if (siteData.isEnterpriseBrand) {
     calculatedScore = Math.max(92, Math.min(98, calculatedScore + 12));
-    liftMin = 8;
-    liftMax = 19;
+    calculatedLiftMin = Math.max(4, Math.round(calculatedLiftMin * 0.35));
+    calculatedLiftMax = Math.max(12, Math.round(calculatedLiftMax * 0.35));
+  } else {
+    calculatedLiftMin = Math.max(8, Math.min(35, calculatedLiftMin));
+    calculatedLiftMax = Math.max(calculatedLiftMin + 10, Math.min(75, calculatedLiftMax));
   }
 
   let initialDiagnostic: AgentDiagnosticResult = {
     growthScore: calculatedScore,
-    estimatedRevenueLiftMin: liftMin,
-    estimatedRevenueLiftMax: liftMax,
+    estimatedRevenueLiftMin: calculatedLiftMin,
+    estimatedRevenueLiftMax: calculatedLiftMax,
     analyzedAt: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }),
     input: {
       ...input,
