@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, ShieldCheck, Globe, Sparkles, Fish, Wheat, Flame, Zap } from 'lucide-react';
+import gsap from 'gsap';
 import { AuditInput } from '../types';
 import { getWhiteLabelConfig, WhiteLabelConfig } from '../services/whiteLabelService';
 
@@ -70,10 +71,20 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
     }
   }, [currentUrl]);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    const handleUpdate = () => setWhiteLabel(getWhiteLabelConfig());
-    window.addEventListener('whitelabel-updated', handleUpdate);
-    return () => window.removeEventListener('whitelabel-updated', handleUpdate);
+    const ctx = gsap.context(() => {
+      gsap.from('.gsap-hero-item', {
+        y: 16,
+        opacity: 0,
+        stagger: 0.08,
+        duration: 0.7,
+        ease: 'power3.out'
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
   }, []);
 
   const handleSelectPreset = (preset: CompanyPreset) => {
@@ -126,10 +137,10 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-sm space-y-6">
-      <div className="max-w-3xl mx-auto text-center space-y-3">
+    <div ref={containerRef} className="bg-white border border-slate-200/90 rounded-3xl p-6 lg:p-8 shadow-xs space-y-6">
+      <div className="gsap-hero-item max-w-3xl mx-auto text-center space-y-3">
         <div 
-          className="inline-flex items-center gap-1.5 px-3 py-1 border rounded-full text-xs font-bold uppercase tracking-wider"
+          className="inline-flex items-center gap-1.5 px-3 py-1 border rounded-full text-xs font-bold uppercase tracking-wider shadow-2xs"
           style={{ color: whiteLabel.primaryColor, backgroundColor: `${whiteLabel.primaryColor}15`, borderColor: `${whiteLabel.primaryColor}30` }}
         >
           <Sparkles className="w-3.5 h-3.5" />
@@ -144,7 +155,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
       </div>
 
       {/* 🚀 QUICK PRESET SHORTCUT BUTTONS (BRK FISHING, AGRO, MOTORS) */}
-      <div className="max-w-3xl mx-auto">
+      <div className="gsap-hero-item max-w-3xl mx-auto">
         <div className="flex items-center justify-between mb-2 px-1">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
             <Zap className="w-3.5 h-3.5 text-amber-500" />
@@ -164,7 +175,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
                 type="button"
                 onClick={() => handleSelectPreset(preset)}
                 disabled={isAnalyzing}
-                className={`p-3.5 rounded-2xl border transition-all text-left flex items-center justify-between gap-3 cursor-pointer shadow-xs ${preset.accentColor} ${
+                className={`p-3.5 rounded-2xl border transition-all text-left flex items-center justify-between gap-3 cursor-pointer shadow-xs hover:scale-103 active:scale-97 ${preset.accentColor} ${
                   isCurrent ? 'ring-2 ring-blue-600 font-bold shadow-md' : ''
                 }`}
               >
@@ -187,7 +198,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
       </div>
 
       {/* Main Single Link Input Form */}
-      <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-4">
+      <form onSubmit={handleSubmit} className="gsap-hero-item max-w-3xl mx-auto space-y-4">
         <div className="flex flex-col sm:flex-row items-center gap-2 p-2 bg-slate-50 border border-slate-300 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100 rounded-2xl transition-all shadow-inner">
           <div className="flex items-center gap-2 px-3 text-slate-400 w-full sm:w-auto">
             <Globe className="w-5 h-5 text-blue-600 shrink-0" />
