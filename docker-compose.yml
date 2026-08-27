@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  leakfinder-app:
+    build: .
+    container_name: leakfinder_saas_prod
+    ports:
+      - "3000:80"
+    restart: always
+    environment:
+      - NODE_ENV=production
