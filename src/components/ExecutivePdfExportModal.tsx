@@ -222,6 +222,20 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
                 <span>Certidão do Fact-Checker</span>
               </label>
             </div>
+
+            {/* Ação Rápida WhatsApp */}
+            <div className="pt-2 border-t border-slate-100">
+              <button
+                onClick={() => {
+                  const msg = `📊 *DIAGNÓSTICO EXECUTIVO DE CRO & ESCALA (${realSiteData.brandName})*\n\nOlá! Concluímos a auditoria profunda da sua operação:\n• *Growth Score Atual:* ${growthScore}/100\n• *Oportunidade de Receita Extra:* +R$ ${estimatedRevenueLiftMin.toLocaleString('pt-BR')} a R$ ${estimatedRevenueLiftMax.toLocaleString('pt-BR')}/mês\n• *Ação Imediata:* Simulador Pix + Reposição de Grade nos Anúncios.\n\nGerado por: ${agencyName} (${consultantName})\n📄 *Relatório Completo em PDF disponível.*`;
+                  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+                }}
+                className="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+              >
+                <Phone className="w-3.5 h-3.5" />
+                <span>Enviar Pitch no WhatsApp</span>
+              </button>
+            </div>
           </div>
 
           {/* DOCUMENT LIVE PREVIEW (DOCUMENTO A4 FORMATADO) */}
