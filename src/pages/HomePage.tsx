@@ -43,8 +43,9 @@ import { DeepScraperDossierView } from '../components/DeepScraperDossierView';
 import { TruthAuditorTribunalView } from '../components/TruthAuditorTribunalView';
 import { AutonomousSwarmControlView } from '../components/AutonomousSwarmControlView';
 import { MarketHunterAgentView } from '../components/agents/MarketHunterAgentView';
+import { ProductEvolutionAgentView } from '../components/agents/ProductEvolutionAgentView';
 import { detectMarketplace } from '../services/marketplaceInspector';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function HomePage() {
@@ -129,6 +130,7 @@ export function HomePage() {
     { id: 'pricing', label: 'Simulador Pix & Margem', icon: Calculator, highlight: true },
     { id: 'catalog', label: 'Catálogo & Estoque', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
     { id: 'market_hunter', label: 'Caçador de Mercado & Leads', icon: Compass, highlight: true },
+    { id: 'product_evolution', label: 'Auto-Evolução do Produto', icon: Wrench, highlight: true },
     { id: 'trust_badge', label: 'Selo de Confiança', icon: ShieldCheck, highlight: true },
     ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : [])
   ];
@@ -138,6 +140,7 @@ export function HomePage() {
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
     { id: 'orchestrator', label: 'Torre do Maestro', icon: Cpu, highlight: true },
     { id: 'market_hunter', label: 'Caçador de Mercado & Leads', icon: Compass, highlight: true },
+    { id: 'product_evolution', label: 'Auto-Evolução do Produto', icon: Wrench, highlight: true },
     { id: 'scraper_dossier', label: 'Dossier de Evidências', icon: Search, highlight: true },
     { id: 'truth_auditor', label: 'Tribunal de Veracidade', icon: Scale, highlight: true },
     { id: 'swarm_control', label: 'Enxame Paralelo 24h', icon: BrainCircuit, highlight: true },
@@ -293,6 +296,10 @@ export function HomePage() {
 
                 {activeTab === 'market_hunter' && (
                   <MarketHunterAgentView />
+                )}
+
+                {activeTab === 'product_evolution' && (
+                  <ProductEvolutionAgentView />
                 )}
 
                 {activeTab === 'truth_auditor' && (
