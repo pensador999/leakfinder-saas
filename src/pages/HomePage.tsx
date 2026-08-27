@@ -398,12 +398,16 @@ export function HomePage() {
         onClose={() => setIsLeadsDrawerOpen(false)}
       />
 
-      {/* Footer Legal */}
-      <footer className="max-w-7xl mx-auto py-8 px-4 border-t border-slate-200 mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500">
-        <p>© {new Date().getFullYear()} LeakFinder. Todos os direitos reservados.</p>
-        <div className="flex items-center gap-4 mt-4 sm:mt-0">
-          <button onClick={() => navigate('/privacy')} className="hover:text-slate-900 transition-colors cursor-pointer">Política de Privacidade</button>
-          <button onClick={() => navigate('/terms')} className="hover:text-slate-900 transition-colors cursor-pointer">Termos de Uso</button>
+      {/* Footer Legal & Institucional */}
+      <footer className="max-w-7xl mx-auto py-8 px-4 border-t border-slate-200 mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+        <div>
+          <p className="font-bold text-slate-700">LeakFinder SaaS • Ecossistema BRK Group</p>
+          <p className="text-[11px] text-slate-400">Auditoria 360º de Conversão, Catálogo & Visão Computacional.</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-4 text-xs">
+          <button onClick={() => navigate('/about')} className="hover:text-blue-600 font-bold transition-colors cursor-pointer">Quem Somos</button>
+          <button onClick={() => navigate('/terms')} className="hover:text-blue-600 transition-colors cursor-pointer">Termos de Uso</button>
+          <button onClick={() => navigate('/privacy')} className="hover:text-blue-600 transition-colors cursor-pointer">Política de Privacidade & LGPD</button>
         </div>
       </footer>
 

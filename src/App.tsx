@@ -11,6 +11,7 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { TermsPage } from './pages/TermsPage';
+import { AboutUsPage } from './pages/AboutUsPage';
 
 export default function App() {
   return (
@@ -25,6 +26,9 @@ export default function App() {
             <Route path="/report/:id" element={<ReportPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms" element={<TermsPage />} />
+            <Route path="/about" element={<AboutUsPage />} />
+            <Route path="/quem-somos" element={<AboutUsPage />} />
+            <Route path="/sobre" element={<AboutUsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
