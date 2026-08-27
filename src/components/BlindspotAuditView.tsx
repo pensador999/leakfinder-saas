@@ -35,7 +35,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
   const isAgro = realSiteData.domain.toLowerCase().includes('agro');
   const isMotors = realSiteData.domain.toLowerCase().includes('motors');
   const themeHeaderColor = isAgro ? '#3a9e35' : isMotors ? '#EA541B' : '#135ed1';
-  const brandTitle = isAgro ? 'BRK AGRO' : isMotors ? 'BRK MOTORS' : 'BRK FISHING';
+  const brandTitle = realSiteData.brandName || 'LOJA OFICIAL';
 
   const exportCatalogCsv = () => {
     const headers = ['SKU', 'Produto', 'Link Direto do Produto (URL)', 'Status Imagem', 'Peso Imagem (KB)', 'Grade Disponível', 'Tamanhos Faltantes (PP->G2)', 'Isenção _FULL', 'Tabela Medidas', 'Ação Recomendada'];
