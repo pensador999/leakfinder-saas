@@ -27,6 +27,7 @@ import { AdminLeadsDrawer } from '../components/AdminLeadsDrawer';
 import { MonitoredStoresManagerModal } from '../components/MonitoredStoresManagerModal';
 import { WhatsAppWatchdogSettingsModal } from '../components/WhatsAppWatchdogSettingsModal';
 import { EcommerceIntegrationsHubModal } from '../components/EcommerceIntegrationsHubModal';
+import { AgencyWhiteLabelModal } from '../components/agency/AgencyWhiteLabelModal';
 import { FloatingAiChatWidget } from '../components/FloatingAiChatWidget';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { CookieBanner } from '../components/CookieBanner';
@@ -50,7 +51,7 @@ import { CustomerSuccessVocAgentView } from '../components/agents/CustomerSucces
 import { ChiefExecutiveOrchestratorAgentView } from '../components/agents/ChiefExecutiveOrchestratorAgentView';
 import { CollectionDeepAuditView } from '../components/CollectionDeepAuditView';
 import { detectMarketplace } from '../services/marketplaceInspector';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function HomePage() {
@@ -67,6 +68,7 @@ export function HomePage() {
   const [isStoresManagerOpen, setIsStoresManagerOpen] = useState<boolean>(false);
   const [isWhatsAppWatchdogOpen, setIsWhatsAppWatchdogOpen] = useState<boolean>(false);
   const [isIntegrationsModalOpen, setIsIntegrationsModalOpen] = useState<boolean>(false);
+  const [isWhiteLabelModalOpen, setIsWhiteLabelModalOpen] = useState<boolean>(false);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analyzingUrl, setAnalyzingUrl] = useState<string>('');
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
@@ -260,6 +262,14 @@ export function HomePage() {
                 >
                   <Plug className="w-3.5 h-3.5" />
                   <span>🔌 Conectar Loja (1-Click)</span>
+                </button>
+
+                <button
+                  onClick={() => setIsWhiteLabelModalOpen(true)}
+                  className="px-3.5 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-all flex items-center gap-1.5 cursor-pointer font-bold border border-indigo-200"
+                >
+                  <FileText className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>📄 Dossiê PDF (Agência)</span>
                 </button>
               </div>
             </div>
@@ -482,6 +492,14 @@ export function HomePage() {
         isOpen={isIntegrationsModalOpen}
         onClose={() => setIsIntegrationsModalOpen(false)}
       />
+
+      {diagnostic && (
+        <AgencyWhiteLabelModal
+          isOpen={isWhiteLabelModalOpen}
+          onClose={() => setIsWhiteLabelModalOpen(false)}
+          diagnostic={diagnostic}
+        />
+      )}
 
       <FloatingAiChatWidget />
 
