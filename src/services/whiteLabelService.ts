@@ -10,9 +10,9 @@ export interface WhiteLabelConfig {
 const STORAGE_KEY = 'whitelabel_config';
 
 const defaultConfig: WhiteLabelConfig = {
-  agencyName: 'WORKER',
+  agencyName: 'AdShield',
   logoUrl: '',
-  primaryColor: '#0ea5e9', // sky-500
+  primaryColor: '#2563eb', // blue-600
   checkoutUrlStarter: '',
   checkoutUrlPro: '',
   checkoutUrlAgency: ''

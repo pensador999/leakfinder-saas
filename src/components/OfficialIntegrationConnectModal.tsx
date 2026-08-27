@@ -129,7 +129,7 @@ export const OfficialIntegrationConnectModal: React.FC<OfficialIntegrationConnec
             <div className="text-xs text-blue-900 space-y-1">
               <p className="font-bold">Garantia de Segurança & Permissão de Somente Leitura (Read-Only):</p>
               <p className="text-blue-700 leading-relaxed text-[11px]">
-                O LeakFinder <strong>nunca altera preços, estoque ou código</strong> da sua loja. Conectamos apenas para puxar métricas consolidadas de vendas reais e investimento em tráfego pago.
+                O AdShield <strong>nunca altera preços, estoque ou código</strong> da sua loja. Conectamos apenas para puxar métricas consolidadas de vendas reais e investimento em tráfego pago.
               </p>
             </div>
           </div>

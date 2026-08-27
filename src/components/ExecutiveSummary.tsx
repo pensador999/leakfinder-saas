@@ -26,7 +26,7 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
         {/* Growth Score Badge Card */}
         <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 font-mono">LeakFinder Score</span>
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 font-mono">AdShield Score</span>
             <span className="px-2 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-700 rounded-full border border-blue-200">
               Auditado
             </span>

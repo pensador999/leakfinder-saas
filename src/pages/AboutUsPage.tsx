@@ -70,9 +70,9 @@ export function AboutUsPage() {
           <div className="flex items-center gap-3">
             <Link to="/" className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm shadow-md shadow-blue-600/20">
-                LF
+                AS
               </div>
-              <span className="font-extrabold text-slate-900 tracking-tight text-base">LeakFinder<span className="text-blue-600">.ai</span></span>
+              <span className="font-extrabold text-slate-900 tracking-tight text-base">AdShield<span className="text-blue-600">.ai</span></span>
             </Link>
             <span className="text-slate-300 hidden sm:inline">|</span>
             <span className="text-xs font-bold text-slate-500 hidden sm:inline font-mono">Quem Somos</span>
@@ -97,7 +97,7 @@ export function AboutUsPage() {
         <div className="text-center space-y-4 max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-blue-50 border border-blue-200 rounded-full text-blue-800 text-xs font-bold font-mono uppercase">
             <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-            <span>Engenharia de Conversão & Inteligência Artificial</span>
+            <span>Engenharia de Conversão & Proteção de Anúncios</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight">
@@ -105,7 +105,7 @@ export function AboutUsPage() {
           </h1>
 
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-            O LeakFinder foi criado para resolver a maior dor silenciosa das lojas virtuais: <strong>o dinheiro queimado em tráfego pago para produtos sem estoque, checkouts lentos e fricção visual</strong>.
+            O <strong>AdShield</strong> foi criado para resolver a maior dor silenciosa das lojas virtuais: <strong>o dinheiro queimado em tráfego pago para produtos sem estoque, checkouts lentos e fricção visual</strong>.
           </p>
         </div>
 
@@ -154,7 +154,7 @@ export function AboutUsPage() {
         {/* 6 AI Agents Section */}
         <div className="space-y-6">
           <div className="text-center space-y-2 max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold text-slate-900">O Enxame de 6 Agentes LeakFinder</h2>
+            <h2 className="text-2xl font-bold text-slate-900">O Enxame de 6 Agentes AdShield</h2>
             <p className="text-xs text-slate-600">Cada agente possui especialização cirúrgica em um pilar vital de faturamento.</p>
           </div>
 
@@ -216,13 +216,13 @@ export function AboutUsPage() {
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-8 px-4 text-center text-xs text-slate-500 mt-12">
         <div className="max-w-4xl mx-auto space-y-2">
-          <p className="font-bold text-slate-700">LeakFinder • Ecossistema BRK Group</p>
+          <p className="font-bold text-slate-700">AdShield • Ecossistema BRK Group</p>
           <div className="flex justify-center gap-4 text-[11px] text-slate-500">
             <Link to="/terms" className="hover:text-blue-600 underline">Termos de Uso</Link>
             <Link to="/privacy" className="hover:text-blue-600 underline">Política de Privacidade</Link>
             <Link to="/about" className="hover:text-blue-600 underline">Quem Somos</Link>
           </div>
-          <p className="text-[10px] text-slate-400">© {new Date().getFullYear()} LeakFinder. Todos os direitos reservados.</p>
+          <p className="text-[10px] text-slate-400">© {new Date().getFullYear()} AdShield. Todos os direitos reservados.</p>
         </div>
       </footer>
 

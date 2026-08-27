@@ -25,9 +25,9 @@ export function PrivacyPage() {
           <div className="flex items-center gap-3">
             <Link to="/" className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm shadow-md shadow-blue-600/20">
-                LF
+                AS
               </div>
-              <span className="font-extrabold text-slate-900 tracking-tight text-base">LeakFinder<span className="text-blue-600">.ai</span></span>
+              <span className="font-extrabold text-slate-900 tracking-tight text-base">AdShield<span className="text-blue-600">.ai</span></span>
             </Link>
             <span className="text-slate-300 hidden sm:inline">|</span>
             <span className="text-xs font-bold text-slate-500 hidden sm:inline font-mono">Privacidade & LGPD</span>
@@ -82,7 +82,7 @@ export function PrivacyPage() {
               <span className="text-blue-600 font-mono">1.</span> Compromisso com a Privacidade
             </h2>
             <p>
-              O <strong>LeakFinder</strong> valoriza e respeita a privacidade de cada cliente e visitante. Esta Política de Privacidade explica de forma transparente como coletamos, utilizamos, armazenamos e protegemos as informações fornecidas por você e os dados públicos auditados em nossa plataforma.
+              O <strong>AdShield</strong> valoriza e respeita a privacidade de cada cliente e visitante. Esta Política de Privacidade explica de forma transparente como coletamos, utilizamos, armazenamos e protegemos as informações fornecidas por você e os dados públicos auditados em nossa plataforma.
             </p>
           </section>
 
@@ -117,7 +117,7 @@ export function PrivacyPage() {
                   <span className="w-2 h-2 rounded-full bg-amber-600" /> 3. Integrações de APIs Oficiais (Read-Only)
                 </h4>
                 <p className="text-xs text-slate-600">
-                  Quando você decide conectar integrações como Shopify Admin ou Meta Ads, os tokens recebem permissão exclusiva de <strong>Somente Leitura (Read-Only)</strong>. O LeakFinder <strong>nunca altera preços, produtos ou estoque</strong>.
+                  Quando você decide conectar integrações como Shopify Admin ou Meta Ads, os tokens recebem permissão exclusiva de <strong>Somente Leitura (Read-Only)</strong>. O AdShield <strong>nunca altera preços, produtos ou estoque</strong>.
                 </p>
               </div>
             </div>
@@ -135,7 +135,7 @@ export function PrivacyPage() {
             </p>
             <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
               <li><strong>Criptografia em Trânsito e Repouso:</strong> Todas as comunicações utilizam protocolos TLS 1.3 e criptografia AES-256 no banco de dados.</li>
-              <li><strong>Não-Compartilhamento de Dados:</strong> O LeakFinder <strong>nunca vende, aluga ou transfere</strong> dados da sua operação para terceiros, concorrentes ou corretores de dados.</li>
+              <li><strong>Não-Compartilhamento de Dados:</strong> O AdShield <strong>nunca vende, aluga ou transfere</strong> dados da sua operação para terceiros, concorrentes ou corretores de dados.</li>
               <li><strong>Zero Treinamento Público com Dados Privados:</strong> Suas métricas confidenciais de faturamento jamais são utilizadas para treinar modelos públicos de IA.</li>
             </ul>
           </section>
@@ -169,8 +169,8 @@ export function PrivacyPage() {
             <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center gap-3 text-xs text-slate-700">
               <Mail className="w-5 h-5 text-blue-600 shrink-0" />
               <div>
-                <p className="font-bold text-slate-900">Encarregado de Proteção de Dados (DPO) - LeakFinder</p>
-                <p className="text-slate-500 font-mono">dpo@leakfinder.ai | privacidade@brkgroup.com.br</p>
+                <p className="font-bold text-slate-900">Encarregado de Proteção de Dados (DPO) - AdShield</p>
+                <p className="text-slate-500 font-mono">dpo@adshield.ai | privacidade@brkgroup.com.br</p>
               </div>
             </div>
           </section>
@@ -182,13 +182,13 @@ export function PrivacyPage() {
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-8 px-4 text-center text-xs text-slate-500 mt-12">
         <div className="max-w-4xl mx-auto space-y-2">
-          <p className="font-bold text-slate-700">LeakFinder • Ecossistema BRK Group</p>
+          <p className="font-bold text-slate-700">AdShield • Ecossistema BRK Group</p>
           <div className="flex justify-center gap-4 text-[11px] text-slate-500">
             <Link to="/terms" className="hover:text-blue-600 underline">Termos de Uso</Link>
             <Link to="/privacy" className="hover:text-blue-600 underline">Política de Privacidade</Link>
             <Link to="/about" className="hover:text-blue-600 underline">Quem Somos</Link>
           </div>
-          <p className="text-[10px] text-slate-400">© {new Date().getFullYear()} LeakFinder. Todos os direitos reservados.</p>
+          <p className="text-[10px] text-slate-400">© {new Date().getFullYear()} AdShield. Todos os direitos reservados.</p>
         </div>
       </footer>
 

@@ -27,9 +27,9 @@ export function TermsPage() {
           <div className="flex items-center gap-3">
             <Link to="/" className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm shadow-md shadow-blue-600/20">
-                LF
+                AS
               </div>
-              <span className="font-extrabold text-slate-900 tracking-tight text-base">LeakFinder<span className="text-blue-600">.ai</span></span>
+              <span className="font-extrabold text-slate-900 tracking-tight text-base">AdShield<span className="text-blue-600">.ai</span></span>
             </Link>
             <span className="text-slate-300 hidden sm:inline">|</span>
             <span className="text-xs font-bold text-slate-500 hidden sm:inline font-mono">Termos de Uso</span>
@@ -84,7 +84,7 @@ export function TermsPage() {
               <span className="text-blue-600 font-mono">1.</span> Objeto e Aceitação dos Termos
             </h2>
             <p>
-              Ao acessar, navegar ou utilizar a plataforma <strong>LeakFinder</strong>, operada pelo ecossistema tecnológico <strong>BRK Group</strong>, você declara ter lido, compreendido e concordado integralmente com estes Termos de Uso e com a nossa Política de Privacidade.
+              Ao acessar, navegar ou utilizar a plataforma <strong>AdShield</strong>, operada pelo ecossistema tecnológico <strong>BRK Group</strong>, você declara ter lido, compreendido e concordado integralmente com estes Termos de Uso e com a nossa Política de Privacidade.
             </p>
             <p>
               Caso você não concorde com qualquer disposição aqui estabelecida, solicitamos que interrompa imediatamente o uso de nossos serviços e ferramentas de diagnóstico.
@@ -99,7 +99,7 @@ export function TermsPage() {
               <span className="text-blue-600 font-mono">2.</span> Escopo dos Serviços & Motor de Diagnóstico
             </h2>
             <p>
-              O LeakFinder é uma plataforma de inteligência analítica, auditoria de catálogo e conversão para e-commerce. A plataforma opera por meio de:
+              O AdShield é uma plataforma de inteligência analítica, auditoria de catálogo e conversão para e-commerce. A plataforma opera por meio de:
             </p>
             <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
               <li><strong>Inspeção Pública de DOM e Metadados:</strong> Leitura automatizada e não-intrusiva de tags públicas, scripts de rastreamento e catálogo público (`/products.json`).</li>
@@ -123,7 +123,7 @@ export function TermsPage() {
                 <CheckCircle2 className="w-4 h-4 text-blue-600" /> Natureza das Simulações Financeiras:
               </p>
               <p className="text-blue-800">
-                Todo cálculo de faturamento adicional projetado ou economia de mídia é rotulado expressamente como <strong>Simulação Baseada em Parâmetros</strong>. O LeakFinder não garante faturamento fixo, atuando como bússola estratégica orientada a dados.
+                Todo cálculo de faturamento adicional projetado ou economia de mídia é rotulado expressamente como <strong>Simulação Baseada em Parâmetros</strong>. O AdShield não garante faturamento fixo, atuando como bússola estratégica orientada a dados.
               </p>
             </div>
           </section>
@@ -135,7 +135,7 @@ export function TermsPage() {
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <span className="text-blue-600 font-mono">4.</span> Uso Autorizado & Proibição de Práticas Abusivas
             </h2>
-            <p>É terminantemente proibido utilizar o LeakFinder para:</p>
+            <p>É terminantemente proibido utilizar o AdShield para:</p>
             <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
               <li>Executar ataques de negação de serviço (DDoS) ou sobrecarregar servidores de terceiros.</li>
               <li>Tentar realizar engenharia reversa ou cópia não autorizada dos algoritmos de auditoria.</li>
@@ -151,7 +151,7 @@ export function TermsPage() {
               <span className="text-blue-600 font-mono">5.</span> Planos, Assinaturas e Direito de Arrependimento (CDC Art. 49)
             </h2>
             <p>
-              As assinaturas do LeakFinder são renovadas periodicamente conforme o plano contratado. Em conformidade com o <strong>Artigo 49 do Código de Defesa do Consumidor (Lei 8.078/1990)</strong>, o cliente possui o prazo de até <strong>7 (sete) dias corridos</strong> a partir da contratação para solicitar o cancelamento com reembolso integral.
+              As assinaturas do AdShield são renovadas periodicamente conforme o plano contratado. Em conformidade com o <strong>Artigo 49 do Código de Defesa do Consumidor (Lei 8.078/1990)</strong>, o cliente possui o prazo de até <strong>7 (sete) dias corridos</strong> a partir da contratação para solicitar o cancelamento com reembolso integral.
             </p>
           </section>
 
@@ -174,13 +174,13 @@ export function TermsPage() {
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-8 px-4 text-center text-xs text-slate-500 mt-12">
         <div className="max-w-4xl mx-auto space-y-2">
-          <p className="font-bold text-slate-700">LeakFinder • Ecossistema BRK Group</p>
+          <p className="font-bold text-slate-700">AdShield • Ecossistema BRK Group</p>
           <div className="flex justify-center gap-4 text-[11px] text-slate-500">
             <Link to="/terms" className="hover:text-blue-600 underline">Termos de Uso</Link>
             <Link to="/privacy" className="hover:text-blue-600 underline">Política de Privacidade</Link>
             <Link to="/about" className="hover:text-blue-600 underline">Quem Somos</Link>
           </div>
-          <p className="text-[10px] text-slate-400">© {new Date().getFullYear()} LeakFinder. Todos os direitos reservados.</p>
+          <p className="text-[10px] text-slate-400">© {new Date().getFullYear()} AdShield. Todos os direitos reservados.</p>
         </div>
       </footer>
 
