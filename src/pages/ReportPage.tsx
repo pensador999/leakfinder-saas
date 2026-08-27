@@ -93,6 +93,8 @@ export function ReportPage() {
     return <div className="min-h-screen flex items-center justify-center font-bold text-slate-600">Carregando Relatório...</div>;
   }
 
+  const [viewMode, setViewMode] = useState<'merchant' | 'war_room'>('merchant');
+
   const totalCatalogAlerts = ((diagnostic?.realSiteData.catalogAudit?.productsWithBrokenGrid || 0) + 
                              (diagnostic?.realSiteData.catalogAudit?.productsWithMissingImages || 0));
 
@@ -100,30 +102,36 @@ export function ReportPage() {
     ? detectMarketplace(diagnostic.realSiteData.url, diagnostic.realSiteData.domain).isMarketplace 
     : false;
 
-  const allTabs = [
+  // 🛍️ 1. MODO LOJISTA: As 6 Abas Essenciais de Negócio & Lucro
+  const merchantTabs = [
+    { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
+    { id: 'rupture_monitor', label: 'Vigia 24h Ruptura', icon: Flame, highlight: true },
+    { id: 'pricing', label: 'Simulador Pix & Margem', icon: Calculator, highlight: true },
+    { id: 'catalog', label: 'Catálogo & Estoque', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
+    { id: 'trust_badge', label: 'Selo de Confiança', icon: ShieldCheck, highlight: true },
+    ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : [])
+  ];
+
+  // 🔐 2. MODO ENGENHARIA / WAR ROOM: As 4 Abas Profundas + Especialistas
+  const warRoomTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
     { id: 'orchestrator', label: 'Torre do Maestro', icon: Cpu, highlight: true },
     { id: 'scraper_dossier', label: 'Dossier de Evidências', icon: Search, highlight: true },
     { id: 'truth_auditor', label: 'Tribunal de Veracidade', icon: Scale, highlight: true },
     { id: 'swarm_control', label: 'Enxame Paralelo 24h', icon: BrainCircuit, highlight: true },
-    ...(isMarketplaceStore ? [{ id: 'marketplace', label: 'Auditoria de Anúncio', icon: Store, highlight: true }] : []),
-    { id: 'vitals', label: 'Core Web Vitals 2026', icon: Gauge, highlight: true },
-    { id: 'pricing', label: 'Simulador Pix & Margem', icon: Calculator, highlight: true },
     { id: 'rupture_monitor', label: 'Vigia 24h Ruptura', icon: Flame, highlight: true },
-    { id: 'trust_badge', label: 'Selo de Confiança', icon: ShieldCheck, highlight: true },
-    { id: 'catalog', label: 'Catálogo & SKUs', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
+    { id: 'pricing', label: 'Simulador Pix & Margem', icon: Calculator, highlight: true },
+    { id: 'catalog', label: 'Catálogo & Estoque', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
+    { id: 'vitals', label: 'Core Web Vitals 2026', icon: Gauge, highlight: true },
+    { id: 'vision', label: 'Visão & Heatmap', icon: Eye, badge: diagnostic?.visionAnalysis.warnings.length },
     { id: 'telemetry', label: 'Telemetria & Clarity', icon: Activity },
+    { id: 'trust_badge', label: 'Selo de Confiança', icon: ShieldCheck, highlight: true },
     ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : []),
-    { id: 'vision', label: 'Visão Computacional & Heatmap', icon: Eye, badge: diagnostic?.visionAnalysis.warnings.length },
     { id: 'competitor', label: 'Espião', icon: Sword },
-    { id: 'kanban', label: 'Plano de Ação', icon: KanbanSquare },
-    { id: 'code_security', label: 'Código & Segurança', icon: ShieldCheck, badge: diagnostic?.cro.findings.length, advanced: true },
-    { id: 'cro_copy', label: 'CRO & Ofertas', icon: ShoppingCart, advanced: true },
-    { id: 'social_pm', label: 'Social & Estratégia', icon: Target, advanced: true },
-    { id: 'tools', label: 'Simulador & War Room', icon: Calculator }
+    { id: 'kanban', label: 'Plano de Ação', icon: KanbanSquare }
   ];
 
-  const tabs = isAdvancedMode ? allTabs : allTabs.filter(t => !t.advanced);
+  const tabs = viewMode === 'merchant' ? merchantTabs : warRoomTabs;
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased pb-20">
@@ -142,8 +150,46 @@ export function ReportPage() {
       <main className="max-w-7xl mx-auto px-4 lg:px-8 pt-6 space-y-6">
         
         {diagnostic ? (
-          <div className="space-y-6">
+          <div className="space-y-4">
             
+            {/* 🎛️ 3-MODE SELECTOR SWITCHER (PROGRESSIVE DISCLOSURE) */}
+            <div className="p-3 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-500 uppercase font-mono">Modo de Visualização:</span>
+              </div>
+
+              <div className="flex items-center bg-slate-100 p-1 rounded-xl gap-1 text-xs font-bold w-full sm:w-auto">
+                <button
+                  onClick={() => {
+                    setViewMode('merchant');
+                    if (['orchestrator', 'scraper_dossier', 'truth_auditor', 'swarm_control', 'vitals', 'vision', 'telemetry', 'competitor', 'kanban'].includes(activeTab)) {
+                      setActiveTab('summary');
+                    }
+                  }}
+                  className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
+                    viewMode === 'merchant'
+                      ? 'bg-white text-slate-900 shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <ShoppingCart className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>🛍️ Modo Lojista (6 Abas de Lucro)</span>
+                </button>
+
+                <button
+                  onClick={() => setViewMode('war_room')}
+                  className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
+                    viewMode === 'war_room'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <Cpu className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>⚡ Modo Engenheiro / War Room</span>
+                </button>
+              </div>
+            </div>
+
             {/* Clean Tab Navigation (Wrap Responsive, 100% Visible) */}
             <div className="flex flex-wrap items-center gap-1.5 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs">
               {tabs.map((tab) => {
@@ -174,27 +220,6 @@ export function ReportPage() {
                   </button>
                 );
               })}
-            </div>
-
-            {/* Advanced Mode Toggle */}
-            <div className="flex justify-end px-2">
-              <label className="flex items-center gap-2 cursor-pointer group">
-                <span className="text-xs font-semibold text-slate-500 group-hover:text-slate-800 transition-colors">Modo Avançado (Auditoria Técnica)</span>
-                <div className={`w-10 h-5 flex items-center rounded-full p-1 transition-colors ${isAdvancedMode ? 'bg-indigo-600' : 'bg-slate-300'}`}>
-                  <div className={`bg-white w-3 h-3 rounded-full shadow-md transform transition-transform ${isAdvancedMode ? 'translate-x-5' : 'translate-x-0'}`}></div>
-                </div>
-                <input 
-                  type="checkbox" 
-                  className="hidden" 
-                  checked={isAdvancedMode} 
-                  onChange={() => {
-                    setIsAdvancedMode(!isAdvancedMode);
-                    if (isAdvancedMode && ['code_security', 'cro_copy', 'social_pm'].includes(activeTab)) {
-                      setActiveTab('summary');
-                    }
-                  }} 
-                />
-              </label>
             </div>
 
             {/* Content Area Rendering */}
