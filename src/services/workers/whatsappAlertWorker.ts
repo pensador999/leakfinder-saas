@@ -1,5 +1,6 @@
 import { MonitoredStore, StoreSnapshotDelta } from '../swarm/autonomousSwarmEngine';
 import { AgentDiagnosticResult } from '../../types';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 export interface WhatsAppAlertPayload {
   to: string;
@@ -10,6 +11,36 @@ export interface WhatsAppAlertPayload {
     storeUrl: string;
     score: number;
   };
+}
+
+export interface WhatsAppGatewayConfig {
+  provider: 'EVOLUTION_API' | 'Z_API' | 'GENERIC_WEBHOOK' | 'SIMULATION';
+  endpointUrl: string;
+  apiToken?: string;
+  instanceName?: string;
+}
+
+const LOCAL_GATEWAY_CONFIG_KEY = 'adshield_whatsapp_gateway_config';
+
+export function getWhatsAppGatewayConfig(): WhatsAppGatewayConfig {
+  const stored = localStorage.getItem(LOCAL_GATEWAY_CONFIG_KEY);
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch {
+      // fallback
+    }
+  }
+  return {
+    provider: 'SIMULATION',
+    endpointUrl: '',
+    apiToken: '',
+    instanceName: 'adshield-bot'
+  };
+}
+
+export function saveWhatsAppGatewayConfig(config: WhatsAppGatewayConfig): void {
+  localStorage.setItem(LOCAL_GATEWAY_CONFIG_KEY, JSON.stringify(config));
 }
 
 /**
@@ -52,29 +83,130 @@ export function formatDailyWhatsAppExecutiveSummary(
 }
 
 /**
- * Mock/API dispatcher for WhatsApp messages (compatible with Evolution API / Z-API / Webhook)
+ * Dispatches a WhatsApp alert message via configured gateway (Evolution API / Z-API / Webhook)
  */
 export async function dispatchWhatsAppAlert(
   payload: WhatsAppAlertPayload,
-  webhookUrl?: string
-): Promise<{ success: boolean; dispatchId: string }> {
-  // If official webhook is provided, POST the payload
-  if (webhookUrl) {
-    try {
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      return { success: response.ok, dispatchId: `wpp-${Date.now()}` };
-    } catch {
-      return { success: false, dispatchId: `err-${Date.now()}` };
-    }
+  config?: WhatsAppGatewayConfig
+): Promise<{ success: boolean; dispatchId: string; error?: string }> {
+  const gateway = config || getWhatsAppGatewayConfig();
+
+  // If simulation mode
+  if (gateway.provider === 'SIMULATION' || !gateway.endpointUrl) {
+    return {
+      success: true,
+      dispatchId: `sim-wpp-${Date.now()}`
+    };
   }
 
-  // Local simulated successful queue dispatch
-  return {
-    success: true,
-    dispatchId: `sim-wpp-${Date.now()}`
-  };
+  try {
+    let headers: Record<string, string> = {
+      'Content-Type': 'application/json'
+    };
+
+    let body: any = {};
+
+    if (gateway.provider === 'EVOLUTION_API') {
+      headers['apikey'] = gateway.apiToken || '';
+      body = {
+        number: payload.to.replace(/\D/g, ''),
+        text: payload.message
+      };
+    } else if (gateway.provider === 'Z_API') {
+      headers['Client-Token'] = gateway.apiToken || '';
+      body = {
+        phone: payload.to.replace(/\D/g, ''),
+        message: payload.message
+      };
+    } else {
+      // Generic Webhook
+      if (gateway.apiToken) {
+        headers['Authorization'] = `Bearer ${gateway.apiToken}`;
+      }
+      body = payload;
+    }
+
+    const response = await fetch(gateway.endpointUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body)
+    });
+
+    if (response.ok) {
+      return { success: true, dispatchId: `wpp-sent-${Date.now()}` };
+    } else {
+      const errText = await response.text();
+      return { success: false, dispatchId: `wpp-err-${Date.now()}`, error: errText };
+    }
+  } catch (err: any) {
+    return { success: false, dispatchId: `wpp-fail-${Date.now()}`, error: err?.message || 'Network error' };
+  }
+}
+
+/**
+ * Drains and processes the alert_dispatch_queue from Supabase
+ */
+export async function processPendingAlertsQueue(
+  supabase: SupabaseClient,
+  gatewayConfig?: WhatsAppGatewayConfig
+): Promise<{ processedCount: number; successCount: number; failedCount: number }> {
+  let processedCount = 0;
+  let successCount = 0;
+  let failedCount = 0;
+
+  try {
+    const { data: pendingAlerts, error } = await supabase
+      .from('alert_dispatch_queue')
+      .select('*')
+      .eq('status', 'PENDING')
+      .limit(20);
+
+    if (error || !pendingAlerts || pendingAlerts.length === 0) {
+      return { processedCount: 0, successCount: 0, failedCount: 0 };
+    }
+
+    for (const alert of pendingAlerts) {
+      processedCount++;
+      const res = await dispatchWhatsAppAlert(
+        {
+          to: alert.phone_number,
+          message: alert.message_body,
+          priority: alert.priority || 'HIGH',
+          metadata: {
+            storeId: alert.store_id || '',
+            storeUrl: '',
+            score: 0
+          }
+        },
+        gatewayConfig
+      );
+
+      if (res.success) {
+        successCount++;
+        await supabase
+          .from('alert_dispatch_queue')
+          .update({
+            status: 'SENT',
+            sent_at: new Date().toISOString()
+          })
+          .eq('id', alert.id);
+      } else {
+        failedCount++;
+        await supabase
+          .from('alert_dispatch_queue')
+          .update({
+            status: 'FAILED',
+            error_detail: res.error || 'Dispatch error'
+          })
+          .eq('id', alert.id);
+      }
+
+      // Anti-spam pause of 300ms between messages
+      await new Promise(r => setTimeout(r, 300));
+    }
+  } catch {
+    // handled
+  }
+
+  return { processedCount, successCount, failedCount };
 }

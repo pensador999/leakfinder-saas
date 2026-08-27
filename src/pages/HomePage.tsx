@@ -25,6 +25,7 @@ import { PricingModal } from '../components/PricingModal';
 import { WhatsAppLeadCaptureModal } from '../components/WhatsAppLeadCaptureModal';
 import { AdminLeadsDrawer } from '../components/AdminLeadsDrawer';
 import { MonitoredStoresManagerModal } from '../components/MonitoredStoresManagerModal';
+import { WhatsAppWatchdogSettingsModal } from '../components/WhatsAppWatchdogSettingsModal';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { CookieBanner } from '../components/CookieBanner';
 import { runAgentDiagnosticAsync } from '../services/agentEngine';
@@ -57,6 +58,7 @@ export function HomePage() {
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState<boolean>(false);
   const [isLeadsDrawerOpen, setIsLeadsDrawerOpen] = useState<boolean>(false);
   const [isStoresManagerOpen, setIsStoresManagerOpen] = useState<boolean>(false);
+  const [isWhatsAppWatchdogOpen, setIsWhatsAppWatchdogOpen] = useState<boolean>(false);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analyzingUrl, setAnalyzingUrl] = useState<string>('');
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
@@ -223,7 +225,15 @@ export function HomePage() {
                   className="px-3.5 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all flex items-center gap-1.5 cursor-pointer font-bold border border-blue-200"
                 >
                   <Store className="w-3.5 h-3.5 text-blue-600" />
-                  <span>📡 Lojas no Radar (24h)</span>
+                  <span>📡 Lojas no Radar</span>
+                </button>
+
+                <button
+                  onClick={() => setIsWhatsAppWatchdogOpen(true)}
+                  className="px-3.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all flex items-center gap-1.5 cursor-pointer font-bold border border-emerald-200"
+                >
+                  <Activity className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>📲 Vigia WhatsApp (07:00)</span>
                 </button>
               </div>
             </div>
@@ -415,6 +425,11 @@ export function HomePage() {
           setAnalyzingUrl(url);
           setIsAnalyzing(true);
         }}
+      />
+
+      <WhatsAppWatchdogSettingsModal
+        isOpen={isWhatsAppWatchdogOpen}
+        onClose={() => setIsWhatsAppWatchdogOpen(false)}
       />
 
       {/* Footer Legal & Institucional */}
