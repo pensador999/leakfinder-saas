@@ -14,7 +14,7 @@ import { CompetitorAgentView } from '../components/agents/CompetitorAgentView';
 import { ActionPlanKanban } from '../components/agents/ActionPlanKanban';
 import { AgentChatView } from '../components/agents/AgentChatView';
 import { RoasCalculator } from '../components/tools/RoasCalculator';
-import { ReportExporter } from '../components/tools/ReportExporter';
+import { ExecutivePdfExportModal } from '../components/ExecutivePdfExportModal';
 import { SettingsModal } from '../components/SettingsModal';
 import { AdminLeadsDashboard } from '../components/AdminLeadsDashboard';
 import { ErrorBoundary } from '../components/ErrorBoundary';
@@ -328,10 +328,11 @@ export function ReportPage() {
 
       </main>
 
-      {/* Export Report Modal */}
+      {/* Export Report Modal (White-Label PDF) */}
       {isExportModalOpen && diagnostic && (
-        <ReportExporter
+        <ExecutivePdfExportModal
           diagnostic={diagnostic}
+          isOpen={isExportModalOpen}
           onClose={() => setIsExportModalOpen(false)}
         />
       )}
