@@ -1,8 +1,9 @@
 {
-  "rewrites": [
+  "version": 2,
+  "crons": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "path": "/api/cron/swarm-runner",
+      "schedule": "0 10 * * *"
     }
   ]
 }

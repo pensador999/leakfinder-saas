@@ -24,6 +24,7 @@ import { AdminLeadsDashboard } from '../components/AdminLeadsDashboard';
 import { PricingModal } from '../components/PricingModal';
 import { WhatsAppLeadCaptureModal } from '../components/WhatsAppLeadCaptureModal';
 import { AdminLeadsDrawer } from '../components/AdminLeadsDrawer';
+import { MonitoredStoresManagerModal } from '../components/MonitoredStoresManagerModal';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { CookieBanner } from '../components/CookieBanner';
 import { runAgentDiagnosticAsync } from '../services/agentEngine';
@@ -55,6 +56,7 @@ export function HomePage() {
   const [isPricingModalOpen, setIsPricingModalOpen] = useState<boolean>(false);
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState<boolean>(false);
   const [isLeadsDrawerOpen, setIsLeadsDrawerOpen] = useState<boolean>(false);
+  const [isStoresManagerOpen, setIsStoresManagerOpen] = useState<boolean>(false);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analyzingUrl, setAnalyzingUrl] = useState<string>('');
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
@@ -214,6 +216,14 @@ export function HomePage() {
                 >
                   <Cpu className="w-3.5 h-3.5 text-cyan-400" />
                   <span>⚡ Modo Engenheiro / War Room</span>
+                </button>
+
+                <button
+                  onClick={() => setIsStoresManagerOpen(true)}
+                  className="px-3.5 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all flex items-center gap-1.5 cursor-pointer font-bold border border-blue-200"
+                >
+                  <Store className="w-3.5 h-3.5 text-blue-600" />
+                  <span>📡 Lojas no Radar (24h)</span>
                 </button>
               </div>
             </div>
@@ -396,6 +406,15 @@ export function HomePage() {
       <AdminLeadsDrawer
         isOpen={isLeadsDrawerOpen}
         onClose={() => setIsLeadsDrawerOpen(false)}
+      />
+
+      <MonitoredStoresManagerModal
+        isOpen={isStoresManagerOpen}
+        onClose={() => setIsStoresManagerOpen(false)}
+        onSelectStoreToAudit={(url) => {
+          setAnalyzingUrl(url);
+          setIsAnalyzing(true);
+        }}
       />
 
       {/* Footer Legal & Institucional */}
