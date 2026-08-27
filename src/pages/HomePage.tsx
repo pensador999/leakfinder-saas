@@ -44,8 +44,9 @@ import { TruthAuditorTribunalView } from '../components/TruthAuditorTribunalView
 import { AutonomousSwarmControlView } from '../components/AutonomousSwarmControlView';
 import { MarketHunterAgentView } from '../components/agents/MarketHunterAgentView';
 import { ProductEvolutionAgentView } from '../components/agents/ProductEvolutionAgentView';
+import { CustomerSuccessVocAgentView } from '../components/agents/CustomerSuccessVocAgentView';
 import { detectMarketplace } from '../services/marketplaceInspector';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function HomePage() {
@@ -131,6 +132,7 @@ export function HomePage() {
     { id: 'catalog', label: 'Catálogo & Estoque', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
     { id: 'market_hunter', label: 'Caçador de Mercado & Leads', icon: Compass, highlight: true },
     { id: 'product_evolution', label: 'Auto-Evolução do Produto', icon: Wrench, highlight: true },
+    { id: 'customer_success', label: 'Clientes & Precificação (VoC)', icon: BarChart3, highlight: true },
     { id: 'trust_badge', label: 'Selo de Confiança', icon: ShieldCheck, highlight: true },
     ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : [])
   ];
@@ -141,6 +143,7 @@ export function HomePage() {
     { id: 'orchestrator', label: 'Torre do Maestro', icon: Cpu, highlight: true },
     { id: 'market_hunter', label: 'Caçador de Mercado & Leads', icon: Compass, highlight: true },
     { id: 'product_evolution', label: 'Auto-Evolução do Produto', icon: Wrench, highlight: true },
+    { id: 'customer_success', label: 'Clientes & Precificação (VoC)', icon: BarChart3, highlight: true },
     { id: 'scraper_dossier', label: 'Dossier de Evidências', icon: Search, highlight: true },
     { id: 'truth_auditor', label: 'Tribunal de Veracidade', icon: Scale, highlight: true },
     { id: 'swarm_control', label: 'Enxame Paralelo 24h', icon: BrainCircuit, highlight: true },
@@ -300,6 +303,10 @@ export function HomePage() {
 
                 {activeTab === 'product_evolution' && (
                   <ProductEvolutionAgentView />
+                )}
+
+                {activeTab === 'customer_success' && (
+                  <CustomerSuccessVocAgentView />
                 )}
 
                 {activeTab === 'truth_auditor' && (
