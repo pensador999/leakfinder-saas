@@ -37,8 +37,9 @@ import { PricingElasticitySimulatorView } from '../components/PricingElasticityS
 import { TrustBadgeGeneratorView } from '../components/TrustBadgeGeneratorView';
 import { StockRuptureMonitorView } from '../components/StockRuptureMonitorView';
 import { OrchestratorControlTowerView } from '../components/OrchestratorControlTowerView';
+import { DeepScraperDossierView } from '../components/DeepScraperDossierView';
 import { detectMarketplace } from '../services/marketplaceInspector';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function HomePage() {
@@ -115,6 +116,7 @@ export function HomePage() {
   const allTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
     { id: 'orchestrator', label: 'Torre do Maestro', icon: Cpu, highlight: true },
+    { id: 'scraper_dossier', label: 'Dossier de Evidências', icon: Search, highlight: true },
     ...(isMarketplaceStore ? [{ id: 'marketplace', label: 'Auditoria de Anúncio', icon: Store, highlight: true }] : []),
     { id: 'vitals', label: 'Core Web Vitals 2026', icon: Gauge, highlight: true },
     { id: 'pricing', label: 'Simulador Pix & Margem', icon: Calculator, highlight: true },
@@ -231,6 +233,10 @@ export function HomePage() {
 
                 {activeTab === 'orchestrator' && (
                   <OrchestratorControlTowerView diagnostic={diagnostic} />
+                )}
+
+                {activeTab === 'scraper_dossier' && (
+                  <DeepScraperDossierView diagnostic={diagnostic} />
                 )}
 
                 {activeTab === 'marketplace' && (
