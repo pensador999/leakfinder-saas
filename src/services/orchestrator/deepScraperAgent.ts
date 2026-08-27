@@ -121,7 +121,15 @@ export class DeepScraperAgent {
 
     // 1. Rota de Plataforma
     const isShopify = htmlLower.includes('cdn.shopify.com') || htmlLower.includes('shopify-') || activeHtml.includes('Shopify.theme');
-    const isVtex = htmlLower.includes('vteximg.com') || htmlLower.includes('vtex.commerce') || htmlLower.includes('vtex-');
+    const isVtex = htmlLower.includes('vteximg') || 
+                   htmlLower.includes('vtex.commerce') || 
+                   htmlLower.includes('vtex_') || 
+                   htmlLower.includes('vtex.io') || 
+                   htmlLower.includes('vtex-') ||
+                   htmlLower.includes('io.vtex.com') ||
+                   htmlLower.includes('vtexassets') ||
+                   htmlLower.includes('salonline') ||
+                   htmlLower.includes('usereserva');
     const isNuvemshop = htmlLower.includes('nuvemshop') || htmlLower.includes('tiendanube');
     const isWooCommerce = htmlLower.includes('wp-content') || htmlLower.includes('woocommerce');
 
@@ -169,18 +177,18 @@ export class DeepScraperAgent {
   }
 
   private extractHeadScripts(rawHtml: string, htmlLower: string): ScrapedHeadTags {
-    const metaPixelMatch = rawHtml.match(/fbq\(['"]init['"],\s*['"](\d+)['"]\)/i);
-    const gtmMatch = rawHtml.match(/GTM-[A-Z0-9]+/i);
-    const ga4Match = rawHtml.match(/G-[A-Z0-9]+/i);
+    const metaPixelMatch = rawHtml.match(/fbq\(['"]init['"],\s*['"](\d+)['"]\)/i) || rawHtml.match(/fbevents\.js.*?id=(\d+)/i);
+    const gtmMatch = rawHtml.match(/\b(GTM-[A-Z0-9]{6,10})\b/);
+    const ga4Match = rawHtml.match(/\b(G-[A-Z0-9]{8,12})\b/);
     const clarityMatch = rawHtml.match(/clarity\.ms\/tag\/([a-zA-Z0-9]+)/i) || rawHtml.match(/clarity\(["']tag["'],\s*["']([a-zA-Z0-9]+)["']\)/i);
 
     return {
       hasMetaPixel: !!metaPixelMatch || htmlLower.includes('connect.facebook.net'),
       metaPixelId: metaPixelMatch ? metaPixelMatch[1] : undefined,
       hasGtm: !!gtmMatch || htmlLower.includes('googletagmanager.com'),
-      gtmId: gtmMatch ? gtmMatch[0] : undefined,
+      gtmId: gtmMatch ? gtmMatch[1] : undefined,
       hasGa4: !!ga4Match || htmlLower.includes('google-analytics.com'),
-      ga4Id: ga4Match ? ga4Match[0] : undefined,
+      ga4Id: ga4Match ? ga4Match[1] : undefined,
       hasClarity: !!clarityMatch || htmlLower.includes('clarity.ms'),
       clarityProjectId: clarityMatch ? clarityMatch[1] : undefined,
       hasTikTokPixel: htmlLower.includes('analytics.tiktok.com'),
