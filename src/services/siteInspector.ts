@@ -1,3 +1,5 @@
+import { EdgeProxyService } from './network/edgeProxyService';
+
 export interface BrokenProductImage {
   id: string;
   src: string;
@@ -165,39 +167,11 @@ export function hashString(str: string): number {
 /**
  * Fetch HTML using fast timeout controllers and concurrent proxy race strategy
  */
-async function fetchHtmlWithTimeout(url: string, timeoutMs: number = 3000): Promise<string> {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const res = await fetch(url, { signal: controller.signal, mode: 'cors' });
-    clearTimeout(timer);
-    if (res.ok) {
-      return await res.text();
-    }
-  } catch {
-    clearTimeout(timer);
+async function fetchHtmlWithTimeout(url: string, timeoutMs: number = 4000): Promise<string> {
+  const result = await EdgeProxyService.fetchResilient(url, timeoutMs);
+  if (result.ok && result.data) {
+    return result.data;
   }
-
-  const proxyEndpoints = [
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-    `https://corsproxy.io/?${encodeURIComponent(url)}`
-  ];
-
-  for (const proxyUrl of proxyEndpoints) {
-    const proxyController = new AbortController();
-    const proxyTimer = setTimeout(() => proxyController.abort(), 2500);
-    try {
-      const pRes = await fetch(proxyUrl, { signal: proxyController.signal });
-      clearTimeout(proxyTimer);
-      if (pRes.ok) {
-        return await pRes.text();
-      }
-    } catch {
-      clearTimeout(proxyTimer);
-    }
-  }
-
   return '';
 }
 

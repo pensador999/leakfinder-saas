@@ -1,4 +1,5 @@
 import { extractCleanDomainAndBrand } from '../siteInspector';
+import { EdgeProxyService } from '../network/edgeProxyService';
 
 export interface ScrapedCatalogItem {
   id: string;
@@ -73,7 +74,7 @@ export interface CollectedEvidenceDossier {
   schemaOrgJsonLdFound: boolean;
   isHttpsSecured: boolean;
   collectionDurationMs: number;
-  evidenceQualityIndex: number; // 0 to 100
+  evidenceQualityIndex: number;
 }
 
 /**
@@ -97,28 +98,47 @@ export class DeepScraperAgent {
    */
   public async executeDeepScrape(rawHtml: string = '', productsJsonRaw: string = ''): Promise<CollectedEvidenceDossier> {
     const startTime = Date.now();
-    const htmlLower = rawHtml.toLowerCase();
+
+    // Auto-fetch resiliente se não for fornecido
+    let activeHtml = rawHtml;
+    let activeProductsJson = productsJsonRaw;
+
+    if (!activeHtml) {
+      const htmlRes = await EdgeProxyService.fetchResilient(this.targetUrl, 4000);
+      if (htmlRes.ok && htmlRes.data) {
+        activeHtml = htmlRes.data;
+      }
+    }
+
+    if (!activeProductsJson) {
+      const productsRes = await EdgeProxyService.fetchResilient(`https://${this.domain}/products.json?limit=30`, 4000);
+      if (productsRes.ok && productsRes.data) {
+        activeProductsJson = productsRes.data;
+      }
+    }
+
+    const htmlLower = (activeHtml || '').toLowerCase();
 
     // 1. Rota de Plataforma
-    const isShopify = htmlLower.includes('cdn.shopify.com') || htmlLower.includes('shopify-') || rawHtml.includes('Shopify.theme');
+    const isShopify = htmlLower.includes('cdn.shopify.com') || htmlLower.includes('shopify-') || activeHtml.includes('Shopify.theme');
     const isVtex = htmlLower.includes('vteximg.com') || htmlLower.includes('vtex.commerce') || htmlLower.includes('vtex-');
     const isNuvemshop = htmlLower.includes('nuvemshop') || htmlLower.includes('tiendanube');
     const isWooCommerce = htmlLower.includes('wp-content') || htmlLower.includes('woocommerce');
 
     // 2. Rota de Head Scripts e Pixels
-    const headTags = this.extractHeadScripts(rawHtml, htmlLower);
+    const headTags = this.extractHeadScripts(activeHtml, htmlLower);
 
     // 3. Rota Legal e Compliance
-    const legal = this.extractLegalCompliance(rawHtml, htmlLower);
+    const legal = this.extractLegalCompliance(activeHtml, htmlLower);
 
     // 4. Rota de Elementos de Interface e UX
-    const ui = this.extractUiElements(rawHtml, htmlLower);
+    const ui = this.extractUiElements(activeHtml, htmlLower);
 
     // 5. Rota de Catálogo e SKUs Públicos
-    const catalog = this.extractCatalog(productsJsonRaw);
+    const catalog = this.extractCatalog(activeProductsJson);
 
     const isHttpsSecured = this.targetUrl.toLowerCase().startsWith('https://');
-    const schemaOrgJsonLdFound = rawHtml.includes('application/ld+json');
+    const schemaOrgJsonLdFound = activeHtml.includes('application/ld+json');
     const duration = Date.now() - startTime;
 
     // Cálculo do Índice de Qualidade da Evidência
