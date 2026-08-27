@@ -26,6 +26,7 @@ import { WhatsAppLeadCaptureModal } from '../components/WhatsAppLeadCaptureModal
 import { AdminLeadsDrawer } from '../components/AdminLeadsDrawer';
 import { MonitoredStoresManagerModal } from '../components/MonitoredStoresManagerModal';
 import { WhatsAppWatchdogSettingsModal } from '../components/WhatsAppWatchdogSettingsModal';
+import { FloatingAiChatWidget } from '../components/FloatingAiChatWidget';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { CookieBanner } from '../components/CookieBanner';
 import { runAgentDiagnosticAsync } from '../services/agentEngine';
@@ -45,8 +46,9 @@ import { AutonomousSwarmControlView } from '../components/AutonomousSwarmControl
 import { MarketHunterAgentView } from '../components/agents/MarketHunterAgentView';
 import { ProductEvolutionAgentView } from '../components/agents/ProductEvolutionAgentView';
 import { CustomerSuccessVocAgentView } from '../components/agents/CustomerSuccessVocAgentView';
+import { ChiefExecutiveOrchestratorAgentView } from '../components/agents/ChiefExecutiveOrchestratorAgentView';
 import { detectMarketplace } from '../services/marketplaceInspector';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function HomePage() {
@@ -133,6 +135,7 @@ export function HomePage() {
     { id: 'market_hunter', label: 'Caçador de Mercado & Leads', icon: Compass, highlight: true },
     { id: 'product_evolution', label: 'Auto-Evolução do Produto', icon: Wrench, highlight: true },
     { id: 'customer_success', label: 'Clientes & Precificação (VoC)', icon: BarChart3, highlight: true },
+    { id: 'ceo_orchestrator', label: 'Orquestrador CEO', icon: Crown, highlight: true },
     { id: 'trust_badge', label: 'Selo de Confiança', icon: ShieldCheck, highlight: true },
     ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : [])
   ];
@@ -140,6 +143,7 @@ export function HomePage() {
   // 🔐 2. MODO ENGENHARIA / WAR ROOM: As 4 Abas Profundas + Especialistas
   const warRoomTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
+    { id: 'ceo_orchestrator', label: 'Orquestrador CEO', icon: Crown, highlight: true },
     { id: 'orchestrator', label: 'Torre do Maestro', icon: Cpu, highlight: true },
     { id: 'market_hunter', label: 'Caçador de Mercado & Leads', icon: Compass, highlight: true },
     { id: 'product_evolution', label: 'Auto-Evolução do Produto', icon: Wrench, highlight: true },
@@ -291,6 +295,10 @@ export function HomePage() {
 
                 {activeTab === 'orchestrator' && (
                   <OrchestratorControlTowerView diagnostic={diagnostic} />
+                )}
+
+                {activeTab === 'ceo_orchestrator' && (
+                  <ChiefExecutiveOrchestratorAgentView />
                 )}
 
                 {activeTab === 'scraper_dossier' && (
@@ -452,6 +460,8 @@ export function HomePage() {
         isOpen={isWhatsAppWatchdogOpen}
         onClose={() => setIsWhatsAppWatchdogOpen(false)}
       />
+
+      <FloatingAiChatWidget />
 
       {/* Footer Legal & Institucional */}
       <footer className="max-w-7xl mx-auto py-8 px-4 border-t border-slate-200 mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
