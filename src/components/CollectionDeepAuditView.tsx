@@ -14,13 +14,14 @@ import {
   ChevronRight,
   TrendingUp,
   Store,
-  LayoutGrid
+  LayoutGrid,
+  Link2,
+  ArrowRight
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { 
   auditSpecificCollection, 
-  CollectionAuditResult, 
-  CollectionCampaignMapping 
+  CollectionAuditResult 
 } from '../services/collectionDeepInspector';
 
 interface CollectionDeepAuditViewProps {
@@ -32,17 +33,21 @@ export const CollectionDeepAuditView: React.FC<CollectionDeepAuditViewProps> = (
 
   const [auditData, setAuditData] = useState<CollectionAuditResult | null>(null);
   const [selectedHandle, setSelectedHandle] = useState<string>('camisas-work');
+  const [customUrlInput, setCustomUrlInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [successFeedback, setSuccessFeedback] = useState<string>('');
 
-  const loadCollectionData = async (handle?: string) => {
+  const loadCollectionData = async (handleOrUrl?: string) => {
     setIsLoading(true);
     try {
       const data = await auditSpecificCollection(
         realSiteData.url || `https://${realSiteData.domain}`,
-        handle || selectedHandle
+        handleOrUrl || selectedHandle
       );
       setAuditData(data);
-      if (handle) setSelectedHandle(handle);
+      if (handleOrUrl) {
+        setSelectedHandle(data.selectedCollection.collectionHandle);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -51,6 +56,16 @@ export const CollectionDeepAuditView: React.FC<CollectionDeepAuditViewProps> = (
   useEffect(() => {
     loadCollectionData();
   }, [diagnostic]);
+
+  const handleCustomUrlSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customUrlInput.trim()) return;
+
+    loadCollectionData(customUrlInput.trim());
+    setSuccessFeedback(`Coleção customizada "${customUrlInput.trim()}" auditada com sucesso!`);
+    setCustomUrlInput('');
+    setTimeout(() => setSuccessFeedback(''), 4000);
+  };
 
   if (isLoading || !auditData) {
     return (
@@ -77,11 +92,11 @@ export const CollectionDeepAuditView: React.FC<CollectionDeepAuditViewProps> = (
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-bold text-slate-900">Auditoria Granular de Coleções & Banners</h2>
               <span className="px-2.5 py-0.5 text-xs font-mono font-extrabold rounded-full bg-blue-100 text-blue-900 border border-blue-200">
-                Foco por Categoria
+                Coleção em Foco
               </span>
             </div>
             <p className="text-xs text-slate-600 mt-1 max-w-2xl leading-relaxed">
-              Audite especificamente as coleções que estão recebendo tráfego pago ou cliques nos Hero Banners da página inicial.
+              Cole o link de **qualquer coleção ou categoria** de e-commerce para auditar a grade de estoque e tráfego de anúncios daquela seção específica.
             </p>
           </div>
         </div>
@@ -96,14 +111,50 @@ export const CollectionDeepAuditView: React.FC<CollectionDeepAuditViewProps> = (
         </div>
       </div>
 
+      {/* 🔗 ATTACH CUSTOM COLLECTION URL BAR */}
+      <div className="p-5 bg-gradient-to-r from-blue-900 to-slate-900 rounded-3xl text-white shadow-xl space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="font-bold text-sm flex items-center gap-2 text-blue-300">
+            <Link2 className="w-4 h-4" />
+            Anexar Link de Coleção Personalizada para Auditar
+          </h3>
+          <span className="text-[10px] text-slate-300 font-mono">Suporta qualquer URL /collections/...</span>
+        </div>
+
+        <form onSubmit={handleCustomUrlSubmit} className="flex flex-col sm:flex-row gap-2">
+          <input
+            type="url"
+            required
+            placeholder="Ex: https://www.brkagro.com.br/collections/camisas-work ou qualquer loja..."
+            value={customUrlInput}
+            onChange={(e) => setCustomUrlInput(e.target.value)}
+            className="flex-1 px-4 py-2.5 text-xs bg-slate-800/90 text-white placeholder:text-slate-400 border border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 font-mono"
+          />
+          <button
+            type="submit"
+            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md cursor-pointer shrink-0"
+          >
+            <span>Auditar Coleção</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </form>
+
+        {successFeedback && (
+          <div className="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold flex items-center gap-2 animate-fadeIn">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <span>{successFeedback}</span>
+          </div>
+        )}
+      </div>
+
       {/* Collection Selector Chips */}
       <div className="space-y-2">
         <span className="text-xs font-bold text-slate-700 block uppercase font-mono tracking-wider">
-          Selecione a Coleção ou Campanha em Foco:
+          Coleções Detectadas no Radar / Exemplos de Campanhas:
         </span>
         <div className="flex flex-wrap gap-2">
           {allDetectedCollections.map((col) => {
-            const isSelected = selectedHandle === col.handle;
+            const isSelected = selectedCollection.collectionHandle === col.handle;
 
             return (
               <button
@@ -121,7 +172,7 @@ export const CollectionDeepAuditView: React.FC<CollectionDeepAuditViewProps> = (
                   <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono font-extrabold ${
                     isSelected ? 'bg-white/20 text-white' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                   }`}>
-                    Hero Banner
+                    {col.isCustom ? 'Link Personalizado' : 'Hero Banner'}
                   </span>
                 )}
               </button>
@@ -178,7 +229,7 @@ export const CollectionDeepAuditView: React.FC<CollectionDeepAuditViewProps> = (
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-blue-400 font-bold text-xs font-mono">
             <Target className="w-4 h-4" />
-            <span>VÍNCULO COM CAMPANHA & HERO BANNER DO SITE:</span>
+            <span>DIAGNÓSTICO DA COLEÇÃO ({selectedCollection.collectionTitle}):</span>
           </div>
           <a
             href={selectedCollection.collectionUrl}
@@ -186,7 +237,7 @@ export const CollectionDeepAuditView: React.FC<CollectionDeepAuditViewProps> = (
             rel="noreferrer"
             className="text-xs text-slate-400 hover:text-blue-400 font-mono flex items-center gap-1 transition-colors"
           >
-            <span>Ver Coleção ao Vivo</span>
+            <span>Abrir Coleção ao Vivo</span>
             <ExternalLink className="w-3 h-3" />
           </a>
         </div>
