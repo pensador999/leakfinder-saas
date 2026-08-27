@@ -669,9 +669,13 @@ export async function inspectRealWebsite(targetUrl: string): Promise<RealSiteDat
   let parser: DOMParser | null = null;
   let doc: Document | null = null;
 
-  if (htmlText) {
-    parser = new DOMParser();
-    doc = parser.parseFromString(htmlText, 'text/html');
+  if (htmlText && typeof DOMParser !== 'undefined') {
+    try {
+      parser = new DOMParser();
+      doc = parser.parseFromString(htmlText, 'text/html');
+    } catch {
+      doc = null;
+    }
   }
 
   // 100% REAL LIVE CATALOG INSPECTOR WITH ENTERPRISE INTELLIGENCE
