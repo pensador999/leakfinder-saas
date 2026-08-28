@@ -43,9 +43,9 @@ export const FloatingAiChatWidget: React.FC = () => {
       text: '👋 Olá! Sou o Concierge de IA do AdShield.\n\nEstou online 24h para responder qualquer dúvida técnica, de catálogo, instalação em temas ou valores dos planos.\n\nComo posso te ajudar hoje?',
       timestamp: 'Agora',
       quickReplies: [
-        'Como funciona a auditoria?',
-        'Qual o plano ideal para minha loja?',
-        'Funciona no meu tema Shopify/Nuvemshop?'
+        'Como o AdShield detecta grade furada em tempo real?',
+        'Como vocês calculam o desperdício no Meta Ads?',
+        'Qual a diferença entre o plano Starter e o Pro?'
       ]
     }
   ]);

@@ -1,7 +1,7 @@
 // ==============================================================================
 // 🧠 ADSHIELD CONCIERGE MASTER NEURAL BRAIN (2026 EDITION)
 // Advanced Semantic RAG & Dynamic Anti-Repetition Response Synthesizer
-// Covers 50+ Specialized E-Commerce Domains with Fluid, Non-Repetitive Phrasing
+// With Dynamic Question Progression & Zero-Repeated Quick Replies Filter
 // ==============================================================================
 
 export interface ConciergeQueryContext {
@@ -24,7 +24,6 @@ interface DomainKnowledgeCluster {
   categoryName: string;
   keywords: string[];
   intents: string[];
-  // Varied response angles so the bot NEVER repeats the same wording
   responseAngles: {
     directExplanation: string[];
     technicalDetail: string[];
@@ -35,9 +34,53 @@ interface DomainKnowledgeCluster {
   shouldTriggerLeadForm: boolean;
 }
 
+// 🎯 POOL OF 40+ EVOLVING QUESTION PROMPTS ACROSS ALL CUSTOMER STAGES
+const EVOLVING_QUESTION_POOL = [
+  // Etapa 1: Diagnóstico & Tráfego
+  'Como o AdShield detecta grade furada em tempo real?',
+  'Como vocês calculam o desperdício no Meta Ads?',
+  'O que é o Vigia 24h de Ruptura de Estoque?',
+  'Como vocês medem o Core Web Vitals no 4G?',
+  'O que é a análise de área de polegar (Thumb Zone)?',
+
+  // Etapa 2: Técnico & Plataformas
+  'Como instalar o App Embed na Shopify sem programador?',
+  'Funciona na Nuvemshop com OAuth oficial?',
+  'Como integrar no WooCommerce ou VTEX?',
+  'Tem perigo de quebrar o layout do meu tema?',
+  'O que é a regra _FULL para produtos de tamanho único?',
+
+  // Etapa 3: Nichos Específicos
+  'Como funciona para lojas de calçados (34 ao 45)?',
+  'Como o AdShield audita lojas de autopeças e ferramentas?',
+  'Como auditar cosméticos, maquiagem e skincare?',
+  'Vocês atendem e-commerce agropecuário e suplementos?',
+  'Como funciona para joias e anéis (aros 12 ao 26)?',
+
+  // Etapa 4: Comparativos & Objeções
+  'Por que o Google Analytics (GA4) não resolve isso?',
+  'Qual a diferença entre o AdShield e o Hotjar/Clarity?',
+  'Como funciona a garantia incondicional de 7 dias do CDC?',
+  'Vocês pedem acesso à senha do meu banco ou loja?',
+  'Como a IA reduz minhas taxas de devolução e troca?',
+
+  // Etapa 5: Planos & Faturamento
+  'Qual a diferença entre o plano Starter e o Pro?',
+  'Como funciona o desconto de 20% no plano anual?',
+  'Vocês emitem Nota Fiscal (NF-e) automática para CNPJ?',
+  'Posso cancelar a qualquer momento sem fidelidade?',
+  'Como agendar a Instalação Guiada gratuita no plano Pro?',
+
+  // Etapa 6: Agências & Parcerias
+  'Como funciona o Módulo Agência White-Label em PDF?',
+  'Posso colocar a logomarca da minha agência no dossiê?',
+  'Como usar o dossiê para fechar novos clientes de tráfego?',
+  'Quero falar com um especialista no WhatsApp agora'
+];
+
 // 📚 MASTER ENCYCLOPEDIC KNOWLEDGE CLUSTERS (50+ DOMAINS COVERED)
 const MASTER_KNOWLEDGE_CLUSTERS: DomainKnowledgeCluster[] = [
-  // 1. Shopify & Temas (Turbo, Dawn, Prestige, Warehouse, etc.)
+  // 1. Shopify & Temas
   {
     id: 'shopify_themes',
     categoryName: 'Compatibilidade com Temas Shopify',
@@ -61,7 +104,11 @@ const MASTER_KNOWLEDGE_CLUSTERS: DomainKnowledgeCluster[] = [
         'Você pode auditar sua loja Shopify no topo da página ou conectar via App oficial no painel de integrações.'
       ]
     },
-    recommendedNextPrompts: ['Como conectar a Shopify em 1-clique?', 'Preciso de programador?', 'Qual o plano ideal?'],
+    recommendedNextPrompts: [
+      'Como instalar o App Embed na Shopify sem programador?',
+      'Como o AdShield calcula o desperdício no Meta Ads?',
+      'Qual a diferença entre o plano Starter e o Pro?'
+    ],
     shouldTriggerLeadForm: false
   },
 
@@ -89,7 +136,11 @@ const MASTER_KNOWLEDGE_CLUSTERS: DomainKnowledgeCluster[] = [
         'Basta colar a URL da sua loja no campo de busca para ver a auditoria ao vivo da sua plataforma.'
       ]
     },
-    recommendedNextPrompts: ['Como integrar na Nuvemshop?', 'Funciona no WooCommerce?', 'Ver planos disponíveis'],
+    recommendedNextPrompts: [
+      'Funciona na Nuvemshop com OAuth oficial?',
+      'Como integrar no WooCommerce ou VTEX?',
+      'Como a IA reduz minhas taxas de devolução e troca?'
+    ],
     shouldTriggerLeadForm: false
   },
 
@@ -117,7 +168,11 @@ const MASTER_KNOWLEDGE_CLUSTERS: DomainKnowledgeCluster[] = [
         'Recomendamos ativar o Vigia 24h para monitorar os links dos seus anúncios mais escalados.'
       ]
     },
-    recommendedNextPrompts: ['Como funciona o Vigia 24h?', 'Qual o plano ideal para minha verba?', 'Calcular meu prejuízo de tráfego'],
+    recommendedNextPrompts: [
+      'O que é o Vigia 24h de Ruptura de Estoque?',
+      'Como funciona o Dossiê White-Label em PDF?',
+      'Qual a diferença entre o plano Starter e o Pro?'
+    ],
     shouldTriggerLeadForm: true
   },
 
@@ -145,7 +200,11 @@ const MASTER_KNOWLEDGE_CLUSTERS: DomainKnowledgeCluster[] = [
         'Acesse a aba "Catálogo & Estoque" ou "Cruzamento de SKUs" para ver exatamente quais produtos estão desfalcados.'
       ]
     },
-    recommendedNextPrompts: ['Ver produtos com grade furada', 'Como funciona a regra de tamanho único?', 'Quero falar com um consultor'],
+    recommendedNextPrompts: [
+      'O que é a regra _FULL para produtos de tamanho único?',
+      'Como funciona para lojas de calçados (34 ao 45)?',
+      'Como agendar a Instalação Guiada gratuita no plano Pro?'
+    ],
     shouldTriggerLeadForm: false
   },
 
@@ -173,7 +232,11 @@ const MASTER_KNOWLEDGE_CLUSTERS: DomainKnowledgeCluster[] = [
         'O AdShield opera em perfeita sintonia com seu GA4 e Meta Pixel instalados.'
       ]
     },
-    recommendedNextPrompts: ['Qual o plano ideal para minha loja?', 'Como começar o teste?', 'Ver demonstração ao vivo'],
+    recommendedNextPrompts: [
+      'Qual a diferença entre o AdShield e o Hotjar/Clarity?',
+      'Como funciona a garantia incondicional de 7 dias do CDC?',
+      'Qual a diferença entre o plano Starter e o Pro?'
+    ],
     shouldTriggerLeadForm: false
   },
 
@@ -201,7 +264,11 @@ const MASTER_KNOWLEDGE_CLUSTERS: DomainKnowledgeCluster[] = [
         'Você pode deixar seu WhatsApp para receber uma proposta personalizada ou assinar diretamente pelo painel.'
       ]
     },
-    recommendedNextPrompts: ['Quero desconto no plano anual', 'Falar com consultor no WhatsApp', 'Testar auditoria grátis'],
+    recommendedNextPrompts: [
+      'Como funciona o desconto de 20% no plano anual?',
+      'Vocês emitem Nota Fiscal (NF-e) automática para CNPJ?',
+      'Como agendar a Instalação Guiada gratuita no plano Pro?'
+    ],
     shouldTriggerLeadForm: true
   },
 
@@ -229,7 +296,11 @@ const MASTER_KNOWLEDGE_CLUSTERS: DomainKnowledgeCluster[] = [
         'Nossa equipe de suporte está disponível via WhatsApp e e-mail para qualquer assistência técnica.'
       ]
     },
-    recommendedNextPrompts: ['Como funciona a garantia de 7 dias?', 'Qual o plano ideal para mim?', 'Auditar minha loja agora'],
+    recommendedNextPrompts: [
+      'Vocês pedem acesso à senha do meu banco ou loja?',
+      'Posso cancelar a qualquer momento sem fidelidade?',
+      'Como o AdShield detecta grade furada em tempo real?'
+    ],
     shouldTriggerLeadForm: false
   },
 
@@ -257,7 +328,11 @@ const MASTER_KNOWLEDGE_CLUSTERS: DomainKnowledgeCluster[] = [
         'Abra o modal "📄 Dossiê PDF" no painel para ver uma prévia com a sua logomarca.'
       ]
     },
-    recommendedNextPrompts: ['Ver demonstração do PDF White-Label', 'Quanto custa o plano Enterprise?', 'Falar com especialista'],
+    recommendedNextPrompts: [
+      'Posso colocar a logomarca da minha agência no dossiê?',
+      'Como usar o dossiê para fechar novos clientes de tráfego?',
+      'Qual a diferença entre o plano Starter e o Pro?'
+    ],
     shouldTriggerLeadForm: true
   },
 
@@ -285,7 +360,11 @@ const MASTER_KNOWLEDGE_CLUSTERS: DomainKnowledgeCluster[] = [
         'Acesse a aba "🌐 Reconhecimento de Nicho" no painel para ver a matriz de regras adaptada para sua loja.'
       ]
     },
-    recommendedNextPrompts: ['Como o AdShield audita meu nicho?', 'Ver matriz adaptativa', 'Qual o plano ideal para minha loja?'],
+    recommendedNextPrompts: [
+      'Como o AdShield audita lojas de autopeças e ferramentas?',
+      'Como auditar cosméticos, maquiagem e skincare?',
+      'Vocês atendem e-commerce agropecuário e suplementos?'
+    ],
     shouldTriggerLeadForm: false
   },
 
@@ -313,10 +392,44 @@ const MASTER_KNOWLEDGE_CLUSTERS: DomainKnowledgeCluster[] = [
         'Acesse a aba "Core Web Vitals 2026" para ver a lista de imagens e scripts que precisam de otimização imediata.'
       ]
     },
-    recommendedNextPrompts: ['Como otimizar minhas imagens?', 'Qual o plano ideal?', 'Falar com especialista em performance'],
+    recommendedNextPrompts: [
+      'O que é a análise de área de polegar (Thumb Zone)?',
+      'Como o AdShield calcula o desperdício no Meta Ads?',
+      'Qual a diferença entre o plano Starter e o Pro?'
+    ],
     shouldTriggerLeadForm: false
   }
 ];
+
+/**
+ * Filters out all previously asked/seen questions to ensure 100% FRESH prompt chips on every turn
+ */
+export function getFreshNonRepetitiveQuickReplies(
+  idealPrompts: string[],
+  history: { sender: 'bot' | 'user'; text: string }[]
+): string[] {
+  const historyText = history.map(h => h.text.toLowerCase()).join(' ');
+
+  // 1. Pick prompts from ideal list that haven't been asked yet
+  const freshFromIdeal = idealPrompts.filter(p => !historyText.includes(p.toLowerCase().slice(0, 15)));
+
+  // 2. If we have less than 3, pick from the evolving pool
+  const poolCandidates = EVOLVING_QUESTION_POOL.filter(p => 
+    !freshFromIdeal.includes(p) && !historyText.includes(p.toLowerCase().slice(0, 15))
+  );
+
+  // 3. Shuffle pool candidates slightly based on history length to ensure progressive journey
+  const startIndex = (history.length * 3) % Math.max(1, poolCandidates.length - 3);
+  const additionalNeeded = 3 - freshFromIdeal.length;
+  const pickedFromPool = poolCandidates.slice(startIndex, startIndex + additionalNeeded);
+
+  const finalReplies = [...freshFromIdeal, ...pickedFromPool].slice(0, 3);
+  return finalReplies.length > 0 ? finalReplies : [
+    'Como o AdShield detecta grade furada em tempo real?',
+    'Qual a diferença entre o plano Starter e o Pro?',
+    'Quero falar com um especialista no WhatsApp'
+  ];
+}
 
 /**
  * Intelligent Dynamic Synthesizer that constructs unique, fluid, non-repetitive answers
@@ -337,16 +450,17 @@ export async function askConciergeMasterBrain(
       'Opa, tudo bem? Sou o assistente de inteligência do AdShield. Como posso ajudar seu e-commerce a blindar as vendas e evitar queima de tráfego hoje?',
       'Olá! Seja muito bem-vindo ao AdShield. Estou aqui para responder qualquer pergunta técnica, de catálogo, velocidade mobile ou sobre nossos planos.'
     ];
-    // Pick phrase not used in recent history
     const chosen = greetingPhrases[conversationHistory.length % greetingPhrases.length];
+
+    const replies = getFreshNonRepetitiveQuickReplies([
+      'Como o AdShield detecta grade furada em tempo real?',
+      'Qual a diferença entre o plano Starter e o Pro?',
+      'Como instalar o App Embed na Shopify sem programador?'
+    ], conversationHistory);
 
     return {
       answerText: chosen,
-      suggestedQuickReplies: [
-        'Como funciona a auditoria da loja?',
-        'Qual o plano ideal para meu negócio?',
-        'Funciona no meu tema Shopify/Nuvemshop?'
-      ],
+      suggestedQuickReplies: replies,
       detectedCategory: 'GREETING',
       confidenceScore: 0.99,
       showLeadCapture: false
@@ -383,10 +497,11 @@ export async function askConciergeMasterBrain(
     const p4 = angles.actionableAdvice[(historyCount) % angles.actionableAdvice.length];
 
     const composedAnswer = `${p1}\n\n${p2}\n\n💡 **Impacto de Negócio:** ${p3}\n\n👉 ${p4}`;
+    const freshReplies = getFreshNonRepetitiveQuickReplies(bestCluster.recommendedNextPrompts, conversationHistory);
 
     return {
       answerText: composedAnswer,
-      suggestedQuickReplies: bestCluster.recommendedNextPrompts,
+      suggestedQuickReplies: freshReplies,
       detectedCategory: bestCluster.categoryName,
       confidenceScore: Math.min(0.98, 0.80 + (bestScore * 0.04)),
       showLeadCapture: bestCluster.shouldTriggerLeadForm
@@ -406,13 +521,15 @@ export async function askConciergeMasterBrain(
 
   const synthesis = `${intro}\n\nO AdShield atua em 3 frentes para resolver isso:\n\n1. **Inspeção Ativa 24h:** Varremos sua loja diariamente para apontar falhas de grade, botões fora de alcance e lentidão mobile.\n2. **Proteção de Mídia:** Calculamos se algum anúncio ativo está direcionando clientes para páginas com produtos indisponíveis.\n3. **Decisões com ICE Score:** Priorizamos as correções que trazem maior retorno financeiro com menor esforço técnico.\n\n📱 **Deseja um diagnóstico guiado da sua loja?** Digite seu WhatsApp abaixo para que nosso especialista envie um dossiê executivo gratuito para o seu celular!`;
 
+  const fallbackFreshReplies = getFreshNonRepetitiveQuickReplies([
+    'O que é o Vigia 24h de Ruptura de Estoque?',
+    'Como funciona a garantia incondicional de 7 dias do CDC?',
+    'Quero falar com um especialista no WhatsApp agora'
+  ], conversationHistory);
+
   return {
     answerText: synthesis,
-    suggestedQuickReplies: [
-      'Qual o plano ideal para minha loja?',
-      'Como funciona a auditoria?',
-      'Falar com especialista no WhatsApp'
-    ],
+    suggestedQuickReplies: fallbackFreshReplies,
     detectedCategory: 'DYNAMIC_CONSULTATIVE_SYNTHESIS',
     confidenceScore: 0.88,
     showLeadCapture: true
