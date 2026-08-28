@@ -14,7 +14,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { MonitoredStore } from '../services/swarm/autonomousSwarmEngine';
-import { getMonitoredStores } from '../services/database/swarmDatabaseService';
+import { getMonitoredStores, deleteMonitoredStore } from '../services/database/swarmDatabaseService';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { extractCleanDomainAndBrand } from '../services/siteInspector';
 
@@ -59,31 +59,61 @@ export const MonitoredStoresManagerModal: React.FC<MonitoredStoresManagerModalPr
 
     const { cleanUrl, brandName } = extractCleanDomainAndBrand(newUrl);
 
-    const newStoreRecord = {
-      store_url: cleanUrl,
-      brand_name: brandName,
+    const newStoreItem: MonitoredStore = {
+      id: `store-custom-${Date.now()}`,
+      storeUrl: cleanUrl,
+      brandName: brandName,
       niche: newNiche,
-      target_phone: newPhone || '5511999999999',
-      is_active: true,
-      check_interval_hours: 24,
-      current_score: 80,
-      current_estimated_loss: 0
+      targetPhone: newPhone || '5511999999999',
+      isActive: true,
+      checkIntervalHours: 24,
+      currentScore: 80,
+      currentEstimatedLoss: 0
     };
 
+    // 1. Immediately update local state & localStorage without waiting
+    setStores(prev => {
+      const filtered = prev.filter(s => s.storeUrl.toLowerCase().replace(/\/$/, '') !== cleanUrl.toLowerCase().replace(/\/$/, ''));
+      const updated = [newStoreItem, ...filtered];
+      localStorage.setItem('adshield_local_monitored_stores', JSON.stringify(updated));
+      return updated;
+    });
+
+    // 2. Persist to Supabase
     if (isSupabaseConfigured) {
       try {
-        await supabase.from('swarm_monitored_stores').insert([newStoreRecord]);
+        await supabase.from('swarm_monitored_stores').insert([{
+          store_url: cleanUrl,
+          brand_name: brandName,
+          niche: newNiche,
+          target_phone: newPhone || '5511999999999',
+          is_active: true,
+          check_interval_hours: 24,
+          current_score: 80,
+          current_estimated_loss: 0
+        }]);
       } catch {
-        // local fallback
+        // Handled gracefully
       }
     }
 
-    setFeedbackMsg(`Loja ${brandName} adicionada com sucesso ao radar 24h!`);
+    setFeedbackMsg(`🎉 Loja ${brandName} adicionada com sucesso ao radar 24h!`);
     setNewUrl('');
     setNewPhone('');
     setIsAdding(false);
-    loadStores();
 
+    setTimeout(() => setFeedbackMsg(''), 4000);
+  };
+
+  const handleDeleteStore = async (storeId: string, storeUrl: string, brand: string) => {
+    setStores(prev => {
+      const updated = prev.filter(s => s.id !== storeId && s.storeUrl !== storeUrl);
+      localStorage.setItem('adshield_local_monitored_stores', JSON.stringify(updated));
+      return updated;
+    });
+
+    await deleteMonitoredStore(storeId, storeUrl);
+    setFeedbackMsg(`Loja ${brand} removida do radar.`);
     setTimeout(() => setFeedbackMsg(''), 3000);
   };
 
@@ -232,10 +262,18 @@ export const MonitoredStoresManagerModal: React.FC<MonitoredStoresManagerModalPr
                         onSelectStoreToAudit(store.storeUrl);
                         onClose();
                       }}
-                      className="px-3 py-1.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+                      className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer border border-blue-200"
                     >
                       <Sparkles className="w-3.5 h-3.5" />
                       <span>Auditar Agora</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleDeleteStore(store.id, store.storeUrl, store.brandName)}
+                      className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all cursor-pointer"
+                      title="Remover do radar"
+                    >
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>

@@ -20,7 +20,8 @@ import {
   RefreshCw,
   Sliders,
   ShieldCheck,
-  BrainCircuit
+  BrainCircuit,
+  Trash2
 } from 'lucide-react';
 import { 
   ProspectStoreLead, 
@@ -94,6 +95,14 @@ export const FounderMasterHqView: React.FC = () => {
   const handleUpdateLeadStatus = (leadId: string, newStatus: ProspectStoreLead['status']) => {
     setLeads(prev => {
       const updated = prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l);
+      localStorage.setItem('adshield_custom_prospect_leads', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const handleDeleteProspectLead = (leadId: string) => {
+    setLeads(prev => {
+      const updated = prev.filter(l => l.id !== leadId);
       localStorage.setItem('adshield_custom_prospect_leads', JSON.stringify(updated));
       return updated;
     });
@@ -384,6 +393,14 @@ export const FounderMasterHqView: React.FC = () => {
                         <option value="EM_NEGOCIACAO">Em Negociação</option>
                         <option value="CLIENTE_ATIVO">Cliente Ativo ✅</option>
                       </select>
+
+                      <button
+                        onClick={() => handleDeleteProspectLead(lead.id)}
+                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all cursor-pointer"
+                        title="Remover lead"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
 
