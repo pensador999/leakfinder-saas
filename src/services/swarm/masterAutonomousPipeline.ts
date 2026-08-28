@@ -1,32 +1,33 @@
-// ==============================================================================
-// 👑 ADSHIELD MASTER AUTONOMOUS 24/7 SYMPHONY PIPELINE
-// Coordinates all 10 specialized agents into a unified, synchronized, self-healing loop
-// ==============================================================================
-
 import { createClient } from '@supabase/supabase-js';
 import { executeAutonomousStoreAudit, MonitoredStore } from './autonomousSwarmEngine';
 import { runMarketHunterScan, WeeklyMarketReport } from '../agents/marketHunterAgent';
 import { runProductEvolutionAudit, PlatformHealthDossier } from '../agents/productEvolutionEngineerAgent';
 import { runCustomerSuccessVocAudit, CustomerSuccessVocDossier } from '../agents/customerSuccessVocAgent';
 import { runCeoOrchestratorEvaluation, CeoExecutiveBoardroomDossier } from '../agents/chiefExecutiveOrchestratorAgent';
+import { fetchDevOpsIncidents, BugIncidentReport } from '../agents/devopsSentinelTelemetryAgent';
+import { generateAutoCodePatch, CodePatchProposal } from '../agents/autonomousCodePatchEngineerAgent';
 import { processPendingAlertsQueue } from '../workers/whatsappAlertWorker';
 
 export interface UnifiedPipelineExecutionSummary {
   executionId: string;
   triggeredAt: string;
   totalLatencyMs: number;
+  totalAgentsExecuted: number;
   storesAuditedCount: number;
   groundingAccuracyPct: number;
   newLeadsDiscoveredCount: number;
   productHealthScore: number;
   ceoDecisionsApprovedCount: number;
   whatsappAlertsDispatched: number;
+  devOpsIncidentsCount: number;
   pipelineStatus: 'SUCESSO_TOTAL' | 'SUCESSO_PARCIAL' | 'FALHA';
   phaseReports: {
     marketHunter: WeeklyMarketReport;
     productEvolution: PlatformHealthDossier;
     vocAnalytics: CustomerSuccessVocDossier;
     ceoBoardroom: CeoExecutiveBoardroomDossier;
+    devopsSentinel: BugIncidentReport[];
+    autoPatches: CodePatchProposal[];
   };
 }
 
@@ -149,28 +150,41 @@ export async function executeMasterAutonomous24hPipeline(
   }
 
   // FASE 6: Drenagem e Disparo da Fila de Alertas WhatsApp
-  console.log(`📲 [Fase 6/6: WhatsApp Dispatcher] Drenando fila de alertas pendentes...`);
+  console.log(`📲 [Fase 6/7: WhatsApp Dispatcher] Drenando fila de alertas pendentes...`);
   const queueResult = await processPendingAlertsQueue(supabase);
 
+  // FASE 7: Telemetria DevOps & Auto-Cura (Agentes 11 & 12)
+  console.log(`🛠️ [Fase 7/7: DevOps Sentinel & Auto-Coder] Auto-inspecionando integridade de código e runtime...`);
+  const devopsIncidents = await fetchDevOpsIncidents();
+  const autoPatches: CodePatchProposal[] = [];
+  for (const inc of devopsIncidents.slice(0, 3)) {
+    const patch = await generateAutoCodePatch(inc);
+    autoPatches.push(patch);
+  }
+
   const totalLatencyMs = Date.now() - startTime;
-  console.log(`✅ [MASTER PIPELINE CONCLUÍDO] 100% dos 10 agentes executados com sucesso em ${totalLatencyMs}ms!\n`);
+  console.log(`✅ [MASTER PIPELINE CONCLUÍDO] 100% dos 12 agentes executados com sucesso em ${totalLatencyMs}ms!\n`);
 
   return {
     executionId,
     triggeredAt: new Date().toLocaleTimeString('pt-BR'),
     totalLatencyMs,
+    totalAgentsExecuted: 12,
     storesAuditedCount: storesToAudit.length,
     groundingAccuracyPct: 100,
     newLeadsDiscoveredCount: marketHunterReport.highValueProspects.length,
     productHealthScore: productEvolutionDossier.overallHealthScore,
     ceoDecisionsApprovedCount: ceoDossier.approvedCount,
     whatsappAlertsDispatched: queueResult.successCount,
+    devOpsIncidentsCount: devopsIncidents.length,
     pipelineStatus: 'SUCESSO_TOTAL',
     phaseReports: {
       marketHunter: marketHunterReport,
       productEvolution: productEvolutionDossier,
       vocAnalytics: vocDossier,
-      ceoBoardroom: ceoDossier
+      ceoBoardroom: ceoDossier,
+      devopsSentinel: devopsIncidents,
+      autoPatches
     }
   };
 }
