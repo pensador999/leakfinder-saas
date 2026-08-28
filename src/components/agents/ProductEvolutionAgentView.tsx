@@ -25,7 +25,18 @@ export const ProductEvolutionAgentView: React.FC = () => {
   const [dossier, setDossier] = useState<PlatformHealthDossier | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>('TODAS');
-  const [approvedProposalIds, setApprovedProposalIds] = useState<string[]>([]);
+  const [approvedProposalIds, setApprovedProposalIds] = useState<string[]>(() => {
+    const saved = localStorage.getItem('adshield_approved_pm_proposals');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  });
+  const [feedbackSuccess, setFeedbackSuccess] = useState<string>('');
 
   const loadDossier = async () => {
     setIsLoading(true);
@@ -41,9 +52,13 @@ export const ProductEvolutionAgentView: React.FC = () => {
     loadDossier();
   }, []);
 
-  const handleApproveProposal = (id: string) => {
-    if (!approvedProposalIds.includes(id)) {
-      setApprovedProposalIds([...approvedProposalIds, id]);
+  const handleApproveProposal = (proposal: ProductEvolutionProposal) => {
+    if (!approvedProposalIds.includes(proposal.id)) {
+      const updated = [...approvedProposalIds, proposal.id];
+      setApprovedProposalIds(updated);
+      localStorage.setItem('adshield_approved_pm_proposals', JSON.stringify(updated));
+      setFeedbackSuccess(`🎉 Proposta "${proposal.title}" aprovada! Ela foi enviada para o Orquestrador CEO (Agente 02) na Sprint Ativa e para o Auto-Coder (Agente 12) para geração de código.`);
+      setTimeout(() => setFeedbackSuccess(''), 6000);
     }
   };
 
@@ -91,6 +106,14 @@ export const ProductEvolutionAgentView: React.FC = () => {
           <span>Re-inspecionar Sistema</span>
         </button>
       </div>
+
+      {/* Success Feedback Banner */}
+      {feedbackSuccess && (
+        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-950 rounded-2xl text-xs font-bold flex items-center gap-2 animate-fadeIn shadow-xs">
+          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+          <span>{feedbackSuccess}</span>
+        </div>
+      )}
 
       {/* System Health Radar */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
@@ -203,7 +226,7 @@ export const ProductEvolutionAgentView: React.FC = () => {
                 </span>
 
                 <button
-                  onClick={() => handleApproveProposal(proposal.id)}
+                  onClick={() => handleApproveProposal(proposal)}
                   disabled={isApproved}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                     isApproved
