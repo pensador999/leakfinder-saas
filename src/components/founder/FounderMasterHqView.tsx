@@ -19,7 +19,8 @@ import {
   Check, 
   RefreshCw,
   Sliders,
-  ShieldCheck
+  ShieldCheck,
+  BrainCircuit
 } from 'lucide-react';
 import { 
   ProspectStoreLead, 
@@ -30,13 +31,14 @@ import {
   fetchLiveBusinessMetrics 
 } from '../../services/founder/founderHqService';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { AgentSelfEvolutionView } from './AgentSelfEvolutionView';
 
 export const FounderMasterHqView: React.FC = () => {
   const [metrics, setMetrics] = useState<BusinessMetricsSummary | null>(null);
   const [leads, setLeads] = useState<ProspectStoreLead[]>(SAMPLE_PROSPECT_LEADS);
   const [conciergeLeads, setConciergeLeads] = useState<any[]>([]);
   const [directives, setDirectives] = useState<FounderDirectivesState>(INITIAL_FOUNDER_DIRECTIVES);
-  const [activeTab, setActiveTab] = useState<'CRM_PROSPECTION' | 'CONCIERGE_LEADS' | 'DIRECTIVES'>('CRM_PROSPECTION');
+  const [activeTab, setActiveTab] = useState<'CRM_PROSPECTION' | 'CONCIERGE_LEADS' | 'SELF_LEARNING' | 'DIRECTIVES'>('CRM_PROSPECTION');
   const [isSavingDirectives, setIsSavingDirectives] = useState<boolean>(false);
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
 
@@ -234,6 +236,18 @@ export const FounderMasterHqView: React.FC = () => {
         </button>
 
         <button
+          onClick={() => setActiveTab('SELF_LEARNING')}
+          className={`px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+            activeTab === 'SELF_LEARNING'
+              ? 'bg-indigo-600 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <BrainCircuit className="w-3.5 h-3.5" />
+          <span>Auto-Aprendizado dos Agentes (ML)</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('DIRECTIVES')}
           className={`px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
             activeTab === 'DIRECTIVES'
@@ -242,7 +256,7 @@ export const FounderMasterHqView: React.FC = () => {
           }`}
         >
           <Sliders className="w-3.5 h-3.5" />
-          <span>Diretrizes & Dicas Estratégicas do Fundador</span>
+          <span>Diretrizes & Dicas do Fundador</span>
         </button>
       </div>
 
@@ -444,7 +458,12 @@ export const FounderMasterHqView: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 3: FOUNDER DIRECTIVES & AI RULES */}
+      {/* TAB 3: MACHINE LEARNING & AGENT SELF-EVOLUTION */}
+      {activeTab === 'SELF_LEARNING' && (
+        <AgentSelfEvolutionView />
+      )}
+
+      {/* TAB 4: FOUNDER DIRECTIVES & AI RULES */}
       {activeTab === 'DIRECTIVES' && (
         <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-6">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
