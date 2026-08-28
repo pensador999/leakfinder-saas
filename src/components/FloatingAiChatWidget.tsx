@@ -16,7 +16,7 @@ import {
   RotateCcw
 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { askConciergeNeuralAgent } from '../services/agents/conciergeNeuralAgent';
+import { askConciergeMasterBrain } from '../services/agents/conciergeNeuralMasterBrain';
 
 interface ChatMessage {
   id: string;
@@ -78,7 +78,10 @@ export const FloatingAiChatWidget: React.FC = () => {
 
     try {
       const history = messages.map(m => ({ sender: m.sender, text: m.text }));
-      const result = await askConciergeNeuralAgent(text.trim(), history);
+      const result = await askConciergeMasterBrain({
+        userQuestion: text.trim(),
+        conversationHistory: history
+      });
 
       const newBotMsg: ChatMessage = {
         id: `b-${Date.now()}`,
