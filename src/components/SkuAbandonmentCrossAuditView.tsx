@@ -37,7 +37,11 @@ export const SkuAbandonmentCrossAuditView: React.FC<SkuAbandonmentCrossAuditView
   const loadData = () => {
     setIsLoading(true);
     try {
-      const data = executeSkuAbandonmentCrossAudit(realSiteData.url || `https://${realSiteData.domain}`);
+      const data = executeSkuAbandonmentCrossAudit(
+        realSiteData.url || `https://${realSiteData.domain}`,
+        realSiteData.catalogAudit?.issues,
+        realSiteData.brandName
+      );
       setAuditData(data);
     } finally {
       setIsLoading(false);
