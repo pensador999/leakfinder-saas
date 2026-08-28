@@ -54,12 +54,14 @@ import { UniversalNicheRecognitionView } from '../components/agents/UniversalNic
 import { SkuAbandonmentCrossAuditView } from '../components/SkuAbandonmentCrossAuditView';
 import { FounderMasterHqView } from '../components/founder/FounderMasterHqView';
 import { AutonomousAgentFlowchartView } from '../components/founder/AutonomousAgentFlowchartView';
+import { FounderAuthModal } from '../components/founder/FounderAuthModal';
 import { detectMarketplace } from '../services/marketplaceInspector';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare, Zap } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare, Zap, Lock, Unlock } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export function HomePage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [diagnostic, setDiagnostic] = useState<AgentDiagnosticResult | null>(null);
   const [activeTab, setActiveTab] = useState<string>('summary');
   const [isAuditModalOpen, setIsAuditModalOpen] = useState<boolean>(false);
@@ -76,6 +78,21 @@ export function HomePage() {
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analyzingUrl, setAnalyzingUrl] = useState<string>('');
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
+
+  // 🔒 Master Founder Confidential Auth State
+  const [isFounderAuthenticated, setIsFounderAuthenticated] = useState<boolean>(() => {
+    return sessionStorage.getItem('adshield_founder_authenticated') === 'true';
+  });
+  const [isFounderModalOpen, setIsFounderModalOpen] = useState<boolean>(false);
+
+  // Auto trigger founder auth modal if URL param exists
+  useEffect(() => {
+    if (searchParams.get('founder') === 'true' || searchParams.get('mode') === 'founder' || window.location.hash.includes('founder')) {
+      if (!isFounderAuthenticated) {
+        setIsFounderModalOpen(true);
+      }
+    }
+  }, [searchParams, isFounderAuthenticated]);
 
   // Initial load dynamically for sample domain so user gets instant value
   useEffect(() => {
@@ -135,11 +152,13 @@ export function HomePage() {
     ? detectMarketplace(diagnostic.realSiteData.url, diagnostic.realSiteData.domain).isMarketplace 
     : false;
 
-  // 🛍️ 1. MODO LOJISTA: As 6 Abas Essenciais de Negócio & Lucro
+  // 🛍️ 1. MODO LOJISTA: As 6 Abas Essenciais de Negócio & Lucro (100% Limpo para Clientes)
   const merchantTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
-    { id: 'founder_hq', label: 'Torre do Fundador (HQ)', icon: Crown, highlight: true },
-    { id: 'agent_flowchart', label: 'Fluxograma do Enxame', icon: Zap, highlight: true },
+    ...(isFounderAuthenticated ? [
+      { id: 'founder_hq', label: 'Torre do Fundador (HQ)', icon: Crown, highlight: true },
+      { id: 'agent_flowchart', label: 'Fluxograma do Enxame', icon: Zap, highlight: true }
+    ] : []),
     { id: 'sku_crossing', label: 'Cruzamento SKUs & Abandonos', icon: GitCompare, highlight: true },
     { id: 'niche_recognition', label: 'Reconhecimento de Nicho', icon: Globe, highlight: true },
     { id: 'rupture_monitor', label: 'Vigia 24h Ruptura', icon: Flame, highlight: true },
@@ -157,8 +176,10 @@ export function HomePage() {
   // 🔐 2. MODO ENGENHARIA / WAR ROOM: As 4 Abas Profundas + Especialistas
   const warRoomTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
-    { id: 'founder_hq', label: 'Torre do Fundador (HQ)', icon: Crown, highlight: true },
-    { id: 'agent_flowchart', label: 'Fluxograma do Enxame', icon: Zap, highlight: true },
+    ...(isFounderAuthenticated ? [
+      { id: 'founder_hq', label: 'Torre do Fundador (HQ)', icon: Crown, highlight: true },
+      { id: 'agent_flowchart', label: 'Fluxograma do Enxame', icon: Zap, highlight: true }
+    ] : []),
     { id: 'sku_crossing', label: 'Cruzamento SKUs & Abandonos', icon: GitCompare, highlight: true },
     { id: 'niche_recognition', label: 'Reconhecimento de Nicho', icon: Globe, highlight: true },
     { id: 'ceo_orchestrator', label: 'Orquestrador CEO', icon: Crown, highlight: true },
@@ -267,6 +288,42 @@ export function HomePage() {
                   <Activity className="w-3.5 h-3.5 text-emerald-600" />
                   <span>📲 Vigia WhatsApp (07:00)</span>
                 </button>
+
+                {/* 🔒 Master Founder Secret Trigger */}
+                {!isFounderAuthenticated ? (
+                  <button
+                    onClick={() => setIsFounderModalOpen(true)}
+                    className="p-2 rounded-xl text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-all flex items-center gap-1 cursor-pointer"
+                    title="Acesso Sigiloso do Fundador"
+                  >
+                    <Lock className="w-3.5 h-3.5" />
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => setActiveTab('founder_hq')}
+                      className={`px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
+                        activeTab === 'founder_hq' || activeTab === 'agent_flowchart'
+                          ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                          : 'bg-amber-100 text-amber-900 hover:bg-amber-200'
+                      }`}
+                    >
+                      <Crown className="w-3.5 h-3.5" />
+                      <span>👑 Painel Fundador</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        sessionStorage.removeItem('adshield_founder_authenticated');
+                        setIsFounderAuthenticated(false);
+                        setActiveTab('summary');
+                      }}
+                      className="p-1.5 hover:bg-slate-200 rounded-lg text-slate-400 hover:text-slate-700 text-xs"
+                      title="Sair do Modo Fundador"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
 
                 <button
                   onClick={() => setIsIntegrationsModalOpen(true)}
@@ -528,6 +585,17 @@ export function HomePage() {
           diagnostic={diagnostic}
         />
       )}
+
+      {/* 🔒 Master Founder Auth Gate */}
+      <FounderAuthModal
+        isOpen={isFounderModalOpen}
+        onClose={() => setIsFounderModalOpen(false)}
+        onSuccess={() => {
+          setIsFounderAuthenticated(true);
+          setIsFounderModalOpen(false);
+          setActiveTab('founder_hq');
+        }}
+      />
 
       <FloatingAiChatWidget />
 
