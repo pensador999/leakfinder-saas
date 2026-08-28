@@ -179,6 +179,34 @@ const AGENTS_PIPELINE: AgentNodeInfo[] = [
     outputs: ['Mensagens no WhatsApp com Relatório', 'Captura de Leads e Fechamento de Planos'],
     status: 'ONLINE',
     customTip: 'Sempre incluir o valor financeiro em risco no primeiro parágrafo da mensagem do WhatsApp.'
+  },
+  {
+    id: 'agent-11',
+    number: '11',
+    name: 'Sentinela DevOps & Telemetria',
+    roleTitle: 'DevOps Sentinel & Bug Auditor',
+    iconName: 'ShieldAlert',
+    executionTime: 'Tempo Real (24h Ativo)',
+    phase: 'Monitoramento & Resiliência',
+    mission: 'Vigiar exceções de JavaScript, rotas quebradas e frustrações de usuários no SaaS, gerando relatórios de incidentes.',
+    inputs: ['Logs de Erro do Navegador', 'Falhas em Requisições Supabase', 'Trajetória do Usuário'],
+    outputs: ['Relatório de Incidente Estruturado', 'Encaminhamento para o Auto-Coder'],
+    status: 'ONLINE',
+    customTip: 'Sempre capturar o contexto exato e a ação que o usuário realizou antes da ocorrência do erro.'
+  },
+  {
+    id: 'agent-12',
+    number: '12',
+    name: 'Engenheiro Auto-Coder & Deployer',
+    roleTitle: 'Autonomous Code Patch Engineer',
+    iconName: 'Code2',
+    executionTime: 'Sob Demanda & Auto-Deploy',
+    phase: 'Engenharia & Auto-Correção',
+    mission: 'Escrever o código de correção (patch / Git Diff), validar tipagem TypeScript e disparar commit para o GitHub e Vercel.',
+    inputs: ['Relatório de Incidente do Agente 11', 'Base de Código TypeScript/React'],
+    outputs: ['Git Diff Validado', 'Commit no GitHub & Novo Deploy Vercel'],
+    status: 'ONLINE',
+    customTip: 'Priorizar sempre correções defensivas com validação de nulo para garantir 100% de estabilidade.'
   }
 ];
 
@@ -216,6 +244,8 @@ export const AutonomousAgentFlowchartView: React.FC = () => {
       case 'Gauge': return <Gauge className="w-5 h-5" />;
       case 'Eye': return <Eye className="w-5 h-5" />;
       case 'Calculator': return <Calculator className="w-5 h-5" />;
+      case 'ShieldAlert': return <ShieldCheck className="w-5 h-5 text-rose-400" />;
+      case 'Code2': return <Cpu className="w-5 h-5 text-cyan-400" />;
       default: return <Phone className="w-5 h-5" />;
     }
   };

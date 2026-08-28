@@ -21,7 +21,8 @@ import {
   Sliders,
   ShieldCheck,
   BrainCircuit,
-  Trash2
+  Trash2,
+  Code2
 } from 'lucide-react';
 import { 
   ProspectStoreLead, 
@@ -33,6 +34,7 @@ import {
 } from '../../services/founder/founderHqService';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { AgentSelfEvolutionView } from './AgentSelfEvolutionView';
+import { DevOpsSelfHealingControlCenterView } from './DevOpsSelfHealingControlCenterView';
 
 export const FounderMasterHqView: React.FC = () => {
   const [metrics, setMetrics] = useState<BusinessMetricsSummary | null>(null);
@@ -59,7 +61,7 @@ export const FounderMasterHqView: React.FC = () => {
     }
     return INITIAL_FOUNDER_DIRECTIVES;
   });
-  const [activeTab, setActiveTab] = useState<'CRM_PROSPECTION' | 'CONCIERGE_LEADS' | 'SELF_LEARNING' | 'DIRECTIVES'>('CRM_PROSPECTION');
+  const [activeTab, setActiveTab] = useState<'CRM_PROSPECTION' | 'CONCIERGE_LEADS' | 'SELF_LEARNING' | 'DEVOPS_AUTO_HEAL' | 'DIRECTIVES'>('CRM_PROSPECTION');
   const [isSavingDirectives, setIsSavingDirectives] = useState<boolean>(false);
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
 
@@ -281,6 +283,18 @@ export const FounderMasterHqView: React.FC = () => {
         >
           <BrainCircuit className="w-3.5 h-3.5" />
           <span>Auto-Aprendizado dos Agentes (ML)</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('DEVOPS_AUTO_HEAL')}
+          className={`px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+            activeTab === 'DEVOPS_AUTO_HEAL'
+              ? 'bg-indigo-600 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <Code2 className="w-3.5 h-3.5" />
+          <span>Auto-Correção & DevOps (Agentes 11 e 12)</span>
         </button>
 
         <button
@@ -507,7 +521,12 @@ export const FounderMasterHqView: React.FC = () => {
         <AgentSelfEvolutionView />
       )}
 
-      {/* TAB 4: FOUNDER DIRECTIVES & AI RULES */}
+      {/* TAB 4: AUTONOMOUS DEVOPS & SELF-HEALING (AGENTS 11 & 12) */}
+      {activeTab === 'DEVOPS_AUTO_HEAL' && (
+        <DevOpsSelfHealingControlCenterView />
+      )}
+
+      {/* TAB 5: FOUNDER DIRECTIVES & AI RULES */}
       {activeTab === 'DIRECTIVES' && (
         <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-6">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
