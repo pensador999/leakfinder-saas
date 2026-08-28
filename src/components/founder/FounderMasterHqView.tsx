@@ -35,9 +35,29 @@ import { AgentSelfEvolutionView } from './AgentSelfEvolutionView';
 
 export const FounderMasterHqView: React.FC = () => {
   const [metrics, setMetrics] = useState<BusinessMetricsSummary | null>(null);
-  const [leads, setLeads] = useState<ProspectStoreLead[]>(SAMPLE_PROSPECT_LEADS);
+  const [leads, setLeads] = useState<ProspectStoreLead[]>(() => {
+    const saved = localStorage.getItem('adshield_custom_prospect_leads');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return SAMPLE_PROSPECT_LEADS;
+      }
+    }
+    return SAMPLE_PROSPECT_LEADS;
+  });
   const [conciergeLeads, setConciergeLeads] = useState<any[]>([]);
-  const [directives, setDirectives] = useState<FounderDirectivesState>(INITIAL_FOUNDER_DIRECTIVES);
+  const [directives, setDirectives] = useState<FounderDirectivesState>(() => {
+    const saved = localStorage.getItem('adshield_founder_directives');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return INITIAL_FOUNDER_DIRECTIVES;
+      }
+    }
+    return INITIAL_FOUNDER_DIRECTIVES;
+  });
   const [activeTab, setActiveTab] = useState<'CRM_PROSPECTION' | 'CONCIERGE_LEADS' | 'SELF_LEARNING' | 'DIRECTIVES'>('CRM_PROSPECTION');
   const [isSavingDirectives, setIsSavingDirectives] = useState<boolean>(false);
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
@@ -58,7 +78,7 @@ export const FounderMasterHqView: React.FC = () => {
           .from('alert_dispatch_queue')
           .select('*')
           .order('created_at', { ascending: false })
-          .limit(10);
+          .limit(20);
 
         if (qData) setConciergeLeads(qData);
       } catch {
@@ -72,7 +92,11 @@ export const FounderMasterHqView: React.FC = () => {
   }, []);
 
   const handleUpdateLeadStatus = (leadId: string, newStatus: ProspectStoreLead['status']) => {
-    setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
+    setLeads(prev => {
+      const updated = prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l);
+      localStorage.setItem('adshield_custom_prospect_leads', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const handleAddNewProspectLead = (e: React.FormEvent) => {
@@ -97,7 +121,9 @@ export const FounderMasterHqView: React.FC = () => {
       status: 'NOVO'
     };
 
-    setLeads([newLead, ...leads]);
+    const updatedLeads = [newLead, ...leads];
+    setLeads(updatedLeads);
+    localStorage.setItem('adshield_custom_prospect_leads', JSON.stringify(updatedLeads));
     setNewStoreDomain('');
     setNewStoreBrand('');
     setNewStorePhone('');
@@ -105,11 +131,12 @@ export const FounderMasterHqView: React.FC = () => {
 
   const handleSaveDirectives = () => {
     setIsSavingDirectives(true);
+    localStorage.setItem('adshield_founder_directives', JSON.stringify(directives));
     setTimeout(() => {
       setIsSavingDirectives(false);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
-    }, 600);
+    }, 400);
   };
 
   return (

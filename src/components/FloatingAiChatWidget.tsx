@@ -16,7 +16,7 @@ import {
   RotateCcw
 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { askConciergeMasterBrain } from '../services/agents/conciergeNeuralMasterBrain';
+import { askConciergeMasterBrain, getFreshNonRepetitiveQuickReplies } from '../services/agents/conciergeNeuralMasterBrain';
 
 interface ChatMessage {
   id: string;
@@ -107,8 +107,8 @@ export const FloatingAiChatWidget: React.FC = () => {
   };
 
   const handleCaptureLeadPhone = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!leadPhone.trim()) return;
+    const cleanPhone = leadPhone.replace(/\D/g, '');
+    if (cleanPhone.length < 8) return;
 
     if (isSupabaseConfigured) {
       try {
@@ -126,15 +126,21 @@ export const FloatingAiChatWidget: React.FC = () => {
       }
     }
 
+    const nextReplies = getFreshNonRepetitiveQuickReplies([
+      'Como funciona a garantia incondicional de 7 dias do CDC?',
+      'Como agendar a Instalação Guiada gratuita no plano Pro?',
+      'Qual a diferença entre o plano Starter e o Pro?'
+    ], messages.map(m => ({ sender: m.sender, text: m.text })));
+
     setLeadCaptured(true);
     setMessages(prev => [
       ...prev,
       {
         id: `b-captured-${Date.now()}`,
         sender: 'bot',
-        text: `🎉 Perfeito! Seu WhatsApp (${leadPhone}) foi registrado. Nosso especialista de CRO entrará em contato para te enviar o relatório detalhado da sua loja!`,
+        text: `🎉 Perfeito! Seu WhatsApp (${leadPhone}) foi registrado no nosso banco de dados. Nosso especialista de CRO entrará em contato para te enviar o relatório detalhado da sua loja!`,
         timestamp: 'Agora',
-        quickReplies: ['Como funciona a auditoria?', 'Qual o plano ideal?']
+        quickReplies: nextReplies
       }
     ]);
   };
