@@ -52,8 +52,10 @@ import { ChiefExecutiveOrchestratorAgentView } from '../components/agents/ChiefE
 import { CollectionDeepAuditView } from '../components/CollectionDeepAuditView';
 import { UniversalNicheRecognitionView } from '../components/agents/UniversalNicheRecognitionView';
 import { SkuAbandonmentCrossAuditView } from '../components/SkuAbandonmentCrossAuditView';
+import { FounderMasterHqView } from '../components/founder/FounderMasterHqView';
+import { AutonomousAgentFlowchartView } from '../components/founder/AutonomousAgentFlowchartView';
 import { detectMarketplace } from '../services/marketplaceInspector';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function HomePage() {
@@ -136,6 +138,8 @@ export function HomePage() {
   // 🛍️ 1. MODO LOJISTA: As 6 Abas Essenciais de Negócio & Lucro
   const merchantTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
+    { id: 'founder_hq', label: 'Torre do Fundador (HQ)', icon: Crown, highlight: true },
+    { id: 'agent_flowchart', label: 'Fluxograma do Enxame', icon: Zap, highlight: true },
     { id: 'sku_crossing', label: 'Cruzamento SKUs & Abandonos', icon: GitCompare, highlight: true },
     { id: 'niche_recognition', label: 'Reconhecimento de Nicho', icon: Globe, highlight: true },
     { id: 'rupture_monitor', label: 'Vigia 24h Ruptura', icon: Flame, highlight: true },
@@ -153,6 +157,8 @@ export function HomePage() {
   // 🔐 2. MODO ENGENHARIA / WAR ROOM: As 4 Abas Profundas + Especialistas
   const warRoomTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
+    { id: 'founder_hq', label: 'Torre do Fundador (HQ)', icon: Crown, highlight: true },
+    { id: 'agent_flowchart', label: 'Fluxograma do Enxame', icon: Zap, highlight: true },
     { id: 'sku_crossing', label: 'Cruzamento SKUs & Abandonos', icon: GitCompare, highlight: true },
     { id: 'niche_recognition', label: 'Reconhecimento de Nicho', icon: Globe, highlight: true },
     { id: 'ceo_orchestrator', label: 'Orquestrador CEO', icon: Crown, highlight: true },
@@ -320,6 +326,14 @@ export function HomePage() {
                     diagnostic={diagnostic}
                     onSelectAgentTab={(tab) => setActiveTab(tab)}
                   />
+                )}
+
+                {activeTab === 'founder_hq' && (
+                  <FounderMasterHqView />
+                )}
+
+                {activeTab === 'agent_flowchart' && (
+                  <AutonomousAgentFlowchartView />
                 )}
 
                 {activeTab === 'sku_crossing' && diagnostic && (
