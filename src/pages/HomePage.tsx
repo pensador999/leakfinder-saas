@@ -55,6 +55,7 @@ import { SkuAbandonmentCrossAuditView } from '../components/SkuAbandonmentCrossA
 import { FounderMasterHqView } from '../components/founder/FounderMasterHqView';
 import { AutonomousAgentFlowchartView } from '../components/founder/AutonomousAgentFlowchartView';
 import { FounderAuthModal } from '../components/founder/FounderAuthModal';
+import { PublicDossierMerchantHeader } from '../components/PublicDossierMerchantHeader';
 import { detectMarketplace } from '../services/marketplaceInspector';
 import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare, Zap, Lock, Unlock } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -78,6 +79,7 @@ export function HomePage() {
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analyzingUrl, setAnalyzingUrl] = useState<string>('');
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
+  const [isPublicDossierMode, setIsPublicDossierMode] = useState<boolean>(false);
 
   // 🔒 Master Founder Confidential Auth State
   const [isFounderAuthenticated, setIsFounderAuthenticated] = useState<boolean>(() => {
@@ -94,16 +96,22 @@ export function HomePage() {
     }
   }, [searchParams, isFounderAuthenticated]);
 
-  // Initial load dynamically for sample domain so user gets instant value
+  // Initial load: dynamically check if a specific store was requested via query param
   useEffect(() => {
-    const sampleUrl = 'https://www.brkagro.com.br';
-    const { cleanUrl, brandName } = extractCleanDomainAndBrand(sampleUrl);
+    const targetQueryUrl = searchParams.get('loja') || searchParams.get('url') || searchParams.get('dossier') || searchParams.get('store');
+    const storeToScan = targetQueryUrl ? (targetQueryUrl.startsWith('http') ? targetQueryUrl : `https://${targetQueryUrl}`) : 'https://www.brkagro.com.br';
+    
+    if (targetQueryUrl) {
+      setIsPublicDossierMode(true);
+    }
+
+    const { cleanUrl, brandName } = extractCleanDomainAndBrand(storeToScan);
 
     const initialInput: AuditInput = {
       siteUrl: cleanUrl,
       businessName: brandName,
       businessType: 'ecommerce',
-      niche: 'Agropecuária & Soluções no Campo',
+      niche: cleanUrl.includes('agro') ? 'Agropecuária & Moda Campo' : 'Moda & Varejo E-commerce',
       monthlyRevenue: 'R$ 50k a R$ 200k',
       averageOrderValue: 180,
       mainChallenge: 'low_conversion',
@@ -112,7 +120,7 @@ export function HomePage() {
       competitorsUrl: 'https://concorrente.com.br'
     };
     runAgentDiagnosticAsync(initialInput).then(res => setDiagnostic(res));
-  }, []);
+  }, [searchParams]);
 
   const handleStartRealAudit = async (input: AuditInput) => {
     setIsAuditModalOpen(false);
@@ -263,8 +271,15 @@ export function HomePage() {
             onComplete={() => {}}
           />
         ) : diagnostic ? (
-          <div className="space-y-4">
+          <div className="space-y-6">
             
+            {/* 🚨 HIGH-CONVERTING PUBLIC DOSSIER MERCHANT BANNER */}
+            <PublicDossierMerchantHeader
+              diagnostic={diagnostic}
+              onOpenPricing={() => setIsPricingModalOpen(true)}
+              onOpenWhatsApp={() => setIsWhatsAppModalOpen(true)}
+            />
+
             {/* 🎛️ 3-MODE SELECTOR SWITCHER (PROGRESSIVE DISCLOSURE) */}
             <div className="p-3 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-2">
