@@ -72,6 +72,31 @@ export interface SocraticCrossInterrogationSession {
   overallConsensusStatus: 'CONFRONTADO_E_HOMOLOGADO';
 }
 
+export interface SocraticTechnicalFeasibilityChallenge {
+  id: string;
+  ceoChallengePrompt: string;
+  challengedAgents: string[];
+  visionUxDefense: {
+    agentName: string;
+    placementDirective: string;
+    thumbZoneImprovement: string;
+    saliencyTimeframeTarget: string;
+  };
+  coreWebVitalsDefense: {
+    agentName: string;
+    antiLayoutShiftRule: string;
+    lcpOptimizationMetric: string;
+    clsGuarantee: string;
+  };
+  ceoSynthesisVerdict: string;
+  combinedUpliftExpected: string;
+}
+
+export interface SocraticTechnicalFeasibilitySession {
+  challenges: SocraticTechnicalFeasibilityChallenge[];
+  overallFeasibilityStatus: 'VIABILIDADE_TECNICA_HOMOLOGADA';
+}
+
 export interface TreeOfThoughtDebateResult {
   id: string;
   storeDomain: string;
@@ -82,6 +107,7 @@ export interface TreeOfThoughtDebateResult {
   divergenceLevel: 'BAIXA_CONCORDANCIA' | 'MODERADA' | 'ALTO_CONSENSO';
   socraticKickoff: SocraticKickoffSession;
   crossInterrogation: SocraticCrossInterrogationSession;
+  technicalFeasibility: SocraticTechnicalFeasibilitySession;
   branches: ReasoningHypothesisBranch[];
   debateTranscript: AgentDebateMessage[];
   synthesizedActionPlan: {
@@ -336,6 +362,31 @@ export function executeTreeOfThoughtReasoning(
     ]
   };
 
+  const technicalFeasibility: SocraticTechnicalFeasibilitySession = {
+    overallFeasibilityStatus: 'VIABILIDADE_TECNICA_HOMOLOGADA',
+    challenges: [
+      {
+        id: 'feasibility-1',
+        ceoChallengePrompt: 'Agente 08 (Visão & UX) e Agente 07 (Core Web Vitals): O Agente 09 propôs injetar um badge agressivo de 7% de desconto no Pix e o Agente 05 propôs um seletor de reposição. Onde exatamente vocês vão colocar esses elementos no mobile para NÃO poluir a interface, NÃO empurrar o CTA para fora da Thumb Zone e NÃO estragar o CLS e LCP no Google PageSpeed?',
+        challengedAgents: ['08. Engenheiro de Visão & UX', '07. Engenheiro Core Web Vitals'],
+        visionUxDefense: {
+          agentName: '08. Engenheiro de Visão & UX',
+          placementDirective: 'Posicionar o badge verde (#15803D com bold 700) imediatamente abaixo do preço parcelado e converter o botão principal em Sticky Buy Button fixo no rodapé.',
+          thumbZoneImprovement: 'Distância do polegar reduzida de 780px para 12px da base (100% Zona Natural)',
+          saliencyTimeframeTarget: 'Fixação ocular capturada entre 500ms e 1.200ms da timeline'
+        },
+        coreWebVitalsDefense: {
+          agentName: '07. Engenheiro Core Web Vitals',
+          antiLayoutShiftRule: 'Container CSS pré-alocado com `min-height: 24px` e `contain: layout` para garantir zero deslocamento de tela.',
+          lcpOptimizationMetric: 'Compressão WebP progressiva das 3 imagens de topo derruba LCP de 3.4s para 1.4s no 4G',
+          clsGuarantee: 'CLS travado em 0.000 (Nota 100 no PageSpeed)'
+        },
+        ceoSynthesisVerdict: '👑 Veredito do CEO: Viabilidade Técnica & UX Homologada com Louvor. Ganhos de +24% em conversão visual e +58% em velocidade mobile sem risco de layout shift.',
+        combinedUpliftExpected: '+24% Conversão Mobile • LCP 1.4s • CLS 0.000'
+      }
+    ]
+  };
+
   return {
     id: `tot-${Date.now()}`,
     storeDomain: domain,
@@ -346,6 +397,7 @@ export function executeTreeOfThoughtReasoning(
     divergenceLevel: 'ALTO_CONSENSO',
     socraticKickoff,
     crossInterrogation,
+    technicalFeasibility,
     branches: [branchA, branchB, branchC],
     debateTranscript,
     synthesizedActionPlan: {

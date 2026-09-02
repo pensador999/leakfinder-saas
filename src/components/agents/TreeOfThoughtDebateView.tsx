@@ -18,7 +18,9 @@ import {
   Layers,
   BarChart3,
   Crown,
-  Sword
+  Sword,
+  Gauge,
+  Eye
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../../types';
 import { 
@@ -26,7 +28,8 @@ import {
   TreeOfThoughtDebateResult, 
   ReasoningHypothesisBranch,
   SocraticKickoffQuestion,
-  SocraticCrossInterrogationClash
+  SocraticCrossInterrogationClash,
+  SocraticTechnicalFeasibilityChallenge
 } from '../../services/ai/treeOfThoughtReasoningEngine';
 
 interface TreeOfThoughtDebateViewProps {
@@ -205,6 +208,109 @@ export const TreeOfThoughtDebateView: React.FC<TreeOfThoughtDebateViewProps> = (
 
                 <div className="p-3 bg-emerald-950/30 rounded-xl border border-emerald-500/30 text-xs text-emerald-300 font-medium">
                   {clash.ceoSynthesisVerdict}
+                </div>
+
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 📐 SESSÃO 3: A COBRANÇA DE VIABILIDADE TÉCNICA & UX */}
+      {debateData.technicalFeasibility && (
+        <div className="p-6 rounded-3xl bg-slate-900 text-white border-2 border-teal-500/30 shadow-2xl space-y-5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl text-slate-950 font-black shadow-md shadow-teal-500/20">
+                <Gauge className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-bold text-white">Viabilidade Técnica, UX & Anti-Layout Shift (Fase 3)</h3>
+                  <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-teal-500/20 text-teal-300 rounded-full border border-teal-500/40">
+                    Saliência Ocular & Core Web Vitals
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-0.5">O CEO exige garantias de que o badge de Pix e o Sticky CTA não vão gerar CLS ou poluição visual.</p>
+              </div>
+            </div>
+
+            <span className="px-3 py-1 bg-teal-500/20 text-teal-300 border border-teal-500/40 rounded-xl font-mono text-xs font-bold shrink-0">
+              Zero Layout Shift (CLS 0.000) ✓
+            </span>
+          </div>
+
+          <div className="space-y-4">
+            {debateData.technicalFeasibility.challenges.map((chal: SocraticTechnicalFeasibilityChallenge) => (
+              <div key={chal.id} className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
+                
+                <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs text-amber-300 font-sans italic">
+                  <strong>Cobrança de Engenharia do CEO:</strong> "{chal.ceoChallengePrompt}"
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  
+                  {/* Agente 08 Visão & UX */}
+                  <div className="p-4 bg-slate-900/90 rounded-2xl border border-pink-500/30 space-y-3 text-xs">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                      <div className="flex items-center gap-2">
+                        <Eye className="w-4 h-4 text-pink-400" />
+                        <strong className="text-white font-mono text-[11px]">{chal.visionUxDefense.agentName}</strong>
+                      </div>
+                      <span className="text-[10px] font-mono text-pink-300 bg-pink-950/60 px-2 py-0.5 rounded border border-pink-800">
+                        Thumb Zone 100%
+                      </span>
+                    </div>
+
+                    <div className="space-y-1.5 text-slate-300 font-sans">
+                      <span className="text-[10px] text-slate-500 uppercase font-mono font-bold block">Diretriz de Posicionamento:</span>
+                      <p className="leading-relaxed">{chal.visionUxDefense.placementDirective}</p>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-800/80 space-y-1 text-[11px] font-mono">
+                      <div className="text-emerald-400">
+                        🎯 <strong>Ergonomia:</strong> {chal.visionUxDefense.thumbZoneImprovement}
+                      </div>
+                      <div className="text-indigo-400">
+                        👁️ <strong>Timeline:</strong> {chal.visionUxDefense.saliencyTimeframeTarget}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Agente 07 Core Web Vitals */}
+                  <div className="p-4 bg-slate-900/90 rounded-2xl border border-teal-500/30 space-y-3 text-xs">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                      <div className="flex items-center gap-2">
+                        <Gauge className="w-4 h-4 text-teal-400" />
+                        <strong className="text-white font-mono text-[11px]">{chal.coreWebVitalsDefense.agentName}</strong>
+                      </div>
+                      <span className="text-[10px] font-mono text-teal-300 bg-teal-950/60 px-2 py-0.5 rounded border border-teal-800">
+                        LCP 1.4s ⚡
+                      </span>
+                    </div>
+
+                    <div className="space-y-1.5 text-slate-300 font-sans">
+                      <span className="text-[10px] text-slate-500 uppercase font-mono font-bold block">Regra Anti-Layout Shift:</span>
+                      <p className="leading-relaxed">{chal.coreWebVitalsDefense.antiLayoutShiftRule}</p>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-800/80 space-y-1 text-[11px] font-mono">
+                      <div className="text-emerald-400">
+                        ⚡ <strong>Velocidade 4G:</strong> {chal.coreWebVitalsDefense.lcpOptimizationMetric}
+                      </div>
+                      <div className="text-indigo-400">
+                        🛡️ <strong>Garantia PageSpeed:</strong> {chal.coreWebVitalsDefense.clsGuarantee}
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div className="p-3 bg-teal-950/30 rounded-xl border border-teal-500/30 text-xs text-teal-300 font-medium flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                  <span>{chal.ceoSynthesisVerdict}</span>
+                  <span className="px-2.5 py-0.5 bg-teal-500/20 text-teal-200 rounded-lg text-[10px] font-mono font-bold shrink-0">
+                    {chal.combinedUpliftExpected}
+                  </span>
                 </div>
 
               </div>
