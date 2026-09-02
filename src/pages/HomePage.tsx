@@ -56,8 +56,9 @@ import { FounderMasterHqView } from '../components/founder/FounderMasterHqView';
 import { AutonomousAgentFlowchartView } from '../components/founder/AutonomousAgentFlowchartView';
 import { FounderAuthModal } from '../components/founder/FounderAuthModal';
 import { PublicDossierMerchantHeader } from '../components/PublicDossierMerchantHeader';
+import { TreeOfThoughtDebateView } from '../components/agents/TreeOfThoughtDebateView';
 import { detectMarketplace } from '../services/marketplaceInspector';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare, Zap, Lock, Unlock } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare, Zap, Lock, Unlock, GitFork } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export function HomePage() {
@@ -205,12 +206,14 @@ export function HomePage() {
       label: '⚡ Mídia & Inteligência',
       badge: viewMode === 'war_room' ? 'War Room' : 'IA 24h',
       tabs: viewMode === 'merchant' ? [
+        { id: 'tree_of_thought', label: '🌲 Debate dos Agentes (ToT)', icon: GitFork, highlight: true },
         { id: 'market_hunter', label: 'Caçador de Mercado & Leads', icon: Compass, highlight: true },
         { id: 'product_evolution', label: 'Auto-Evolução do Produto', icon: Wrench, highlight: true },
         { id: 'customer_success', label: 'Clientes & Precificação (VoC)', icon: BarChart3, highlight: true },
         { id: 'ceo_orchestrator', label: 'Orquestrador CEO', icon: Crown, highlight: true },
         ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : [])
       ] : [
+        { id: 'tree_of_thought', label: '🌲 Debate dos Agentes (ToT)', icon: GitFork, highlight: true },
         { id: 'ceo_orchestrator', label: 'Orquestrador CEO', icon: Crown, highlight: true },
         { id: 'orchestrator', label: 'Torre do Maestro', icon: Cpu, highlight: true },
         { id: 'market_hunter', label: 'Caçador de Mercado & Leads', icon: Compass, highlight: true },
@@ -494,6 +497,10 @@ export function HomePage() {
 
                 {activeTab === 'collection_audit' && diagnostic && (
                   <CollectionDeepAuditView diagnostic={diagnostic} />
+                )}
+
+                {activeTab === 'tree_of_thought' && diagnostic && (
+                  <TreeOfThoughtDebateView diagnostic={diagnostic} />
                 )}
 
                 {activeTab === 'scraper_dossier' && (
