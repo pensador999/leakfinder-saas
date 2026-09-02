@@ -58,8 +58,9 @@ import { FounderAuthModal } from '../components/founder/FounderAuthModal';
 import { PublicDossierMerchantHeader } from '../components/PublicDossierMerchantHeader';
 import { TreeOfThoughtDebateView } from '../components/agents/TreeOfThoughtDebateView';
 import { VectorMemoryCompetitorRadarView } from '../components/agents/VectorMemoryCompetitorRadarView';
+import { DualAgentConsensusTribunalView } from '../components/agents/DualAgentConsensusTribunalView';
 import { detectMarketplace } from '../services/marketplaceInspector';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare, Zap, Lock, Unlock, GitFork, Database } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare, Zap, Lock, Unlock, GitFork, Database, BadgeCheck } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export function HomePage() {
@@ -208,6 +209,7 @@ export function HomePage() {
       badge: viewMode === 'war_room' ? 'War Room' : 'IA 24h',
       tabs: viewMode === 'merchant' ? [
         { id: 'tree_of_thought', label: '🌲 Debate dos Agentes (ToT)', icon: GitFork, highlight: true },
+        { id: 'truth_auditor', label: '🛡️ Tribunal de Consenso (2 Agentes)', icon: Scale, highlight: true },
         { id: 'vector_radar', label: '🗄️ Memória RAG & Radar', icon: Database, highlight: true },
         { id: 'market_hunter', label: 'Caçador de Mercado & Leads', icon: Compass, highlight: true },
         { id: 'product_evolution', label: 'Auto-Evolução do Produto', icon: Wrench, highlight: true },
@@ -216,6 +218,7 @@ export function HomePage() {
         ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : [])
       ] : [
         { id: 'tree_of_thought', label: '🌲 Debate dos Agentes (ToT)', icon: GitFork, highlight: true },
+        { id: 'truth_auditor', label: '🛡️ Tribunal de Consenso (Zero Falso-Positivo)', icon: Scale, highlight: true },
         { id: 'vector_radar', label: '🗄️ Memória RAG & Radar', icon: Database, highlight: true },
         { id: 'ceo_orchestrator', label: 'Orquestrador CEO', icon: Crown, highlight: true },
         { id: 'orchestrator', label: 'Torre do Maestro', icon: Cpu, highlight: true },
@@ -223,7 +226,6 @@ export function HomePage() {
         { id: 'product_evolution', label: 'Auto-Evolução do Produto', icon: Wrench, highlight: true },
         { id: 'customer_success', label: 'Clientes & Precificação (VoC)', icon: BarChart3, highlight: true },
         { id: 'scraper_dossier', label: 'Dossier de Evidências', icon: Search, highlight: true },
-        { id: 'truth_auditor', label: 'Tribunal de Veracidade', icon: Scale, highlight: true },
         { id: 'swarm_control', label: 'Enxame Paralelo 24h', icon: BrainCircuit, highlight: true },
         { id: 'vitals', label: 'Core Web Vitals 2026', icon: Gauge, highlight: true },
         { id: 'vision', label: 'Visão & Heatmap', icon: Eye, badge: diagnostic?.visionAnalysis.warnings.length },
@@ -526,8 +528,8 @@ export function HomePage() {
                   <CustomerSuccessVocAgentView />
                 )}
 
-                {activeTab === 'truth_auditor' && (
-                  <TruthAuditorTribunalView diagnostic={diagnostic} />
+                {activeTab === 'truth_auditor' && diagnostic && (
+                  <DualAgentConsensusTribunalView diagnostic={diagnostic} />
                 )}
 
                 {activeTab === 'swarm_control' && (
