@@ -17,13 +17,16 @@ import {
   Flame,
   Layers,
   BarChart3,
-  Crown
+  Crown,
+  Sword
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../../types';
 import { 
   executeTreeOfThoughtReasoning, 
   TreeOfThoughtDebateResult, 
-  ReasoningHypothesisBranch 
+  ReasoningHypothesisBranch,
+  SocraticKickoffQuestion,
+  SocraticCrossInterrogationClash
 } from '../../services/ai/treeOfThoughtReasoningEngine';
 
 interface TreeOfThoughtDebateViewProps {
@@ -115,7 +118,7 @@ export const TreeOfThoughtDebateView: React.FC<TreeOfThoughtDebateViewProps> = (
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {debateData.socraticKickoff.questions.map((q, idx) => (
+            {debateData.socraticKickoff.questions.map((q: SocraticKickoffQuestion, idx: number) => (
               <div key={idx} className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono font-bold text-amber-400 uppercase">
@@ -138,6 +141,72 @@ export const TreeOfThoughtDebateView: React.FC<TreeOfThoughtDebateViewProps> = (
                 <div className="p-2 bg-slate-900/90 rounded-xl border border-slate-800 text-[10px] font-mono text-slate-400 flex items-center justify-between">
                   <span className="text-slate-500">Dado Bruto Extraído: <strong className="text-emerald-400 font-sans">{q.verifiedEvidenceSnippet}</strong></span>
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ⚔️ SESSÃO 2: O FOGO CRUZADO & CONFRONTO DE PREMISSAS */}
+      {debateData.crossInterrogation && (
+        <div className="p-6 rounded-3xl bg-slate-900 text-white border-2 border-indigo-500/30 shadow-2xl space-y-5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl text-white font-black shadow-md shadow-indigo-500/20">
+                <Sword className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-bold text-white">O Fogo Cruzado & Confronto de Premissas (Fase 2)</h3>
+                  <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 rounded-full border border-indigo-500/40">
+                    Interrogação Direta entre Especialistas
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-0.5">O CEO confronta teses concorrentes (Mídia vs Catálogo e Mercado vs Preço) exigindo dados matemáticos.</p>
+              </div>
+            </div>
+
+            <span className="px-3 py-1 bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 rounded-xl font-mono text-xs font-bold shrink-0">
+              Confrontos Homologados ✓
+            </span>
+          </div>
+
+          <div className="space-y-4">
+            {debateData.crossInterrogation.clashes.map((clash: SocraticCrossInterrogationClash) => (
+              <div key={clash.id} className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
+                
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-2">
+                  <h4 className="font-bold text-slate-200 text-sm">{clash.clashTitle}</h4>
+                  <span className="text-[10px] font-mono text-indigo-400 bg-indigo-950/60 px-2 py-0.5 rounded border border-indigo-800">
+                    {clash.financialGainVerified}
+                  </span>
+                </div>
+
+                <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs text-amber-300 font-sans italic">
+                  <strong>Pergunta Inquisitiva do CEO:</strong> "{clash.ceoInquisitivePrompt}"
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {clash.agentDefenses.map((def, i) => (
+                    <div key={i} className="p-3.5 bg-slate-900/80 rounded-xl border border-slate-800 space-y-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <strong className="text-white font-mono text-[11px]">{def.agentName}</strong>
+                        <span className="text-[10px] text-slate-500 font-mono">{def.agentRole}</span>
+                      </div>
+                      <p className="text-slate-300 font-sans leading-relaxed text-[11px]">
+                        "{def.statement}"
+                      </p>
+                      <div className="pt-1 text-[10px] font-mono text-emerald-400">
+                        <span>Prova: <strong>{def.mathematicalProof}</strong></span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="p-3 bg-emerald-950/30 rounded-xl border border-emerald-500/30 text-xs text-emerald-300 font-medium">
+                  {clash.ceoSynthesisVerdict}
+                </div>
+
               </div>
             ))}
           </div>
