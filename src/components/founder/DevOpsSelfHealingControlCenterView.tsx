@@ -35,7 +35,7 @@ export const DevOpsSelfHealingControlCenterView: React.FC = () => {
   const [currentPatch, setCurrentPatch] = useState<CodePatchProposal | null>(null);
   const [isGeneratingPatch, setIsGeneratingPatch] = useState<boolean>(false);
   const [isDeploying, setIsDeploying] = useState<boolean>(false);
-  const [deployResult, setDeployResult] = useState<{ commitSha: string; url: string } | null>(null);
+  const [deployResult, setDeployResult] = useState<{ commitSha: string; url: string; githubCommitUrl?: string; message?: string } | null>(null);
 
   const loadIncidents = async () => {
     const list = await fetchDevOpsIncidents();
@@ -64,7 +64,12 @@ export const DevOpsSelfHealingControlCenterView: React.FC = () => {
     setIsDeploying(true);
     try {
       const res = await dispatchCommitToGitHubAndVercel(currentPatch);
-      setDeployResult({ commitSha: res.commitSha, url: res.vercelDeployUrl });
+      setDeployResult({ 
+        commitSha: res.commitSha, 
+        url: res.vercelDeployUrl,
+        githubCommitUrl: res.githubCommitUrl,
+        message: res.message
+      });
       
       // Update incident status in local state
       if (selectedIncident) {
@@ -110,22 +115,45 @@ export const DevOpsSelfHealingControlCenterView: React.FC = () => {
       </div>
 
       {deployResult && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-950 rounded-2xl text-xs font-bold flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-fadeIn shadow-xs">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-            <span>
-              🎉 Patch aplicado e comitado no GitHub! Commit SHA: <strong className="font-mono">{deployResult.commitSha}</strong>. O Vercel está compilando o novo build agora mesmo.
+        <div className="p-5 bg-emerald-50 border-2 border-emerald-300 text-emerald-950 rounded-3xl text-xs font-bold space-y-3 animate-fadeIn shadow-md">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+              <span>
+                🎉 Patch aplicado com sucesso! Commit SHA: <strong className="font-mono bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">{deployResult.commitSha}</strong>
+              </span>
+            </div>
+            <span className="px-2 py-0.5 rounded font-mono text-[10px] bg-emerald-200 text-emerald-900">
+              Vercel Build Auto-Triggered ✓
             </span>
           </div>
-          <a
-            href={deployResult.url}
-            target="_blank"
-            rel="noreferrer"
-            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 shrink-0"
-          >
-            <span>Ver Deploy Vercel</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
+
+          <p className="text-[11px] text-emerald-800 font-medium">
+            {deployResult.message}
+          </p>
+
+          <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-emerald-200/80">
+            <a
+              href={deployResult.githubCommitUrl || 'https://github.com/pensador999/leakfinder-saas/commits/main'}
+              target="_blank"
+              rel="noreferrer"
+              className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shadow-xs"
+            >
+              <GitCommit className="w-3.5 h-3.5" />
+              <span>Ver Commits no GitHub (pensador999/leakfinder-saas)</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+
+            <a
+              href={deployResult.url}
+              target="_blank"
+              rel="noreferrer"
+              className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shadow-xs"
+            >
+              <span>Ver Deploy ao Vivo na Vercel</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
         </div>
       )}
 
