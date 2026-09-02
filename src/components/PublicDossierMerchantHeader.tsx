@@ -29,11 +29,25 @@ export const PublicDossierMerchantHeader: React.FC<PublicDossierMerchantHeaderPr
 }) => {
   const { realSiteData, growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax } = diagnostic;
 
-  const estimatedMonthlyLoss = Math.round(estimatedRevenueLiftMin * 280);
-  const brokenSkusCount = realSiteData.catalogAudit?.issues?.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0).length || 3;
+  const domainLower = realSiteData.domain.toLowerCase();
+  const isMotorsOrAuto = domainLower.includes('motor') || domainLower.includes('auto') || domainLower.includes('peca') || (diagnostic.input.niche || '').toLowerCase().includes('auto');
+  const isAgro = domainLower.includes('agro') || domainLower.includes('campo') || (diagnostic.input.niche || '').toLowerCase().includes('agro');
+  const isEnterprise = realSiteData.isEnterpriseBrand;
+
+  // Dynamic Average Ticket based on store catalog and niche
+  const baseTicket = diagnostic.input.averageOrderValue || (isMotorsOrAuto ? 385 : isAgro ? 220 : isEnterprise ? 520 : 165);
+  
+  // Actual broken SKUs from catalog audit
+  const catalogIssues = realSiteData.catalogAudit?.issues || [];
+  const realBrokenIssues = catalogIssues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
+  const brokenSkusCount = realBrokenIssues.length > 0 ? realBrokenIssues.length : (isEnterprise ? 1 : isMotorsOrAuto ? 4 : 3);
+  
+  // Store size factor: larger stores with higher tickets have proportionally higher ad volume & ad waste
+  const dailyAdSpend = isEnterprise ? 2500 : isMotorsOrAuto ? 680 : isAgro ? 450 : 250;
+  const estimatedMonthlyLoss = Math.round(dailyAdSpend * 30 * 0.38 * (brokenSkusCount / Math.max(1, brokenSkusCount + 1)));
 
   const whatsappPitchUrl = `https://api.whatsapp.com/send?phone=5511999999999&text=${encodeURIComponent(
-    `Olá! Vi o dossiê de auditoria da minha loja (${realSiteData.brandName}) no AdShield e quero entender como recuperar as vendas perdidas por ruptura de grade e checkout.`
+    `Olá! Vi o dossiê de auditoria da minha loja (${realSiteData.brandName}) no AdShield e quero entender como recuperar os R$ ${estimatedMonthlyLoss.toLocaleString('pt-BR')} em risco por ruptura de grade e checkout.`
   )}`;
 
   return (

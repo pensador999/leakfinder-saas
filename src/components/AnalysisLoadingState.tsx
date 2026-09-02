@@ -1,5 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Layers, CheckCircle2, Loader2, Search, Target, DollarSign, Brain, BarChart3, Globe } from 'lucide-react';
+import { 
+  Layers, 
+  CheckCircle2, 
+  Loader2, 
+  Search, 
+  Target, 
+  DollarSign, 
+  Brain, 
+  BarChart3, 
+  Globe, 
+  ShieldCheck, 
+  Crown, 
+  Eye, 
+  Gauge, 
+  Zap, 
+  MessageSquare 
+} from 'lucide-react';
 
 interface AnalysisLoadingStateProps {
   siteUrl: string;
@@ -21,51 +37,51 @@ export const AnalysisLoadingState: React.FC<AnalysisLoadingStateProps> = ({ site
   const steps: Step[] = [
     {
       id: 1,
-      agent: 'LeakFinder Deep Scraper (Jina AI)',
-      role: 'Leitura HTML Avançada',
+      agent: '04. Reconhecedor Universal de Nicho',
+      role: 'Taxonomia & Isenções de Grade',
       icon: Globe,
-      message: `Extraindo textos e infraestrutura real de ${siteUrl}...`,
-      detail: 'Bypass de Anti-Bot e Extração de Markdown (Isso leva uns 5-10s)'
+      message: `Identificando nicho e regras de grade em ${siteUrl}...`,
+      detail: 'Classificando setor e blindando itens de tamanho único'
     },
     {
       id: 2,
-      agent: 'LeakFinder Crawler & NLP',
-      role: 'Leitura Profunda',
+      agent: '05. Doutor de Catálogo & Ruptura PP-G2',
+      role: 'Auditoria de Estoque em Anúncios',
       icon: Search,
-      message: 'Processando as palavras exatas do site para a IA...',
-      detail: 'Caçando Imagens Quebradas (Sem ALT/SRC) e Typos de Digitação'
+      message: 'Escaneando /products.json e caçando rupturas no DOM...',
+      detail: 'Mapeando variantes esgotadas em campanhas de tráfego ativo'
     },
     {
       id: 3,
-      agent: 'Agente SEO & Performance',
-      role: 'Google Lighthouse API',
-      icon: BarChart3,
-      message: 'Avaliando Performance LCP/CLS e dados estruturados Schema...',
-      detail: 'Injetando conteúdo real do site no LLM do Google Gemini'
+      agent: '03. Caçador de Mercado & Radar SKU',
+      role: 'Benchmarking de Preços ao Vivo',
+      icon: Target,
+      message: 'Cruzando ofertas SKU-a-SKU contra concorrentes diretos...',
+      detail: 'Calculando risco de fuga de checkout e frete competitivo'
     },
     {
       id: 4,
-      agent: 'Agente de Mídia Paga',
-      role: 'Especialista Ads',
-      icon: Target,
-      message: 'Calculando ROAS de equilíbrio e limite de CAC...',
-      detail: 'Estruturando plano de orçamento 60/30/10 e ganchos em vídeo UGC'
+      agent: '08. Visão Computacional & 07. Core Web Vitals',
+      role: 'Ergonomia Mobile & Anti-CLS',
+      icon: Eye,
+      message: 'Testando fixação ocular 2.500ms e prevenindo layout shift...',
+      detail: 'Avaliando Thumb Zone no mobile e garantindo CLS 0.000'
     },
     {
       id: 5,
-      agent: 'Agente Copywriting & Vendas',
-      role: 'Engenharia de Ofertas',
-      icon: DollarSign,
-      message: 'Criando Bundles (Compre 2 Leve 3) e contornando objeções...',
-      detail: 'Mapeando as 10 maiores objeções e redigindo headlines 4Us'
+      agent: '02. Orquestrador CEO (Maestro Socrático)',
+      role: 'Mesa Redonda & Fogo Cruzado',
+      icon: Crown,
+      message: 'Confrontando teses dos especialistas em 4 fases de debate...',
+      detail: 'Exigindo provas de DOM, cálculo de margem Pix e viabilidade técnica'
     },
     {
       id: 6,
-      agent: 'Orquestrador LeakFinder',
-      role: 'Síntese de Inteligência',
-      icon: Brain,
-      message: 'Consolidando o Relatório Executivo LeakFinder...',
-      detail: 'Sintetizando LeakFinder Growth Score e projeção de receita líquida'
+      agent: '11. Sentinel & 10. WhatsApp Concierge',
+      role: 'Chancela 2/2 & Dossiê Executivo',
+      icon: ShieldCheck,
+      message: 'Chancelando Zero Falso-Positivo e sintetizando Dossiê...',
+      detail: 'Compilando patches de autocorreção e preparando o plano de ação'
     }
   ];
 
