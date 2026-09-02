@@ -21,7 +21,7 @@ import { AnalysisLoadingState } from '../components/AnalysisLoadingState';
 import { ExecutivePdfExportModal } from '../components/ExecutivePdfExportModal';
 import { SettingsModal } from '../components/SettingsModal';
 import { AdminLeadsDashboard } from '../components/AdminLeadsDashboard';
-import { PricingModal } from '../components/PricingModal';
+import { TransparentCheckoutModal } from '../components/billing/TransparentCheckoutModal';
 import { WhatsAppLeadCaptureModal } from '../components/WhatsAppLeadCaptureModal';
 import { AdminLeadsDrawer } from '../components/AdminLeadsDrawer';
 import { MonitoredStoresManagerModal } from '../components/MonitoredStoresManagerModal';
@@ -667,7 +667,7 @@ export function HomePage() {
       )}
 
       {isPricingModalOpen && (
-        <PricingModal onClose={() => setIsPricingModalOpen(false)} />
+        <TransparentCheckoutModal onClose={() => setIsPricingModalOpen(false)} />
       )}
 
       {diagnostic && (
