@@ -4,6 +4,17 @@ import { SocialAuditResult } from '../socialInspector';
 
 export type StoreScaleTier = 'DTC_INICIANTE' | 'ECOMMERCE_MEDIO' | 'ESCALA_ALTO_TICKET' | 'ENTERPRISE_GLOBAL';
 
+export interface GroundingTransparency {
+  dataGroundingType: 'PROJECAO_ESTATISTICA_BENCHMARK';
+  transparencyNotice: string;
+  sourceGroundingSummary: {
+    groundedCatalogFacts: string[];
+    projectedSimulations: string[];
+    privateMetricsRequiringApi: string[];
+  };
+  isUserOverridden: boolean;
+}
+
 export interface StoreFinancialGrounding {
   storeDomain: string;
   brandName: string;
@@ -16,6 +27,7 @@ export interface StoreFinancialGrounding {
   hasMetaPixelActive: boolean;
   hasDirectSalesChannel: boolean;
   directSalesChannelType: 'WHATSAPP_FLUTUANTE' | 'INSTAGRAM_DIRECT' | 'CHECKOUT_AUTOMATIZADO_100' | 'NENHUM';
+  transparency: GroundingTransparency;
   estimatedMonthlyRevenue: {
     min: number;
     max: number;
@@ -205,6 +217,27 @@ export function calculateStoreFinancialGrounding(
     hasMetaPixelActive: hasMeta,
     hasDirectSalesChannel: hasWhatsapp || !!socialAudit?.instagramBioStrategy?.linkInBioType,
     directSalesChannelType,
+    transparency: {
+      dataGroundingType: 'PROJECAO_ESTATISTICA_BENCHMARK',
+      transparencyNotice: 'Esta análise projeta o risco financeiro a partir dos preços reais dos produtos, dados públicos do catálogo e presença de pixels. O faturamento e verba de anúncios são estimativas baseadas em benchmark de mercado e podem ser ajustados pelo lojista.',
+      sourceGroundingSummary: {
+        groundedCatalogFacts: [
+          `Preços das variantes auditados ao vivo no DOM e no endpoint /products.json`,
+          `${brokenSkusCount} produto(s) com variantes centrais indisponíveis (estoque zerado comprovado)`,
+          hasMeta ? 'Meta Pixel ativo no cabeçalho (<head>)' : 'Meta Pixel ausente no cabeçalho'
+        ],
+        projectedSimulations: [
+          `Verba diária estimada de anúncios (${formatBRL(dailyAdSpend)}/dia baseada no nicho ${tierLabel})`,
+          `Taxa de abandono projetada em 38% por falta de grade e fricção de checkout`
+        ],
+        privateMetricsRequiringApi: [
+          'Faturamento diário confidencial da loja (requer conexão Shopify Admin API)',
+          'Custo real exato por clique (requer conexão Meta Ads Marketing API)',
+          'Gravações de sessões individuais (requer conexão Microsoft Clarity / Hotjar)'
+        ]
+      },
+      isUserOverridden: !!(input?.averageOrderValue || input?.monthlyRevenue)
+    },
     estimatedMonthlyRevenue: {
       min: baseMonthlyRevenueMin,
       max: baseMonthlyRevenueMax,

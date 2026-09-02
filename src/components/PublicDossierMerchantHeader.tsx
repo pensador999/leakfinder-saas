@@ -49,13 +49,16 @@ export const PublicDossierMerchantHeader: React.FC<PublicDossierMerchantHeaderPr
         
         {/* Top Badges */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-indigo-800/60 pb-4">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="px-3 py-1 bg-rose-500/20 text-rose-300 border border-rose-500/40 rounded-full text-xs font-mono font-bold flex items-center gap-1.5 animate-pulse">
               <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
               <span>Dossiê Confidencial de Auditoria</span>
             </span>
             <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full text-xs font-mono font-bold">
-              Auditado ao Vivo ✓
+              Catálogo & Preços Verificados ao Vivo ✓
+            </span>
+            <span className="px-2.5 py-0.5 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-full text-xs font-mono font-bold">
+              [Simulador Dinâmico • {finances.tierLabel}]
             </span>
           </div>
 
@@ -70,12 +73,17 @@ export const PublicDossierMerchantHeader: React.FC<PublicDossierMerchantHeaderPr
           
           <div className="lg:col-span-8 space-y-3">
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight">
-              Identificamos <span className="text-rose-400 font-mono">R$ {estimatedMonthlyLoss.toLocaleString('pt-BR')}/mês</span> em risco nos anúncios da <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">{realSiteData.brandName}</span>
+              Identificamos <span className="text-rose-400 font-mono">{finances.financialRisk.formattedMonthlyLoss}/mês</span> em risco nos anúncios da <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">{realSiteData.brandName}</span>
             </h1>
             
             <p className="text-sm text-slate-300 leading-relaxed max-w-2xl">
-              Nossa inteligência artificial inspecionou o catálogo público de <strong>{realSiteData.domain}</strong> e encontrou <strong>{brokenSkusCount} produtos com anúncios ativos mas grade furada (tamanhos esgotados)</strong> e fricção no checkout que estão drenando o seu ROAS.
+              Nossa inteligência inspecionou o catálogo público de <strong>{realSiteData.domain}</strong> e detectou <strong>{brokenSkusCount} produto(s) com grade furada</strong> e fuga no checkout, calculando o risco com base no ticket médio auditado de <strong>{finances.formattedAverageTicket}</strong>.
             </p>
+
+            <div className="p-2.5 bg-slate-900/90 rounded-xl border border-indigo-500/20 text-[11px] text-slate-400 flex items-start gap-2">
+              <span className="text-indigo-400 text-xs">🛡️</span>
+              <span><strong>Protocolo de Transparência:</strong> Preços e estoque são dados reais extraídos do DOM. Valores de faturamento e verba de mídia são simulações projetadas pelo porte do nicho.</span>
+            </div>
           </div>
 
           {/* Quick Score and Lift Metric */}
