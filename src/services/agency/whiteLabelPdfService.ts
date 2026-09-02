@@ -4,6 +4,7 @@
 // ==============================================================================
 
 import { AgentDiagnosticResult } from '../../types';
+import { calculateStoreFinancialGrounding } from '../ai/storeFinancialGroundingEngine';
 
 export interface AgencyWhiteLabelConfig {
   agencyName: string;
@@ -57,14 +58,15 @@ export function generatePrintablePdfDossierHtml(
   diagnostic: AgentDiagnosticResult,
   config: AgencyWhiteLabelConfig
 ): string {
-  const { realSiteData, growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax, visionAnalysis } = diagnostic;
+  const { realSiteData, growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax, visionAnalysis, social } = diagnostic;
   const storeDomain = realSiteData.domain || 'loja.com.br';
   const brandName = realSiteData.brandName || 'Loja Virtual';
   const formattedDate = new Date().toLocaleDateString('pt-BR');
 
+  const finances = calculateStoreFinancialGrounding(realSiteData, diagnostic.input, social);
   const catalogIssues = realSiteData.catalogAudit?.issues || [];
-  const brokenSkusCount = catalogIssues.length;
-  const estimatedMonthlyLoss = estimatedRevenueLiftMin * 45;
+  const brokenSkusCount = finances.brokenSkusCount;
+  const estimatedMonthlyLoss = finances.financialRisk.totalMonthlyLoss;
 
   return `
 <!DOCTYPE html>

@@ -15,6 +15,7 @@ import {
   Zap
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
+import { calculateStoreFinancialGrounding } from '../services/ai/storeFinancialGroundingEngine';
 
 interface PublicDossierMerchantHeaderProps {
   diagnostic: AgentDiagnosticResult;
@@ -27,27 +28,14 @@ export const PublicDossierMerchantHeader: React.FC<PublicDossierMerchantHeaderPr
   onOpenPricing,
   onOpenWhatsApp
 }) => {
-  const { realSiteData, growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax } = diagnostic;
+  const { realSiteData, growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax, social } = diagnostic;
 
-  const domainLower = realSiteData.domain.toLowerCase();
-  const isMotorsOrAuto = domainLower.includes('motor') || domainLower.includes('auto') || domainLower.includes('peca') || (diagnostic.input.niche || '').toLowerCase().includes('auto');
-  const isAgro = domainLower.includes('agro') || domainLower.includes('campo') || (diagnostic.input.niche || '').toLowerCase().includes('agro');
-  const isEnterprise = realSiteData.isEnterpriseBrand;
-
-  // Dynamic Average Ticket based on store catalog and niche
-  const baseTicket = diagnostic.input.averageOrderValue || (isMotorsOrAuto ? 385 : isAgro ? 220 : isEnterprise ? 520 : 165);
-  
-  // Actual broken SKUs from catalog audit
-  const catalogIssues = realSiteData.catalogAudit?.issues || [];
-  const realBrokenIssues = catalogIssues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
-  const brokenSkusCount = realBrokenIssues.length > 0 ? realBrokenIssues.length : (isEnterprise ? 1 : isMotorsOrAuto ? 4 : 3);
-  
-  // Store size factor: larger stores with higher tickets have proportionally higher ad volume & ad waste
-  const dailyAdSpend = isEnterprise ? 2500 : isMotorsOrAuto ? 680 : isAgro ? 450 : 250;
-  const estimatedMonthlyLoss = Math.round(dailyAdSpend * 30 * 0.38 * (brokenSkusCount / Math.max(1, brokenSkusCount + 1)));
+  const finances = calculateStoreFinancialGrounding(realSiteData, diagnostic.input, social);
+  const estimatedMonthlyLoss = finances.financialRisk.totalMonthlyLoss;
+  const brokenSkusCount = finances.brokenSkusCount;
 
   const whatsappPitchUrl = `https://api.whatsapp.com/send?phone=5511999999999&text=${encodeURIComponent(
-    `Olá! Vi o dossiê de auditoria da minha loja (${realSiteData.brandName}) no AdShield e quero entender como recuperar os R$ ${estimatedMonthlyLoss.toLocaleString('pt-BR')} em risco por ruptura de grade e checkout.`
+    `Olá! Vi o dossiê de auditoria da minha loja (${realSiteData.brandName}) no AdShield e quero entender como recuperar os ${finances.financialRisk.formattedMonthlyLoss} em risco por ruptura de grade e checkout.`
   )}`;
 
   return (
