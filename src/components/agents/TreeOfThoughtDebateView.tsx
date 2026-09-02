@@ -270,37 +270,60 @@ export const TreeOfThoughtDebateView: React.FC<TreeOfThoughtDebateViewProps> = (
         <div className="space-y-4">
           {debateData.debateTranscript
             .filter(msg => activeRound === 'ALL' || msg.round === activeRound)
-            .map((msg) => (
-              <div 
-                key={msg.id} 
-                className={`p-4 rounded-2xl border text-xs space-y-2 transition-all ${
-                  msg.speakerAgent.includes('CEO')
-                    ? 'bg-amber-50/60 border-amber-300 ring-2 ring-amber-400/20'
-                    : 'bg-slate-50 border-slate-200'
-                }`}
-              >
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 border-b border-slate-200/60 pb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-slate-900 text-xs">{msg.speakerAgent}</span>
-                    <span className="px-2 py-0.5 rounded-md font-mono text-[10px] font-bold bg-slate-200/80 text-slate-700">
-                      {msg.speakerRole}
-                    </span>
+            .map((msg) => {
+              const isQuestion = msg.interactionType === 'PERGUNTA_CRITICA';
+              const isAnswer = msg.interactionType === 'RESPOSTA_AJUDA';
+              const isConsensus = msg.interactionType === 'CONSENSO_FINAL';
+
+              return (
+                <div 
+                  key={msg.id} 
+                  className={`p-5 rounded-3xl border text-xs space-y-3 transition-all ${
+                    isConsensus
+                      ? 'bg-amber-50/70 border-amber-300 ring-2 ring-amber-400/20 shadow-sm'
+                      : isQuestion
+                      ? 'bg-rose-50/40 border-rose-200'
+                      : isAnswer
+                      ? 'bg-emerald-50/40 border-emerald-200'
+                      : 'bg-slate-50 border-slate-200'
+                  }`}
+                >
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-2.5">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-bold text-slate-900 text-xs">{msg.speakerAgent}</span>
+                      
+                      {msg.targetAgent && (
+                        <span className="px-2 py-0.5 rounded-md font-mono text-[10px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
+                          Dirigido a: @{msg.targetAgent}
+                        </span>
+                      )}
+
+                      <span className={`px-2 py-0.5 rounded-md font-mono text-[10px] font-bold ${
+                        isQuestion
+                          ? 'bg-rose-100 text-rose-800 border border-rose-200'
+                          : isAnswer
+                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                          : 'bg-slate-200/80 text-slate-700'
+                      }`}>
+                        {isQuestion ? '❓ Pergunta Crítica' : isAnswer ? '💡 Resposta & Ajuda' : msg.speakerRole}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-mono">{msg.timestamp}</span>
                   </div>
-                  <span className="text-[10px] text-slate-400 font-mono">{msg.timestamp}</span>
+
+                  <p className="text-slate-800 text-xs leading-relaxed font-sans font-medium">
+                    {msg.text}
+                  </p>
+
+                  {msg.referencedDataPoint && (
+                    <div className="flex items-center gap-1.5 text-[10px] text-indigo-700 font-mono bg-indigo-50/80 px-2.5 py-1 rounded-lg border border-indigo-200 w-fit">
+                      <Zap className="w-3 h-3 text-indigo-600" />
+                      <span>Dado Real Verificado: <strong>{msg.referencedDataPoint}</strong></span>
+                    </div>
+                  )}
                 </div>
-
-                <p className="text-slate-800 text-xs leading-relaxed font-sans font-medium">
-                  "{msg.text}"
-                </p>
-
-                {msg.referencedDataPoint && (
-                  <div className="flex items-center gap-1.5 text-[10px] text-indigo-700 font-mono bg-indigo-50/80 px-2.5 py-1 rounded-lg border border-indigo-200 w-fit">
-                    <Zap className="w-3 h-3 text-indigo-600" />
-                    <span>Dado Real Verificado: <strong>{msg.referencedDataPoint}</strong></span>
-                  </div>
-                )}
-              </div>
-            ))}
+              );
+            })}
         </div>
 
       </div>
