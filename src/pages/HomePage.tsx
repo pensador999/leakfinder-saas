@@ -59,8 +59,9 @@ import { PublicDossierMerchantHeader } from '../components/PublicDossierMerchant
 import { TreeOfThoughtDebateView } from '../components/agents/TreeOfThoughtDebateView';
 import { VectorMemoryCompetitorRadarView } from '../components/agents/VectorMemoryCompetitorRadarView';
 import { DualAgentConsensusTribunalView } from '../components/agents/DualAgentConsensusTribunalView';
+import { OmnichannelSocialCommerceView } from '../components/social/OmnichannelSocialCommerceView';
 import { detectMarketplace } from '../services/marketplaceInspector';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare, Zap, Lock, Unlock, GitFork, Database, BadgeCheck } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare, Zap, Lock, Unlock, GitFork, Database, BadgeCheck, Share2 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export function HomePage() {
@@ -188,6 +189,7 @@ export function HomePage() {
       tabs: [
         { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
         { id: 'pricing', label: 'Simulador Pix & Margem', icon: Calculator, highlight: true },
+        { id: 'omnichannel_social', label: '📲 Redes Sociais & Venda Direta', icon: Share2, highlight: true },
         { id: 'collection_audit', label: 'Coleções & Hero Banner', icon: Target, highlight: true },
         { id: 'trust_badge', label: 'Selo de Confiança Legal', icon: ShieldCheck, highlight: true }
       ]
@@ -546,6 +548,10 @@ export function HomePage() {
 
                 {activeTab === 'pricing' && (
                   <PricingElasticitySimulatorView diagnostic={diagnostic} />
+                )}
+
+                {activeTab === 'omnichannel_social' && diagnostic && (
+                  <OmnichannelSocialCommerceView diagnostic={diagnostic} />
                 )}
 
                 {activeTab === 'rupture_monitor' && (
