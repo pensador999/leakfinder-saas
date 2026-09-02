@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../../types';
 import { generateShopifyTelemetryAnalysis } from '../../services/shopifyTelemetryService';
+import { calculateStoreFinancialGrounding } from '../../services/ai/storeFinancialGroundingEngine';
 
 interface ReportExporterProps {
   diagnostic: AgentDiagnosticResult;
@@ -27,9 +28,11 @@ interface ReportExporterProps {
 }
 
 export const ReportExporter: React.FC<ReportExporterProps> = ({ diagnostic, onClose }) => {
-  const { input, realSiteData, growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax, visionAnalysis, security, cro } = diagnostic;
+  const { input, realSiteData, growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax, visionAnalysis, security, cro, social } = diagnostic;
   const [copiedMd, setCopiedMd] = useState(false);
   const [agencyName, setAgencyName] = useState('LeakFinder Growth Intelligence');
+
+  const finances = calculateStoreFinancialGrounding(realSiteData, input, social);
 
   const telemetryData = generateShopifyTelemetryAnalysis(
     realSiteData.domain,
@@ -41,6 +44,7 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ diagnostic, onCl
 **Data da Auditoria:** ${diagnostic.analyzedAt || new Date().toLocaleDateString('pt-BR')}
 **Loja / Domínio:** ${realSiteData.domain} (${realSiteData.url})
 **Marca:** ${realSiteData.brandName}
+**Porte do E-commerce:** ${finances.tierLabel}
 **Plataforma Detectada:** ${realSiteData.ecommercePlatform} (${realSiteData.brandTier})
 **Growth Score Global:** ${growthScore} / 100
 **Projeção de Recuperação de Receita:** +${estimatedRevenueLiftMin}% a +${estimatedRevenueLiftMax}%
@@ -48,10 +52,10 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ diagnostic, onCl
 ---
 
 ## 1. RESUMO EXECUTIVO DE IMPACTO FINANCEIRO
-- **Vazamento Financeiro Estimado:** R$ ${telemetryData.totalEstimatedRevenueLoss.toLocaleString('pt-BR')} / mês
-- **Total de Carrinhos com Desistência:** ~${telemetryData.totalCartAbandonments} abandonos identificados
-- **Produtos Auditados no Catálogo:** ${realSiteData.catalogAudit?.totalProductsScanned || 0} SKUs
-- **Grades Furadas Detectadas:** ${realSiteData.catalogAudit?.productsWithBrokenGrid || 0} produtos sem PP, G1 ou G2
+- **Vazamento Financeiro Real:** ${finances.financialRisk.formattedMonthlyLoss} / mês (${finances.financialRisk.formattedAnnualizedLoss} / ano)
+- **Ticket Médio Ponderado:** ${finances.formattedAverageTicket}
+- **Verba Estimada de Tráfego:** ${finances.estimatedAdSpend.formattedMonthly}
+- **Produtos com Ruptura de Grade:** ${finances.brokenSkusCount} SKUs críticos
 - **Saúde do Catálogo:** ${realSiteData.catalogAudit?.catalogHealthScore || 0} / 100
 
 ---

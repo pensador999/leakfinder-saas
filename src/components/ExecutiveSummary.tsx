@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { generateShopifyTelemetryAnalysis } from '../services/shopifyTelemetryService';
+import { calculateStoreFinancialGrounding } from '../services/ai/storeFinancialGroundingEngine';
 
 interface ExecutiveSummaryProps {
   diagnostic: AgentDiagnosticResult;
@@ -22,7 +23,9 @@ interface ExecutiveSummaryProps {
 }
 
 export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, onSelectAgentTab }) => {
-  const { growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax, realSiteData, visionAnalysis } = diagnostic;
+  const { growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax, realSiteData, visionAnalysis, social } = diagnostic;
+
+  const finances = calculateStoreFinancialGrounding(realSiteData, diagnostic.input, social);
 
   const telemetryData = generateShopifyTelemetryAnalysis(
     realSiteData.domain,
@@ -149,7 +152,7 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
         <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-rose-700 font-mono flex items-center gap-1.5">
-              <Activity className="w-3.5 h-3.5 text-rose-600" /> Telemetria & Perda
+              <Activity className="w-3.5 h-3.5 text-rose-600" /> Risco & Perda Real
             </span>
             <div className="p-1.5 bg-rose-50 text-rose-600 rounded-xl">
               <TrendingDown className="w-4 h-4" />
@@ -158,10 +161,10 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
 
           <div>
             <span className="text-2xl font-black font-mono text-rose-600 tracking-tight">
-              R$ {telemetryData.totalEstimatedRevenueLoss.toLocaleString('pt-BR')} / mês
+              {finances.financialRisk.formattedMonthlyLoss} / mês
             </span>
             <p className="text-[11px] text-slate-500 mt-0.5">
-              Perda projetada em ~{telemetryData.totalCartAbandonments} carrinhos por falta de tamanhos e fotos.
+              Perda projetada em tráfego para {finances.brokenSkusCount} SKUs rompidos e fricção no checkout.
             </p>
           </div>
 

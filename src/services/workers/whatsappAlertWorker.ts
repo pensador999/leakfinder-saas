@@ -1,5 +1,6 @@
 import { MonitoredStore, StoreSnapshotDelta } from '../swarm/autonomousSwarmEngine';
 import { AgentDiagnosticResult } from '../../types';
+import { calculateStoreFinancialGrounding } from '../ai/storeFinancialGroundingEngine';
 import { SupabaseClient } from '@supabase/supabase-js';
 
 export interface WhatsAppAlertPayload {
@@ -54,10 +55,11 @@ export function formatDailyWhatsAppExecutiveSummary(
   const score = diagnostic.growthScore;
   const catalogIssues = diagnostic.realSiteData.catalogAudit?.issues || [];
   const brokenSkus = catalogIssues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
+  const finances = calculateStoreFinancialGrounding(diagnostic.realSiteData, diagnostic.input, diagnostic.social);
 
   let message = `🛡️ *ADSHIELD INTEL • RELATÓRIO EXECUTIVO DIÁRIO*\n`;
   message += `━━━━━━━━━━━━━━━━━━━━━\n`;
-  message += `🏢 Loja: *${store.brandName}*\n`;
+  message += `🏢 Loja: *${store.brandName}* (${finances.tierLabel})\n`;
   message += `📊 AdShield Score: *${score}/100* ${score >= 80 ? '🟢' : score >= 60 ? '🟡' : '🔴'}\n`;
   message += `⏱️ Horário da Auditoria: *07:00 (Grounding 100%)*\n\n`;
 
@@ -71,7 +73,7 @@ export function formatDailyWhatsAppExecutiveSummary(
     brokenSkus.slice(0, 3).forEach((sku, idx) => {
       message += `${idx + 1}. *${sku.productTitle}* (Sem: ${sku.missingSizes.join(', ')})\n`;
     });
-    message += `\n💰 *Perda Estimada:* R$ ${diagnostic.estimatedRevenueLiftMin * 45}/mês em queima de mídia.\n`;
+    message += `\n💰 *Perda Estimada:* ${finances.financialRisk.formattedMonthlyLoss}/mês em queima de mídia.\n`;
     message += `👉 *Recomendação:* Repor tamanhos ou pausar criativo no Meta Ads.\n\n`;
   } else {
     message += `✅ *Catálogo Blindado:* Nenhuma ruptura crítica detectada nas grades principais.\n\n`;

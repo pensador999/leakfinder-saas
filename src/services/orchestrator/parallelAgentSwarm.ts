@@ -7,6 +7,7 @@ import { auditSiteSecurity, SecurityAuditResult } from '../securityInspector';
 import { analyzeComputerVision, VisionAnalysisResult } from '../visionCoreEngine';
 import { calculatePricingElasticity, PricingElasticityResult } from '../pricingElasticityEngine';
 import { analyzeStockRupture, StockRuptureAnalysisResult } from '../stockRuptureEngine';
+import { calculateStoreFinancialGrounding } from '../ai/storeFinancialGroundingEngine';
 
 export interface SwarmWorkerExecutionResult {
   workerId: string;
@@ -161,11 +162,12 @@ export class ParallelAgentSwarmEngine {
 
     // FASE 3: Julgamento de Veracidade (Fact-Checker)
     const truthAuditor = new TruthAuditorAgent(dossier);
+    const finances = calculateStoreFinancialGrounding(realSiteData, this.input);
     
     const partialDiagnostic: any = {
       growthScore: 88,
-      estimatedRevenueLiftMin: Math.round((this.input.averageOrderValue || 159.90) * 120),
-      estimatedRevenueLiftMax: Math.round((this.input.averageOrderValue || 159.90) * 280),
+      estimatedRevenueLiftMin: 12,
+      estimatedRevenueLiftMax: 28,
       analyzedAt: new Date().toISOString(),
       input: this.input,
       realSiteData,
@@ -176,7 +178,7 @@ export class ParallelAgentSwarmEngine {
       osintData: { domainAgeYears: 4, hostingProvider: 'Cloudflare', registrar: 'Registro.br', techStack: ['Shopify', 'React'] },
       cro: { score: 88, findings: [], mobileSpeedMs: 1650, checkoutFrictionScore: 12, quickWins: [] },
       seo: { score: 90, healthStatus: 'Excelente', topKeywords: [], schemaMarkupRecommendation: '', onPageFixes: [] },
-      ads: { targetRoas: 4.2, maxCacAllowed: 45, monthlyAdBudgetSuggested: 5000, budgetAllocation: { coldProspecting: 60, warmRemarketing: 25, hotRetention: 15 } }
+      ads: { targetRoas: 4.2, maxCacAllowed: 45, monthlyAdBudgetSuggested: finances.estimatedAdSpend.monthly, budgetAllocation: { coldProspecting: 60, warmRemarketing: 25, hotRetention: 15 } }
     };
 
     const truthVerdict = truthAuditor.auditDiagnostic(partialDiagnostic);
