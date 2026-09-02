@@ -20,7 +20,11 @@ import {
   Crown,
   Sword,
   Gauge,
-  Eye
+  Eye,
+  Check,
+  Copy,
+  Send,
+  Code2
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../../types';
 import { 
@@ -29,7 +33,8 @@ import {
   ReasoningHypothesisBranch,
   SocraticKickoffQuestion,
   SocraticCrossInterrogationClash,
-  SocraticTechnicalFeasibilityChallenge
+  SocraticTechnicalFeasibilityChallenge,
+  SocraticExecutiveVerdictSession
 } from '../../services/ai/treeOfThoughtReasoningEngine';
 
 interface TreeOfThoughtDebateViewProps {
@@ -41,6 +46,13 @@ export const TreeOfThoughtDebateView: React.FC<TreeOfThoughtDebateViewProps> = (
   const [selectedBranchId, setSelectedBranchId] = useState<string>('branch-catalog');
   const [activeRound, setActiveRound] = useState<number | 'ALL'>('ALL');
   const [isDebating, setIsDebating] = useState<boolean>(false);
+  const [copiedWhatsApp, setCopiedWhatsApp] = useState<boolean>(false);
+
+  const handleCopyWhatsApp = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedWhatsApp(true);
+    setTimeout(() => setCopiedWhatsApp(false), 2500);
+  };
 
   const loadDebate = () => {
     const data = executeTreeOfThoughtReasoning(diagnostic);
@@ -558,46 +570,106 @@ export const TreeOfThoughtDebateView: React.FC<TreeOfThoughtDebateViewProps> = (
 
       </div>
 
-      {/* 🏆 3. CONSENSUS SYNTHESIS & ACTION PLAN */}
-      <div className="p-6 rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white border-2 border-emerald-500/30 shadow-2xl space-y-5">
-        
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-emerald-500/20 text-emerald-400 rounded-2xl border border-emerald-500/30">
-              <Award className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-white">Veredito Final por Consenso dos Agentes</h3>
-              <p className="text-xs text-slate-400">Síntese matemática aprovada com {debateData.consensusConfidencePct}% de concordância</p>
-            </div>
-          </div>
-
-          <div className="p-3 bg-emerald-950/60 border border-emerald-500/40 rounded-2xl text-center shrink-0">
-            <span className="text-[10px] text-emerald-300 uppercase font-mono block font-bold">Recuperação Estimada</span>
-            <span className="text-xl font-black text-emerald-400 font-mono">+{debateData.synthesizedActionPlan.expectedRevenueRecoveryPct}% Vendas</span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+      {/* 🏆 SESSÃO 4: O VEREDITO DE CONSENSO EXECUTIVO & CHANCELA FINAL */}
+      {debateData.executiveVerdict && (
+        <div className="p-6 rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white border-2 border-emerald-500/40 shadow-2xl space-y-6">
           
-          <div className="p-4 bg-slate-900/90 rounded-2xl border border-rose-500/30 space-y-1.5">
-            <span className="text-[10px] text-rose-400 uppercase font-mono font-bold block">🚨 Prioridade Imediata (Hoje):</span>
-            <p className="text-slate-200 font-medium leading-relaxed">{debateData.synthesizedActionPlan.immediatePriority}</p>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-gradient-to-br from-amber-400 to-yellow-600 rounded-2xl text-slate-950 font-black shadow-lg shadow-amber-500/20">
+                <Crown className="w-7 h-7" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-white">Veredito Executivo & Chancela do Maestro CEO (Fase 4)</h3>
+                  <span className="px-2.5 py-0.5 text-xs font-mono font-black bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/40">
+                    Consenso {debateData.executiveVerdict.mathematicalConsensusScore}% Homologado
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-0.5">{debateData.executiveVerdict.ceoFinalChallenge}</p>
+              </div>
+            </div>
+
+            <div className="p-3 bg-emerald-950/60 border border-emerald-500/40 rounded-2xl text-center shrink-0">
+              <span className="text-[10px] text-emerald-300 uppercase font-mono block font-bold">Recuperação Estimada</span>
+              <span className="text-xl font-black text-emerald-400 font-mono">+{debateData.synthesizedActionPlan.expectedRevenueRecoveryPct}% Vendas</span>
+            </div>
           </div>
 
-          <div className="p-4 bg-slate-900/90 rounded-2xl border border-amber-500/30 space-y-1.5">
-            <span className="text-[10px] text-amber-400 uppercase font-mono font-bold block">⚡ Otimização Secundária:</span>
-            <p className="text-slate-200 font-medium leading-relaxed">{debateData.synthesizedActionPlan.secondaryOptimization}</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            
+            {/* Sentinela 11 Chancela */}
+            <div className="p-4 bg-slate-900/90 rounded-2xl border border-emerald-500/30 space-y-2">
+              <div className="flex items-center gap-2 text-emerald-400 font-mono font-bold text-[11px]">
+                <ShieldCheck className="w-4 h-4" />
+                <span>{debateData.executiveVerdict.sentinelAuditDefense.agentName}</span>
+              </div>
+              <p className="text-slate-200 font-medium leading-relaxed">
+                {debateData.executiveVerdict.sentinelAuditDefense.dualSignatureApprovalCount}
+              </p>
+              <div className="pt-1 text-[10px] font-mono text-emerald-300 border-t border-slate-800">
+                {debateData.executiveVerdict.sentinelAuditDefense.falsePositiveZeroGuarantee}
+              </div>
+            </div>
+
+            {/* Auto-Coder 12 Patches */}
+            <div className="p-4 bg-slate-900/90 rounded-2xl border border-indigo-500/30 space-y-2">
+              <div className="flex items-center gap-2 text-indigo-400 font-mono font-bold text-[11px]">
+                <Code2 className="w-4 h-4" />
+                <span>{debateData.executiveVerdict.autoCoderDefense.agentName}</span>
+              </div>
+              <ul className="space-y-1 text-slate-300 text-[11px]">
+                {debateData.executiveVerdict.autoCoderDefense.generatedPatchesList.map((p, i) => (
+                  <li key={i} className="flex items-start gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
+                    <span>{p}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="pt-1 text-[10px] font-mono text-indigo-300 border-t border-slate-800">
+                {debateData.executiveVerdict.autoCoderDefense.buildStatus}
+              </div>
+            </div>
+
+            {/* WhatsApp Concierge 10 Payload */}
+            <div className="p-4 bg-slate-900/90 rounded-2xl border border-amber-500/30 space-y-2 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 text-amber-400 font-mono font-bold text-[11px]">
+                  <MessageSquare className="w-4 h-4" />
+                  <span>{debateData.executiveVerdict.whatsAppConciergePayload.agentName}</span>
+                </div>
+                <div className="mt-2 p-2.5 bg-slate-950 rounded-xl border border-slate-800 text-[11px] text-slate-300 font-sans italic">
+                  "{debateData.executiveVerdict.whatsAppConciergePayload.merchantHookDirectMessage}"
+                </div>
+              </div>
+
+              <div className="pt-2 flex items-center justify-between gap-2">
+                <span className="text-[10px] font-mono text-amber-300">
+                  {debateData.executiveVerdict.whatsAppConciergePayload.projectedMonthlyRecovery}
+                </span>
+                <button
+                  onClick={() => handleCopyWhatsApp(debateData.executiveVerdict.whatsAppConciergePayload.merchantHookDirectMessage)}
+                  className="px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 rounded-lg text-[10px] font-black font-mono flex items-center gap-1 cursor-pointer transition-all shadow-md"
+                >
+                  {copiedWhatsApp ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedWhatsApp ? 'Copiado!' : 'Copiar Dossiê'}</span>
+                </button>
+              </div>
+            </div>
+
           </div>
 
-          <div className="p-4 bg-slate-900/90 rounded-2xl border border-emerald-500/30 space-y-1.5">
-            <span className="text-[10px] text-emerald-400 uppercase font-mono font-bold block">🛡️ Salvaguarda 24h:</span>
-            <p className="text-slate-200 font-medium leading-relaxed">{debateData.synthesizedActionPlan.monitoringSafeguard}</p>
+          <div className="p-4 bg-emerald-950/40 border border-emerald-500/40 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+            <span className="text-emerald-200 font-medium leading-relaxed">
+              {debateData.executiveVerdict.ceoSignedVerdict}
+            </span>
+            <span className="px-4 py-2 bg-emerald-500 text-slate-950 font-black font-mono rounded-xl shrink-0 shadow-lg shadow-emerald-500/30">
+              Chancela 100% Homologada ✓
+            </span>
           </div>
 
         </div>
-
-      </div>
+      )}
 
     </div>
   );
