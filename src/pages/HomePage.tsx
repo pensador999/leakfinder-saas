@@ -63,6 +63,8 @@ import { OmnichannelSocialCommerceView } from '../components/social/OmnichannelS
 import { SupplyChainDiscrepancyView } from '../components/supplyChain/SupplyChainDiscrepancyView';
 import { MerchantTripleImpactDossier } from '../components/merchant/MerchantTripleImpactDossier';
 import { MetaAdsAutoKillSwitchModal } from '../components/ads/MetaAdsAutoKillSwitchModal';
+import { BatchProspectingAuditorModal } from '../components/agency/BatchProspectingAuditorModal';
+import { ChromeExtensionModal } from '../components/tools/ChromeExtensionModal';
 import { detectMarketplace } from '../services/marketplaceInspector';
 import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare, Zap, Lock, Unlock, GitFork, Database, BadgeCheck, Share2, Factory } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -84,6 +86,8 @@ export function HomePage() {
   const [isIntegrationsModalOpen, setIsIntegrationsModalOpen] = useState<boolean>(false);
   const [isWhiteLabelModalOpen, setIsWhiteLabelModalOpen] = useState<boolean>(false);
   const [isMetaAutoKillModalOpen, setIsMetaAutoKillModalOpen] = useState<boolean>(false);
+  const [isBatchAuditorOpen, setIsBatchAuditorOpen] = useState<boolean>(false);
+  const [isChromeExtensionOpen, setIsChromeExtensionOpen] = useState<boolean>(false);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analyzingUrl, setAnalyzingUrl] = useState<string>('');
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
@@ -337,6 +341,22 @@ export function HomePage() {
                 >
                   <Store className="w-3.5 h-3.5 text-blue-600" />
                   <span>📡 Lojas no Radar</span>
+                </button>
+
+                <button
+                  onClick={() => setIsBatchAuditorOpen(true)}
+                  className="px-3.5 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-all flex items-center gap-1.5 cursor-pointer font-bold border border-indigo-200"
+                >
+                  <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>🏢 Scanner em Lote (Agências)</span>
+                </button>
+
+                <button
+                  onClick={() => setIsChromeExtensionOpen(true)}
+                  className="px-3.5 py-1.5 rounded-lg bg-amber-50 text-amber-800 hover:bg-amber-100 transition-all flex items-center gap-1.5 cursor-pointer font-bold border border-amber-200"
+                >
+                  <Globe className="w-3.5 h-3.5 text-amber-600" />
+                  <span>🧩 Extensão Chrome</span>
                 </button>
 
                 <button
@@ -677,6 +697,34 @@ export function HomePage() {
         <MetaAdsAutoKillSwitchModal
           diagnostic={diagnostic}
           onClose={() => setIsMetaAutoKillModalOpen(false)}
+        />
+      )}
+
+      {isBatchAuditorOpen && (
+        <BatchProspectingAuditorModal
+          onClose={() => setIsBatchAuditorOpen(false)}
+          onOpenStoreDossier={(domain) => {
+            setIsBatchAuditorOpen(false);
+            const { cleanUrl, brandName } = extractCleanDomainAndBrand(domain);
+            handleStartRealAudit({
+              siteUrl: cleanUrl,
+              businessName: brandName,
+              businessType: 'ecommerce',
+              niche: cleanUrl.includes('agro') ? 'Agropecuária & Moda Campo' : 'Moda & Varejo E-commerce',
+              monthlyRevenue: 'R$ 50k a R$ 200k',
+              averageOrderValue: 180,
+              mainChallenge: 'low_conversion',
+              targetRegion: 'Brasil',
+              grossMargin: 45,
+              competitorsUrl: 'https://concorrente.com.br'
+            });
+          }}
+        />
+      )}
+
+      {isChromeExtensionOpen && (
+        <ChromeExtensionModal
+          onClose={() => setIsChromeExtensionOpen(false)}
         />
       )}
 

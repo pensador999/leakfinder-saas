@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>AdShield AI Quick Audit</title>
+  <style>
+    body {
+      width: 360px;
+      margin: 0;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+    }
+    .logo {
+      font-weight: 900;
+      font-size: 14px;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .badge {
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #059669;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .card-title {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+    .loss-value {
+      font-size: 22px;
+      font-weight: 900;
+      color: #f43f5e;
+      font-family: monospace;
+    }
+    .btn {
+      width: 100%;
+      padding: 10px;
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn:hover {
+      background: #1d4ed8;
+    }
+    .btn-green {
+      background: #059669;
+    }
+    .btn-green:hover {
+      background: #047857;
+    }
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      padding: 4px 0;
+      border-bottom: 1px solid #334155;
+    }
+    .status-row:last-child {
+      border-bottom: none;
+    }
+    .red { color: #f43f5e; font-weight: 700; }
+    .green { color: #10b981; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">
+      <span>🛡️</span>
+      <span>AdShield AI Quick Audit</span>
+    </div>
+    <span class="badge" id="platformBadge">Auto-Detect</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Vazamento Estimado em Anúncios</div>
+    <div class="loss-value" id="adWasteValue">R$ 2.450/mês</div>
+    <div style="font-size: 10px; color: #94a3b8; margin-top: 2px;" id="domainLabel">Auditando aba ativa...</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Checklist de Integridade ao Vivo</div>
+    <div class="status-row">
+      <span>Pixel Meta / Tráfego Ativo:</span>
+      <span class="green" id="metaPixelStatus">Detectado (Ativo)</span>
+    </div>
+    <div class="status-row">
+      <span>Ruptura de Grade (M / G):</span>
+      <span class="red" id="brokenGridStatus">2 SKUs Rompidos</span>
+    </div>
+    <div class="status-row">
+      <span>Tabela de Medidas (PDP):</span>
+      <span class="green" id="sizeChartStatus">Instalada</span>
+    </div>
+    <div class="status-row">
+      <span>CNPJ no Rodapé:</span>
+      <span class="green" id="cnpjStatus">Conforme</span>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <button class="btn btn-green" id="btnCopyAlert">
+      <span>📋 Copiar Alerta WhatsApp para o Gestor</span>
+    </button>
+    <button class="btn" id="btnOpenFullDossier">
+      <span>🚀 Abrir Dossiê Completo no SaaS</span>
+    </button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
