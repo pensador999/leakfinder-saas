@@ -62,6 +62,7 @@ import { DualAgentConsensusTribunalView } from '../components/agents/DualAgentCo
 import { OmnichannelSocialCommerceView } from '../components/social/OmnichannelSocialCommerceView';
 import { SupplyChainDiscrepancyView } from '../components/supplyChain/SupplyChainDiscrepancyView';
 import { MerchantTripleImpactDossier } from '../components/merchant/MerchantTripleImpactDossier';
+import { MetaAdsAutoKillSwitchModal } from '../components/ads/MetaAdsAutoKillSwitchModal';
 import { detectMarketplace } from '../services/marketplaceInspector';
 import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare, Zap, Lock, Unlock, GitFork, Database, BadgeCheck, Share2, Factory } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -82,6 +83,7 @@ export function HomePage() {
   const [isWhatsAppWatchdogOpen, setIsWhatsAppWatchdogOpen] = useState<boolean>(false);
   const [isIntegrationsModalOpen, setIsIntegrationsModalOpen] = useState<boolean>(false);
   const [isWhiteLabelModalOpen, setIsWhiteLabelModalOpen] = useState<boolean>(false);
+  const [isMetaAutoKillModalOpen, setIsMetaAutoKillModalOpen] = useState<boolean>(false);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analyzingUrl, setAnalyzingUrl] = useState<string>('');
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
@@ -480,6 +482,7 @@ export function HomePage() {
                       diagnostic={diagnostic}
                       onOpenPricing={() => setIsPricingModalOpen(true)}
                       onOpenWhatsAppLead={() => setIsWhatsAppModalOpen(true)}
+                      onOpenMetaAutoKill={() => setIsMetaAutoKillModalOpen(true)}
                       onSwitchToWarRoom={() => {
                         setViewMode('war_room');
                         setActiveTab('tree_of_thought');
@@ -668,6 +671,13 @@ export function HomePage() {
 
       {isPricingModalOpen && (
         <TransparentCheckoutModal onClose={() => setIsPricingModalOpen(false)} />
+      )}
+
+      {isMetaAutoKillModalOpen && diagnostic && (
+        <MetaAdsAutoKillSwitchModal
+          diagnostic={diagnostic}
+          onClose={() => setIsMetaAutoKillModalOpen(false)}
+        />
       )}
 
       {diagnostic && (

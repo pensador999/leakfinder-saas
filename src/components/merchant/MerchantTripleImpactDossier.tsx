@@ -28,13 +28,15 @@ interface MerchantTripleImpactDossierProps {
   onOpenPricing: () => void;
   onOpenWhatsAppLead: () => void;
   onSwitchToWarRoom: () => void;
+  onOpenMetaAutoKill: () => void;
 }
 
 export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierProps> = ({
   diagnostic,
   onOpenPricing,
   onOpenWhatsAppLead,
-  onSwitchToWarRoom
+  onSwitchToWarRoom,
+  onOpenMetaAutoKill
 }) => {
   const { realSiteData, input, growthScore, estimatedRevenueLiftMin } = diagnostic;
   const finances = calculateStoreFinancialGrounding(realSiteData, input, diagnostic.social);
@@ -224,39 +226,55 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
         </div>
 
         {/* Action Buttons Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <a
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-between cursor-pointer group"
+            className="p-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-between cursor-pointer group"
           >
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-slate-950/20 rounded-xl text-slate-950">
-                <MessageSquare className="w-6 h-6" />
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 bg-slate-950/20 rounded-xl text-slate-950">
+                <MessageSquare className="w-5 h-5" />
               </div>
               <div className="text-left">
-                <span className="text-xs text-slate-900 uppercase tracking-wider font-mono block font-extrabold">Recomendado</span>
-                <span className="text-sm font-black text-slate-950">Falar com Especialista no WhatsApp</span>
+                <span className="text-[10px] text-slate-900 uppercase tracking-wider font-mono block font-extrabold">Recomendado</span>
+                <span className="text-xs font-black text-slate-950">Falar no WhatsApp</span>
               </div>
             </div>
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </a>
 
           <button
-            onClick={onOpenPricing}
-            className="p-5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold transition-all border border-slate-700 flex items-center justify-between cursor-pointer group text-left"
+            onClick={onOpenMetaAutoKill}
+            className="p-4 rounded-2xl bg-gradient-to-r from-indigo-900 to-slate-900 hover:from-indigo-800 hover:to-slate-800 text-white font-bold transition-all border border-indigo-500/40 flex items-center justify-between cursor-pointer group text-left shadow-lg shadow-indigo-950/50"
           >
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-indigo-500/20 text-indigo-400 rounded-xl border border-indigo-500/30">
-                <Sparkles className="w-6 h-6" />
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 bg-amber-500/20 text-amber-400 rounded-xl border border-amber-500/30">
+                <Zap className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-xs text-indigo-300 uppercase tracking-wider font-mono block">Monitoramento 24h</span>
-                <span className="text-sm font-bold text-white">Ver Planos AdShield (a partir de R$ 197)</span>
+                <span className="text-[10px] text-amber-300 uppercase tracking-wider font-mono block font-bold">Piloto Automático</span>
+                <span className="text-xs font-bold text-white">Meta Ads Auto-Kill</span>
               </div>
             </div>
-            <ArrowRight className="w-5 h-5 text-slate-400 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 transition-transform" />
+          </button>
+
+          <button
+            onClick={onOpenPricing}
+            className="p-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold transition-all border border-slate-700 flex items-center justify-between cursor-pointer group text-left"
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 bg-indigo-500/20 text-indigo-400 rounded-xl border border-indigo-500/30">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-[10px] text-indigo-300 uppercase tracking-wider font-mono block">Monitoramento 24h</span>
+                <span className="text-xs font-bold text-white">Ver Planos (R$ 197+)</span>
+              </div>
+            </div>
+            <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
 
