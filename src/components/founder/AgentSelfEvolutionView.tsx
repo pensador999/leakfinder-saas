@@ -27,6 +27,7 @@ import {
 export const AgentSelfEvolutionView: React.FC = () => {
   const [learningState, setLearningState] = useState<SelfLearningEngineState | null>(null);
   const [selectedNicheId, setSelectedNicheId] = useState<string>('MODA_VESTUARIO');
+  const [journalFilter, setJournalFilter] = useState<'SELECTED_NICHE' | 'ALL' | 'DEVOPS'>('SELECTED_NICHE');
   const [isTraining, setIsTraining] = useState<boolean>(false);
   const [trainingSuccessMsg, setTrainingSuccessMsg] = useState<string>('');
 
@@ -44,15 +45,15 @@ export const AgentSelfEvolutionView: React.FC = () => {
     setTrainingSuccessMsg('');
 
     try {
-      const newLog = await executeLiveSelfLearningCycle();
+      const newLog = await executeLiveSelfLearningCycle(selectedNicheId as any);
       setLearningState(prev => prev ? {
         ...prev,
         totalLearningIterations: prev.totalLearningIterations + 1,
         recentReflectionLogs: [newLog, ...prev.recentReflectionLogs]
       } : null);
 
-      setTrainingSuccessMsg('✨ Ciclo de Auto-Reflexão e Calibração concluído com sucesso!');
-      setTimeout(() => setTrainingSuccessMsg(''), 4000);
+      setTrainingSuccessMsg(`✨ Ciclo de Auto-Reflexão e Calibração para ${selectedProfile.nicheLabel} concluído com sucesso!`);
+      setTimeout(() => setTrainingSuccessMsg(''), 4500);
     } finally {
       setIsTraining(false);
     }
@@ -262,42 +263,111 @@ export const AgentSelfEvolutionView: React.FC = () => {
       </div>
 
       {/* Machine Learning Journal / Self-Reflection Logs */}
-      <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-          <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-            <FileText className="w-4 h-4 text-indigo-600" />
-            <span>Diário de Auto-Reflexão & Aprendizados dos Agentes</span>
-          </h3>
-          <span className="text-xs text-slate-400 font-mono">Últimas calibrações gravadas no Supabase</span>
+      <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-5">
+        
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div>
+            <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+              <FileText className="w-4 h-4 text-indigo-600" />
+              <span>Diário de Auto-Reflexão & Aprendizados Específicos por Nicho</span>
+            </h3>
+            <p className="text-xs text-slate-400 font-mono mt-0.5">Cada nicho possui aprendizados e calibrações únicas gravadas no Supabase</p>
+          </div>
+
+          {/* Filter Selector */}
+          <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-bold font-mono">
+            <button
+              onClick={() => setJournalFilter('SELECTED_NICHE')}
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                journalFilter === 'SELECTED_NICHE'
+                  ? 'bg-white text-indigo-900 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Nicho: {selectedProfile.nicheLabel.split(',')[0]}
+            </button>
+
+            <button
+              onClick={() => setJournalFilter('DEVOPS')}
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                journalFilter === 'DEVOPS'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              🛡️ Agente 11: DevOps & Erros
+            </button>
+
+            <button
+              onClick={() => setJournalFilter('ALL')}
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                journalFilter === 'ALL'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Todos ({learningState.recentReflectionLogs.length})
+            </button>
+          </div>
         </div>
 
-        <div className="space-y-3">
-          {learningState.recentReflectionLogs.map((log) => (
-            <div key={log.id} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 border-b border-slate-200/60 pb-2">
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded font-mono font-bold text-[10px]">
-                    Ciclo #{log.cycleNumber}
-                  </span>
-                  <span className="font-bold text-slate-900">{log.agentName}</span>
-                </div>
-                <span className="text-[10px] text-slate-400 font-mono">{log.timestamp}</span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                <div>
-                  <span className="font-bold text-slate-500 uppercase text-[9px] font-mono block">Observação do Agente:</span>
-                  <p className="text-slate-700 font-medium">{log.observation}</p>
-                </div>
-
-                <div>
-                  <span className="font-bold text-emerald-600 uppercase text-[9px] font-mono block">Aprendizado & Ajuste Feito:</span>
-                  <p className="text-slate-900 font-bold">{log.weightAdjustmentMade}</p>
-                </div>
-              </div>
+        {/* Live DevOps Health Status Card */}
+        {journalFilter === 'DEVOPS' && (
+          <div className="p-4 bg-slate-950 text-white rounded-2xl border border-slate-800 space-y-2 text-xs font-mono">
+            <div className="flex items-center justify-between">
+              <span className="text-emerald-400 font-bold flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span>Agente 11 (DevOps Sentinel): Telemetria de Produção Vercel & Supabase</span>
+              </span>
+              <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded text-[10px]">
+                0 Erros Críticos Ativos
+              </span>
             </div>
-          ))}
+            <p className="text-slate-400 text-[11px] leading-relaxed">
+              O robô inspeciona ativamente chamadas de rede do Edge Proxy, integridade de queries SQL no PostgreSQL e captura exceções não tratadas no navegador dos usuários.
+            </p>
+          </div>
+        )}
+
+        {/* Dynamic Reflection Cards List */}
+        <div className="space-y-3">
+          {learningState.recentReflectionLogs
+            .filter(log => {
+              if (journalFilter === 'SELECTED_NICHE') {
+                return !log.nicheId || log.nicheId === selectedNicheId || log.nicheId === 'TODOS';
+              }
+              if (journalFilter === 'DEVOPS') {
+                return log.nicheId === 'DEVOPS_SENTINEL' || log.agentName.includes('DevOps') || log.agentName.includes('11');
+              }
+              return true;
+            })
+            .map((log) => (
+              <div key={log.id} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs hover:border-indigo-200 transition-all">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 border-b border-slate-200/60 pb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded font-mono font-bold text-[10px]">
+                      Ciclo #{log.cycleNumber}
+                    </span>
+                    <span className="font-bold text-slate-900">{log.agentName}</span>
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-mono">{log.timestamp}</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <span className="font-bold text-slate-500 uppercase text-[9px] font-mono block">Observação do Agente:</span>
+                    <p className="text-slate-700 font-medium leading-relaxed">{log.observation}</p>
+                  </div>
+
+                  <div>
+                    <span className="font-bold text-emerald-600 uppercase text-[9px] font-mono block">Aprendizado & Calibração Feita:</span>
+                    <p className="text-slate-900 font-bold leading-relaxed">{log.weightAdjustmentMade}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
         </div>
+
       </div>
 
     </div>
