@@ -86,15 +86,33 @@ export function auditSupplyChainDiscrepancy(
   let totalAdWaste = 0;
   let totalCancellationRisk = 0;
 
-  // 1. Process broken SKUs as GRAU 1 (Anúncio Fantasma) & GRAU 2 (Venda Fantasma)
+  // 1. Process broken SKUs with strict ABC size curve weighting
   if (brokenSkus.length > 0) {
     brokenSkus.forEach((skuItem, idx) => {
-      const isCriticalSizes = skuItem.missingSizes.some(s => ['M', 'G', 'GG', '40', '41', '42'].includes(s.toUpperCase()));
-      const severity: DiscrepancySeverity = isCriticalSizes ? 'GRAU_1_ANUNCIO_FANTASMA' : 'GRAU_2_VENDA_FANTASMA';
+      // Curve ABC central sizes in Brazil:
+      // Apparel: P, M, G, GG (M+G represent ~65% of sales)
+      // Footwear: 39, 40, 41, 42, 43
+      const apparelCriticalSizes = ['P', 'M', 'G', 'GG'];
+      const footwearCriticalSizes = ['39', '40', '41', '42', '43'];
+      
+      const isApparelCritical = skuItem.missingSizes.some(s => apparelCriticalSizes.includes(s.toUpperCase()));
+      const isFootwearCritical = skuItem.missingSizes.some(s => footwearCriticalSizes.includes(s.toUpperCase()));
+      const isCriticalSizes = isApparelCritical || isFootwearCritical;
+      
+      // If store has active ad pixels and critical sizes are broken -> GRAU 1 ANÚNCIO FANTASMA
+      const isGrau1 = realSiteData.hasMetaPixel && isCriticalSizes;
+      const severity: DiscrepancySeverity = isGrau1 ? 'GRAU_1_ANUNCIO_FANTASMA' : 'GRAU_2_VENDA_FANTASMA';
       
       const price = finances.groundedAverageTicket;
-      const adWaste = Math.round(finances.financialRisk.adWasteMonthly / Math.max(1, brokenSkus.length));
-      const cancellationRisk = Math.round(price * 4.5); // Risco de estorno e custo operacional por pedido sem estoque
+
+      // Mathematical Ad Waste Grounding:
+      // SKU monthly ad budget allocation (~20% of total budget distributed among active promoted SKUs)
+      // Multiplied by 0.65 (percentage of traffic landing on out-of-stock sizes M & G)
+      const skuMonthlyAdAllocation = (finances.estimatedAdSpend.monthly * 0.60) / Math.max(1, brokenSkus.length);
+      const adWaste = Math.round(skuMonthlyAdAllocation * 0.65);
+      
+      // Cancellation risk: financial loss from returns, chargeback fees and support friction
+      const cancellationRisk = Math.round(price * 3.8);
 
       totalAdWaste += adWaste;
       totalCancellationRisk += cancellationRisk;
@@ -107,18 +125,22 @@ export function auditSupplyChainDiscrepancy(
         imageSrc: skuItem.imageSrc,
         price,
         severity,
-        severityLabel: severity === 'GRAU_1_ANUNCIO_FANTASMA' ? '🔴 Grau 1: Anúncio Fantasma (Grade Zerada)' : '🟠 Grau 2: Risco de Venda Fantasma',
-        badgeColor: severity === 'GRAU_1_ANUNCIO_FANTASMA' ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' : 'bg-amber-500/20 text-amber-300 border-amber-500/40',
-        symptom: `Produto ativo com grade furada nos tamanhos de maior giro: ${skuItem.missingSizes.join(', ')}.`,
-        operationalCause: 'A ordem de produção no Sankhya finalizou apenas parte da grade, ou a fila da Magis5 não atualizou o estoque na vitrine antes do tráfego disparar os cliques.',
+        severityLabel: severity === 'GRAU_1_ANUNCIO_FANTASMA' 
+          ? '🔴 Grau 1: Anúncio Fantasma (Grade Zerada em Tráfego Ativo)' 
+          : '🟠 Grau 2: Risco de Venda Fantasma (Estoque Descasado)',
+        badgeColor: severity === 'GRAU_1_ANUNCIO_FANTASMA' 
+          ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' 
+          : 'bg-amber-500/20 text-amber-300 border-amber-500/40',
+        symptom: `Produto ativo recebendo tráfego com ruptura na curva ABC de tamanhos: ${skuItem.missingSizes.join(', ')}.`,
+        operationalCause: 'A ordem de corte no Sankhya finalizou apenas parte da grade, ou a fila da Magis5 não atualizou o estoque na vitrine antes do tráfego disparar os cliques.',
         adWasteEstimatedMonthly: adWaste,
         cancellationRiskEstimatedMonthly: cancellationRisk,
         totalFinancialRiskMonthly: adWaste + cancellationRisk,
         recommendedAction: 'Pausar o criativo no Meta Ads ou sincronizar imediatamente o lote de reposição no Sankhya via Magis5.',
         playbookScript: {
-          trafficManagerWhatsApp: `🚨 *ALERTA DE TRÁFEGO • ADSHIELD INTEL*\n\nFala Gestor! O produto *${skuItem.productTitle}* (SKU: ${skuItem.sku}) está com os tamanhos *${skuItem.missingSizes.join(', ')} esgotados* na vitrine pública de ${domain}.\n\n💸 *Risco de queima de verba:* ~${formatBRL(adWaste)}/mês.\n👉 *Ação Recomendada:* Pausar o conjunto de anúncios no Meta Ads ou trocar a URL de destino para um produto similar com grade completa.`,
-          magis5OperatorAction: `🔄 *AÇÃO NO HUB MAGIS5:*\n1. Acessar tela de Anúncios / Catálogo.\n2. Localizar SKU: ${skuItem.sku}.\n3. Forçar sincronização imediata de saldo com o Sankhya ERP.\n4. Aplicar Buffer de Segurança de 2 unidades para evitar venda sem estoque.`,
-          sankhyaPcpProductionNote: `🏭 *NOTA DE PCP • SANKHYA ERP:*\nItem: ${skuItem.productTitle} (SKU: ${skuItem.sku}).\nStatus: Demanda de tráfego ativa no digital, porém com ruptura nos tamanhos centrais (${skuItem.missingSizes.join(', ')}).\nPrioridade de Ordem de Produção: ALTA para reposição de lote.`
+          trafficManagerWhatsApp: `🚨 *ALERTA DE TRÁFEGO • ADSHIELD INTEL*\n\nFala Gestor! O produto *${skuItem.productTitle}* (SKU: ${skuItem.sku}) está com os tamanhos de maior giro (*${skuItem.missingSizes.join(', ')}*) esgotados na vitrine pública de ${domain}.\n\n💸 *Desperdício Estimado de Mídia:* ~${formatBRL(adWaste)}/mês em cliques perdidos.\n👉 *Ação Imediata:* Pausar o conjunto de anúncios no Meta Ads ou redirecionar a URL para um produto com grade completa.`,
+          magis5OperatorAction: `🔄 *AÇÃO NO HUB MAGIS5:*\n1. Localizar SKU: ${skuItem.sku}.\n2. Verificar fila de sincronização de saldo com o Sankhya ERP.\n3. Ativar trava de Buffer de Segurança (mínimo 2 unidades) para evitar venda de peças já faturadas.`,
+          sankhyaPcpProductionNote: `🏭 *NOTA DE PCP • SANKHYA ERP:*\nItem: ${skuItem.productTitle} (SKU: ${skuItem.sku}).\nStatus: Alta tração em tráfego pago, mas com ruptura crítica na curva ABC (${skuItem.missingSizes.join(', ')}).\nPrioridade de Produção: ALTA para novo lote de corte.`
         }
       });
     });
