@@ -61,6 +61,7 @@ import { VectorMemoryCompetitorRadarView } from '../components/agents/VectorMemo
 import { DualAgentConsensusTribunalView } from '../components/agents/DualAgentConsensusTribunalView';
 import { OmnichannelSocialCommerceView } from '../components/social/OmnichannelSocialCommerceView';
 import { SupplyChainDiscrepancyView } from '../components/supplyChain/SupplyChainDiscrepancyView';
+import { MerchantTripleImpactDossier } from '../components/merchant/MerchantTripleImpactDossier';
 import { detectMarketplace } from '../services/marketplaceInspector';
 import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare, Zap, Lock, Unlock, GitFork, Database, BadgeCheck, Share2, Factory } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -474,10 +475,22 @@ export function HomePage() {
             <div className="animate-in fade-in duration-200">
               <ErrorBoundary>
                 {activeTab === 'summary' && (
-                  <ExecutiveSummary
-                    diagnostic={diagnostic}
-                    onSelectAgentTab={(tab) => setActiveTab(tab)}
-                  />
+                  viewMode === 'merchant' ? (
+                    <MerchantTripleImpactDossier
+                      diagnostic={diagnostic}
+                      onOpenPricing={() => setIsPricingModalOpen(true)}
+                      onOpenWhatsAppLead={() => setIsWhatsAppModalOpen(true)}
+                      onSwitchToWarRoom={() => {
+                        setViewMode('war_room');
+                        setActiveTab('tree_of_thought');
+                      }}
+                    />
+                  ) : (
+                    <ExecutiveSummary
+                      diagnostic={diagnostic}
+                      onSelectAgentTab={(tab) => setActiveTab(tab)}
+                    />
+                  )
                 )}
 
                 {activeTab === 'founder_hq' && (
