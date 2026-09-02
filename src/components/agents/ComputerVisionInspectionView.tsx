@@ -7,10 +7,13 @@ interface ComputerVisionInspectionViewProps {
 }
 
 type VisionTab = 'heatmap' | 'thumbzone' | 'contrast' | 'trustbadges';
+type DaltonismMode = 'NORMAL' | 'PROTANOPIA' | 'DEUTERANOPIA' | 'TRITANOPIA' | 'ACHROMATOPSIA';
 
 export const ComputerVisionInspectionView: React.FC<ComputerVisionInspectionViewProps> = ({ diagnostic }) => {
   const { visionAnalysis, realSiteData } = diagnostic;
   const [activeSubTab, setActiveSubTab] = useState<VisionTab>('heatmap');
+  const [currentTimeMs, setCurrentTimeMs] = useState<number>(2500);
+  const [daltonismMode, setDaltonismMode] = useState<DaltonismMode>('NORMAL');
   const [copiedSnippetId, setCopiedSnippetId] = useState<string | null>(null);
 
   const handleCopyCode = (id: string, code: string) => {
@@ -19,16 +22,29 @@ export const ComputerVisionInspectionView: React.FC<ComputerVisionInspectionView
     setTimeout(() => setCopiedSnippetId(null), 2500);
   };
 
+  const currentTimelineStage = visionAnalysis.saliencyTimeline?.find(s => s.timeMs === currentTimeMs) || 
+    visionAnalysis.saliencyTimeline?.[visionAnalysis.saliencyTimeline.length - 1] || {
+      timeMs: 2500,
+      stageName: '2.500ms: Decisão de Clique no CTA',
+      fixationTarget: 'Botão de Compra Primário',
+      cognitiveAction: 'Movimento motor do polegar em direção ao botão de compra ou abandono',
+      attentionCtaPct: 78,
+      attentionHeroPct: 8,
+      attentionPricePct: 10,
+      dropoffRiskPct: 34
+    };
+
   const getIntensityGradient = (heatColor: string) => {
+    const scaleFactor = currentTimeMs / 2500;
     switch (heatColor) {
       case 'red':
-        return 'radial-gradient(circle, rgba(239, 68, 68, 0.85) 0%, rgba(249, 115, 22, 0.55) 45%, rgba(234, 179, 8, 0.25) 75%, transparent 100%)';
+        return `radial-gradient(circle, rgba(239, 68, 68, ${0.85 * scaleFactor}) 0%, rgba(249, 115, 22, ${0.55 * scaleFactor}) 45%, rgba(234, 179, 8, ${0.25 * scaleFactor}) 75%, transparent 100%)`;
       case 'orange':
-        return 'radial-gradient(circle, rgba(249, 115, 22, 0.8) 0%, rgba(234, 179, 8, 0.5) 50%, transparent 100%)';
+        return `radial-gradient(circle, rgba(249, 115, 22, ${0.8 * scaleFactor}) 0%, rgba(234, 179, 8, ${0.5 * scaleFactor}) 50%, transparent 100%)`;
       case 'yellow':
-        return 'radial-gradient(circle, rgba(234, 179, 8, 0.75) 0%, rgba(59, 130, 246, 0.3) 60%, transparent 100%)';
+        return `radial-gradient(circle, rgba(234, 179, 8, ${0.75 * scaleFactor}) 0%, rgba(59, 130, 246, ${0.3 * scaleFactor}) 60%, transparent 100%)`;
       default:
-        return 'radial-gradient(circle, rgba(59, 130, 246, 0.7) 0%, rgba(99, 102, 241, 0.2) 60%, transparent 100%)';
+        return `radial-gradient(circle, rgba(59, 130, 246, ${0.7 * scaleFactor}) 0%, rgba(99, 102, 241, ${0.2 * scaleFactor}) 60%, transparent 100%)`;
     }
   };
 
@@ -118,6 +134,58 @@ export const ComputerVisionInspectionView: React.FC<ComputerVisionInspectionView
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Simulated Browser with Heatmap Overlay */}
           <div className="lg:col-span-8 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+            
+            {/* ⏱️ 2,500ms INTERACTIVE SALIENCY TIMELINE SCRUBBER */}
+            <div className="p-3.5 bg-slate-900 text-white rounded-2xl border border-slate-800 space-y-3">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <span className="text-xs font-mono font-bold text-amber-400 flex items-center gap-1.5">
+                  <Flame className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Timeline de Fixação Biológica Ocular (0 a 2.500ms):</span>
+                </span>
+                <span className="px-2.5 py-0.5 bg-amber-500/20 text-amber-300 rounded-lg text-xs font-mono font-bold">
+                  Fixação Atual: {currentTimeMs}ms
+                </span>
+              </div>
+
+              {/* Scrubber Stage Buttons */}
+              <div className="grid grid-cols-4 gap-1.5 bg-slate-800/80 p-1 rounded-xl">
+                {[
+                  { ms: 0, label: '0ms: Carga' },
+                  { ms: 500, label: '500ms: Hero' },
+                  { ms: 1200, label: '1.200ms: Grade' },
+                  { ms: 2500, label: '2.500ms: CTA' }
+                ].map(stage => (
+                  <button
+                    key={stage.ms}
+                    onClick={() => setCurrentTimeMs(stage.ms)}
+                    className={`py-1.5 px-2 rounded-lg text-[11px] font-bold font-mono transition-all cursor-pointer text-center ${
+                      currentTimeMs === stage.ms
+                        ? 'bg-amber-400 text-slate-950 shadow-md font-black'
+                        : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                    }`}
+                  >
+                    {stage.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Cognitive State Breakdown Banner */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px] font-mono border-t border-slate-800">
+                <div className="text-slate-300">
+                  <span className="text-[9px] text-slate-500 uppercase block">Alvo de Fixação:</span>
+                  <strong className="text-white">{currentTimelineStage.fixationTarget}</strong>
+                </div>
+                <div className="text-slate-300">
+                  <span className="text-[9px] text-slate-500 uppercase block">Ação Cognitiva:</span>
+                  <span className="text-slate-200">{currentTimelineStage.cognitiveAction}</span>
+                </div>
+                <div className="text-slate-300">
+                  <span className="text-[9px] text-slate-500 uppercase block">Atenção no CTA:</span>
+                  <strong className="text-emerald-400">{currentTimelineStage.attentionCtaPct}%</strong> • Fuga: <span className="text-rose-400">{currentTimelineStage.dropoffRiskPct}%</span>
+                </div>
+              </div>
+            </div>
+
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-red-400" />
@@ -126,7 +194,7 @@ export const ComputerVisionInspectionView: React.FC<ComputerVisionInspectionView
                 <span className="text-xs font-mono text-slate-400 ml-2">https://{realSiteData.domain}</span>
               </div>
               <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">
-                Simulação de Fixação Visual (2.500 ms)
+                Simulação em {currentTimeMs}ms
               </span>
             </div>
 
@@ -425,9 +493,52 @@ export const ComputerVisionInspectionView: React.FC<ComputerVisionInspectionView
               </div>
             </div>
 
-            {/* Color Blindness Simulation Checklist */}
+            {/* Interactive Daltonism Filter Selector */}
+            <div className="p-4 bg-slate-900 text-white border border-slate-800 rounded-2xl space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold font-mono text-purple-300">
+                  Simulador Interativo de Daltonismo (Acessibilidade Visual):
+                </span>
+                <span className="text-[10px] font-mono text-slate-400 bg-slate-800 px-2 py-0.5 rounded">
+                  Modo: {daltonismMode}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5 bg-slate-800/80 p-1 rounded-xl text-[10px] font-mono font-bold">
+                {(['NORMAL', 'PROTANOPIA', 'DEUTERANOPIA', 'TRITANOPIA', 'ACHROMATOPSIA'] as DaltonismMode[]).map(mode => (
+                  <button
+                    key={mode}
+                    onClick={() => setDaltonismMode(mode)}
+                    className={`py-1.5 px-2 rounded-lg transition-all cursor-pointer text-center ${
+                      daltonismMode === mode
+                        ? 'bg-purple-500 text-white shadow-md font-black'
+                        : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                    }`}
+                  >
+                    {mode === 'NORMAL' ? 'Normal' : mode === 'PROTANOPIA' ? 'Protanopia' : mode === 'DEUTERANOPIA' ? 'Deuteranopia' : mode === 'TRITANOPIA' ? 'Tritanopia' : 'Acromatopsia'}
+                  </button>
+                ))}
+              </div>
+
+              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-center">
+                <div
+                  className="py-2.5 px-6 rounded-xl font-bold text-xs text-white transition-all shadow-md"
+                  style={{
+                    backgroundColor: visionAnalysis.contrastAudit.ctaBgColor,
+                    filter: daltonismMode === 'PROTANOPIA' ? 'grayscale(40%) sepia(30%) hue-rotate(180deg)' :
+                            daltonismMode === 'DEUTERANOPIA' ? 'grayscale(40%) sepia(30%) hue-rotate(240deg)' :
+                            daltonismMode === 'TRITANOPIA' ? 'grayscale(30%) sepia(40%) hue-rotate(60deg)' :
+                            daltonismMode === 'ACHROMATOPSIA' ? 'grayscale(100%)' : 'none'
+                  }}
+                >
+                  COMPRAR AGORA ({daltonismMode})
+                </div>
+              </div>
+            </div>
+
+            {/* Color Blindness Quick Checklist */}
             <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-              <span className="text-xs font-bold text-slate-800">Simulação de Daltonismo:</span>
+              <span className="text-xs font-bold text-slate-800">Checklist de Conformidade Daltonismo:</span>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <span className="flex items-center gap-1.5 text-emerald-700">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Protanopia (Vermelho): Seguro

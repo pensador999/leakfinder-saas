@@ -51,6 +51,17 @@ export interface VisualClutterMetrics {
   aboveTheFoldRetentionScore: number;
 }
 
+export interface SaliencyTimelineStage {
+  timeMs: number;
+  stageName: string;
+  fixationTarget: string;
+  cognitiveAction: string;
+  attentionCtaPct: number;
+  attentionHeroPct: number;
+  attentionPricePct: number;
+  dropoffRiskPct: number;
+}
+
 export interface VisionAnalysisResult {
   ocr: {
     hasTextInImages: boolean;
@@ -102,6 +113,7 @@ export interface VisionAnalysisResult {
     hasLoyaltyProgram: boolean;
     hasSubscribeAndSave: boolean;
   };
+  saliencyTimeline: SaliencyTimelineStage[];
   warnings: string[];
   recommendations: string[];
 }
@@ -354,6 +366,48 @@ export async function analyzeComputerVision(domain: string, htmlSnippet: string 
       hasLoyaltyProgram: htmlLower.includes('cashback') || htmlLower.includes('fidelidade') || htmlLower.includes('pontos'),
       hasSubscribeAndSave: htmlLower.includes('assinatura') || htmlLower.includes('recorr')
     },
+    saliencyTimeline: [
+      {
+        timeMs: 0,
+        stageName: '0ms: Impacto Visual Inicial',
+        fixationTarget: 'Logo & Topo da Vitrine',
+        cognitiveAction: 'Validação subconsciente de segurança e carregamento do cabeçalho',
+        attentionCtaPct: 5,
+        attentionHeroPct: 75,
+        attentionPricePct: 10,
+        dropoffRiskPct: 8
+      },
+      {
+        timeMs: 500,
+        stageName: '500ms: Fixação no Hero Banner',
+        fixationTarget: mainHeroText,
+        cognitiveAction: 'Reconhecimento da proposta de valor e fotografia principal do produto',
+        attentionCtaPct: 18,
+        attentionHeroPct: 62,
+        attentionPricePct: 15,
+        dropoffRiskPct: 14
+      },
+      {
+        timeMs: 1200,
+        stageName: '1.200ms: Avaliação de Preço & Grade',
+        fixationTarget: 'Faixa de Preço & Seletor de Tamanhos',
+        cognitiveAction: 'Processamento racional: busca pelo tamanho do comprador e cálculo de custo-benefício',
+        attentionCtaPct: 45,
+        attentionHeroPct: 20,
+        attentionPricePct: 30,
+        dropoffRiskPct: 22
+      },
+      {
+        timeMs: 2500,
+        stageName: '2.500ms: Decisão de Clique no CTA',
+        fixationTarget: `${primaryCtaText} (Botão Primário)`,
+        cognitiveAction: 'Movimento motor do polegar em direção ao botão de compra ou abandono da aba',
+        attentionCtaPct: 78,
+        attentionHeroPct: 8,
+        attentionPricePct: 10,
+        dropoffRiskPct: 34
+      }
+    ],
     warnings,
     recommendations
   };
