@@ -5,6 +5,7 @@
 
 import { AgentDiagnosticResult } from '../../types';
 import { calculateStoreFinancialGrounding } from '../ai/storeFinancialGroundingEngine';
+import { auditSupplyChainDiscrepancy } from '../supplyChain/erpHubDiscrepancyEngine';
 
 export interface AgencyWhiteLabelConfig {
   agencyName: string;
@@ -64,6 +65,7 @@ export function generatePrintablePdfDossierHtml(
   const formattedDate = new Date().toLocaleDateString('pt-BR');
 
   const finances = calculateStoreFinancialGrounding(realSiteData, diagnostic.input, social);
+  const supplyChainAudit = auditSupplyChainDiscrepancy(realSiteData, diagnostic.input);
   const catalogIssues = realSiteData.catalogAudit?.issues || [];
   const brokenSkusCount = finances.brokenSkusCount;
   const estimatedMonthlyLoss = finances.financialRisk.totalMonthlyLoss;
@@ -301,6 +303,29 @@ export function generatePrintablePdfDossierHtml(
           <td>Contraste Visual WCAG 2.1 AAA (Mobile)</td>
           <td><span class="${visionAnalysis.contrastAudit.wcagAaPassed ? 'badge-green' : 'badge-red'}">${visionAnalysis.contrastAudit.contrastRatio}:1 (${visionAnalysis.contrastAudit.wcagAaPassed ? 'APROVADO' : 'REPROVADO'})</span></td>
           <td>Garante legibilidade do botão 'Comprar' sob luz solar</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="section-title">Auditoria de Descompasso Operacional (Sankhya ERP ⟷ Magis5 ⟷ Loja ⟷ Ads)</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Pilar Operacional</th>
+          <th>Diagnóstico Observado</th>
+          <th>Impacto Financeiro</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Índice de Sincronia de Estoque</td>
+          <td><span class="${supplyChainAudit.operationalSyncScore >= 80 ? 'badge-green' : 'badge-red'}">${supplyChainAudit.operationalSyncScore}% SINCRONIZADO</span></td>
+          <td>Risco Total: ${supplyChainAudit.financialImpactSummary.formattedMonthlyTotalRisk}/mês</td>
+        </tr>
+        <tr>
+          <td>Trava de Buffer Anti-Venda Fantasma</td>
+          <td><span class="badge-green">${supplyChainAudit.suggestedSafetyBufferUnits} UNIDADES RECOMENDADAS</span></td>
+          <td>Evita cancelamentos por delay de fila no hub</td>
         </tr>
       </tbody>
     </table>

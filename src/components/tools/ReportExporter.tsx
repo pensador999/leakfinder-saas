@@ -21,6 +21,7 @@ import {
 import { AgentDiagnosticResult } from '../../types';
 import { generateShopifyTelemetryAnalysis } from '../../services/shopifyTelemetryService';
 import { calculateStoreFinancialGrounding } from '../../services/ai/storeFinancialGroundingEngine';
+import { auditSupplyChainDiscrepancy } from '../../services/supplyChain/erpHubDiscrepancyEngine';
 
 interface ReportExporterProps {
   diagnostic: AgentDiagnosticResult;
@@ -33,6 +34,7 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ diagnostic, onCl
   const [agencyName, setAgencyName] = useState('LeakFinder Growth Intelligence');
 
   const finances = calculateStoreFinancialGrounding(realSiteData, input, social);
+  const supplyChainAudit = auditSupplyChainDiscrepancy(realSiteData, input);
 
   const telemetryData = generateShopifyTelemetryAnalysis(
     realSiteData.domain,
@@ -60,12 +62,21 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ diagnostic, onCl
 
 ---
 
-## 2. GARGALOS CRÍTICOS IDENTIFICADOS NO CATÁLOGO
+## 2. AUDITORIA DE DESCOMPASSO OPERACIONAL & TRÁFEGO (SANKHYA ERP ⟷ MAGIS5 ⟷ LOJA ⟷ ADS)
+- **Score de Sincronia Operacional:** ${supplyChainAudit.operationalSyncScore}%
+- **Risco Total por Descompasso:** ${supplyChainAudit.financialImpactSummary.formattedMonthlyTotalRisk} / mês
+- **Desperdício em Cliques Fantasmas (Grau 1):** R$ ${supplyChainAudit.financialImpactSummary.monthlyAdWasteBRL.toLocaleString('pt-BR')} / mês
+- **Risco de Venda Fantasma / Estorno (Grau 2):** R$ ${supplyChainAudit.financialImpactSummary.monthlyCancellationRiskBRL.toLocaleString('pt-BR')} / mês
+- **Trava de Buffer Recomendada na Magis5:** ${supplyChainAudit.suggestedSafetyBufferUnits} unidades de segurança
+
+---
+
+## 3. GARGALOS CRÍTICOS IDENTIFICADOS NO CATÁLOGO
 ${(realSiteData.catalogAudit?.issues || []).map(i => `- **SKU ${i.sku} (${i.productTitle}):** ${i.isFullPrintExempt ? '[Isento Regra _FULL / Acessório]' : i.missingSizes.length > 0 ? `Faltam tamanhos: ${i.missingSizes.join(', ')}` : 'Grade Completa'} | URL: ${i.productUrl}`).join('\n')}
 
 ---
 
-## 3. VISÃO COMPUTACIONAL & ERGONOMIA MOBILE
+## 4. VISÃO COMPUTACIONAL & ERGONOMIA MOBILE
 - **Ímã Visual Dominante:** ${visionAnalysis.eyeTracking.mainFocusElement}
 - **Foco no CTA Principal:** ${visionAnalysis.eyeTracking.focusScoreCta}%
 - **Contraste WCAG 2.1 AAA:** ${visionAnalysis.contrastAudit.contrastRatio}:1 (${visionAnalysis.contrastAudit.wcagAaPassed ? 'Aprovado' : 'Abaixo do Ideal'})
@@ -73,12 +84,12 @@ ${(realSiteData.catalogAudit?.issues || []).map(i => `- **SKU ${i.sku} (${i.prod
 
 ---
 
-## 4. PLANO DE AÇÃO & REMEDIAÇÃO IMEDIATA
-1. Reposição de grade nos SKUs com maior volume de carrinhos abandonados.
-2. Implantação de Sticky Buy Button no rodapé mobile do tema.
-3. Ampliação da área de toque dos botões de seleção de tamanho para 48x48px (Lei de Fitts).
+## 5. PLANO DE AÇÃO & REMEDIAÇÃO IMEDIATA
+1. Pausar no Meta Ads os criativos direcionados para SKUs com grade esgotada (M e G).
+2. Ativar Trava de Buffer de Segurança (mínimo 2 un) na Magis5 para blindar o Sankhya ERP.
+3. Implantação de Sticky Buy Button no rodapé mobile do tema.
 4. Destaque do cálculo de 10% de desconto no Pix logo abaixo do preço.
-5. Inserção de rel="noopener noreferrer" em todos os links externos.
+5. Injeção da Tabela de Medidas (<product-addons>) nas páginas de produto.
 
 ---
 *Relatório gerado por ${agencyName} via LeakFinder SaaS.*
