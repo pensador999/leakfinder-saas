@@ -292,9 +292,9 @@ async function fetchRealLiveCatalogAudit(
                                  domain.toLowerCase().includes('brk') ||
                                  (doc ? !!doc.querySelector('product-addons, .size_chart, [data-custom-class="size_chart"], [data-text-header*="Guia"], [data-text-header*="guia"]') : false);
 
-  // Try fetching real Shopify products.json
-  const shopifyJsonUrl = `https://${domain}/products.json?limit=15`;
-  const jsonRaw = await fetchHtmlWithTimeout(shopifyJsonUrl, 3000);
+  // Try fetching real Shopify products.json (Deep 50-item Catalog Sweep)
+  const shopifyJsonUrl = `https://${domain}/products.json?limit=50`;
+  const jsonRaw = await fetchHtmlWithTimeout(shopifyJsonUrl, 3500);
 
   if (jsonRaw) {
     try {
