@@ -60,8 +60,9 @@ import { TreeOfThoughtDebateView } from '../components/agents/TreeOfThoughtDebat
 import { VectorMemoryCompetitorRadarView } from '../components/agents/VectorMemoryCompetitorRadarView';
 import { DualAgentConsensusTribunalView } from '../components/agents/DualAgentConsensusTribunalView';
 import { OmnichannelSocialCommerceView } from '../components/social/OmnichannelSocialCommerceView';
+import { SupplyChainDiscrepancyView } from '../components/supplyChain/SupplyChainDiscrepancyView';
 import { detectMarketplace } from '../services/marketplaceInspector';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare, Zap, Lock, Unlock, GitFork, Database, BadgeCheck, Share2 } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare, Zap, Lock, Unlock, GitFork, Database, BadgeCheck, Share2, Factory } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export function HomePage() {
@@ -199,6 +200,7 @@ export function HomePage() {
       label: '🩺 Catálogo & Estoque',
       badge: totalCatalogAlerts > 0 ? `${totalCatalogAlerts} Alertas` : undefined,
       tabs: [
+        { id: 'supply_chain_discrepancy', label: '📦 Descompasso ERP & Hub (Sankhya/Magis5)', icon: Factory, highlight: true },
         { id: 'sku_crossing', label: 'Cruzamento SKUs & Abandonos', icon: GitCompare, highlight: true },
         { id: 'niche_recognition', label: 'Reconhecimento de Nicho', icon: Globe, highlight: true },
         { id: 'catalog', label: 'Catálogo & Grade PP-G2', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
@@ -544,6 +546,10 @@ export function HomePage() {
 
                 {activeTab === 'vitals' && (
                   <CoreWebVitalsAuditView diagnostic={diagnostic} />
+                )}
+
+                {activeTab === 'supply_chain_discrepancy' && diagnostic && (
+                  <SupplyChainDiscrepancyView diagnostic={diagnostic} />
                 )}
 
                 {activeTab === 'pricing' && (
