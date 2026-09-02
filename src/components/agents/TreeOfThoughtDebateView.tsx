@@ -16,7 +16,8 @@ import {
   Award,
   Flame,
   Layers,
-  BarChart3
+  BarChart3,
+  Crown
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../../types';
 import { 
@@ -88,6 +89,60 @@ export const TreeOfThoughtDebateView: React.FC<TreeOfThoughtDebateViewProps> = (
           <span>{isDebating ? 'Debatendo Hipóteses...' : 'Executar Novo Ciclo de Debate'}</span>
         </button>
       </div>
+
+      {/* 👑 SESSÃO INAUGURAL: DESAFIO SOCRÁTICO DO CEO */}
+      {debateData.socraticKickoff && (
+        <div className="p-6 rounded-3xl bg-slate-900 text-white border-2 border-amber-500/30 shadow-2xl space-y-5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-gradient-to-br from-amber-500 to-yellow-600 rounded-2xl text-slate-950 font-black shadow-md shadow-amber-500/20">
+                <Crown className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-bold text-white">Desafio Inicial do CEO (Socratic Kickoff)</h3>
+                  <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 rounded-full border border-amber-500/40">
+                    Cobrança Implacável de Evidências
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-0.5">{debateData.socraticKickoff.kickoffDirective}</p>
+              </div>
+            </div>
+
+            <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-xl font-mono text-xs font-bold shrink-0">
+              2/2 Evidências Homologadas ✓
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {debateData.socraticKickoff.questions.map((q, idx) => (
+              <div key={idx} className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono font-bold text-amber-400 uppercase">
+                    Cobrança #{idx + 1} • Para: {q.agentTargetName}
+                  </span>
+                  <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800">
+                    {q.ceoValidationBadge}
+                  </span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-amber-200 font-sans italic">
+                  <strong>Pergunta do CEO:</strong> "{q.ceoChallengeQuestion}"
+                </div>
+
+                <div className="space-y-1.5 text-xs text-slate-300 font-sans">
+                  <span className="text-[10px] text-slate-500 uppercase font-mono font-bold block">Defesa com Prova Empírica:</span>
+                  <p className="leading-relaxed">{q.agentResponseWithGrounding}</p>
+                </div>
+
+                <div className="p-2 bg-slate-900/90 rounded-xl border border-slate-800 text-[10px] font-mono text-slate-400 flex items-center justify-between">
+                  <span className="text-slate-500">Dado Bruto Extraído: <strong className="text-emerald-400 font-sans">{q.verifiedEvidenceSnippet}</strong></span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 🌲 3 COMPETING HYPOTHESIS BRANCHES */}
       <div className="space-y-4">
