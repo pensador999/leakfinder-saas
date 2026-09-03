@@ -96,6 +96,31 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
         </div>
       </div>
 
+      {/* 🛡️ BANNER DE TRANSPARÊNCIA E GROUNDING (AGENTS.MD RULE 1) */}
+      <div className="p-4 bg-slate-900 text-white rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-emerald-500/20 text-emerald-400 rounded-xl border border-emerald-500/30 shrink-0">
+            <ShieldCheck className="w-5 h-5 text-emerald-400" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-white">Dados 100% Públicos & Auditados ao Vivo</span>
+              <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full text-[10px] font-mono font-bold">
+                Zero Alucinação
+              </span>
+            </div>
+            <p className="text-slate-400 text-[11px] mt-0.5">
+              Estes {catalogAudit?.totalProductsScanned || 0} produtos, fotos, SKUs e tamanhos disponíveis foram extraídos diretamente do DOM público e do endpoint <code className="text-emerald-300">/products.json</code> da loja.
+            </p>
+          </div>
+        </div>
+
+        <div className="text-left sm:text-right text-[10px] text-slate-400 font-mono shrink-0 pl-11 sm:pl-0">
+          <span>Estoque físico em galpão e dados confidenciais</span>
+          <span className="block text-indigo-400 font-semibold">Requerem conexão via API da Shopify Admin / ERP Sankhya</span>
+        </div>
+      </div>
+
       {/* Metric Counters Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">

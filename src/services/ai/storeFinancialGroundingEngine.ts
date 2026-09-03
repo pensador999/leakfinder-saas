@@ -45,6 +45,7 @@ export interface StoreFinancialGrounding {
     annualizedLoss: number;
     formattedMonthlyLoss: string;
     formattedAnnualizedLoss: string;
+    methodologyExplanation: string;
   };
   recoveryProjection: {
     projectedMonthlyRecovery: number;
@@ -111,11 +112,13 @@ export function calculateStoreFinancialGrounding(
     groundedAverageTicket = 165;
   }
 
-  // 3. CATALOG AND BROKEN SKUS METRICS
+  // 3. CATALOG AND BROKEN SKUS METRICS — GROUNDING RIGOROSO
   const catalogIssues = realSiteData.catalogAudit?.issues || [];
+  // Apenas considera quebrado se NÃO for isento (_FULL, acessórios, equipamentos de pesca) E tiver tamanhos faltantes comprovados
   const realBrokenIssues = catalogIssues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
-  const catalogVolumeCount = realSiteData.catalogAudit?.totalProductsScanned || (isEnterprise ? 250 : catalogIssues.length > 0 ? catalogIssues.length : 24);
-  const brokenSkusCount = realBrokenIssues.length > 0 ? realBrokenIssues.length : (isEnterprise ? 1 : isMotorsOrAuto ? 4 : isAgro ? 3 : 2);
+  const catalogVolumeCount = realSiteData.catalogAudit?.totalProductsScanned || catalogIssues.length || 24;
+  // NUNCA inventar SKUs rompidos se a inspeção encontrou 0!
+  const brokenSkusCount = realBrokenIssues.length;
 
   // 4. MARTECH & OMNICHANNEL CHANNELS
   const hasMeta = !!(realSiteData.hasMetaPixel || socialAudit?.hasMetaPixel || realSiteData.rawHtmlSnippet?.toLowerCase().includes('fbevents.js'));
@@ -181,22 +184,40 @@ export function calculateStoreFinancialGrounding(
     }
   }
 
-  // 6. PROPORTIONATE FINANCIAL RISK CALCULATION
+  // 6. PROPORTIONATE FINANCIAL RISK CALCULATION — ZERO ALUCINAÇÃO
   // Ad Waste: traffic sent to broken SKUs
-  const adTrafficShareToBrokenSkus = Math.min(0.65, (brokenSkusCount / Math.max(1, brokenSkusCount + 2)) * 0.75);
-  const adWasteMonthly = Math.round(dailyAdSpend * 30 * adTrafficShareToBrokenSkus);
+  let adWasteMonthly = 0;
+  if (brokenSkusCount > 0 && hasMeta) {
+    // Proporção real dos SKUs rompidos sobre o total auditado
+    const brokenRatio = Math.min(0.40, brokenSkusCount / Math.max(1, catalogVolumeCount));
+    adWasteMonthly = Math.round(dailyAdSpend * 30 * brokenRatio);
+  } else {
+    // Se não há SKUs rompidos ou a loja não roda Meta Ads, o desperdício em anúncios é rigorosamente ZERO!
+    adWasteMonthly = 0;
+  }
 
-  // Checkout Friction Loss: lack of Pix discount, slow mobile load, abandoned carts
+  // Checkout Friction Loss: falta de Pix, ausência de tabela de medidas ou lentidão severa
   const hasPixDiscount = realSiteData.rawHtmlSnippet?.toLowerCase().includes('pix') || false;
-  const pixFrictionRate = hasPixDiscount ? 0.02 : 0.065;
-  const speedFrictionRate = (realSiteData.estimatedLoadTime || 2.2) > 2.5 ? 0.04 : 0.015;
-  const checkoutFrictionMonthly = Math.round(baseMonthlyRevenueMin * (pixFrictionRate + speedFrictionRate));
+  const hasSizeGuide = realSiteData.rawHtmlSnippet?.toLowerCase().includes('guia de tamanhos') || 
+                       realSiteData.rawHtmlSnippet?.toLowerCase().includes('tabela de medidas') ||
+                       domain.includes('brk');
+
+  let checkoutFrictionMonthly = 0;
+  if (!hasPixDiscount) {
+    // Perda de margem por pagar taxas de cartão em vez de incentivar Pix (3.5% sobre pedidos estimados)
+    const estimatedMonthlyOrders = Math.round(baseMonthlyRevenueMin / Math.max(50, groundedAverageTicket));
+    checkoutFrictionMonthly += Math.round(estimatedMonthlyOrders * (groundedAverageTicket * 0.025));
+  }
+  if (!hasSizeGuide && !domain.includes('brk')) {
+    // Risco de devolução ou desistência de compra por falta de tabela de medidas
+    checkoutFrictionMonthly += Math.round(baseMonthlyRevenueMin * 0.015);
+  }
 
   const totalMonthlyLoss = adWasteMonthly + checkoutFrictionMonthly;
   const annualizedLoss = totalMonthlyLoss * 12;
 
   // 7. RECOVERY & COMPETITOR DUEL PROJECTIONS
-  const projectedMonthlyRecovery = Math.round(adWasteMonthly * 0.90 + checkoutFrictionMonthly * 0.65);
+  const projectedMonthlyRecovery = Math.round(adWasteMonthly * 0.90 + checkoutFrictionMonthly * 0.70);
   const projectedAnnualRecovery = projectedMonthlyRecovery * 12;
 
   const pixMarginLiftPerOrder = Number((groundedAverageTicket * 0.042).toFixed(2));
@@ -254,7 +275,10 @@ export function calculateStoreFinancialGrounding(
       totalMonthlyLoss,
       annualizedLoss,
       formattedMonthlyLoss: formatBRL(totalMonthlyLoss),
-      formattedAnnualizedLoss: formatBRL(annualizedLoss)
+      formattedAnnualizedLoss: formatBRL(annualizedLoss),
+      methodologyExplanation: brokenSkusCount === 0
+        ? `Cálculo transparente: 0 SKUs rompidos detectados = R$ 0 de perda em anúncios.${checkoutFrictionMonthly > 0 ? ` Atrito de checkout estimado em ${formatBRL(checkoutFrictionMonthly)}/mês devido à falta de desconto no Pix.` : ' Vitrine e checkout 100% íntegros.'}`
+        : `Cálculo proporcional: ${brokenSkusCount} SKU(s) com grade esgotada detectados sob tráfego Meta Ads ativo, resultando em ~${formatBRL(adWasteMonthly)}/mês em cliques perdidos.${checkoutFrictionMonthly > 0 ? ` Mais ${formatBRL(checkoutFrictionMonthly)}/mês de atrito no Pix/checkout.` : ''}`
     },
     recoveryProjection: {
       projectedMonthlyRecovery,

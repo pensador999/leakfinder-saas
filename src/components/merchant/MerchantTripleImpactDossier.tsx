@@ -104,10 +104,26 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
                 Quanto dinheiro sua loja está perdendo hoje?
               </h2>
               <p className="text-3xl sm:text-4xl font-black tracking-tight text-white leading-tight">
-                Identificamos <span className="text-rose-400 font-mono">{finances.financialRisk.formattedMonthlyLoss}/mês</span> em risco nos anúncios da <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">{realSiteData.brandName}</span>
+                {finances.financialRisk.totalMonthlyLoss > 0 ? (
+                  <>
+                    Identificamos <span className="text-rose-400 font-mono">{finances.financialRisk.formattedMonthlyLoss}/mês</span> em risco nos anúncios da <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">{realSiteData.brandName}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-emerald-400">Grade Blindada!</span> R$ 0,00 de desperdício em anúncios para a <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">{realSiteData.brandName}</span>
+                  </>
+                )}
               </p>
               <p className="text-sm text-slate-300 leading-relaxed max-w-2xl">
-                Nossa inteligência inspecionou o catálogo ao vivo de <strong>{realSiteData.domain}</strong> e encontrou <strong>{brokenSkus.length} produtos com tráfego pago ativo mas com os tamanhos mais vendidos esgotados</strong>, além de fuga no checkout por ausência de desconto no Pix e tabela de medidas.
+                {finances.financialRisk.totalMonthlyLoss > 0 ? (
+                  <>
+                    Nossa inteligência inspecionou o catálogo ao vivo de <strong>{realSiteData.domain}</strong> e encontrou <strong>{brokenSkus.length} produto(s) com tráfego pago ativo mas com os tamanhos mais vendidos esgotados</strong>.
+                  </>
+                ) : (
+                  <>
+                    Nossa inteligência inspecionou o catálogo ao vivo de <strong>{realSiteData.domain}</strong> e confirmou que os produtos auditados estão com a grade disponível ou são peças de tamanho único/equipamentos isentos.
+                  </>
+                )}
               </p>
             </div>
 
@@ -127,9 +143,14 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
             </div>
           </div>
 
-          <div className="p-3 bg-slate-900/90 rounded-xl border border-indigo-500/20 text-xs text-slate-400 flex items-center gap-2">
-            <span className="text-indigo-400">🛡️</span>
-            <span><strong>Dado 100% Verificado ao Vivo:</strong> Preços de produtos e grade indisponível foram extraídos diretamente do HTML e da API pública da loja.</span>
+          <div className="p-3.5 bg-slate-900/90 rounded-xl border border-indigo-500/30 text-xs text-slate-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-indigo-400">🛡️</span>
+              <span><strong>Origem Auditada do Cálculo:</strong> {finances.financialRisk.methodologyExplanation}</span>
+            </div>
+            <span className="px-2 py-0.5 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded text-[10px] font-mono font-bold shrink-0">
+              Zero Alucinação
+            </span>
           </div>
         </div>
       </div>

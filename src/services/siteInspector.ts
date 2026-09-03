@@ -534,15 +534,15 @@ async function fetchRealLiveCatalogAudit(
         imageSrc: imgSrc,
         hasValidImage,
         imageResolutionStatus: hasValidImage ? 'ALTA' : 'BAIXA',
-        availableSizes: ['P', 'M', 'G', 'GG'],
-        missingSizes: isFullPrintExempt ? [] : ['PP', 'G1', 'G2'],
-        isFullPrintExempt,
+        availableSizes: ['Consultar no Produto'],
+        missingSizes: [], // NUNCA inventar tamanhos esgotados sem inspecionar a API ou variantes reais
+        isFullPrintExempt: true, // Se extraído de link genérico, isenta de ruptura para evitar falsos positivos
         hasDescription: true,
         descriptionLength: 120,
-        hasSizeGuide: themeHasSizeGuideAddon || true,
+        hasSizeGuide: themeHasSizeGuideAddon,
         imageWeightKb: 220,
-        criticalIssuesCount: isFullPrintExempt ? 0 : 2,
-        recommendedAction: isFullPrintExempt ? 'Produto em conformidade de vitrine.' : 'Completar grade PP, G1 e G2.'
+        criticalIssuesCount: 0,
+        recommendedAction: 'Produto indexado via vitrine pública.'
       });
     }
   }

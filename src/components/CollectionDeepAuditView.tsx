@@ -42,7 +42,8 @@ export const CollectionDeepAuditView: React.FC<CollectionDeepAuditViewProps> = (
     try {
       const data = await auditSpecificCollection(
         realSiteData.url || `https://${realSiteData.domain}`,
-        handleOrUrl || selectedHandle
+        handleOrUrl || selectedHandle,
+        realSiteData.catalogAudit?.issues || []
       );
       setAuditData(data);
       if (handleOrUrl) {

@@ -135,27 +135,66 @@ export async function analyzeComputerVision(domain: string, htmlSnippet: string 
   const hash = hashDomain(domain);
   const htmlLower = htmlSnippet.toLowerCase();
 
-  // 1. Extração de elementos reais do DOM
-  let mainHeroText = 'Hero Banner da Vitrine Principal';
-  let primaryCtaText = 'Botão de Compra Primário';
+  // 1. Extração de elementos reais do DOM — ZERO DADOS ESTÁTICOS
+  const brandFromDomain = domain.replace(/^www\./, '').split('.')[0].toUpperCase();
+  let mainHeroText = '';
+  let primaryCtaText = '';
 
-  // Buscar títulos H1 reais
+  // A) Buscar títulos H1 reais no DOM
   const h1Match = htmlSnippet.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
   if (h1Match && h1Match[1]) {
-    const cleanH1 = h1Match[1].replace(/<[^>]*>/g, '').trim();
-    if (cleanH1.length > 3 && cleanH1.length < 80) {
+    const cleanH1 = h1Match[1].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    if (cleanH1.length > 3 && cleanH1.length < 80 && !cleanH1.toLowerCase().includes('início') && !cleanH1.toLowerCase().includes('home')) {
       mainHeroText = cleanH1;
     }
   }
 
-  // Buscar botões reais
-  const btnMatch = htmlSnippet.match(/<button[^>]*>([\s\S]*?)<\/button>/i) || 
-                   htmlSnippet.match(/class=["'][^"']*(?:btn|button|buy|checkout|cart)[^"']*["'][^>]*>([\s\S]*?)<\/(?:button|a|span)>/i);
+  // B) Se não encontrou H1 limpo, buscar H2 com classe de banner, hero ou carrossel
+  if (!mainHeroText) {
+    const h2BannerMatch = htmlSnippet.match(/<h2[^>]*class=["'][^"']*(?:banner|hero|title|headline|carousel|slider|slide|destaque)[^"']*["'][^>]*>([\s\S]*?)<\/h2>/i) ||
+                          htmlSnippet.match(/<h2[^>]*>([\s\S]*?)<\/h2>/i);
+    if (h2BannerMatch && h2BannerMatch[1]) {
+      const cleanH2 = h2BannerMatch[1].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+      if (cleanH2.length > 3 && cleanH2.length < 80) {
+        mainHeroText = cleanH2;
+      }
+    }
+  }
+
+  // C) Buscar alt text de imagem de banner/hero
+  if (!mainHeroText) {
+    const bannerImgMatch = htmlSnippet.match(/<img[^>]+(?:class=["'][^"']*(?:banner|hero|slider|carousel|slide)[^"']*["'])[^>]+alt=["']([^"']{4,80})["']/i) ||
+                           htmlSnippet.match(/<img[^>]+alt=["']([^"']*(?:coleção|pesca|agro|lançamento|novidade|verão|inverno|oficial)[^"']*)["']/i);
+    if (bannerImgMatch && bannerImgMatch[1]) {
+      mainHeroText = bannerImgMatch[1].trim();
+    }
+  }
+
+  // D) Buscar OpenGraph Title ou Title da página
+  if (!mainHeroText) {
+    const ogTitleMatch = htmlSnippet.match(/<meta\s+property=["']og:title["']\s+content=["']([^"']+)["']/i);
+    if (ogTitleMatch && ogTitleMatch[1]) {
+      mainHeroText = ogTitleMatch[1].split('|')[0].split('-')[0].trim();
+    }
+  }
+
+  // E) Fallback fiel baseado no domínio da marca (NUNCA texto genérico fixo)
+  if (!mainHeroText) {
+    mainHeroText = `${brandFromDomain} — Vitrine & Proposta de Valor Principal`;
+  }
+
+  // Buscar botões reais de CTA (Buy/Cart/Offer)
+  const btnMatch = htmlSnippet.match(/<(?:button|a)[^>]*class=["'][^"']*(?:btn|button|buy|comprar|checkout|cart|cta)[^"']*["'][^>]*>([\s\S]*?)<\/(?:button|a)>/i) ||
+                   htmlSnippet.match(/<button[^>]*>([\s\S]*?)<\/button>/i);
   if (btnMatch && btnMatch[1]) {
-    const cleanBtn = btnMatch[1].replace(/<[^>]*>/g, '').trim();
-    if (cleanBtn.length > 2 && cleanBtn.length < 40) {
+    const cleanBtn = btnMatch[1].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    if (cleanBtn.length > 2 && cleanBtn.length < 35 && !cleanBtn.includes('{') && !cleanBtn.includes('function')) {
       primaryCtaText = cleanBtn;
     }
+  }
+
+  if (!primaryCtaText) {
+    primaryCtaText = 'Botão Principal de Conversão (CTA)';
   }
 
   // 2. Detecção de Selos e Recursos Reais

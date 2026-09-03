@@ -281,9 +281,9 @@ export const ComputerVisionInspectionView: React.FC<ComputerVisionInspectionView
                   {visionAnalysis.eyeTracking.mainFocusElement}
                 </p>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  {visionAnalysis.eyeTracking.mainFocusElement === 'Botão Comprar' 
-                    ? '✅ O fluxo ocular converge diretamente para o botão de conversão sem dispersão.'
-                    : `⚠️ O visitante gasta os primeiros 1.5s olhando para [${visionAnalysis.eyeTracking.mainFocusElement}], atrasando a decisão de compra.`}
+                  {visionAnalysis.eyeTracking.mainFocusElement.toLowerCase().includes('botão') || visionAnalysis.eyeTracking.mainFocusElement.toLowerCase().includes('comprar')
+                    ? '✅ O fluxo ocular dos primeiros 2.500ms converge diretamente para o botão de conversão e compra sem dispersão.'
+                    : `👁️ A atenção visual inicial foca na proposta de valor de "${visionAnalysis.eyeTracking.mainFocusElement}", elemento dominante acima da dobra.`}
                 </p>
               </div>
 
