@@ -16,17 +16,22 @@ import {
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { calculatePricingElasticity, PricingElasticityResult } from '../services/pricingElasticityEngine';
+import { calculateStoreFinancialGrounding } from '../services/ai/storeFinancialGroundingEngine';
 
 interface PricingElasticitySimulatorViewProps {
   diagnostic: AgentDiagnosticResult;
 }
 
 export const PricingElasticitySimulatorView: React.FC<PricingElasticitySimulatorViewProps> = ({ diagnostic }) => {
-  const { realSiteData, input } = diagnostic;
+  const { realSiteData, input, social } = diagnostic;
   const [copiedCode, setCopiedCode] = useState(false);
 
-  // Sliders State
-  const [productPrice, setProductPrice] = useState<number>(Number(input.averageOrderValue) || 159.90);
+  const finances = calculateStoreFinancialGrounding(realSiteData, input, social);
+
+  // Sliders State grounded in store's real average ticket
+  const [productPrice, setProductPrice] = useState<number>(
+    Number(input.averageOrderValue) || finances.groundedAverageTicket || 165
+  );
   const [monthlyOrders, setMonthlyOrders] = useState<number>(450);
   const [pixDiscount, setPixDiscount] = useState<number>(10);
   const [creditCardMdr, setCreditCardMdr] = useState<number>(4.49);

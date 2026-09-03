@@ -160,17 +160,34 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
           </div>
 
           <div>
-            <span className="text-2xl font-black font-mono text-rose-600 tracking-tight">
-              {finances.financialRisk.formattedMonthlyLoss} / mês
-            </span>
-            <p className="text-[11px] text-slate-500 mt-0.5">
-              Perda projetada em tráfego para {finances.brokenSkusCount} SKUs rompidos e fricção no checkout.
-            </p>
+            {finances.financialRisk.totalMonthlyLoss > 0 ? (
+              <>
+                <span className="text-2xl font-black font-mono text-rose-600 tracking-tight">
+                  {finances.financialRisk.formattedMonthlyLoss} / mês
+                </span>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Risco em tráfego para {finances.brokenSkusCount} SKU(s) rompidos e fricção de checkout.
+                </p>
+              </>
+            ) : (
+              <>
+                <span className="text-2xl font-black font-mono text-emerald-600 tracking-tight">
+                  Grade Blindada (R$ 0)
+                </span>
+                <p className="text-[11px] text-emerald-700 mt-0.5 font-medium">
+                  Catálogo 100% íntegro. Zero desperdício em anúncios de produtos rompidos.
+                </p>
+              </>
+            )}
           </div>
 
           <button
             onClick={() => onSelectAgentTab('telemetry')}
-            className="w-full py-2 px-3 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            className={`w-full py-2 px-3 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+              finances.financialRisk.totalMonthlyLoss > 0
+                ? 'bg-rose-50 hover:bg-rose-100 text-rose-700'
+                : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800'
+            }`}
           >
             <span>Ver Telemetria & Gravações</span>
             <ArrowRight className="w-3.5 h-3.5" />
