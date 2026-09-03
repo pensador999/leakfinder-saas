@@ -1,40 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Header } from '../components/Header';
 import { ExecutiveSummary } from '../components/ExecutiveSummary';
-import { ComputerVisionInspectionView } from '../components/agents/ComputerVisionInspectionView';
-import { BlindspotAuditView } from '../components/BlindspotAuditView';
-import { SecurityAgentView } from '../components/agents/SecurityAgentView';
-import { SocialAgentView } from '../components/agents/SocialAgentView';
-import { CroAgentView } from '../components/agents/CroAgentView';
-import { SeoAgentView } from '../components/agents/SeoAgentView';
-import { AdsAgentView } from '../components/agents/AdsAgentView';
-import { SalesCopyAgentView } from '../components/agents/SalesCopyAgentView';
-import { PmGrowthAgentView } from '../components/agents/PmGrowthAgentView';
-import { CompetitorAgentView } from '../components/agents/CompetitorAgentView';
-import { ActionPlanKanban } from '../components/agents/ActionPlanKanban';
-import { AgentChatView } from '../components/agents/AgentChatView';
-import { RoasCalculator } from '../components/tools/RoasCalculator';
-import { ExecutivePdfExportModal } from '../components/ExecutivePdfExportModal';
-import { SettingsModal } from '../components/SettingsModal';
-import { AdminLeadsDashboard } from '../components/AdminLeadsDashboard';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { CookieBanner } from '../components/CookieBanner';
-import { ShopifyTelemetryView } from '../components/ShopifyTelemetryView';
-import { ThemeScriptGeneratorView } from '../components/ThemeScriptGeneratorView';
-import { MarketplaceAuditView } from '../components/MarketplaceAuditView';
-import { CoreWebVitalsAuditView } from '../components/CoreWebVitalsAuditView';
-import { PricingElasticitySimulatorView } from '../components/PricingElasticitySimulatorView';
-import { TrustBadgeGeneratorView } from '../components/TrustBadgeGeneratorView';
-import { StockRuptureMonitorView } from '../components/StockRuptureMonitorView';
-import { OrchestratorControlTowerView } from '../components/OrchestratorControlTowerView';
-import { DeepScraperDossierView } from '../components/DeepScraperDossierView';
-import { TruthAuditorTribunalView } from '../components/TruthAuditorTribunalView';
-import { AutonomousSwarmControlView } from '../components/AutonomousSwarmControlView';
+import { TabLoadingSkeleton } from '../components/TabLoadingSkeleton';
 import { detectMarketplace } from '../services/marketplaceInspector';
 import { AgentDiagnosticResult } from '../types';
 import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+
+// ⚡ LAZY LOADED ANALYTICAL TABS (Demanded only when tab is active)
+const ComputerVisionInspectionView = lazy(() => import('../components/agents/ComputerVisionInspectionView').then(m => ({ default: m.ComputerVisionInspectionView })));
+const BlindspotAuditView = lazy(() => import('../components/BlindspotAuditView').then(m => ({ default: m.BlindspotAuditView })));
+const SecurityAgentView = lazy(() => import('../components/agents/SecurityAgentView').then(m => ({ default: m.SecurityAgentView })));
+const SocialAgentView = lazy(() => import('../components/agents/SocialAgentView').then(m => ({ default: m.SocialAgentView })));
+const CroAgentView = lazy(() => import('../components/agents/CroAgentView').then(m => ({ default: m.CroAgentView })));
+const SeoAgentView = lazy(() => import('../components/agents/SeoAgentView').then(m => ({ default: m.SeoAgentView })));
+const AdsAgentView = lazy(() => import('../components/agents/AdsAgentView').then(m => ({ default: m.AdsAgentView })));
+const SalesCopyAgentView = lazy(() => import('../components/agents/SalesCopyAgentView').then(m => ({ default: m.SalesCopyAgentView })));
+const PmGrowthAgentView = lazy(() => import('../components/agents/PmGrowthAgentView').then(m => ({ default: m.PmGrowthAgentView })));
+const CompetitorAgentView = lazy(() => import('../components/agents/CompetitorAgentView').then(m => ({ default: m.CompetitorAgentView })));
+const ActionPlanKanban = lazy(() => import('../components/agents/ActionPlanKanban').then(m => ({ default: m.ActionPlanKanban })));
+const AgentChatView = lazy(() => import('../components/agents/AgentChatView').then(m => ({ default: m.AgentChatView })));
+const RoasCalculator = lazy(() => import('../components/tools/RoasCalculator').then(m => ({ default: m.RoasCalculator })));
+const ShopifyTelemetryView = lazy(() => import('../components/ShopifyTelemetryView').then(m => ({ default: m.ShopifyTelemetryView })));
+const ThemeScriptGeneratorView = lazy(() => import('../components/ThemeScriptGeneratorView').then(m => ({ default: m.ThemeScriptGeneratorView })));
+const MarketplaceAuditView = lazy(() => import('../components/MarketplaceAuditView').then(m => ({ default: m.MarketplaceAuditView })));
+const CoreWebVitalsAuditView = lazy(() => import('../components/CoreWebVitalsAuditView').then(m => ({ default: m.CoreWebVitalsAuditView })));
+const PricingElasticitySimulatorView = lazy(() => import('../components/PricingElasticitySimulatorView').then(m => ({ default: m.PricingElasticitySimulatorView })));
+const TrustBadgeGeneratorView = lazy(() => import('../components/TrustBadgeGeneratorView').then(m => ({ default: m.TrustBadgeGeneratorView })));
+const StockRuptureMonitorView = lazy(() => import('../components/StockRuptureMonitorView').then(m => ({ default: m.StockRuptureMonitorView })));
+const OrchestratorControlTowerView = lazy(() => import('../components/OrchestratorControlTowerView').then(m => ({ default: m.OrchestratorControlTowerView })));
+const DeepScraperDossierView = lazy(() => import('../components/DeepScraperDossierView').then(m => ({ default: m.DeepScraperDossierView })));
+const TruthAuditorTribunalView = lazy(() => import('../components/TruthAuditorTribunalView').then(m => ({ default: m.TruthAuditorTribunalView })));
+const AutonomousSwarmControlView = lazy(() => import('../components/AutonomousSwarmControlView').then(m => ({ default: m.AutonomousSwarmControlView })));
+
+// ⚡ LAZY LOADED MODALS
+const ExecutivePdfExportModal = lazy(() => import('../components/ExecutivePdfExportModal').then(m => ({ default: m.ExecutivePdfExportModal })));
+const SettingsModal = lazy(() => import('../components/SettingsModal').then(m => ({ default: m.SettingsModal })));
+const AdminLeadsDashboard = lazy(() => import('../components/AdminLeadsDashboard').then(m => ({ default: m.AdminLeadsDashboard })));
 
 export function ReportPage() {
   const { id } = useParams();
@@ -232,13 +237,15 @@ export function ReportPage() {
                   />
                 )}
 
-                {activeTab === 'orchestrator' && (
-                  <OrchestratorControlTowerView diagnostic={diagnostic} />
-                )}
+                {/* Lazy Loaded Analytical Tabs with Skeleton Fallback */}
+                <Suspense fallback={<TabLoadingSkeleton />}>
+                  {activeTab === 'orchestrator' && (
+                    <OrchestratorControlTowerView diagnostic={diagnostic} />
+                  )}
 
-                {activeTab === 'scraper_dossier' && (
-                  <DeepScraperDossierView diagnostic={diagnostic} />
-                )}
+                  {activeTab === 'scraper_dossier' && (
+                    <DeepScraperDossierView diagnostic={diagnostic} />
+                  )}
 
                 {activeTab === 'truth_auditor' && (
                   <TruthAuditorTribunalView diagnostic={diagnostic} />
@@ -320,6 +327,7 @@ export function ReportPage() {
                     <RoasCalculator />
                   </div>
                 )}
+                </Suspense>
               </ErrorBoundary>
             </div>
 
@@ -328,22 +336,25 @@ export function ReportPage() {
 
       </main>
 
-      {/* Export Report Modal (White-Label PDF) */}
-      {isExportModalOpen && diagnostic && (
-        <ExecutivePdfExportModal
-          diagnostic={diagnostic}
-          isOpen={isExportModalOpen}
-          onClose={() => setIsExportModalOpen(false)}
-        />
-      )}
+      {/* Lazy Loaded Modals */}
+      <Suspense fallback={null}>
+        {/* Export Report Modal (White-Label PDF) */}
+        {isExportModalOpen && diagnostic && (
+          <ExecutivePdfExportModal
+            diagnostic={diagnostic}
+            isOpen={isExportModalOpen}
+            onClose={() => setIsExportModalOpen(false)}
+          />
+        )}
 
-      {isSettingsModalOpen && (
-        <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />
-      )}
+        {isSettingsModalOpen && (
+          <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />
+        )}
 
-      {isAdminDashboardOpen && (
-        <AdminLeadsDashboard onClose={() => setIsAdminDashboardOpen(false)} />
-      )}
+        {isAdminDashboardOpen && (
+          <AdminLeadsDashboard onClose={() => setIsAdminDashboardOpen(false)} />
+        )}
+      </Suspense>
 
       {/* Footer Legal */}
       <footer className="max-w-7xl mx-auto py-8 px-4 border-t border-slate-200 mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500">

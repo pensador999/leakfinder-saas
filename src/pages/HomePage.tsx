@@ -1,73 +1,83 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import confetti from 'canvas-confetti';
 import { Header } from '../components/Header';
 import { HeroUrlBar } from '../components/HeroUrlBar';
 import { ExecutiveSummary } from '../components/ExecutiveSummary';
-import { ComputerVisionInspectionView } from '../components/agents/ComputerVisionInspectionView';
-import { BlindspotAuditView } from '../components/BlindspotAuditView';
-import { SecurityAgentView } from '../components/agents/SecurityAgentView';
-import { SocialAgentView } from '../components/agents/SocialAgentView';
-import { CroAgentView } from '../components/agents/CroAgentView';
-import { SeoAgentView } from '../components/agents/SeoAgentView';
-import { AdsAgentView } from '../components/agents/AdsAgentView';
-import { SalesCopyAgentView } from '../components/agents/SalesCopyAgentView';
-import { PmGrowthAgentView } from '../components/agents/PmGrowthAgentView';
-import { CompetitorAgentView } from '../components/agents/CompetitorAgentView';
-import { ActionPlanKanban } from '../components/agents/ActionPlanKanban';
-import { AgentChatView } from '../components/agents/AgentChatView';
-import { RoasCalculator } from '../components/tools/RoasCalculator';
-import { AuditFormModal } from '../components/AuditFormModal';
+import { MerchantTripleImpactDossier } from '../components/merchant/MerchantTripleImpactDossier';
 import { AnalysisLoadingState } from '../components/AnalysisLoadingState';
-import { ExecutivePdfExportModal } from '../components/ExecutivePdfExportModal';
-import { SettingsModal } from '../components/SettingsModal';
-import { AdminLeadsDashboard } from '../components/AdminLeadsDashboard';
-import { TransparentCheckoutModal } from '../components/billing/TransparentCheckoutModal';
-import { WhatsAppLeadCaptureModal } from '../components/WhatsAppLeadCaptureModal';
-import { AdminLeadsDrawer } from '../components/AdminLeadsDrawer';
-import { MonitoredStoresManagerModal } from '../components/MonitoredStoresManagerModal';
-import { WhatsAppWatchdogSettingsModal } from '../components/WhatsAppWatchdogSettingsModal';
-import { EcommerceIntegrationsHubModal } from '../components/EcommerceIntegrationsHubModal';
-import { AgencyWhiteLabelModal } from '../components/agency/AgencyWhiteLabelModal';
-import { FloatingAiChatWidget } from '../components/FloatingAiChatWidget';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { CookieBanner } from '../components/CookieBanner';
+import { TabLoadingSkeleton } from '../components/TabLoadingSkeleton';
+import { PublicDossierMerchantHeader } from '../components/PublicDossierMerchantHeader';
 import { runAgentDiagnosticAsync } from '../services/agentEngine';
 import { extractCleanDomainAndBrand } from '../services/siteInspector';
 import { AuditInput, AgentDiagnosticResult } from '../types';
-import { ShopifyTelemetryView } from '../components/ShopifyTelemetryView';
-import { ThemeScriptGeneratorView } from '../components/ThemeScriptGeneratorView';
-import { MarketplaceAuditView } from '../components/MarketplaceAuditView';
-import { CoreWebVitalsAuditView } from '../components/CoreWebVitalsAuditView';
-import { PricingElasticitySimulatorView } from '../components/PricingElasticitySimulatorView';
-import { TrustBadgeGeneratorView } from '../components/TrustBadgeGeneratorView';
-import { StockRuptureMonitorView } from '../components/StockRuptureMonitorView';
-import { OrchestratorControlTowerView } from '../components/OrchestratorControlTowerView';
-import { DeepScraperDossierView } from '../components/DeepScraperDossierView';
-import { TruthAuditorTribunalView } from '../components/TruthAuditorTribunalView';
-import { AutonomousSwarmControlView } from '../components/AutonomousSwarmControlView';
-import { MarketHunterAgentView } from '../components/agents/MarketHunterAgentView';
-import { ProductEvolutionAgentView } from '../components/agents/ProductEvolutionAgentView';
-import { CustomerSuccessVocAgentView } from '../components/agents/CustomerSuccessVocAgentView';
-import { ChiefExecutiveOrchestratorAgentView } from '../components/agents/ChiefExecutiveOrchestratorAgentView';
-import { CollectionDeepAuditView } from '../components/CollectionDeepAuditView';
-import { UniversalNicheRecognitionView } from '../components/agents/UniversalNicheRecognitionView';
-import { SkuAbandonmentCrossAuditView } from '../components/SkuAbandonmentCrossAuditView';
-import { FounderMasterHqView } from '../components/founder/FounderMasterHqView';
-import { AutonomousAgentFlowchartView } from '../components/founder/AutonomousAgentFlowchartView';
-import { FounderAuthModal } from '../components/founder/FounderAuthModal';
-import { PublicDossierMerchantHeader } from '../components/PublicDossierMerchantHeader';
-import { TreeOfThoughtDebateView } from '../components/agents/TreeOfThoughtDebateView';
-import { VectorMemoryCompetitorRadarView } from '../components/agents/VectorMemoryCompetitorRadarView';
-import { DualAgentConsensusTribunalView } from '../components/agents/DualAgentConsensusTribunalView';
-import { OmnichannelSocialCommerceView } from '../components/social/OmnichannelSocialCommerceView';
-import { SupplyChainDiscrepancyView } from '../components/supplyChain/SupplyChainDiscrepancyView';
-import { MerchantTripleImpactDossier } from '../components/merchant/MerchantTripleImpactDossier';
-import { MetaAdsAutoKillSwitchModal } from '../components/ads/MetaAdsAutoKillSwitchModal';
-import { BatchProspectingAuditorModal } from '../components/agency/BatchProspectingAuditorModal';
-import { ChromeExtensionModal } from '../components/tools/ChromeExtensionModal';
 import { detectMarketplace } from '../services/marketplaceInspector';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, Globe, GitCompare, Zap, Lock, Unlock, GitFork, Database, BadgeCheck, Share2, Factory } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { 
+  LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, 
+  KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, 
+  Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, 
+  Globe, GitCompare, Zap, Lock, Unlock, GitFork, Database, BadgeCheck, Share2, Factory 
+} from 'lucide-react';
+
+// ⚡ LAZY LOADED ANALYTICAL TABS (Demanded only when tab is active)
+const ComputerVisionInspectionView = lazy(() => import('../components/agents/ComputerVisionInspectionView').then(m => ({ default: m.ComputerVisionInspectionView })));
+const BlindspotAuditView = lazy(() => import('../components/BlindspotAuditView').then(m => ({ default: m.BlindspotAuditView })));
+const SecurityAgentView = lazy(() => import('../components/agents/SecurityAgentView').then(m => ({ default: m.SecurityAgentView })));
+const SocialAgentView = lazy(() => import('../components/agents/SocialAgentView').then(m => ({ default: m.SocialAgentView })));
+const CroAgentView = lazy(() => import('../components/agents/CroAgentView').then(m => ({ default: m.CroAgentView })));
+const SeoAgentView = lazy(() => import('../components/agents/SeoAgentView').then(m => ({ default: m.SeoAgentView })));
+const AdsAgentView = lazy(() => import('../components/agents/AdsAgentView').then(m => ({ default: m.AdsAgentView })));
+const SalesCopyAgentView = lazy(() => import('../components/agents/SalesCopyAgentView').then(m => ({ default: m.SalesCopyAgentView })));
+const PmGrowthAgentView = lazy(() => import('../components/agents/PmGrowthAgentView').then(m => ({ default: m.PmGrowthAgentView })));
+const CompetitorAgentView = lazy(() => import('../components/agents/CompetitorAgentView').then(m => ({ default: m.CompetitorAgentView })));
+const ActionPlanKanban = lazy(() => import('../components/agents/ActionPlanKanban').then(m => ({ default: m.ActionPlanKanban })));
+const AgentChatView = lazy(() => import('../components/agents/AgentChatView').then(m => ({ default: m.AgentChatView })));
+const RoasCalculator = lazy(() => import('../components/tools/RoasCalculator').then(m => ({ default: m.RoasCalculator })));
+const ShopifyTelemetryView = lazy(() => import('../components/ShopifyTelemetryView').then(m => ({ default: m.ShopifyTelemetryView })));
+const ThemeScriptGeneratorView = lazy(() => import('../components/ThemeScriptGeneratorView').then(m => ({ default: m.ThemeScriptGeneratorView })));
+const MarketplaceAuditView = lazy(() => import('../components/MarketplaceAuditView').then(m => ({ default: m.MarketplaceAuditView })));
+const CoreWebVitalsAuditView = lazy(() => import('../components/CoreWebVitalsAuditView').then(m => ({ default: m.CoreWebVitalsAuditView })));
+const PricingElasticitySimulatorView = lazy(() => import('../components/PricingElasticitySimulatorView').then(m => ({ default: m.PricingElasticitySimulatorView })));
+const TrustBadgeGeneratorView = lazy(() => import('../components/TrustBadgeGeneratorView').then(m => ({ default: m.TrustBadgeGeneratorView })));
+const StockRuptureMonitorView = lazy(() => import('../components/StockRuptureMonitorView').then(m => ({ default: m.StockRuptureMonitorView })));
+const OrchestratorControlTowerView = lazy(() => import('../components/OrchestratorControlTowerView').then(m => ({ default: m.OrchestratorControlTowerView })));
+const DeepScraperDossierView = lazy(() => import('../components/DeepScraperDossierView').then(m => ({ default: m.DeepScraperDossierView })));
+const TruthAuditorTribunalView = lazy(() => import('../components/TruthAuditorTribunalView').then(m => ({ default: m.TruthAuditorTribunalView })));
+const AutonomousSwarmControlView = lazy(() => import('../components/AutonomousSwarmControlView').then(m => ({ default: m.AutonomousSwarmControlView })));
+const MarketHunterAgentView = lazy(() => import('../components/agents/MarketHunterAgentView').then(m => ({ default: m.MarketHunterAgentView })));
+const ProductEvolutionAgentView = lazy(() => import('../components/agents/ProductEvolutionAgentView').then(m => ({ default: m.ProductEvolutionAgentView })));
+const CustomerSuccessVocAgentView = lazy(() => import('../components/agents/CustomerSuccessVocAgentView').then(m => ({ default: m.CustomerSuccessVocAgentView })));
+const ChiefExecutiveOrchestratorAgentView = lazy(() => import('../components/agents/ChiefExecutiveOrchestratorAgentView').then(m => ({ default: m.ChiefExecutiveOrchestratorAgentView })));
+const CollectionDeepAuditView = lazy(() => import('../components/CollectionDeepAuditView').then(m => ({ default: m.CollectionDeepAuditView })));
+const UniversalNicheRecognitionView = lazy(() => import('../components/agents/UniversalNicheRecognitionView').then(m => ({ default: m.UniversalNicheRecognitionView })));
+const SkuAbandonmentCrossAuditView = lazy(() => import('../components/SkuAbandonmentCrossAuditView').then(m => ({ default: m.SkuAbandonmentCrossAuditView })));
+const FounderMasterHqView = lazy(() => import('../components/founder/FounderMasterHqView').then(m => ({ default: m.FounderMasterHqView })));
+const AutonomousAgentFlowchartView = lazy(() => import('../components/founder/AutonomousAgentFlowchartView').then(m => ({ default: m.AutonomousAgentFlowchartView })));
+const TreeOfThoughtDebateView = lazy(() => import('../components/agents/TreeOfThoughtDebateView').then(m => ({ default: m.TreeOfThoughtDebateView })));
+const VectorMemoryCompetitorRadarView = lazy(() => import('../components/agents/VectorMemoryCompetitorRadarView').then(m => ({ default: m.VectorMemoryCompetitorRadarView })));
+const DualAgentConsensusTribunalView = lazy(() => import('../components/agents/DualAgentConsensusTribunalView').then(m => ({ default: m.DualAgentConsensusTribunalView })));
+const OmnichannelSocialCommerceView = lazy(() => import('../components/social/OmnichannelSocialCommerceView').then(m => ({ default: m.OmnichannelSocialCommerceView })));
+const SupplyChainDiscrepancyView = lazy(() => import('../components/supplyChain/SupplyChainDiscrepancyView').then(m => ({ default: m.SupplyChainDiscrepancyView })));
+
+// ⚡ LAZY LOADED MODALS (Demanded only when modal is triggered)
+const AuditFormModal = lazy(() => import('../components/AuditFormModal').then(m => ({ default: m.AuditFormModal })));
+const ExecutivePdfExportModal = lazy(() => import('../components/ExecutivePdfExportModal').then(m => ({ default: m.ExecutivePdfExportModal })));
+const SettingsModal = lazy(() => import('../components/SettingsModal').then(m => ({ default: m.SettingsModal })));
+const AdminLeadsDashboard = lazy(() => import('../components/AdminLeadsDashboard').then(m => ({ default: m.AdminLeadsDashboard })));
+const TransparentCheckoutModal = lazy(() => import('../components/billing/TransparentCheckoutModal').then(m => ({ default: m.TransparentCheckoutModal })));
+const WhatsAppLeadCaptureModal = lazy(() => import('../components/WhatsAppLeadCaptureModal').then(m => ({ default: m.WhatsAppLeadCaptureModal })));
+const AdminLeadsDrawer = lazy(() => import('../components/AdminLeadsDrawer').then(m => ({ default: m.AdminLeadsDrawer })));
+const MonitoredStoresManagerModal = lazy(() => import('../components/MonitoredStoresManagerModal').then(m => ({ default: m.MonitoredStoresManagerModal })));
+const WhatsAppWatchdogSettingsModal = lazy(() => import('../components/WhatsAppWatchdogSettingsModal').then(m => ({ default: m.WhatsAppWatchdogSettingsModal })));
+const EcommerceIntegrationsHubModal = lazy(() => import('../components/EcommerceIntegrationsHubModal').then(m => ({ default: m.EcommerceIntegrationsHubModal })));
+const AgencyWhiteLabelModal = lazy(() => import('../components/agency/AgencyWhiteLabelModal').then(m => ({ default: m.AgencyWhiteLabelModal })));
+const FounderAuthModal = lazy(() => import('../components/founder/FounderAuthModal').then(m => ({ default: m.FounderAuthModal })));
+const MetaAdsAutoKillSwitchModal = lazy(() => import('../components/ads/MetaAdsAutoKillSwitchModal').then(m => ({ default: m.MetaAdsAutoKillSwitchModal })));
+const BatchProspectingAuditorModal = lazy(() => import('../components/agency/BatchProspectingAuditorModal').then(m => ({ default: m.BatchProspectingAuditorModal })));
+const ChromeExtensionModal = lazy(() => import('../components/tools/ChromeExtensionModal').then(m => ({ default: m.ChromeExtensionModal })));
+const FloatingAiChatWidget = lazy(() => import('../components/FloatingAiChatWidget').then(m => ({ default: m.FloatingAiChatWidget })));
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -516,9 +526,11 @@ export function HomePage() {
                   )
                 )}
 
-                {activeTab === 'founder_hq' && (
-                  <FounderMasterHqView />
-                )}
+                {/* Lazy Loaded Analytical Tabs with Skeleton Fallback */}
+                <Suspense fallback={<TabLoadingSkeleton />}>
+                  {activeTab === 'founder_hq' && (
+                    <FounderMasterHqView />
+                  )}
 
                 {activeTab === 'agent_flowchart' && (
                   <AutonomousAgentFlowchartView />
@@ -656,6 +668,7 @@ export function HomePage() {
                     <RoasCalculator />
                   </div>
                 )}
+                </Suspense>
               </ErrorBoundary>
             </div>
 
@@ -664,9 +677,11 @@ export function HomePage() {
 
       </main>
 
-      {/* Audit Modal */}
-      <AuditFormModal
-        isOpen={isAuditModalOpen}
+      {/* Lazy Loaded Operational Modals */}
+      <Suspense fallback={null}>
+        {/* Audit Modal */}
+        <AuditFormModal
+          isOpen={isAuditModalOpen}
         onClose={() => setIsAuditModalOpen(false)}
         onSubmit={handleStartRealAudit}
         initialData={diagnostic?.input}
@@ -780,6 +795,7 @@ export function HomePage() {
       />
 
       <FloatingAiChatWidget />
+      </Suspense>
 
       {/* Footer Legal & Institucional */}
       <footer className="max-w-7xl mx-auto py-8 px-4 border-t border-slate-200 mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
