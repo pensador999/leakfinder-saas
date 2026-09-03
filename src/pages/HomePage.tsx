@@ -13,6 +13,7 @@ import { runAgentDiagnosticAsync } from '../services/agentEngine';
 import { extractCleanDomainAndBrand } from '../services/siteInspector';
 import { AuditInput, AgentDiagnosticResult } from '../types';
 import { detectMarketplace } from '../services/marketplaceInspector';
+import { saveAuditToDatabase } from '../services/history/storeAuditHistoryService';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, 
@@ -141,7 +142,10 @@ export function HomePage() {
       grossMargin: 45,
       competitorsUrl: 'https://concorrente.com.br'
     };
-    runAgentDiagnosticAsync(initialInput).then(res => setDiagnostic(res));
+    runAgentDiagnosticAsync(initialInput).then(res => {
+      setDiagnostic(res);
+      saveAuditToDatabase(res).catch(e => console.warn('[Supabase Auto-Save] Initial audit save error:', e));
+    });
   }, [searchParams]);
 
   const handleStartRealAudit = async (input: AuditInput) => {
@@ -161,6 +165,9 @@ export function HomePage() {
       setDiagnostic(result);
       setIsAnalyzing(false);
       setActiveTab('summary');
+
+      // 🗄️ Save audit to Supabase and update continuous score evolution timeline
+      saveAuditToDatabase(result).catch(e => console.warn('[Supabase Auto-Save] Manual audit save error:', e));
 
       confetti({
         particleCount: 80,

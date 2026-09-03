@@ -22,6 +22,7 @@ import {
 import { AgentDiagnosticResult } from '../../types';
 import { calculateStoreFinancialGrounding, formatBRL } from '../../services/ai/storeFinancialGroundingEngine';
 import { auditSupplyChainDiscrepancy } from '../../services/supplyChain/erpHubDiscrepancyEngine';
+import { AuditScoreEvolutionTimeline } from '../history/AuditScoreEvolutionTimeline';
 
 interface MerchantTripleImpactDossierProps {
   diagnostic: AgentDiagnosticResult;
@@ -329,6 +330,9 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
         </div>
 
       </div>
+
+      {/* Historical Evolution Timeline Powered by Supabase */}
+      <AuditScoreEvolutionTimeline diagnostic={diagnostic} />
 
     </div>
   );

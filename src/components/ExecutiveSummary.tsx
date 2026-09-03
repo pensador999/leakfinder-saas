@@ -16,6 +16,7 @@ import {
 import { AgentDiagnosticResult } from '../types';
 import { generateShopifyTelemetryAnalysis } from '../services/shopifyTelemetryService';
 import { calculateStoreFinancialGrounding } from '../services/ai/storeFinancialGroundingEngine';
+import { AuditScoreEvolutionTimeline } from './history/AuditScoreEvolutionTimeline';
 
 interface ExecutiveSummaryProps {
   diagnostic: AgentDiagnosticResult;
@@ -195,6 +196,9 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
         </div>
 
       </div>
+
+      {/* Historical Evolution Timeline Powered by Supabase */}
+      <AuditScoreEvolutionTimeline diagnostic={diagnostic} />
     </div>
   );
 };
