@@ -177,9 +177,11 @@ export const MetaAdsAutoKillSwitchModal: React.FC<MetaAdsAutoKillSwitchModalProp
             <div className="p-4 rounded-2xl bg-slate-900 text-white border border-slate-800">
               <span className="text-[10px] uppercase font-bold text-slate-400 font-mono block">Economia Mensal em Mídia</span>
               <span className="text-2xl font-black text-emerald-400 font-mono">
-                {formatBRL(Math.max(2850, totalSavedMonthly))}
+                {formatBRL(totalSavedMonthly)}
               </span>
-              <span className="text-[10px] text-slate-400 block font-medium">verba não desperdiçada</span>
+              <span className="text-[10px] text-slate-400 block font-medium">
+                {totalSavedMonthly > 0 ? 'verba não desperdiçada' : 'anúncios em estoque seguro'}
+              </span>
             </div>
 
             <div className="p-4 rounded-2xl bg-white border border-slate-200">
