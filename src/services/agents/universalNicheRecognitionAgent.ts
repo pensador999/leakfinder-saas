@@ -15,6 +15,7 @@ export type UniversalNicheCategory =
   | 'ELETRONICOS_INFORMATICA'
   | 'SUPLEMENTOS_FARMACIA'
   | 'AGROPECUARIA_PET'
+  | 'PESCA_CAMPING_OUTDOOR'
   | 'JOIAS_ACESSORIOS'
   | 'VAREJO_GERAL_MULTI';
 
@@ -176,6 +177,21 @@ export const UNIVERSAL_NICHE_PROFILES: Record<UniversalNicheCategory, NicheAdapt
     sampleBrands: ['Vivara', 'Pandora', 'Monte Carlo', 'Romanel'],
     description: 'Audita tabela de aros de anel, certificado de garantia dos metais nobres e fotos de escala.'
   },
+  PESCA_CAMPING_OUTDOOR: {
+    nicheId: 'PESCA_CAMPING_OUTDOOR',
+    nicheLabel: 'Pesca Esportiva, Náutica & Outdoor',
+    iconName: 'Fish',
+    primaryVariantTypes: ['Ação / Libragem (Varas)', 'Tamanho / Peso (Iscas)', 'Tamanho UV50+ (Vestuário)'],
+    mandatoryAddonWidget: 'Especificações de Libragem, Ação & Proteção Solar UV50+',
+    criticalLeakPoints: [
+      'Equipamentos de pesca (iscas, varas, carretilhas) avaliados erroneamente como vestuário',
+      'Falta de indicação de proteção solar UV50+ no vestuário técnico esportivo',
+      'Ausência de especificações de gramatura e profundidade de nado em iscas artificiais'
+    ],
+    recommendedCallToAction: 'Comprar Equipamento / Vestuário',
+    sampleBrands: ['BRK Fishing', 'Marine Sports', 'Daiwa', 'Shimano'],
+    description: 'Aplica regras especializadas para pesca e esportes náuticos: isenta equipamentos e acessórios de grade PP-G2 e audita proteção UV50+.'
+  },
   VAREJO_GERAL_MULTI: {
     nicheId: 'VAREJO_GERAL_MULTI',
     nicheLabel: 'Varejo Geral, Presentes & Multi-Categorias',
@@ -213,6 +229,7 @@ export function classifyUniversalNiche(realSiteData: RealSiteData): UniversalNic
     ELETRONICOS_INFORMATICA: ['celular', 'smartphone', 'notebook', 'computador', 'fone', 'gamer', 'placa', 'eletrônico', 'teclado', 'monitor', 'tv', '110v', '220v'],
     SUPLEMENTOS_FARMACIA: ['suplemento', 'whey', 'creatina', 'proteína', 'vitamina', 'farmácia', 'saúde', 'termogênico', 'cápsula', 'nutrição', 'anvisa'],
     AGROPECUARIA_PET: ['agro', 'campo', 'fazenda', 'pecuária', 'pet', 'ração', 'cão', 'gato', 'bovino', 'cavalo', 'agrícola', 'veterinário', 'sementes'],
+    PESCA_CAMPING_OUTDOOR: ['pesca', 'fishing', 'isca', 'anzol', 'carretilha', 'molinete', 'vara de pescar', 'linha de pesca', 'multifilamento', 'fluorocarbon', 'camping', 'outdoor', 'peixe', 'tucunaré'],
     JOIAS_ACESSORIOS: ['joia', 'anel', 'colar', 'brinco', 'prata 925', 'ouro 18k', 'aliança', 'pingente', 'pulseira', 'relojaria', 'semijoia'],
     VAREJO_GERAL_MULTI: ['loja', 'comprar', 'oferta', 'produtos', 'brasil', 'frete grátis']
   };
@@ -235,12 +252,12 @@ export function classifyUniversalNiche(realSiteData: RealSiteData): UniversalNic
     }
   }
 
-  // Fallback for agro/fishing brands
-  if (realSiteData.domain.includes('agro') || realSiteData.domain.includes('campo')) {
+  // Specialized domain recognition
+  if (realSiteData.domain.includes('fishing') || realSiteData.domain.includes('pesca')) {
+    detectedNiche = 'PESCA_CAMPING_OUTDOOR';
+    highestScore = Math.max(highestScore, 10);
+  } else if (realSiteData.domain.includes('agro') || realSiteData.domain.includes('campo')) {
     detectedNiche = 'AGROPECUARIA_PET';
-    highestScore = Math.max(highestScore, 8);
-  } else if (realSiteData.domain.includes('fishing') || realSiteData.domain.includes('pesca')) {
-    detectedNiche = 'MODA_VESTUARIO';
     highestScore = Math.max(highestScore, 8);
   }
 

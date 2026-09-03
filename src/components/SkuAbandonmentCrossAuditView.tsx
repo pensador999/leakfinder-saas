@@ -97,6 +97,31 @@ export const SkuAbandonmentCrossAuditView: React.FC<SkuAbandonmentCrossAuditView
         </div>
       </div>
 
+      {/* 🛡️ BANNER DE TRANSPARÊNCIA E GROUNDING (AGENTS.MD RULE 1) */}
+      <div className="p-4 bg-slate-900 text-white rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-indigo-500/20 text-indigo-400 rounded-xl border border-indigo-500/30 shrink-0">
+            <ShieldCheck className="w-5 h-5 text-indigo-400" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-white">Cruzamento Baseado em Benchmark Auditado</span>
+              <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full text-[10px] font-mono font-bold">
+                Simulador Dinâmico
+              </span>
+            </div>
+            <p className="text-slate-400 text-[11px] mt-0.5">
+              Os SKUs e links são 100% reais do catálogo. A taxa de abandono por ruptura é uma projeção com base nos tamanhos faltantes detectados.
+            </p>
+          </div>
+        </div>
+
+        <div className="text-left sm:text-right text-[10px] text-slate-400 font-mono shrink-0 pl-11 sm:pl-0">
+          <span>Telemetria individual de checkout e carrinhos reais</span>
+          <span className="block text-indigo-400 font-semibold">Requerem conexão com a API da Shopify Admin</span>
+        </div>
+      </div>
+
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center gap-3">

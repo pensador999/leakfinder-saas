@@ -21,19 +21,31 @@ import { AgentDiagnosticResult } from '../types';
 import { analyzeStockRupture, StockRuptureAnalysisResult } from '../services/stockRuptureEngine';
 import { generateWhatsAppLink } from '../services/whatsappLeadService';
 import { OfficialIntegrationConnectModal } from './OfficialIntegrationConnectModal';
+import { calculateStoreFinancialGrounding } from '../services/ai/storeFinancialGroundingEngine';
 
 interface StockRuptureMonitorViewProps {
   diagnostic: AgentDiagnosticResult;
 }
 
 export const StockRuptureMonitorView: React.FC<StockRuptureMonitorViewProps> = ({ diagnostic }) => {
-  const { realSiteData, input } = diagnostic;
+  const { realSiteData, input, social } = diagnostic;
 
-  // Sliders & Selection State
-  const [dailyAdSpend, setDailyAdSpend] = useState<number>(300);
-  const [productPrice, setProductPrice] = useState<number>(Number(input.averageOrderValue) || 159.90);
+  const finances = calculateStoreFinancialGrounding(realSiteData, input, social);
+
+  // Extract REAL broken sizes detected in the store's public catalog (Zero Hallucination)
+  const realBrokenSizesFromCatalog = Array.from(
+    new Set(
+      (realSiteData.catalogAudit?.issues || [])
+        .filter(i => !i.isFullPrintExempt)
+        .flatMap(i => i.missingSizes || [])
+    )
+  );
+
+  // Sliders & Selection State grounded in real audit data
+  const [dailyAdSpend, setDailyAdSpend] = useState<number>(finances.estimatedAdSpend.daily || 300);
+  const [productPrice, setProductPrice] = useState<number>(Number(input.averageOrderValue) || finances.groundedAverageTicket || 165);
   const [grossMargin, setGrossMargin] = useState<number>(Number(input.grossMargin) || 60);
-  const [rupturedSizes, setRupturedSizes] = useState<string[]>(['G', 'GG']);
+  const [rupturedSizes, setRupturedSizes] = useState<string[]>(realBrokenSizesFromCatalog);
   const [alertPhone, setAlertPhone] = useState<string>('');
   const [copiedAlert, setCopiedAlert] = useState<boolean>(false);
   const [isAlertSubscribed, setIsAlertSubscribed] = useState<boolean>(false);

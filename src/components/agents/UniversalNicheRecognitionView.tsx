@@ -17,7 +17,8 @@ import {
   ShieldCheck,
   AlertTriangle,
   Compass,
-  Check
+  Check,
+  Fish
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../../types';
 import { 
@@ -49,6 +50,7 @@ export const UniversalNicheRecognitionView: React.FC<UniversalNicheRecognitionVi
       case 'ELETRONICOS_INFORMATICA': return <Smartphone className="w-5 h-5" />;
       case 'SUPLEMENTOS_FARMACIA': return <HeartPulse className="w-5 h-5" />;
       case 'AGROPECUARIA_PET': return <Tractor className="w-5 h-5" />;
+      case 'PESCA_CAMPING_OUTDOOR': return <Fish className="w-5 h-5" />;
       case 'JOIAS_ACESSORIOS': return <Gem className="w-5 h-5" />;
       default: return <ShoppingBag className="w-5 h-5" />;
     }
