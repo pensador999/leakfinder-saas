@@ -54,11 +54,11 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ diagnostic, onCl
 ---
 
 ## 1. RESUMO EXECUTIVO DE IMPACTO FINANCEIRO
-- **Vazamento Financeiro Real:** ${finances.financialRisk.formattedMonthlyLoss} / mês (${finances.financialRisk.formattedAnnualizedLoss} / ano)
+- **Impacto em Mídia:** ${finances.financialRisk.totalMonthlyLoss > 0 ? `${finances.financialRisk.formattedMonthlyLoss} / mês (${finances.financialRisk.formattedAnnualizedLoss} / ano)` : 'Grade 100% Blindada (R$ 0,00 de desperdício em anúncios)'}
 - **Ticket Médio Ponderado:** ${finances.formattedAverageTicket}
 - **Verba Estimada de Tráfego:** ${finances.estimatedAdSpend.formattedMonthly}
 - **Produtos com Ruptura de Grade:** ${finances.brokenSkusCount} SKUs críticos
-- **Saúde do Catálogo:** ${realSiteData.catalogAudit?.catalogHealthScore || 0} / 100
+- **Origem Auditada:** ${finances.financialRisk.methodologyExplanation}
 
 ---
 
@@ -170,12 +170,30 @@ ${(realSiteData.catalogAudit?.issues || []).map(i => `- **SKU ${i.sku} (${i.prod
 
           {/* 4-Card Executive KPI Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <div className="p-4 rounded-2xl bg-rose-50/70 border border-rose-200 space-y-1">
-              <p className="text-[10px] font-bold uppercase text-rose-700">Vazamento Financeiro</p>
-              <p className="text-xl font-black text-rose-900 font-mono">
-                R$ {telemetryData.totalEstimatedRevenueLoss.toLocaleString('pt-BR')}
+            <div className={`p-4 rounded-2xl border space-y-1 ${
+              finances.financialRisk.totalMonthlyLoss > 0 
+                ? 'bg-rose-50/70 border-rose-200' 
+                : 'bg-emerald-50/70 border-emerald-200'
+            }`}>
+              <p className={`text-[10px] font-bold uppercase ${
+                finances.financialRisk.totalMonthlyLoss > 0 ? 'text-rose-700' : 'text-emerald-700'
+              }`}>
+                {finances.financialRisk.totalMonthlyLoss > 0 ? 'Vazamento em Mídia' : 'Status do Catálogo'}
               </p>
-              <p className="text-[10px] text-rose-600">~{telemetryData.totalCartAbandonments} abandonos/mês</p>
+              <p className={`text-xl font-black font-mono ${
+                finances.financialRisk.totalMonthlyLoss > 0 ? 'text-rose-900' : 'text-emerald-800'
+              }`}>
+                {finances.financialRisk.totalMonthlyLoss > 0 
+                  ? finances.financialRisk.formattedMonthlyLoss 
+                  : 'Grade Blindada (R$ 0)'}
+              </p>
+              <p className={`text-[10px] ${
+                finances.financialRisk.totalMonthlyLoss > 0 ? 'text-rose-600' : 'text-emerald-700'
+              }`}>
+                {finances.financialRisk.totalMonthlyLoss > 0 
+                  ? `${finances.brokenSkusCount} SKU(s) com ruptura` 
+                  : 'Zero perda em anúncios'}
+              </p>
             </div>
 
             <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-1">
