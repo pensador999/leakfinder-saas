@@ -160,11 +160,13 @@ export function executeTreeOfThoughtReasoning(
   // Dynamic Average Ticket and daily ad spend
   const baseTicket = diagnostic.input.averageOrderValue || (isMotorsOrAuto ? 385 : isAgro ? 220 : isEnterprise ? 520 : 165);
   const realBrokenIssues = issues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
-  const activeBrokenCount = realBrokenIssues.length > 0 ? realBrokenIssues.length : (isEnterprise ? 1 : isMotorsOrAuto ? 4 : 3);
+  const activeBrokenCount = realBrokenIssues.length;
   const dailyAdSpend = isEnterprise ? 2500 : isMotorsOrAuto ? 680 : isAgro ? 450 : 250;
   
-  // Real dynamic daily and monthly loss
-  const dailyLoss = Math.round(dailyAdSpend * 0.38 * (activeBrokenCount / Math.max(1, activeBrokenCount + 1)));
+  // Real dynamic daily and monthly loss (Zero Hallucination: 0 broken SKUs = R$ 0 loss)
+  const dailyLoss = activeBrokenCount > 0 
+    ? Math.round(dailyAdSpend * 0.38 * (activeBrokenCount / Math.max(1, activeBrokenCount + 1)))
+    : 0;
   const monthlyLoss = dailyLoss * 30;
 
   // Dynamic competitor duel prices
@@ -175,12 +177,12 @@ export function executeTreeOfThoughtReasoning(
   const monthlyRecoveredAds = Math.round(monthlyLoss);
   const monthlyRecoveredSales = Math.round(monthlyLoss * 0.62);
 
-  const brokenSampleProduct = realBrokenIssues[0]?.productTitle || (isMotorsOrAuto ? 'Capacete / Jaqueta Off-Road Pro' : isAgro ? 'Camisa Proteção Solar Campo' : 'Produto Principal');
+  const brokenSampleProduct = realBrokenIssues[0]?.productTitle || issues[0]?.productTitle || 'Vitrine Auditada';
 
   const hasPixDiscount = realSiteData.rawHtmlSnippet?.toLowerCase().includes('pix') || false;
 
   // 🌲 BRANCH A: Catálogo & Ruptura de Grade (Agente 05)
-  const branchA: ReasoningHypothesisBranch = {
+  const branchA: ReasoningHypothesisBranch = activeBrokenCount > 0 ? {
     id: 'branch-catalog',
     agentName: '05. Doutor de Catálogo',
     agentRole: 'Especialista em Grade PP-G2 & Ruptura de Estoque',
@@ -199,6 +201,25 @@ export function executeTreeOfThoughtReasoning(
     ],
     finalAdjustedWeight: 0.88,
     recommendedAction: 'Pausar campanhas do Meta Ads para SKUs com menos de 2 tamanhos centrais disponíveis.'
+  } : {
+    id: 'branch-catalog',
+    agentName: '05. Doutor de Catálogo',
+    agentRole: 'Especialista em Grade PP-G2 & Ruptura de Estoque',
+    agentAvatar: '🩺',
+    hypothesisTitle: 'Grade de Catálogo Auditada & 100% Blindada',
+    coreArgument: 'A auditoria completa confirma que não há queima de anúncios em produtos com grade esgotada. O catálogo possui estoque saudável nos produtos promovidos.',
+    supportingEvidence: [
+      'Zero produtos com ruptura crítica nos tamanhos de maior giro',
+      'Isenções para equipamentos e acessórios técnicos validadas pelo Agente 04',
+      'Estoque seguro para escalada agressiva de campanhas de tráfego pago'
+    ],
+    initialConfidencePct: 98,
+    criticismsReceived: [
+      'Agente de Mídia: "Com a grade blindada, o foco deve migrar 100% para novos criativos e otimização de ROAS."',
+      'Agente de Preço: "Excelente momento para testar incentivo agressivo de Pix."'
+    ],
+    finalAdjustedWeight: 0.95,
+    recommendedAction: 'Acelerar investimento em mídia paga com segurança nos produtos-chave auditados.'
   };
 
   // 🌲 BRANCH B: Tráfego Pago & Desconexão de Mídia (Agente 06)

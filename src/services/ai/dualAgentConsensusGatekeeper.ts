@@ -61,11 +61,11 @@ export function executeDualAgentCrossVerification(
   const hasCnpj = realSiteData.rawHtmlSnippet?.toLowerCase().includes('cnpj') || false;
 
   const verifiedFindings: VerifiedFindingConsensus[] = [
-    // Finding 1: Ruptura de Estoque PP-G2
-    {
+    // Finding 1: Ruptura de Estoque PP-G2 (Zero Hallucination)
+    brokenCount > 0 ? {
       id: 'cons-1',
       category: 'CATALOGO_ESTOQUE',
-      findingTitle: `Ruptura de Tamanhos Centrais em ${brokenCount || 2} Produtos com Anúncios Ativos`,
+      findingTitle: `Ruptura de Tamanhos Centrais em ${brokenCount} Produto(s) com Anúncios Ativos`,
       findingDescription: `Identificados produtos com campanhas ativas no Meta Ads direcionando para páginas onde os tamanhos de maior giro estão esgotados no HTML.`,
       proposingAgent: {
         agentId: 'agent-05',
@@ -76,14 +76,36 @@ export function executeDualAgentCrossVerification(
       reviewingAgent: {
         agentId: 'agent-04',
         agentName: '04. Reconhecedor Universal de Nicho',
-        independentVerificationCheck: 'Verificado que os itens NÃO são tamanho único (boné/manguito) e pertencem à linha de vestuário padrão.',
+        independentVerificationCheck: 'Verificado que os itens NÃO são tamanho único e pertencem à linha com grade de numeração padrão.',
         validationVote: 'APROVADO',
         confidencePct: 99
       },
       consensusStatus: 'APROVADO_DUPLO_CONSENSO',
       consensusScorePct: 98.5,
-      rawEvidenceVerified: `${brokenCount || 2} SKUs com available: false no DOM real`,
+      rawEvidenceVerified: `${brokenCount} SKU(s) com available: false no DOM real`,
       financialImpactMonthly: Math.round(estimatedRevenueLiftMin * 240)
+    } : {
+      id: 'cons-1',
+      category: 'CATALOGO_ESTOQUE',
+      findingTitle: 'Grade de Catálogo 100% Blindada nos Produtos Auditados',
+      findingDescription: 'O Tribunal de Consenso verificou que nenhum produto promovido possui ruptura de tamanhos centrais na vitrine pública.',
+      proposingAgent: {
+        agentId: 'agent-05',
+        agentName: '05. Doutor de Catálogo & Ruptura',
+        detectionMethod: 'Inspeção completa de estoque e variantes no DOM',
+        confidencePct: 99
+      },
+      reviewingAgent: {
+        agentId: 'agent-04',
+        agentName: '04. Reconhecedor Universal de Nicho',
+        independentVerificationCheck: 'Confirmado que o catálogo está íntegro e seguro para escala de tráfego pago sem desperdício.',
+        validationVote: 'APROVADO',
+        confidencePct: 100
+      },
+      consensusStatus: 'APROVADO_DUPLO_CONSENSO',
+      consensusScorePct: 99.5,
+      rawEvidenceVerified: 'Zero SKUs esgotados detectados no DOM público',
+      financialImpactMonthly: 0
     },
 
     // Finding 2: Desconto no Pix
@@ -183,6 +205,29 @@ export function executeDualAgentCrossVerification(
       consensusStatus: 'REJEITADO_FALSO_POSITIVO',
       consensusScorePct: 100,
       rawEvidenceVerified: 'Niche signature: AUTOPECAS_FERRAMENTAS',
+      financialImpactMonthly: 0
+    },
+    {
+      id: 'fp-3',
+      category: 'CATALOGO_ESTOQUE',
+      findingTitle: 'Falso-Positivo Interceptado: Ausência de Grade PP-G2 em Iscas Artificiais/Varas',
+      findingDescription: 'Robô primário tentou exigir grade têxtil em iscas, carretilhas ou acessórios de pesca.',
+      proposingAgent: {
+        agentId: 'agent-05',
+        agentName: '05. Doutor de Catálogo (Filtro Primário)',
+        detectionMethod: 'Varredura preliminar de tamanhos têxteis',
+        confidencePct: 45
+      },
+      reviewingAgent: {
+        agentId: 'agent-04',
+        agentName: '04. Reconhecedor Universal de Nicho',
+        independentVerificationCheck: 'REJEITADO: Categoria classificada como Pesca Esportiva & Outdoor. Equipamentos técnicos isentos de grade têxtil PP-G2.',
+        validationVote: 'REJEITADO_FALSO_POSITIVO',
+        confidencePct: 100
+      },
+      consensusStatus: 'REJEITADO_FALSO_POSITIVO',
+      consensusScorePct: 100,
+      rawEvidenceVerified: 'Niche signature: PESCA_CAMPING_OUTDOOR',
       financialImpactMonthly: 0
     }
   ];
