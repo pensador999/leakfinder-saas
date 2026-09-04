@@ -20,6 +20,15 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false }
 });
 
+// Global exception protection: Never crash on socket drops or ECONNRESET
+process.on('uncaughtException', (err) => {
+  console.warn(`⚠️ [Swarm Guard] Exceção de rede interceptada (Daemon continua ativo):`, err?.message || err);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.warn(`⚠️ [Swarm Guard] Rejeição de rede interceptada (Daemon continua ativo):`, reason?.message || reason);
+});
+
 /**
  * ⚡ Real-time store health probe using lightweight fetch
  */
