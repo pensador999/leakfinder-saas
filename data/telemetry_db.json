@@ -1,0 +1,156 @@
+{
+  "version": "2.4",
+  "updated_at": "2026-09-04T11:30:13.617Z",
+  "monitored_stores": [
+    {
+      "id": "store-1",
+      "brand_name": "BRK Agro",
+      "store_url": "https://www.brkagro.com.br",
+      "niche": "Agropecuária & Moda Campo",
+      "target_phone": "5511999999999",
+      "is_active": true,
+      "current_score": 96,
+      "current_estimated_loss": 0,
+      "last_audited_at": "2026-09-04T11:30:12.332Z"
+    },
+    {
+      "id": "store-2",
+      "brand_name": "BRK Fishing",
+      "store_url": "https://www.brkfishing.com.br",
+      "niche": "Moda Pesca & Outdoor",
+      "target_phone": "5511999999999",
+      "is_active": true,
+      "current_score": 96,
+      "current_estimated_loss": 0,
+      "last_audited_at": "2026-09-04T11:30:12.875Z"
+    },
+    {
+      "id": "store-3",
+      "brand_name": "BRK Motors",
+      "store_url": "https://www.brkmotors.com.br",
+      "niche": "Automotivo & Performance",
+      "target_phone": "5511999999999",
+      "is_active": true,
+      "current_score": 91,
+      "current_estimated_loss": 2312,
+      "last_audited_at": "2026-09-04T11:30:13.605Z"
+    }
+  ],
+  "daily_snapshots": [
+    {
+      "id": "snap-1788521413605-71vj",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "store_url": "https://www.brkmotors.com.br",
+      "score": 91,
+      "lift_min": 15,
+      "lift_max": 31,
+      "broken_skus_count": 1,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 2312,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:30:13.605Z"
+    },
+    {
+      "id": "snap-1788521412875-8j34",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "store_url": "https://www.brkfishing.com.br",
+      "score": 96,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:30:12.875Z"
+    },
+    {
+      "id": "snap-1788521412332-mvab",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "store_url": "https://www.brkagro.com.br",
+      "score": 96,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:30:12.332Z"
+    }
+  ],
+  "job_logs": [
+    {
+      "id": "job-1788521413614-pvn7",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 729,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 0,
+      "created_at": "2026-09-04T11:30:13.614Z"
+    },
+    {
+      "id": "job-1788521412883-dxo6",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 516,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 2,
+      "created_at": "2026-09-04T11:30:12.883Z"
+    },
+    {
+      "id": "job-1788521412365-aqzo",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 364,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 0,
+      "created_at": "2026-09-04T11:30:12.365Z"
+    }
+  ],
+  "alert_dispatch_queue": [
+    {
+      "id": "alert-1788521413615",
+      "phone_number": "5511999999999",
+      "message_body": "🌅 *Relatório Executivo AdShield (04/09/2026 às 08:30:11)*\n\n🏢 *Lojas Monitoradas:* 3 lojas\n🩺 *Saúde de Catálogo:* 1 SKUs com Ruptura ⚠️\n💰 *Vazamento em Mídia:* R$ 2.312/mês em risco\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 sem erros.",
+      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
+      "priority": "NORMAL",
+      "status": "PENDING",
+      "created_at": "2026-09-04T11:30:13.615Z"
+    }
+  ]
+}
