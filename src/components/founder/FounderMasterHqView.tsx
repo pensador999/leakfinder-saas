@@ -22,7 +22,9 @@ import {
   ShieldCheck,
   BrainCircuit,
   Trash2,
-  Code2
+  Code2,
+  Activity,
+  Cpu
 } from 'lucide-react';
 import { 
   ProspectStoreLead, 
@@ -35,6 +37,7 @@ import {
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { AgentSelfEvolutionView } from './AgentSelfEvolutionView';
 import { DevOpsSelfHealingControlCenterView } from './DevOpsSelfHealingControlCenterView';
+import { InfrastructureFourPillarsMonitor } from './InfrastructureFourPillarsMonitor';
 
 export const FounderMasterHqView: React.FC = () => {
   const [metrics, setMetrics] = useState<BusinessMetricsSummary | null>(null);
@@ -61,7 +64,7 @@ export const FounderMasterHqView: React.FC = () => {
     }
     return INITIAL_FOUNDER_DIRECTIVES;
   });
-  const [activeTab, setActiveTab] = useState<'CRM_PROSPECTION' | 'CONCIERGE_LEADS' | 'SELF_LEARNING' | 'DEVOPS_AUTO_HEAL' | 'DIRECTIVES'>('CRM_PROSPECTION');
+  const [activeTab, setActiveTab] = useState<'CRM_PROSPECTION' | 'CONCIERGE_LEADS' | 'SELF_LEARNING' | 'DEVOPS_AUTO_HEAL' | 'DIRECTIVES' | 'INFRASTRUCTURE_360'>('CRM_PROSPECTION');
   const [isSavingDirectives, setIsSavingDirectives] = useState<boolean>(false);
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
 
@@ -247,8 +250,11 @@ export const FounderMasterHqView: React.FC = () => {
 
       </div>
 
+      {/* 🖥️ 360º Infrastructure & Network Telemetry Monitor */}
+      <InfrastructureFourPillarsMonitor />
+
       {/* Sub-Tabs: CRM vs Concierge vs Directives */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 text-xs font-bold">
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 text-xs font-bold overflow-x-auto">
         <button
           onClick={() => setActiveTab('CRM_PROSPECTION')}
           className={`px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
@@ -299,7 +305,7 @@ export const FounderMasterHqView: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('DIRECTIVES')}
-          className={`px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+          className={`px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
             activeTab === 'DIRECTIVES'
               ? 'bg-indigo-600 text-white shadow-sm'
               : 'text-slate-600 hover:bg-slate-100'
@@ -307,6 +313,18 @@ export const FounderMasterHqView: React.FC = () => {
         >
           <Sliders className="w-3.5 h-3.5" />
           <span>Diretrizes & Dicas do Fundador</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('INFRASTRUCTURE_360')}
+          className={`px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+            activeTab === 'INFRASTRUCTURE_360'
+              ? 'bg-indigo-600 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          <Activity className="w-3.5 h-3.5" />
+          <span>Monitor 360º de Infraestrutura</span>
         </button>
       </div>
 
@@ -633,6 +651,13 @@ export const FounderMasterHqView: React.FC = () => {
               ✅ Diretrizes do Fundador salvas e propagadas para todos os 10 agentes!
             </div>
           )}
+        </div>
+      )}
+
+      {/* TAB 6: INFRASTRUCTURE 360 MONITOR */}
+      {activeTab === 'INFRASTRUCTURE_360' && (
+        <div className="space-y-6 animate-fadeIn">
+          <InfrastructureFourPillarsMonitor />
         </div>
       )}
 
