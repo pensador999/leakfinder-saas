@@ -1,6 +1,6 @@
 {
   "version": "2.4",
-  "updated_at": "2026-09-04T11:30:13.617Z",
+  "updated_at": "2026-09-04T11:36:36.175Z",
   "monitored_stores": [
     {
       "id": "store-1",
@@ -9,9 +9,9 @@
       "niche": "Agropecuária & Moda Campo",
       "target_phone": "5511999999999",
       "is_active": true,
-      "current_score": 96,
-      "current_estimated_loss": 0,
-      "last_audited_at": "2026-09-04T11:30:12.332Z"
+      "current_score": 91,
+      "current_estimated_loss": 1359,
+      "last_audited_at": "2026-09-04T11:36:34.856Z"
     },
     {
       "id": "store-2",
@@ -20,9 +20,9 @@
       "niche": "Moda Pesca & Outdoor",
       "target_phone": "5511999999999",
       "is_active": true,
-      "current_score": 96,
+      "current_score": 99,
       "current_estimated_loss": 0,
-      "last_audited_at": "2026-09-04T11:30:12.875Z"
+      "last_audited_at": "2026-09-04T11:36:35.571Z"
     },
     {
       "id": "store-3",
@@ -31,12 +31,300 @@
       "niche": "Automotivo & Performance",
       "target_phone": "5511999999999",
       "is_active": true,
-      "current_score": 91,
-      "current_estimated_loss": 2312,
-      "last_audited_at": "2026-09-04T11:30:13.605Z"
+      "current_score": 99,
+      "current_estimated_loss": 0,
+      "last_audited_at": "2026-09-04T11:36:36.164Z"
     }
   ],
   "daily_snapshots": [
+    {
+      "id": "snap-1788521796164-db23",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "store_url": "https://www.brkmotors.com.br",
+      "score": 99,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 15,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "broken_products_details": [],
+      "audited_at": "2026-09-04T11:36:36.164Z"
+    },
+    {
+      "id": "snap-1788521795571-7bem",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "store_url": "https://www.brkfishing.com.br",
+      "score": 99,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 15,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "broken_products_details": [],
+      "audited_at": "2026-09-04T11:36:35.571Z"
+    },
+    {
+      "id": "snap-1788521794856-0ooc",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "store_url": "https://www.brkagro.com.br",
+      "score": 91,
+      "lift_min": 15,
+      "lift_max": 31,
+      "broken_skus_count": 1,
+      "total_skus_count": 15,
+      "estimated_monthly_loss": 1359,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "broken_products_details": [
+        {
+          "title": "Camisa Agro Brk São Bento e Colheitadeira com Proteção UV50 - Envio Imediato",
+          "handle": "camisa-agro-brk-sao-bento-e-colheitadeira-com-protecao-uv50-envio-imediato",
+          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-sao-bento-e-colheitadeira-com-protecao-uv50-envio-imediato",
+          "price": 169.9,
+          "missingSizes": [
+            "G"
+          ],
+          "availableSizes": [
+            "M",
+            "GG",
+            "G1"
+          ]
+        }
+      ],
+      "audited_at": "2026-09-04T11:36:34.856Z"
+    },
+    {
+      "id": "snap-1788521712772-dh4a",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "store_url": "https://www.brkmotors.com.br",
+      "score": 92,
+      "lift_min": 15,
+      "lift_max": 31,
+      "broken_skus_count": 1,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 2312,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:35:12.772Z"
+    },
+    {
+      "id": "snap-1788521712527-9n75",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "store_url": "https://www.brkfishing.com.br",
+      "score": 96,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:35:12.527Z"
+    },
+    {
+      "id": "snap-1788521712281-0gi3",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "store_url": "https://www.brkagro.com.br",
+      "score": 96,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:35:12.281Z"
+    },
+    {
+      "id": "snap-1788521652762-r702",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "store_url": "https://www.brkmotors.com.br",
+      "score": 92,
+      "lift_min": 15,
+      "lift_max": 31,
+      "broken_skus_count": 1,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 2312,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:34:12.762Z"
+    },
+    {
+      "id": "snap-1788521652508-nb8k",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "store_url": "https://www.brkfishing.com.br",
+      "score": 96,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:34:12.508Z"
+    },
+    {
+      "id": "snap-1788521652267-mbfs",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "store_url": "https://www.brkagro.com.br",
+      "score": 96,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:34:12.267Z"
+    },
+    {
+      "id": "snap-1788521593253-k49l",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "store_url": "https://www.brkmotors.com.br",
+      "score": 92,
+      "lift_min": 15,
+      "lift_max": 31,
+      "broken_skus_count": 1,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 2312,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:33:13.253Z"
+    },
+    {
+      "id": "snap-1788521593021-jmkn",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "store_url": "https://www.brkfishing.com.br",
+      "score": 96,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:33:13.021Z"
+    },
+    {
+      "id": "snap-1788521592773-3kcy",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "store_url": "https://www.brkagro.com.br",
+      "score": 96,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:33:12.773Z"
+    },
+    {
+      "id": "snap-1788521533327-t1yi",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "store_url": "https://www.brkmotors.com.br",
+      "score": 92,
+      "lift_min": 15,
+      "lift_max": 31,
+      "broken_skus_count": 1,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 2312,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:32:13.327Z"
+    },
+    {
+      "id": "snap-1788521533101-j3z6",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "store_url": "https://www.brkfishing.com.br",
+      "score": 96,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:32:13.101Z"
+    },
+    {
+      "id": "snap-1788521532861-brl3",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "store_url": "https://www.brkagro.com.br",
+      "score": 96,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:32:12.861Z"
+    },
+    {
+      "id": "snap-1788521472719-d13q",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "store_url": "https://www.brkmotors.com.br",
+      "score": 92,
+      "lift_min": 15,
+      "lift_max": 31,
+      "broken_skus_count": 1,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 2312,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:31:12.719Z"
+    },
+    {
+      "id": "snap-1788521472489-uzmm",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "store_url": "https://www.brkfishing.com.br",
+      "score": 96,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:31:12.489Z"
+    },
+    {
+      "id": "snap-1788521472250-9bo3",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "store_url": "https://www.brkagro.com.br",
+      "score": 96,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 24,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "audited_at": "2026-09-04T11:31:12.250Z"
+    },
     {
       "id": "snap-1788521413605-71vj",
       "store_id": "store-3",
@@ -84,6 +372,351 @@
     }
   ],
   "job_logs": [
+    {
+      "id": "job-1788521796172-nujo",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 590,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_LIVE",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_public_products_json",
+      "products_scanned": 15,
+      "created_at": "2026-09-04T11:36:36.172Z"
+    },
+    {
+      "id": "job-1788521795580-n8qu",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 693,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_LIVE",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_public_products_json",
+      "products_scanned": 15,
+      "created_at": "2026-09-04T11:36:35.580Z"
+    },
+    {
+      "id": "job-1788521794885-v2px",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 1081,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_LIVE",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_public_products_json",
+      "products_scanned": 15,
+      "created_at": "2026-09-04T11:36:34.885Z"
+    },
+    {
+      "id": "job-1788521712781-sos2",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 242,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 0,
+      "created_at": "2026-09-04T11:35:12.781Z"
+    },
+    {
+      "id": "job-1788521712536-zuwu",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 225,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 2,
+      "created_at": "2026-09-04T11:35:12.536Z"
+    },
+    {
+      "id": "job-1788521712309-4mwp",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 255,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 0,
+      "created_at": "2026-09-04T11:35:12.309Z"
+    },
+    {
+      "id": "job-1788521652770-iah1",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 253,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 0,
+      "created_at": "2026-09-04T11:34:12.770Z"
+    },
+    {
+      "id": "job-1788521652515-dqhu",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 222,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 2,
+      "created_at": "2026-09-04T11:34:12.515Z"
+    },
+    {
+      "id": "job-1788521652291-gs4f",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 242,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 0,
+      "created_at": "2026-09-04T11:34:12.291Z"
+    },
+    {
+      "id": "job-1788521593261-ayws",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 231,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 0,
+      "created_at": "2026-09-04T11:33:13.261Z"
+    },
+    {
+      "id": "job-1788521593028-dihy",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 232,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 2,
+      "created_at": "2026-09-04T11:33:13.028Z"
+    },
+    {
+      "id": "job-1788521592794-77g8",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 754,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 0,
+      "created_at": "2026-09-04T11:33:12.794Z"
+    },
+    {
+      "id": "job-1788521533337-ibe5",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 226,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 0,
+      "created_at": "2026-09-04T11:32:13.337Z"
+    },
+    {
+      "id": "job-1788521533109-prbn",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 221,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 2,
+      "created_at": "2026-09-04T11:32:13.109Z"
+    },
+    {
+      "id": "job-1788521532886-ax6i",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 849,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 0,
+      "created_at": "2026-09-04T11:32:12.886Z"
+    },
+    {
+      "id": "job-1788521472728-oqci",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 228,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 0,
+      "created_at": "2026-09-04T11:31:12.728Z"
+    },
+    {
+      "id": "job-1788521472498-boh6",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 221,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 2,
+      "created_at": "2026-09-04T11:31:12.498Z"
+    },
+    {
+      "id": "job-1788521472276-zzxx",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 241,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG",
+        "06_ADS",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "false_positives_prevented": 0,
+      "created_at": "2026-09-04T11:31:12.276Z"
+    },
     {
       "id": "job-1788521413614-pvn7",
       "store_id": "store-3",
@@ -143,6 +776,60 @@
     }
   ],
   "alert_dispatch_queue": [
+    {
+      "id": "alert-1788521796174",
+      "phone_number": "5511999999999",
+      "message_body": "🌅 *Relatório Executivo AdShield (04/09/2026 às 08:36:33)*\n\n🏢 *Lojas Auditadas ao Vivo:* 3 lojas\n🩺 *Diagnóstico de Ruptura:* 1 produto(s) com estoque furado\n💰 *Vazamento em Mídia:* R$ 1.359/mês em risco\n\n🔍 *Detalhes Reais do Catálogo:*\n• BRK Agro: \"Camisa Agro Brk São Bento e Colheitadeira com Proteção UV50 - Envio Imediato\" sem [G]\n\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 com Grounding Absoluto.",
+      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
+      "priority": "NORMAL",
+      "status": "PENDING",
+      "created_at": "2026-09-04T11:36:36.174Z"
+    },
+    {
+      "id": "alert-1788521712784",
+      "phone_number": "5511999999999",
+      "message_body": "🌅 *Relatório Executivo AdShield (04/09/2026 às 08:35:12)*\n\n🏢 *Lojas Monitoradas:* 3 lojas\n🩺 *Saúde de Catálogo:* 1 SKUs com Ruptura ⚠️\n💰 *Vazamento em Mídia:* R$ 2.312/mês em risco\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 sem erros.",
+      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
+      "priority": "NORMAL",
+      "status": "PENDING",
+      "created_at": "2026-09-04T11:35:12.784Z"
+    },
+    {
+      "id": "alert-1788521652773",
+      "phone_number": "5511999999999",
+      "message_body": "🌅 *Relatório Executivo AdShield (04/09/2026 às 08:34:12)*\n\n🏢 *Lojas Monitoradas:* 3 lojas\n🩺 *Saúde de Catálogo:* 1 SKUs com Ruptura ⚠️\n💰 *Vazamento em Mídia:* R$ 2.312/mês em risco\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 sem erros.",
+      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
+      "priority": "NORMAL",
+      "status": "PENDING",
+      "created_at": "2026-09-04T11:34:12.773Z"
+    },
+    {
+      "id": "alert-1788521593264",
+      "phone_number": "5511999999999",
+      "message_body": "🌅 *Relatório Executivo AdShield (04/09/2026 às 08:33:12)*\n\n🏢 *Lojas Monitoradas:* 3 lojas\n🩺 *Saúde de Catálogo:* 1 SKUs com Ruptura ⚠️\n💰 *Vazamento em Mídia:* R$ 2.312/mês em risco\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 sem erros.",
+      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
+      "priority": "NORMAL",
+      "status": "PENDING",
+      "created_at": "2026-09-04T11:33:13.264Z"
+    },
+    {
+      "id": "alert-1788521533339",
+      "phone_number": "5511999999999",
+      "message_body": "🌅 *Relatório Executivo AdShield (04/09/2026 às 08:32:12)*\n\n🏢 *Lojas Monitoradas:* 3 lojas\n🩺 *Saúde de Catálogo:* 1 SKUs com Ruptura ⚠️\n💰 *Vazamento em Mídia:* R$ 2.312/mês em risco\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 sem erros.",
+      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
+      "priority": "NORMAL",
+      "status": "PENDING",
+      "created_at": "2026-09-04T11:32:13.339Z"
+    },
+    {
+      "id": "alert-1788521472730",
+      "phone_number": "5511999999999",
+      "message_body": "🌅 *Relatório Executivo AdShield (04/09/2026 às 08:31:12)*\n\n🏢 *Lojas Monitoradas:* 3 lojas\n🩺 *Saúde de Catálogo:* 1 SKUs com Ruptura ⚠️\n💰 *Vazamento em Mídia:* R$ 2.312/mês em risco\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 sem erros.",
+      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
+      "priority": "NORMAL",
+      "status": "PENDING",
+      "created_at": "2026-09-04T11:31:12.730Z"
+    },
     {
       "id": "alert-1788521413615",
       "phone_number": "5511999999999",
