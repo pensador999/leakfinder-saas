@@ -48,6 +48,17 @@ const INITIAL_DB = {
       current_score: 79,
       current_estimated_loss: 2312,
       last_audited_at: null
+    },
+    {
+      id: 'store-4',
+      brand_name: 'Mercado Livre Loja Oficial',
+      store_url: 'https://lista.mercadolivre.com.br/camisa-pesca-uv',
+      niche: 'Marketplace E-commerce',
+      target_phone: '5511999999999',
+      is_active: true,
+      current_score: 98,
+      current_estimated_loss: 0,
+      last_audited_at: null
     }
   ],
   daily_snapshots: [],

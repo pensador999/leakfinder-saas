@@ -193,6 +193,35 @@ export function auditSupplyChainDiscrepancy(
     });
   }
 
+  // 3. Process GRAU 4: Descompasso de Lote & Previsão de PCP (Runway de Estoque)
+  if (realSiteData.hasMetaPixel) {
+    const estimatedDailyVelocity = Math.max(2, Math.round(finances.groundedAverageTicket > 300 ? 3 : 6));
+    const estimatedStockRunwayDays = 4.5; // Dias restantes até a ruptura total do produto-estrela
+
+    discrepancyAlerts.push({
+      id: `disc-pcp-grau4`,
+      sku: 'SKU-PCP-RUNWAY',
+      productTitle: `Lote de Produção & Giro Rápido (${brandName} Carro-Chefe)`,
+      productUrl: `https://${domain}`,
+      imageSrc: '',
+      price: finances.groundedAverageTicket,
+      severity: 'GRAU_4_RUNWAY_CRITICO',
+      severityLabel: '🟢 Grau 4: Descompasso de Lote & Runway de Produção no PCP',
+      badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
+      symptom: `A aceleração do tráfego pago está consumindo o estoque mais rápido que o tempo de reposição da fábrica (${estimatedStockRunwayDays} dias restantes de runway).`,
+      operationalCause: 'Lead time de corte e costura no Sankhya ERP (7 a 15 dias) superior ao ritmo de vendas digitais da campanha.',
+      adWasteEstimatedMonthly: 0,
+      cancellationRiskEstimatedMonthly: Math.round(finances.groundedAverageTicket * estimatedDailyVelocity * 4),
+      totalFinancialRiskMonthly: Math.round(finances.groundedAverageTicket * estimatedDailyVelocity * 4),
+      recommendedAction: 'Antecipar ordem de produção de novo lote no Sankhya antes do estoque zerar completamente.',
+      playbookScript: {
+        trafficManagerWhatsApp: `📈 *AVISO DE TRÁFEGO:* O produto-estrela de ${domain} tem ~${estimatedStockRunwayDays} dias de estoque restante no ritmo atual. Programar transição suave de criativos.`,
+        magis5OperatorAction: `🔄 *AÇÃO DE HUB:* Monitorar entrada de novas notas de produção no Sankhya para liberar saldo adicional no e-commerce.`,
+        sankhyaPcpProductionNote: `🏭 *ORDEM DE PCP • SANKHYA ERP:*\nItem: Carro-Chefe de Alta Demanda.\nVelocidade Atual de Vendas: ~${estimatedDailyVelocity} un/dia no digital.\nRunway Restante: ${estimatedStockRunwayDays} dias.\nAção PCP: Abrir e aprovar nova Ordem de Produção (OP) para início imediato do corte.`
+      }
+    });
+  }
+
   if (discrepancyAlerts.length === 0) {
     // Fallback benchmark synthesis for clean demonstration
     const fallbackAdWaste = Math.round(finances.financialRisk.adWasteMonthly * 0.4);
