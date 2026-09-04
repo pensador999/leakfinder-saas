@@ -1,6 +1,6 @@
 {
   "version": "2.4",
-  "updated_at": "2026-09-04T15:39:55.543Z",
+  "updated_at": "2026-09-04T15:42:54.586Z",
   "monitored_stores": [
     {
       "id": "store-1",
@@ -9,9 +9,9 @@
       "niche": "Agropecuária & Moda Campo",
       "target_phone": "5511999999999",
       "is_active": true,
-      "current_score": 90,
+      "current_score": 92,
       "current_estimated_loss": 1359,
-      "last_audited_at": "2026-09-04T15:39:53.370Z",
+      "last_audited_at": "2026-09-04T15:42:52.667Z",
       "platform": "SHOPIFY"
     },
     {
@@ -23,7 +23,7 @@
       "is_active": true,
       "current_score": 99,
       "current_estimated_loss": 0,
-      "last_audited_at": "2026-09-04T15:39:54.019Z",
+      "last_audited_at": "2026-09-04T15:42:53.136Z",
       "platform": "SHOPIFY"
     },
     {
@@ -35,7 +35,7 @@
       "is_active": true,
       "current_score": 99,
       "current_estimated_loss": 0,
-      "last_audited_at": "2026-09-04T15:39:54.679Z",
+      "last_audited_at": "2026-09-04T15:42:53.890Z",
       "platform": "SHOPIFY"
     },
     {
@@ -47,11 +47,287 @@
       "is_active": true,
       "current_score": 97,
       "current_estimated_loss": 0,
-      "last_audited_at": "2026-09-04T15:39:55.517Z",
+      "last_audited_at": "2026-09-04T15:42:54.561Z",
       "platform": "MERCADO_LIVRE"
     }
   ],
   "daily_snapshots": [
+    {
+      "id": "snap-1788536574561-gvht",
+      "store_id": "store-4",
+      "brand_name": "Mercado Livre Loja Oficial",
+      "store_url": "https://lista.mercadolivre.com.br/camisa-pesca-uv",
+      "platform": "MERCADO_LIVRE",
+      "score": 97,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 1,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": {
+        "platformName": "Mercado Livre",
+        "isFull": true,
+        "hasBuyBox": true,
+        "sellerReputation": "MercadoLíder Platinum / Oficial"
+      },
+      "broken_products_details": [],
+      "audited_at": "2026-09-04T15:42:54.561Z"
+    },
+    {
+      "id": "snap-1788536573890-mvrn",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "store_url": "https://www.brkmotors.com.br",
+      "platform": "SHOPIFY",
+      "score": 99,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 15,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [],
+      "audited_at": "2026-09-04T15:42:53.890Z"
+    },
+    {
+      "id": "snap-1788536573136-on96",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "store_url": "https://www.brkfishing.com.br",
+      "platform": "SHOPIFY",
+      "score": 99,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 15,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [],
+      "audited_at": "2026-09-04T15:42:53.136Z"
+    },
+    {
+      "id": "snap-1788536572667-mqne",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "store_url": "https://www.brkagro.com.br",
+      "platform": "SHOPIFY",
+      "score": 92,
+      "lift_min": 15,
+      "lift_max": 31,
+      "broken_skus_count": 1,
+      "total_skus_count": 15,
+      "estimated_monthly_loss": 1359,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [
+        {
+          "title": "Camisa Agro Brk São Bento e Colheitadeira com Proteção UV50 - Envio Imediato",
+          "handle": "camisa-agro-brk-sao-bento-e-colheitadeira-com-protecao-uv50-envio-imediato",
+          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-sao-bento-e-colheitadeira-com-protecao-uv50-envio-imediato",
+          "price": 169.9,
+          "missingSizes": [
+            "G"
+          ],
+          "availableSizes": [
+            "M",
+            "GG",
+            "G1"
+          ]
+        }
+      ],
+      "audited_at": "2026-09-04T15:42:52.667Z"
+    },
+    {
+      "id": "snap-1788536515137-q3ih",
+      "store_id": "store-4",
+      "brand_name": "Mercado Livre Loja Oficial",
+      "store_url": "https://lista.mercadolivre.com.br/camisa-pesca-uv",
+      "platform": "MERCADO_LIVRE",
+      "score": 97,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 1,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": {
+        "platformName": "Mercado Livre",
+        "isFull": true,
+        "hasBuyBox": true,
+        "sellerReputation": "MercadoLíder Platinum / Oficial"
+      },
+      "broken_products_details": [],
+      "audited_at": "2026-09-04T15:41:55.137Z"
+    },
+    {
+      "id": "snap-1788536514479-1l4m",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "store_url": "https://www.brkmotors.com.br",
+      "platform": "SHOPIFY",
+      "score": 99,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 15,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [],
+      "audited_at": "2026-09-04T15:41:54.479Z"
+    },
+    {
+      "id": "snap-1788536513689-2j1j",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "store_url": "https://www.brkfishing.com.br",
+      "platform": "SHOPIFY",
+      "score": 99,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 15,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [],
+      "audited_at": "2026-09-04T15:41:53.689Z"
+    },
+    {
+      "id": "snap-1788536513155-xnei",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "store_url": "https://www.brkagro.com.br",
+      "platform": "SHOPIFY",
+      "score": 91,
+      "lift_min": 15,
+      "lift_max": 31,
+      "broken_skus_count": 1,
+      "total_skus_count": 15,
+      "estimated_monthly_loss": 1359,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [
+        {
+          "title": "Camisa Agro Brk São Bento e Colheitadeira com Proteção UV50 - Envio Imediato",
+          "handle": "camisa-agro-brk-sao-bento-e-colheitadeira-com-protecao-uv50-envio-imediato",
+          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-sao-bento-e-colheitadeira-com-protecao-uv50-envio-imediato",
+          "price": 169.9,
+          "missingSizes": [
+            "G"
+          ],
+          "availableSizes": [
+            "M",
+            "GG",
+            "G1"
+          ]
+        }
+      ],
+      "audited_at": "2026-09-04T15:41:53.155Z"
+    },
+    {
+      "id": "snap-1788536455352-plz7",
+      "store_id": "store-4",
+      "brand_name": "Mercado Livre Loja Oficial",
+      "store_url": "https://lista.mercadolivre.com.br/camisa-pesca-uv",
+      "platform": "MERCADO_LIVRE",
+      "score": 97,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 1,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": {
+        "platformName": "Mercado Livre",
+        "isFull": true,
+        "hasBuyBox": true,
+        "sellerReputation": "MercadoLíder Platinum / Oficial"
+      },
+      "broken_products_details": [],
+      "audited_at": "2026-09-04T15:40:55.352Z"
+    },
+    {
+      "id": "snap-1788536453595-l3so",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "store_url": "https://www.brkmotors.com.br",
+      "platform": "SHOPIFY",
+      "score": 99,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 15,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [],
+      "audited_at": "2026-09-04T15:40:53.595Z"
+    },
+    {
+      "id": "snap-1788536453097-4zk8",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "store_url": "https://www.brkfishing.com.br",
+      "platform": "SHOPIFY",
+      "score": 99,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "total_skus_count": 15,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [],
+      "audited_at": "2026-09-04T15:40:53.097Z"
+    },
+    {
+      "id": "snap-1788536452625-9v8l",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "store_url": "https://www.brkagro.com.br",
+      "platform": "SHOPIFY",
+      "score": 92,
+      "lift_min": 15,
+      "lift_max": 31,
+      "broken_skus_count": 1,
+      "total_skus_count": 15,
+      "estimated_monthly_loss": 1359,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [
+        {
+          "title": "Camisa Agro Brk São Bento e Colheitadeira com Proteção UV50 - Envio Imediato",
+          "handle": "camisa-agro-brk-sao-bento-e-colheitadeira-com-protecao-uv50-envio-imediato",
+          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-sao-bento-e-colheitadeira-com-protecao-uv50-envio-imediato",
+          "price": 169.9,
+          "missingSizes": [
+            "G"
+          ],
+          "availableSizes": [
+            "M",
+            "GG",
+            "G1"
+          ]
+        }
+      ],
+      "audited_at": "2026-09-04T15:40:52.625Z"
+    },
     {
       "id": "snap-1788536395517-l36y",
       "store_id": "store-4",
@@ -6024,6 +6300,258 @@
   ],
   "job_logs": [
     {
+      "id": "job-1788536574577-iahm",
+      "store_id": "store-4",
+      "brand_name": "Mercado Livre Loja Oficial",
+      "platform": "MERCADO_LIVRE",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 666,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_mercado_livre",
+      "products_scanned": 1,
+      "created_at": "2026-09-04T15:42:54.577Z"
+    },
+    {
+      "id": "job-1788536573905-8jb2",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 745,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 15,
+      "created_at": "2026-09-04T15:42:53.905Z"
+    },
+    {
+      "id": "job-1788536573152-yqm3",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 441,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 15,
+      "created_at": "2026-09-04T15:42:53.152Z"
+    },
+    {
+      "id": "job-1788536572703-aiez",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 526,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 15,
+      "created_at": "2026-09-04T15:42:52.703Z"
+    },
+    {
+      "id": "job-1788536515152-6gb9",
+      "store_id": "store-4",
+      "brand_name": "Mercado Livre Loja Oficial",
+      "platform": "MERCADO_LIVRE",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 651,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_mercado_livre",
+      "products_scanned": 1,
+      "created_at": "2026-09-04T15:41:55.152Z"
+    },
+    {
+      "id": "job-1788536514495-8ay3",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 784,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 15,
+      "created_at": "2026-09-04T15:41:54.495Z"
+    },
+    {
+      "id": "job-1788536513706-x405",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 502,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 15,
+      "created_at": "2026-09-04T15:41:53.706Z"
+    },
+    {
+      "id": "job-1788536513198-dn7c",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 1023,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 15,
+      "created_at": "2026-09-04T15:41:53.198Z"
+    },
+    {
+      "id": "job-1788536455368-2igj",
+      "store_id": "store-4",
+      "brand_name": "Mercado Livre Loja Oficial",
+      "platform": "MERCADO_LIVRE",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 1749,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_mercado_livre",
+      "products_scanned": 1,
+      "created_at": "2026-09-04T15:40:55.368Z"
+    },
+    {
+      "id": "job-1788536453611-pcbl",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 490,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 15,
+      "created_at": "2026-09-04T15:40:53.611Z"
+    },
+    {
+      "id": "job-1788536453114-819i",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 438,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 15,
+      "created_at": "2026-09-04T15:40:53.114Z"
+    },
+    {
+      "id": "job-1788536452666-9dzr",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 506,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 15,
+      "created_at": "2026-09-04T15:40:52.666Z"
+    },
+    {
       "id": "job-1788536395533-7efy",
       "store_id": "store-4",
       "brand_name": "Mercado Livre Loja Oficial",
@@ -9786,249 +10314,36 @@
       "evidence_source": "live_public_products_json",
       "products_scanned": 15,
       "created_at": "2026-09-04T14:35:40.881Z"
-    },
-    {
-      "id": "job-1788532539866-2ujl",
-      "store_id": "store-2",
-      "brand_name": "BRK Fishing",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 457,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_LIVE",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_public_products_json",
-      "products_scanned": 15,
-      "created_at": "2026-09-04T14:35:39.866Z"
-    },
-    {
-      "id": "job-1788532539405-ikug",
-      "store_id": "store-1",
-      "brand_name": "BRK Agro",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 486,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_LIVE",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_public_products_json",
-      "products_scanned": 15,
-      "created_at": "2026-09-04T14:35:39.405Z"
-    },
-    {
-      "id": "job-1788532481019-tw7y",
-      "store_id": "store-3",
-      "brand_name": "BRK Motors",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 1121,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_LIVE",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_public_products_json",
-      "products_scanned": 15,
-      "created_at": "2026-09-04T14:34:41.019Z"
-    },
-    {
-      "id": "job-1788532479892-ojp1",
-      "store_id": "store-2",
-      "brand_name": "BRK Fishing",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 462,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_LIVE",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_public_products_json",
-      "products_scanned": 15,
-      "created_at": "2026-09-04T14:34:39.892Z"
-    },
-    {
-      "id": "job-1788532479426-lk7k",
-      "store_id": "store-1",
-      "brand_name": "BRK Agro",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 512,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_LIVE",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_public_products_json",
-      "products_scanned": 15,
-      "created_at": "2026-09-04T14:34:39.426Z"
-    },
-    {
-      "id": "job-1788532421010-vrfw",
-      "store_id": "store-3",
-      "brand_name": "BRK Motors",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 1092,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_LIVE",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_public_products_json",
-      "products_scanned": 15,
-      "created_at": "2026-09-04T14:33:41.010Z"
-    },
-    {
-      "id": "job-1788532419915-4bpw",
-      "store_id": "store-2",
-      "brand_name": "BRK Fishing",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 455,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_LIVE",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_public_products_json",
-      "products_scanned": 15,
-      "created_at": "2026-09-04T14:33:39.915Z"
-    },
-    {
-      "id": "job-1788532419456-2cz9",
-      "store_id": "store-1",
-      "brand_name": "BRK Agro",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 546,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_LIVE",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_public_products_json",
-      "products_scanned": 15,
-      "created_at": "2026-09-04T14:33:39.456Z"
-    },
-    {
-      "id": "job-1788532360346-uko6",
-      "store_id": "store-3",
-      "brand_name": "BRK Motors",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 487,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_LIVE",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_public_products_json",
-      "products_scanned": 15,
-      "created_at": "2026-09-04T14:32:40.346Z"
-    },
-    {
-      "id": "job-1788532359855-v8l1",
-      "store_id": "store-2",
-      "brand_name": "BRK Fishing",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 456,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_LIVE",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_public_products_json",
-      "products_scanned": 15,
-      "created_at": "2026-09-04T14:32:39.855Z"
-    },
-    {
-      "id": "job-1788532359395-jfrb",
-      "store_id": "store-1",
-      "brand_name": "BRK Agro",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 497,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_LIVE",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_public_products_json",
-      "products_scanned": 15,
-      "created_at": "2026-09-04T14:32:39.395Z"
-    },
-    {
-      "id": "job-1788532301128-3l69",
-      "store_id": "store-3",
-      "brand_name": "BRK Motors",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 696,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_LIVE",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_public_products_json",
-      "products_scanned": 15,
-      "created_at": "2026-09-04T14:31:41.128Z"
     }
   ],
   "alert_dispatch_queue": [
+    {
+      "id": "alert-1788536574583",
+      "phone_number": "5511999999999",
+      "message_body": "🌅 *Relatório Executivo AdShield (04/09/2026 às 12:42:52)*\n\n🏢 *Lojas & Plataformas Auditadas:* 4 lojas (Shopify, VTEX, Nuvemshop, Marketplace)\n🩺 *Diagnóstico de Ruptura / Buy Box:* 1 item(ns) com alerta crítico\n💰 *Vazamento em Mídia:* R$ 1.359/mês em risco\n\n🔍 *Detalhes Reais Identificados:*\n• BRK Agro: \"Camisa Agro Brk São Bento e Colheitadeira com Proteção UV50 - Envio Imediato\" sem [G]\n\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 com Grounding Absoluto e Varredura Universal.",
+      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
+      "priority": "NORMAL",
+      "status": "PENDING",
+      "created_at": "2026-09-04T15:42:54.583Z"
+    },
+    {
+      "id": "alert-1788536515160",
+      "phone_number": "5511999999999",
+      "message_body": "🌅 *Relatório Executivo AdShield (04/09/2026 às 12:41:52)*\n\n🏢 *Lojas & Plataformas Auditadas:* 4 lojas (Shopify, VTEX, Nuvemshop, Marketplace)\n🩺 *Diagnóstico de Ruptura / Buy Box:* 1 item(ns) com alerta crítico\n💰 *Vazamento em Mídia:* R$ 1.359/mês em risco\n\n🔍 *Detalhes Reais Identificados:*\n• BRK Agro: \"Camisa Agro Brk São Bento e Colheitadeira com Proteção UV50 - Envio Imediato\" sem [G]\n\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 com Grounding Absoluto e Varredura Universal.",
+      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
+      "priority": "NORMAL",
+      "status": "PENDING",
+      "created_at": "2026-09-04T15:41:55.160Z"
+    },
+    {
+      "id": "alert-1788536455375",
+      "phone_number": "5511999999999",
+      "message_body": "🌅 *Relatório Executivo AdShield (04/09/2026 às 12:40:52)*\n\n🏢 *Lojas & Plataformas Auditadas:* 4 lojas (Shopify, VTEX, Nuvemshop, Marketplace)\n🩺 *Diagnóstico de Ruptura / Buy Box:* 1 item(ns) com alerta crítico\n💰 *Vazamento em Mídia:* R$ 1.359/mês em risco\n\n🔍 *Detalhes Reais Identificados:*\n• BRK Agro: \"Camisa Agro Brk São Bento e Colheitadeira com Proteção UV50 - Envio Imediato\" sem [G]\n\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 com Grounding Absoluto e Varredura Universal.",
+      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
+      "priority": "NORMAL",
+      "status": "PENDING",
+      "created_at": "2026-09-04T15:40:55.375Z"
+    },
     {
       "id": "alert-1788536395540",
       "phone_number": "5511999999999",

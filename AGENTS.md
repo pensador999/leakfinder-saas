@@ -74,3 +74,11 @@ graph TD
 1. **Zero Links Quebrados:** Todo link de produto gerado deve abrir com sucesso na loja real.
 2. **Zero Falsos-Positivos:** Verificar widgets do tema (como `<product-addons>`) antes de declarar ausência de recursos.
 3. **Clareza de Linguagem:** Sempre que for recomendação, usar termos propositivos (*"Recomendamos testar..."*, *"Simulação projetada de..."*).
+
+---
+
+## 📚 5. Compêndio Arquitetural Completo dos 18 Agentes
+Para visualizar as fichas técnicas detalhadas, papéis, inputs/outputs, código-fonte e diagramas de todos os 18 agentes que compõem o enxame autônomo do LeakFinder / AdShield:
+
+👉 **[Consulte o Dossiê Completo dos 18 Agentes em docs/AGENTS_ECOSYSTEM.md](./docs/AGENTS_ECOSYSTEM.md)**
+

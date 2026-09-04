@@ -41,18 +41,19 @@ A arquitetura completa do sistema está documentada no padrão **C4 Model (Conte
 
 ---
 
-## 🤖 Esquadrão de 8 Agentes Especialistas
+## 🤖 Enxame Autônomo de 18 Agentes Especialistas
 
-| Agente | Especialidade | Entregáveis Principais |
+O LeakFinder opera um ecossistema com **18 Agentes de IA Especialistas**, organizados em 5 camadas funcionais coordenadas pelo **CEO Orchestrator** e reguladas pelo **Tribunal de Consenso Duplo**:
+
+| Camada | Agentes | Responsabilidade Principal |
 | :--- | :--- | :--- |
-| 📦 **Doctor de Catálogo** | SKUs & Grade de Tamanhos | Auditoria de grade `PP ao G2`, regra `_FULL`, fotos e widget de medidas. |
-| 👁️ **Visão Computacional** | Eye-Tracking & Saliência | Mapas de calor, contraste WCAG 2.1 AAA e ergonomia de polegar (48px). |
-| 📊 **Telemetria & Clarity** | Comportamento do Usuário | Deep links de rage clicks e tabela de perda financeira por SKU furado. |
-| 💻 **Gerador de Scripts** | Remediação Automática | Códigos prontos (.liquid/CSS) para Sticky Buy Button, Pix 10% e Tabnabbing. |
-| 🛡️ **Segurança & Legal** | Conformidade Brasileira | Auditoria de CNPJ no rodapé, CDC Art. 49 e LGPD. |
-| 🎯 **Arquiteto de CRO** | Funis de Conversão | Fórmulas de lift de receita e fricção de checkout. |
-| 📈 **Mídia Paga (Ads)** | Gestão de Tráfego | Simulador de verba e divisão técnica de funil (60/25/15). |
-| 🕵️ **Espião de Rivais** | Benchmarking Competitivo | Comparativo de velocidade, frete e vitrines contra marcas concorrentes. |
+| **1. Governança & Orquestração** | `CEO Orchestrator`, `Universal Niche Recognition`, `Truth Auditor`, `Dual-Agent Consensus Tribunal` | Priorização ICE Score, DNA do nicho, grounding e eliminação de falsos-positivos. |
+| **2. Aquisição & Mídia** | `Media Buyer & Ads Risk`, `Market Hunter`, `Competitor Radar`, `High-Conversion Sales Copywriter` | Sangria de verba em anúncios, gaps de mercado, benchmarking e copy B2B. |
+| **3. CRO & Catálogo** | `Universal Catalog Doctor`, `Conversion Rate Architect`, `Computer Vision & Saliency`, `Technical SEO` | Grade `PP a G2` (Shopify, VTEX, Nuvemshop, Marketplaces), usabilidade, contraste WCAG e Core Web Vitals. |
+| **4. Supply Chain & VoC** | `ERP & Supply Chain Discrepancy Engine`, `Customer Success VoC & NPS`, `SaaS Product Evolution` | Rupturas ERP (Sankhya/Bling) vs Hubs (Magis5), runway de PCP, Reclame Aqui e melhoria contínua. |
+| **5. DevOps & Resiliência** | `DevOps Sentinel & Circuit Breaker`, `Autonomous Code Patch Engineer`, `WhatsApp Watchdog Worker` | Monitor 360º dos 4 pilares, auto-cura de código e alertas executivos 24/7 no WhatsApp. |
+
+👉 **[Consulte o Dossiê Técnico Completo dos 18 Agentes em docs/AGENTS_ECOSYSTEM.md](./docs/AGENTS_ECOSYSTEM.md)**
 
 ---
 
