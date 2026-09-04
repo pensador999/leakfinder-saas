@@ -37,10 +37,6 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
   onClose,
   diagnostic
 }) => {
-  if (!isOpen || !diagnostic) return null;
-
-  const { input, realSiteData, growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax } = diagnostic;
-
   // White-Label State
   const [agencyName, setAgencyName] = useState('Apex Growth Advisors');
   const [consultantName, setConsultantName] = useState('Especialista em CRO & Growth');
@@ -60,6 +56,10 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
 
   const printContainerRef = useRef<HTMLDivElement>(null);
+
+  if (!isOpen || !diagnostic) return null;
+
+  const { input, realSiteData, growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax } = diagnostic;
 
   const handlePrint = () => {
     window.print();

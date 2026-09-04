@@ -26,13 +26,14 @@ export const WhatsAppLeadCaptureModal: React.FC<WhatsAppLeadCaptureModalProps> =
   isOpen,
   onClose
 }) => {
-  if (!isOpen) return null;
-
-  const { realSiteData, growthScore } = diagnostic;
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [isSent, setIsSent] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+
+  if (!isOpen) return null;
+
+  const { realSiteData, growthScore } = diagnostic;
 
   const telemetry = generateShopifyTelemetryAnalysis(
     realSiteData.domain,

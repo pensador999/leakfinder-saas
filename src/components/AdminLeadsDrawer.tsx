@@ -22,14 +22,16 @@ interface AdminLeadsDrawerProps {
 }
 
 export const AdminLeadsDrawer: React.FC<AdminLeadsDrawerProps> = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
-
   const [leads, setLeads] = useState<CapturedLead[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    setLeads(getStoredLeads());
+    if (isOpen) {
+      setLeads(getStoredLeads());
+    }
   }, [isOpen]);
+
+  if (!isOpen) return null;
 
   const handleClearLeads = () => {
     if (window.confirm('Tem certeza que deseja limpar a lista de leads capturados localmente?')) {

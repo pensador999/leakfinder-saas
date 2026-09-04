@@ -94,11 +94,11 @@ export function ReportPage() {
     fetchAudit();
   }, [id, navigate]);
 
+  const [viewMode, setViewMode] = useState<'merchant' | 'war_room'>('merchant');
+
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center font-bold text-slate-600">Carregando Relatório...</div>;
   }
-
-  const [viewMode, setViewMode] = useState<'merchant' | 'war_room'>('merchant');
 
   const totalCatalogAlerts = ((diagnostic?.realSiteData.catalogAudit?.productsWithBrokenGrid || 0) + 
                              (diagnostic?.realSiteData.catalogAudit?.productsWithMissingImages || 0));
