@@ -5,6 +5,7 @@
 // ==============================================================================
 
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { circuitBreaker } from '../../lib/circuitBreaker';
 import { AgentDiagnosticResult } from '../../types';
 
 export interface AuditHistoryEntry {
@@ -90,8 +91,8 @@ export async function saveAuditToDatabase(result: AgentDiagnosticResult): Promis
     console.warn('[storeAuditHistoryService] LocalStorage write error:', err);
   }
 
-  // 2. Persist to Supabase if configured
-  if (isSupabaseConfigured) {
+  // 2. Persist to Supabase if configured and circuit is closed
+  if (isSupabaseConfigured && !circuitBreaker.isCircuitOpen()) {
     try {
       const { data, error } = await supabase
         .from('audit_reports')
@@ -128,8 +129,8 @@ export async function getStoreAuditEvolution(
   const cleanDomain = domain.toLowerCase().trim();
   let rawEntries: AuditHistoryEntry[] = [];
 
-  // 1. Try fetching from Supabase
-  if (isSupabaseConfigured) {
+  // 1. Try fetching from Supabase if circuit is closed
+  if (isSupabaseConfigured && !circuitBreaker.isCircuitOpen()) {
     try {
       const { data, error } = await supabase
         .from('audit_reports')
