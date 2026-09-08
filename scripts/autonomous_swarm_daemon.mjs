@@ -118,13 +118,23 @@ async function runAutonomousWorkerCycle(cycleNumber) {
       console.log(`🩺 [05 Doctor Catálogo] ✅ Grade/Anúncio 100% Saudável! Sem rupturas de estoque ou Buy Box.`);
     } else {
       console.log(`🩺 [05 Doctor Catálogo] ⚠️ Detectados ${brokenSkus} ponto(s) crítico(s) no catálogo:`);
+      console.log(`      ↳ Confecção Própria: ${catalogAudit.inHouseBrokenCount || 0} item(ns) | Revenda Externa: ${catalogAudit.resaleBrokenCount || 0} item(ns)`);
       catalogAudit.brokenProducts.forEach(bp => {
-        console.log(`      • "${bp.title}" — Risco/Falta: [${bp.missingSizes.join(', ')}] | Preço: R$ ${bp.price.toFixed(2)}`);
-        criticalFindings.push({ brand, title: bp.title, missing: bp.missingSizes });
+        const typeBadge = bp.isResale ? '🛍️ [REVENDA]' : '🏭 [FABRICAÇÃO PRÓPRIA]';
+        console.log(`      • ${typeBadge} "${bp.title}" — Risco/Falta: [${bp.missingSizes.join(', ')}] | Preço: R$ ${bp.price.toFixed(2)}`);
+        console.log(`        └─ Ação Recomendada: ${bp.recommendedSupplyAction}`);
+        criticalFindings.push({ 
+          brand, 
+          title: bp.title, 
+          missing: bp.missingSizes,
+          isResale: bp.isResale,
+          manufacturingType: bp.manufacturingType,
+          action: bp.recommendedSupplyAction
+        });
       });
     }
 
-    console.log(`🎯 [06 Mídia & Tráfego] Risco em Anúncios: ${monthlyBleed === 0 ? 'R$ 0,00 (Verba Segura)' : `R$ ${monthlyBleed.toLocaleString('pt-BR')}/mês`}`);
+    console.log(`🎯 [06 Mídia & Tráfego] Risco em Anúncios: ${monthlyBleed === 0 ? 'R$ 0,00 (Verba Segura)' : `R$ ${monthlyBleed.toLocaleString('pt-BR')}/mês`} (Própria: R$ ${(catalogAudit.inHouseMonthlyLossBRL || 0).toLocaleString('pt-BR')} | Revenda: R$ ${(catalogAudit.resaleMonthlyLossBRL || 0).toLocaleString('pt-BR')})`);
     console.log(`👁️ [08 Visão & UX] Contraste WCAG 2.1: 4.8:1 (Aprovado) | Mobile Thumb Zone: Otimizado`);
     console.log(`⚖️ [Tribunal de Consenso] Veredito 100% Grounded via [${catalogAudit.platform}]. Zero Falsos-Positivos.`);
 
@@ -138,6 +148,10 @@ async function runAutonomousWorkerCycle(cycleNumber) {
       lift_min: Math.round(12 + brokenSkus * 3),
       lift_max: Math.round(25 + brokenSkus * 6),
       broken_skus_count: brokenSkus,
+      in_house_broken_count: catalogAudit.inHouseBrokenCount || 0,
+      resale_broken_count: catalogAudit.resaleBrokenCount || 0,
+      in_house_monthly_loss: catalogAudit.inHouseMonthlyLossBRL || 0,
+      resale_monthly_loss: catalogAudit.resaleMonthlyLossBRL || 0,
       total_skus_count: catalogAudit.totalAudited || 24,
       estimated_monthly_loss: monthlyBleed,
       contrast_ratio: 4.8,
@@ -197,14 +211,17 @@ async function runAutonomousWorkerCycle(cycleNumber) {
   // 4. Enqueue WhatsApp Executive Alert with Identical Real Product Names
   let findingsSummary = 'Grade 100% Blindada em todas as lojas monitoradas ✅';
   if (criticalFindings.length > 0) {
-    findingsSummary = criticalFindings.map(f => `• ${f.brand}: "${f.title}" sem [${f.missing.join(', ')}]`).join('\n');
+    findingsSummary = criticalFindings.map(f => {
+      const badge = f.isResale ? '🛍️ (Revenda)' : '🏭 (Própria)';
+      return `• ${f.brand} ${badge}: "${f.title}" sem [${f.missing.join(', ')}]\n   ↳ Ação: ${f.action}`;
+    }).join('\n');
   }
 
   const alertBody = `🌅 *Relatório Executivo AdShield (${dateStr} às ${timeStr})*\n\n` +
     `🏢 *Lojas & Plataformas Auditadas:* ${stores.length} lojas (Shopify, VTEX, Nuvemshop, Marketplace)\n` +
     `🩺 *Diagnóstico de Ruptura / Buy Box:* ${totalBrokenSkus === 0 ? 'Catálogo & Buy Box 100% Blindados' : `${totalBrokenSkus} item(ns) com alerta crítico`}\n` +
     `💰 *Vazamento em Mídia:* ${totalCycleLoss === 0 ? 'R$ 0,00 (Verba 100% Protegida)' : `R$ ${totalCycleLoss.toLocaleString('pt-BR')}/mês em risco`}\n\n` +
-    `🔍 *Detalhes Reais Identificados:*\n${findingsSummary}\n\n` +
+    `🔍 *Detalhes Reais Identificados (Própria vs Revenda):*\n${findingsSummary}\n\n` +
     `🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 com Grounding Absoluto e Varredura Universal.`;
 
   enqueueAlert({

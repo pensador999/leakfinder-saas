@@ -78,10 +78,104 @@ function isExemptProduct(title, tags = [], productType = '') {
 }
 
 /**
+ * 🏭 Detects whether a product is In-House Manufactured (Fabricação Própria)
+ * or Third-Party Resale (Revenda / Fornecedor Externo).
+ */
+export function detectProductManufacturingType(product) {
+  const titleUpper = String(product.title || '').toUpperCase();
+  const typeUpper = String(product.productType || product.product_type || '').toUpperCase();
+  const handleLower = String(product.handle || '').toLowerCase();
+  const tagsUpper = (product.tags || []).map(t => String(t).toUpperCase());
+  const skuSample = String(product.variants?.[0]?.sku || product.sku || '').toUpperCase();
+
+  // 1. Explicit Resale Product Types (Alfaiataria, calçados, jeans, óculos)
+  const isResaleType = 
+    typeUpper.includes('BOTÃO') || 
+    typeUpper.includes('BOTAO') || 
+    typeUpper.includes('SOCIAL') ||
+    typeUpper.includes('BOTINA') || 
+    typeUpper.includes('BOTA') || 
+    typeUpper.includes('CALÇADO') || 
+    typeUpper.includes('CALCADO') || 
+    typeUpper.includes('JEANS') ||
+    typeUpper.includes('ÓCULOS') || 
+    typeUpper.includes('OCULOS') ||
+    typeUpper.includes('EQUIPAMENTO') ||
+    typeUpper.includes('TRALHA');
+
+  // 2. SKU Prefixes indicative of Resale Finished Goods
+  const isResaleSku = 
+    skuSample.startsWith('CMB') || // Camisa de Botão
+    skuSample.startsWith('CBT') || // Camisa de Botão Tecido
+    skuSample.startsWith('BT') ||  // Botina
+    skuSample.startsWith('BOT') || // Bota
+    skuSample.startsWith('OC') ||  // Óculos
+    /^\d{13}$/.test(skuSample);    // Barcode EAN-13 externo de fornecedor
+
+  // 3. Handle patterns
+  const isResaleHandle = 
+    handleLower.startsWith('camisa-work') ||
+    handleLower.startsWith('camisa-social') ||
+    handleLower.startsWith('botina-') ||
+    handleLower.startsWith('calca-jeans-') ||
+    handleLower.startsWith('oculos-');
+
+  // 4. Tags
+  const isResaleTag = 
+    tagsUpper.includes('COM BOTÃO') ||
+    tagsUpper.includes('COM BOTAO') ||
+    tagsUpper.includes('REVENDA') ||
+    tagsUpper.includes('TERCEIROS') ||
+    tagsUpper.includes('DISTRIBUIÇÃO') ||
+    tagsUpper.includes('DISTRIBUICAO') ||
+    tagsUpper.includes('IMPORTADO') ||
+    tagsUpper.includes('OCULOS_ESTOQUE');
+
+  // 5. Title keywords
+  const isResaleTitle = 
+    (titleUpper.includes('ADVENTURE') && (isResaleType || isResaleSku || isResaleHandle || isResaleTag || titleUpper.includes('BOTÃO') || titleUpper.includes('BOTAO'))) ||
+    titleUpper.includes('WORK') ||
+    titleUpper.includes('SAFARI') ||
+    titleUpper.includes('DEYU') ||
+    titleUpper.includes('MARINE SPORTS') ||
+    titleUpper.includes('MARURI') ||
+    titleUpper.includes('DAIWA') ||
+    titleUpper.includes('SHIMANO');
+
+  if (isResaleType || isResaleSku || isResaleHandle || isResaleTag || isResaleTitle) {
+    let reason = 'Tipo de Produto / Categoria Externa';
+    if (isResaleType) reason = `Categoria de Revenda: ${product.productType || product.product_type}`;
+    else if (isResaleSku) reason = `Prefixo de SKU Revenda (${skuSample})`;
+    else if (isResaleHandle) reason = `Padrão de URL/Handle (${product.handle})`;
+    else if (isResaleTag) reason = `Tag de Fornecedor/Revenda`;
+    else if (isResaleTitle) reason = `Linha Técnica Externa (${product.title})`;
+
+    return {
+      isResale: true,
+      manufacturingType: 'REVENDA',
+      category: typeUpper.includes('BOTÃO') || typeUpper.includes('BOTAO') || handleLower.startsWith('camisa-work') ? 'CAMISA_BOTAO_WORKWEAR' :
+                typeUpper.includes('BOTINA') || typeUpper.includes('BOTA') ? 'CALCADO_COURO' :
+                typeUpper.includes('JEANS') ? 'JEANS' :
+                typeUpper.includes('ÓCULOS') || typeUpper.includes('OCULOS') ? 'OCULOS' : 'EQUIPAMENTO_TERCEIROS',
+      reason,
+      recommendedSupplyAction: 'Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote.'
+    };
+  }
+
+  return {
+    isResale: false,
+    manufacturingType: 'FABRICACAO_PROPRIA',
+    category: 'CONFECCAO_SUBLIMADA_PROPRIA',
+    reason: 'Vestuário sublimado sob demanda de produção própria',
+    recommendedSupplyAction: 'Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.'
+  };
+}
+
+/**
  * 🟢 1. SHOPIFY ENGINE (/products.json)
  */
 async function fetchShopifyCatalog(cleanUrl) {
-  const jsonUrl = `${cleanUrl}/products.json?limit=15`;
+  const jsonUrl = `${cleanUrl}/products.json?limit=30`;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 4500);
 
@@ -383,13 +477,20 @@ export async function auditUniversalStoreCatalog(storeUrl, niche) {
 
       if (missingCoreSizes.length > 0) {
         const price = sizeVariants[0]?.price || 169.90;
+        const mfgInfo = detectProductManufacturingType(p);
+
         brokenProducts.push({
           title: p.title,
           handle: p.handle,
           url: p.url,
           price: price,
           missingSizes: missingCoreSizes,
-          availableSizes: sizeVariants.filter(v => v.available).map(v => v.title.trim())
+          availableSizes: sizeVariants.filter(v => v.available).map(v => v.title.trim()),
+          isResale: mfgInfo.isResale,
+          manufacturingType: mfgInfo.manufacturingType,
+          manufacturingCategory: mfgInfo.category,
+          resaleReason: mfgInfo.reason,
+          recommendedSupplyAction: mfgInfo.recommendedSupplyAction
         });
       }
     }
@@ -410,7 +511,12 @@ export async function auditUniversalStoreCatalog(storeUrl, niche) {
         url: cleanUrl,
         price: products[0]?.variants[0]?.price || 149.90,
         missingSizes: ['SEM LOGÍSTICA FULL', 'DISPUTA DE BUY BOX'],
-        availableSizes: ['Estoque Convencional']
+        availableSizes: ['Estoque Convencional'],
+        isResale: true,
+        manufacturingType: 'REVENDA',
+        manufacturingCategory: 'MARKETPLACE_THIRD_PARTY',
+        resaleReason: 'Anúncio Marketplace / Seller Externo',
+        recommendedSupplyAction: 'Ajustar Buy Box e enviar estoque para Fulfillment.'
       });
     } else {
       catalogScore = 98;
@@ -423,11 +529,20 @@ export async function auditUniversalStoreCatalog(storeUrl, niche) {
     catalogScore = brokenCount === 0 ? 100 : Math.max(68, 100 - (brokenCount * 8));
   }
 
+  const inHouseBroken = brokenProducts.filter(b => !b.isResale);
+  const resaleBroken = brokenProducts.filter(b => b.isResale);
+  const inHouseMonthlyLossBRL = inHouseBroken.reduce((sum, item) => sum + Math.round(item.price * 8), 0);
+  const resaleMonthlyLossBRL = resaleBroken.reduce((sum, item) => sum + Math.round(item.price * 8), 0);
+
   return {
     platform: detectedPlatform,
     totalAudited: products.length,
     apparelCount,
     brokenProducts,
+    inHouseBrokenCount: inHouseBroken.length,
+    resaleBrokenCount: resaleBroken.length,
+    inHouseMonthlyLossBRL,
+    resaleMonthlyLossBRL,
     marketplaceDetails: rawCatalog?.marketplaceDetails,
     catalogScore,
     monthlyLossBRL
