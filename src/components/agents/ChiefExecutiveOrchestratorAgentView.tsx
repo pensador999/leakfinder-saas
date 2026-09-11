@@ -22,8 +22,13 @@ import {
   CeoProposalDecision, 
   StrategicSprint 
 } from '../../services/agents/chiefExecutiveOrchestratorAgent';
+import { AgentDiagnosticResult } from '../../types';
 
-export const ChiefExecutiveOrchestratorAgentView: React.FC = () => {
+interface ChiefExecutiveOrchestratorAgentViewProps {
+  diagnostic?: AgentDiagnosticResult;
+}
+
+export const ChiefExecutiveOrchestratorAgentView: React.FC<ChiefExecutiveOrchestratorAgentViewProps> = ({ diagnostic }) => {
   const [dossier, setDossier] = useState<CeoExecutiveBoardroomDossier | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeSubTab, setActiveSubTab] = useState<'decisions' | 'roadmap'>('decisions');
@@ -31,7 +36,7 @@ export const ChiefExecutiveOrchestratorAgentView: React.FC = () => {
   const loadDossier = async () => {
     setIsLoading(true);
     try {
-      const data = await runCeoOrchestratorEvaluation();
+      const data = await runCeoOrchestratorEvaluation(diagnostic);
       setDossier(data);
     } finally {
       setIsLoading(false);
@@ -40,7 +45,7 @@ export const ChiefExecutiveOrchestratorAgentView: React.FC = () => {
 
   useEffect(() => {
     loadDossier();
-  }, []);
+  }, [diagnostic]);
 
   if (isLoading || !dossier) {
     return (

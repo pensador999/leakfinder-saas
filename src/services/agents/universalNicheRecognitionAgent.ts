@@ -222,8 +222,8 @@ export function classifyUniversalNiche(realSiteData: RealSiteData): UniversalNic
   // Keyword Matrix for instant high-confidence classification
   const NICHE_KEYWORDS: Record<UniversalNicheCategory, string[]> = {
     MODA_VESTUARIO: ['roupa', 'vestido', 'camisa', 'camiseta', 'calça', 'moda', 'fashion', 'jeans', 'casaco', 'tamanho', 'tabela de medidas', 'look', 'cropped', 'manga'],
-    CALCADOS_CALCADISTA: ['sapato', 'tênis', 'bota', 'sandália', 'chinelo', 'calçado', 'sneaker', 'salto', 'mocassim', 'numeração', 'coturno'],
-    AUTOPECAS_FERRAMENTAS: ['autopeças', 'carro', 'moto', 'veículo', 'motor', 'farol', 'freio', 'parafuso', 'ferramenta', 'óleo', 'bateria', 'suspensão', 'oem', 'peça'],
+    CALCADOS_CALCADISTA: ['sapato', 'tênis', 'bota', 'sandália', 'chinelo', 'calçado', 'sneaker', 'salto', 'mocassim', 'numeração', 'coturno', 'botina', 'calce'],
+    AUTOPECAS_FERRAMENTAS: ['autopeças', 'carro', 'moto', 'veículo', 'motor', 'farol', 'freio', 'parafuso', 'ferramenta', 'óleo', 'bateria', 'suspensão', 'oem', 'peça', 'motors', 'racing', 'kart', 'track day', 'motocross', 'automotivo', 'balaclava'],
     BELEZA_COSMETICOS: ['cosmético', 'maquiagem', 'skincare', 'perfume', 'batom', 'cabelo', 'shampoo', 'creme', 'sérum', 'facial', 'beleza', 'dermatológico'],
     CASA_MOVEIS_DECORACAO: ['móvel', 'sofá', 'mesa', 'cadeira', 'cama', 'colchão', 'decoração', 'tapete', 'luminária', 'cozinha', 'quarto', 'sala', 'armário'],
     ELETRONICOS_INFORMATICA: ['celular', 'smartphone', 'notebook', 'computador', 'fone', 'gamer', 'placa', 'eletrônico', 'teclado', 'monitor', 'tv', '110v', '220v'],
@@ -259,6 +259,12 @@ export function classifyUniversalNiche(realSiteData: RealSiteData): UniversalNic
   } else if (realSiteData.domain.includes('agro') || realSiteData.domain.includes('campo')) {
     detectedNiche = 'AGROPECUARIA_PET';
     highestScore = Math.max(highestScore, 8);
+  } else if (realSiteData.domain.includes('motors') || realSiteData.domain.includes('racing') || realSiteData.domain.includes('automotivo')) {
+    detectedNiche = 'AUTOPECAS_FERRAMENTAS';
+    highestScore = Math.max(highestScore, 9);
+  } else if (realSiteData.domain.includes('calcados') || realSiteData.domain.includes('botas') || realSiteData.domain.includes('shoes')) {
+    detectedNiche = 'CALCADOS_CALCADISTA';
+    highestScore = Math.max(highestScore, 9);
   }
 
   const confidenceScore = Math.min(99, Math.max(75, highestScore * 12));

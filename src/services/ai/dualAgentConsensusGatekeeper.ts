@@ -68,14 +68,14 @@ export function executeDualAgentCrossVerification(
       findingTitle: `Ruptura de Tamanhos Centrais em ${brokenCount} Produto(s) com Anúncios Ativos`,
       findingDescription: `Identificados produtos com campanhas ativas no Meta Ads direcionando para páginas onde os tamanhos de maior giro estão esgotados no HTML.`,
       proposingAgent: {
-        agentId: 'agent-05',
-        agentName: '05. Doutor de Catálogo & Ruptura',
+        agentId: 'agent-09',
+        agentName: '09. Doutor de Catálogo Universal',
         detectionMethod: 'Inspeção do array de variantes /products.json e tags <select>',
         confidencePct: 98
       },
       reviewingAgent: {
-        agentId: 'agent-04',
-        agentName: '04. Reconhecedor Universal de Nicho',
+        agentId: 'agent-02',
+        agentName: '02. Reconhecedor Universal de Nicho',
         independentVerificationCheck: 'Verificado que os itens NÃO são tamanho único e pertencem à linha com grade de numeração padrão.',
         validationVote: 'APROVADO',
         confidencePct: 99
@@ -83,21 +83,21 @@ export function executeDualAgentCrossVerification(
       consensusStatus: 'APROVADO_DUPLO_CONSENSO',
       consensusScorePct: 98.5,
       rawEvidenceVerified: `${brokenCount} SKU(s) com available: false no DOM real`,
-      financialImpactMonthly: Math.round(estimatedRevenueLiftMin * 240)
+      financialImpactMonthly: realSiteData.catalogAudit?.monthlyLossEstimateBRL || Math.round(estimatedRevenueLiftMin * 240)
     } : {
       id: 'cons-1',
       category: 'CATALOGO_ESTOQUE',
       findingTitle: 'Grade de Catálogo 100% Blindada nos Produtos Auditados',
       findingDescription: 'O Tribunal de Consenso verificou que nenhum produto promovido possui ruptura de tamanhos centrais na vitrine pública.',
       proposingAgent: {
-        agentId: 'agent-05',
-        agentName: '05. Doutor de Catálogo & Ruptura',
+        agentId: 'agent-09',
+        agentName: '09. Doutor de Catálogo Universal',
         detectionMethod: 'Inspeção completa de estoque e variantes no DOM',
         confidencePct: 99
       },
       reviewingAgent: {
-        agentId: 'agent-04',
-        agentName: '04. Reconhecedor Universal de Nicho',
+        agentId: 'agent-02',
+        agentName: '02. Reconhecedor Universal de Nicho',
         independentVerificationCheck: 'Confirmado que o catálogo está íntegro e seguro para escala de tráfego pago sem desperdício.',
         validationVote: 'APROVADO',
         confidencePct: 100
@@ -213,14 +213,14 @@ export function executeDualAgentCrossVerification(
       findingTitle: 'Falso-Positivo Interceptado: Ausência de Grade PP-G2 em Iscas Artificiais/Varas',
       findingDescription: 'Robô primário tentou exigir grade têxtil em iscas, carretilhas ou acessórios de pesca.',
       proposingAgent: {
-        agentId: 'agent-05',
-        agentName: '05. Doutor de Catálogo (Filtro Primário)',
+        agentId: 'agent-09',
+        agentName: '09. Doutor de Catálogo Universal',
         detectionMethod: 'Varredura preliminar de tamanhos têxteis',
         confidencePct: 45
       },
       reviewingAgent: {
-        agentId: 'agent-04',
-        agentName: '04. Reconhecedor Universal de Nicho',
+        agentId: 'agent-02',
+        agentName: '02. Reconhecedor Universal de Nicho',
         independentVerificationCheck: 'REJEITADO: Categoria classificada como Pesca Esportiva & Outdoor. Equipamentos técnicos isentos de grade têxtil PP-G2.',
         validationVote: 'REJEITADO_FALSO_POSITIVO',
         confidencePct: 100
@@ -228,6 +228,29 @@ export function executeDualAgentCrossVerification(
       consensusStatus: 'REJEITADO_FALSO_POSITIVO',
       consensusScorePct: 100,
       rawEvidenceVerified: 'Niche signature: PESCA_CAMPING_OUTDOOR',
+      financialImpactMonthly: 0
+    },
+    {
+      id: 'fp-4',
+      category: 'CATALOGO_ESTOQUE',
+      findingTitle: 'Falso-Positivo Interceptado: Cobrança Indevida do PCP Fabril em Camisas de Botão de Revenda',
+      findingDescription: 'Tentativa de abrir Ordem de Produção de costura/sublimação interna para itens de fornecedor terceiro.',
+      proposingAgent: {
+        agentId: 'agent-13',
+        agentName: '13. Supply Chain & PCP Sankhya',
+        detectionMethod: 'Busca genérica por falta de estoque central',
+        confidencePct: 65
+      },
+      reviewingAgent: {
+        agentId: 'agent-02',
+        agentName: '02. Reconhecedor Universal de Nicho & Manufatura',
+        independentVerificationCheck: 'REJEITADO: Item identificado como REVENDA EXTERNA (Camisa de Botão/Workwear). Chão de fábrica interno isento; ação direcionada para Setor de Compras e Pausa de Ads.',
+        validationVote: 'REJEITADO_FALSO_POSITIVO',
+        confidencePct: 100
+      },
+      consensusStatus: 'REJEITADO_FALSO_POSITIVO',
+      consensusScorePct: 100,
+      rawEvidenceVerified: 'Regra de Manufatura: REVENDA (CAMISA_BOTAO_WORKWEAR)',
       financialImpactMonthly: 0
     }
   ];

@@ -1,6 +1,8 @@
+import { AgentDiagnosticResult } from '../../types';
+
 export interface CeoProposalDecision {
   id: string;
-  sourceAgent: 'MARKET_HUNTER' | 'PRODUCT_EVOLUTION' | 'VOC_ANALYST';
+  sourceAgent: 'MARKET_HUNTER' | 'PRODUCT_EVOLUTION' | 'VOC_ANALYST' | 'SUPPLY_CHAIN_PCP' | 'MEDIA_BUYER';
   sourceAgentName: string;
   proposalTitle: string;
   category: string;
@@ -25,6 +27,7 @@ export interface StrategicSprint {
 export interface CeoExecutiveBoardroomDossier {
   auditedAt: string;
   ceoStatus: string;
+  targetDomain?: string;
   totalProposalsEvaluated: number;
   approvedCount: number;
   moreEvidenceCount: number;
@@ -38,9 +41,77 @@ export interface CeoExecutiveBoardroomDossier {
 /**
  * 👑 Chief Executive Orchestrator / CEO Agent Engine
  * The central brain that rigorously reviews all proposals via ICE Score (Threshold >= 8.0)
+ * Evaluates both live e-commerce audit findings (Grounded) and platform growth initiatives.
  */
-export async function runCeoOrchestratorEvaluation(): Promise<CeoExecutiveBoardroomDossier> {
-  const decisions: CeoProposalDecision[] = [
+export async function runCeoOrchestratorEvaluation(diagnostic?: AgentDiagnosticResult): Promise<CeoExecutiveBoardroomDossier> {
+  const decisions: CeoProposalDecision[] = [];
+
+  // Se houver diagnóstico de loja real, gera propostas prioritárias com Grounding Absoluto
+  if (diagnostic?.realSiteData) {
+    const { realSiteData } = diagnostic;
+    const issues = realSiteData.catalogAudit?.issues || [];
+    const brokenItems = issues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
+    const brokenInHouse = brokenItems.filter(i => i.manufacturingType !== 'REVENDA');
+    const brokenResale = brokenItems.filter(i => i.manufacturingType === 'REVENDA');
+    const monthlyLoss = realSiteData.catalogAudit?.monthlyLossEstimateBRL || 0;
+
+    if (brokenResale.length > 0) {
+      decisions.push({
+        id: 'ceo-dec-resale-pause',
+        sourceAgent: 'MEDIA_BUYER',
+        sourceAgentName: '05. Media Buyer & Risco em Ads',
+        proposalTitle: `Pausar Anúncios das ${brokenResale.length} Peças de Revenda sem Grade Central`,
+        category: 'GESTAO_DE_MIDIA',
+        impactScore: 9.9,
+        confidenceScore: 10.0,
+        easeScore: 9.8,
+        iceScore: 9.9,
+        decision: 'APROVADO_PARA_EXECUCAO',
+        ceoVerdictRationale: `Aprovado com urgência máxima. As camisas de revenda (confecção plana/workwear) não são repostas em poucas horas e têm lead time externo de 20 dias. Pausar o tráfego estanca dreno de imediato.`,
+        allocatedSprint: 'SPRINT_48H_QUICK_WIN',
+        estimatedMrrImpact: `Estanca sangria imediata de tráfego pago`
+      });
+    }
+
+    if (brokenInHouse.length > 0) {
+      decisions.push({
+        id: 'ceo-dec-pcp-sublimacao',
+        sourceAgent: 'SUPPLY_CHAIN_PCP',
+        sourceAgentName: '13. Supply Chain & PCP Sankhya',
+        proposalTitle: `Abertura Emergencial de OP de Sublimação para ${brokenInHouse.length} Modelos Chave`,
+        category: 'CADEIA_DE_SUPRIMENTOS',
+        impactScore: 9.8,
+        confidenceScore: 10.0,
+        easeScore: 9.5,
+        iceScore: 9.8,
+        decision: 'APROVADO_PARA_EXECUCAO',
+        ceoVerdictRationale: `Aprovado para execução imediata no chão de fábrica. Como temos rolo de tecido dry-fit e estamparia digital própria, a reposição dos tamanhos centrais M/G leva de 3 a 5 dias.`,
+        allocatedSprint: 'SPRINT_48H_QUICK_WIN',
+        estimatedMrrImpact: monthlyLoss > 0 ? `Recupera potencial de até R$ ${monthlyLoss.toLocaleString('pt-BR')}/mês` : '+R$ 15.000/mês em vendas recuperadas'
+      });
+    }
+
+    if (brokenItems.length === 0) {
+      decisions.push({
+        id: 'ceo-dec-scale-traffic',
+        sourceAgent: 'MEDIA_BUYER',
+        sourceAgentName: '05. Media Buyer & Ads Risk Agent',
+        proposalTitle: 'Aceleração de Tráfego Pago (+35% de Orçamento)',
+        category: 'ESCALA_DE_VENDAS',
+        impactScore: 9.6,
+        confidenceScore: 9.8,
+        easeScore: 9.2,
+        iceScore: 9.5,
+        decision: 'APROVADO_PARA_EXECUCAO',
+        ceoVerdictRationale: 'Catálogo auditado está 100% blindado sem furos de estoque. Cenário perfeito para expansão horizontal de campanhas no Meta e Google Ads.',
+        allocatedSprint: 'SPRINT_48H_QUICK_WIN',
+        estimatedMrrImpact: '+35% a +50% no faturamento mensal'
+      });
+    }
+  }
+
+  // Propostas de evolução tecnológica da plataforma AdShield
+  decisions.push(
     {
       id: 'ceo-dec-1',
       sourceAgent: 'PRODUCT_EVOLUTION',
@@ -116,7 +187,7 @@ export async function runCeoOrchestratorEvaluation(): Promise<CeoExecutiveBoardr
       allocatedSprint: 'ARQUIVADO',
       estimatedMrrImpact: 'Impacto marginal irrelevante no curto prazo'
     }
-  ];
+  );
 
   const approved = decisions.filter(d => d.decision === 'APROVADO_PARA_EXECUCAO');
   const moreEvidence = decisions.filter(d => d.decision === 'SOLICITADO_MAIS_EVIDENCIAS');

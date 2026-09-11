@@ -22,30 +22,57 @@ interface TruthAuditorTribunalViewProps {
 }
 
 export const TruthAuditorTribunalView: React.FC<TruthAuditorTribunalViewProps> = ({ diagnostic }) => {
-  const { realSiteData, input } = diagnostic;
+  const { realSiteData } = diagnostic;
 
-  const scraper = new DeepScraperAgent(input.siteUrl);
+  const rawHtml = realSiteData.rawHtmlSnippet || '';
+  const hasCnpjInFooter = Boolean(/cnpj|\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/i.test(rawHtml));
+  const hasTrocaDevolucao = Boolean(/troca|devolu/i.test(rawHtml));
+  const hasPrivacidade = Boolean(/privacidade|lgpd/i.test(rawHtml));
+  const hasTermos = Boolean(/termo/i.test(rawHtml));
+
   const auditor = new TruthAuditorAgent({
     dossierId: `dossier-${realSiteData.domain}`,
     targetDomain: realSiteData.domain,
     targetBrand: realSiteData.brandName,
     collectedAt: new Date().toISOString(),
     responseStatus: 200,
-    isShopifyPlatform: true,
-    isVtexPlatform: false,
-    isNuvemshopPlatform: false,
-    isWooCommercePlatform: false,
+    isShopifyPlatform: realSiteData.ecommercePlatform === 'Shopify',
+    isVtexPlatform: realSiteData.ecommercePlatform === 'VTEX',
+    isNuvemshopPlatform: realSiteData.ecommercePlatform === 'Nuvemshop',
+    isWooCommercePlatform: realSiteData.ecommercePlatform === 'WooCommerce',
     catalog: {
       totalProductsFound: realSiteData.catalogAudit?.issues.length || 0,
       items: []
     },
-    headTags: { hasMetaPixel: true, hasGtm: true, hasGa4: true, hasClarity: true, hasTikTokPixel: false, hasHotjar: false },
-    legal: { hasCnpjInFooter: true, hasReturnPolicyLink: true, hasPrivacyPolicyLink: true, hasTermsOfServiceLink: true },
-    ui: { h1Title: realSiteData.h1List[0] || '', mainCtaButtonText: 'Comprar', mainCtaColorComputed: '#0284C7', hasFloatingWhatsApp: true, hasFreeShippingBanner: true, hasPixDiscountMention: true, hasSizeChartAddonTag: true, brokenImagesCount: 0, totalImagesScanned: 24 },
-    schemaOrgJsonLdFound: true,
-    isHttpsSecured: true,
-    collectionDurationMs: 350,
-    evidenceQualityIndex: 98
+    headTags: { 
+      hasMetaPixel: Boolean(realSiteData.hasMetaPixel || rawHtml.includes('fbq(') || rawHtml.includes('connect.facebook.net')), 
+      hasGtm: Boolean(realSiteData.hasGtm || rawHtml.includes('gtm.js')), 
+      hasGa4: Boolean(rawHtml.includes('gtag(') || rawHtml.includes('G-')), 
+      hasClarity: Boolean(rawHtml.includes('clarity.ms')), 
+      hasTikTokPixel: Boolean(realSiteData.hasTiktokPixel || rawHtml.includes('analytics.tiktok.com')), 
+      hasHotjar: Boolean(rawHtml.includes('hotjar.com')) 
+    },
+    legal: { 
+      hasCnpjInFooter, 
+      hasReturnPolicyLink: hasTrocaDevolucao, 
+      hasPrivacyPolicyLink: hasPrivacidade, 
+      hasTermsOfServiceLink: hasTermos 
+    },
+    ui: { 
+      h1Title: realSiteData.h1List[0] || '', 
+      mainCtaButtonText: 'Comprar', 
+      mainCtaColorComputed: '#0284C7', 
+      hasFloatingWhatsApp: Boolean(realSiteData.hasWhatsapp || rawHtml.includes('api.whatsapp.com')), 
+      hasFreeShippingBanner: Boolean(realSiteData.detectedCheckoutTerms?.hasFrete), 
+      hasPixDiscountMention: Boolean(realSiteData.detectedCheckoutTerms?.hasPix), 
+      hasSizeChartAddonTag: Boolean(rawHtml.includes('size_chart') || rawHtml.includes('tabela de medidas')), 
+      brokenImagesCount: realSiteData.brokenProductImages?.length || 0, 
+      totalImagesScanned: realSiteData.totalImages || 0 
+    },
+    schemaOrgJsonLdFound: Boolean(realSiteData.hasSchemaJsonLd),
+    isHttpsSecured: Boolean(realSiteData.isHttps),
+    collectionDurationMs: realSiteData.executionTimeMs || 350,
+    evidenceQualityIndex: realSiteData.catalogAudit ? 98 : 85
   });
 
   const verdict: TruthVerdictReport = auditor.auditDiagnostic(diagnostic);
