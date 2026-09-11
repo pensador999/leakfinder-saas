@@ -81,14 +81,14 @@ export const AgentSelfEvolutionView: React.FC = () => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold">Cérebro de Auto-Aprendizado dos Agentes (Machine Learning)</h2>
+              <h2 className="text-xl font-bold">Agente 17 — Autonomous Code Patch & Self-Learning Engineer</h2>
               <span className="px-2.5 py-0.5 text-xs font-mono font-extrabold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
                 <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                 RLHF & Auto-Reflexão Ativa
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
-              Os 10 agentes aprendem sozinhos analisando os mais de 1.050 snapshots no Supabase. O algoritmo calibra os pesos de conversão, elimina falsos-positivos e aprimora os textos de fechamento.
+              Cérebro de auto-cura e aprendizado contínuo: análise de linter (oxlint), tipagem TypeScript (tsc), calibração de pesos de nicho e auto-reparo autônomo.
             </p>
           </div>
         </div>

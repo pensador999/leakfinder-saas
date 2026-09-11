@@ -1,6 +1,6 @@
 {
   "version": "2.4",
-  "updated_at": "2026-09-11T16:51:30.435Z",
+  "updated_at": "2026-09-11T16:55:30.798Z",
   "monitored_stores": [
     {
       "id": "store-1",
@@ -11,7 +11,7 @@
       "is_active": true,
       "current_score": 75,
       "current_estimated_loss": 6392,
-      "last_audited_at": "2026-09-11T16:51:28.089Z",
+      "last_audited_at": "2026-09-11T16:55:28.551Z",
       "platform": "SHOPIFY"
     },
     {
@@ -23,7 +23,7 @@
       "is_active": true,
       "current_score": 99,
       "current_estimated_loss": 0,
-      "last_audited_at": "2026-09-11T16:51:28.944Z",
+      "last_audited_at": "2026-09-11T16:55:29.289Z",
       "platform": "SHOPIFY"
     },
     {
@@ -35,7 +35,7 @@
       "is_active": true,
       "current_score": 99,
       "current_estimated_loss": 0,
-      "last_audited_at": "2026-09-11T16:51:29.597Z",
+      "last_audited_at": "2026-09-11T16:55:29.850Z",
       "platform": "SHOPIFY"
     },
     {
@@ -47,11 +47,703 @@
       "is_active": true,
       "current_score": 97,
       "current_estimated_loss": 0,
-      "last_audited_at": "2026-09-11T16:51:30.357Z",
+      "last_audited_at": "2026-09-11T16:55:30.726Z",
       "platform": "MERCADO_LIVRE"
     }
   ],
   "daily_snapshots": [
+    {
+      "id": "snap-1789145730726-ehc6",
+      "store_id": "store-4",
+      "brand_name": "Mercado Livre Loja Oficial",
+      "store_url": "https://lista.mercadolivre.com.br/camisa-pesca-uv",
+      "platform": "MERCADO_LIVRE",
+      "score": 97,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "in_house_broken_count": 0,
+      "resale_broken_count": 0,
+      "in_house_monthly_loss": 0,
+      "resale_monthly_loss": 0,
+      "total_skus_count": 1,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": {
+        "platformName": "Mercado Livre",
+        "isFull": true,
+        "hasBuyBox": true,
+        "sellerReputation": "MercadoLíder Platinum / Oficial"
+      },
+      "broken_products_details": [],
+      "audited_at": "2026-09-11T16:55:30.726Z"
+    },
+    {
+      "id": "snap-1789145729850-9hot",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "store_url": "https://www.brkmotors.com.br",
+      "platform": "SHOPIFY",
+      "score": 99,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "in_house_broken_count": 0,
+      "resale_broken_count": 0,
+      "in_house_monthly_loss": 0,
+      "resale_monthly_loss": 0,
+      "total_skus_count": 30,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [],
+      "audited_at": "2026-09-11T16:55:29.850Z"
+    },
+    {
+      "id": "snap-1789145729289-hqvz",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "store_url": "https://www.brkfishing.com.br",
+      "platform": "SHOPIFY",
+      "score": 99,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "in_house_broken_count": 0,
+      "resale_broken_count": 0,
+      "in_house_monthly_loss": 0,
+      "resale_monthly_loss": 0,
+      "total_skus_count": 30,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [],
+      "audited_at": "2026-09-11T16:55:29.289Z"
+    },
+    {
+      "id": "snap-1789145728551-0ezt",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "store_url": "https://www.brkagro.com.br",
+      "platform": "SHOPIFY",
+      "score": 75,
+      "lift_min": 24,
+      "lift_max": 49,
+      "broken_skus_count": 4,
+      "in_house_broken_count": 2,
+      "resale_broken_count": 2,
+      "in_house_monthly_loss": 2718,
+      "resale_monthly_loss": 3674,
+      "total_skus_count": 30,
+      "estimated_monthly_loss": 6392,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [
+        {
+          "title": "Camisa Agro Brk Camo Long Horn Brasil Azul com Proteção Solar UV50+",
+          "handle": "camisa-agro-brk-camo-long-horn-brasil-azul-com-protecao-solar-uv50-1",
+          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-camo-long-horn-brasil-azul-com-protecao-solar-uv50-1",
+          "price": 169.9,
+          "missingSizes": [
+            "G"
+          ],
+          "availableSizes": [
+            "P",
+            "M",
+            "GG",
+            "G1",
+            "G2"
+          ],
+          "isResale": false,
+          "manufacturingType": "FABRICACAO_PROPRIA",
+          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
+          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
+          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+        },
+        {
+          "title": "Camisa Xadrez Farm Preto/Branco - Manga Longa",
+          "handle": "camisa-brk-m-l-western-preto-branco",
+          "url": "https://www.brkagro.com.br/products/camisa-brk-m-l-western-preto-branco",
+          "price": 229.6,
+          "missingSizes": [
+            "M",
+            "G",
+            "GG"
+          ],
+          "availableSizes": [
+            "P"
+          ],
+          "isResale": true,
+          "manufacturingType": "REVENDA",
+          "manufacturingCategory": "CAMISA_BOTAO_WORKWEAR",
+          "resaleReason": "Categoria de Revenda: Camisa de Botão",
+          "recommendedSupplyAction": "Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote."
+        },
+        {
+          "title": "Camisa Country Ranch Lilas/Laranja - Manga Longa",
+          "handle": "camisa-brk-m-l-ranch-lilas-laranja",
+          "url": "https://www.brkagro.com.br/products/camisa-brk-m-l-ranch-lilas-laranja",
+          "price": 229.6,
+          "missingSizes": [
+            "GG"
+          ],
+          "availableSizes": [
+            "G",
+            "G1",
+            "M",
+            "P"
+          ],
+          "isResale": true,
+          "manufacturingType": "REVENDA",
+          "manufacturingCategory": "CAMISA_BOTAO_WORKWEAR",
+          "resaleReason": "Categoria de Revenda: Camisa de Botão",
+          "recommendedSupplyAction": "Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote."
+        },
+        {
+          "title": "Camisa Agro Brk Básica Verde com Proteção Solar UV50+",
+          "handle": "camisa-agro-brk-basica-verde-com-protecao-solar-uv50-1",
+          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-basica-verde-com-protecao-solar-uv50-1",
+          "price": 169.9,
+          "missingSizes": [
+            "M"
+          ],
+          "availableSizes": [
+            "G",
+            "GG",
+            "G2"
+          ],
+          "isResale": false,
+          "manufacturingType": "FABRICACAO_PROPRIA",
+          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
+          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
+          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+        }
+      ],
+      "audited_at": "2026-09-11T16:55:28.551Z"
+    },
+    {
+      "id": "snap-1789145670796-wc00",
+      "store_id": "store-4",
+      "brand_name": "Mercado Livre Loja Oficial",
+      "store_url": "https://lista.mercadolivre.com.br/camisa-pesca-uv",
+      "platform": "MERCADO_LIVRE",
+      "score": 97,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "in_house_broken_count": 0,
+      "resale_broken_count": 0,
+      "in_house_monthly_loss": 0,
+      "resale_monthly_loss": 0,
+      "total_skus_count": 1,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": {
+        "platformName": "Mercado Livre",
+        "isFull": true,
+        "hasBuyBox": true,
+        "sellerReputation": "MercadoLíder Platinum / Oficial"
+      },
+      "broken_products_details": [],
+      "audited_at": "2026-09-11T16:54:30.796Z"
+    },
+    {
+      "id": "snap-1789145670076-md86",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "store_url": "https://www.brkmotors.com.br",
+      "platform": "SHOPIFY",
+      "score": 99,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "in_house_broken_count": 0,
+      "resale_broken_count": 0,
+      "in_house_monthly_loss": 0,
+      "resale_monthly_loss": 0,
+      "total_skus_count": 30,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [],
+      "audited_at": "2026-09-11T16:54:30.076Z"
+    },
+    {
+      "id": "snap-1789145669562-7ea3",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "store_url": "https://www.brkfishing.com.br",
+      "platform": "SHOPIFY",
+      "score": 99,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "in_house_broken_count": 0,
+      "resale_broken_count": 0,
+      "in_house_monthly_loss": 0,
+      "resale_monthly_loss": 0,
+      "total_skus_count": 30,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [],
+      "audited_at": "2026-09-11T16:54:29.562Z"
+    },
+    {
+      "id": "snap-1789145668718-f1ec",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "store_url": "https://www.brkagro.com.br",
+      "platform": "SHOPIFY",
+      "score": 75,
+      "lift_min": 24,
+      "lift_max": 49,
+      "broken_skus_count": 4,
+      "in_house_broken_count": 2,
+      "resale_broken_count": 2,
+      "in_house_monthly_loss": 2718,
+      "resale_monthly_loss": 3674,
+      "total_skus_count": 30,
+      "estimated_monthly_loss": 6392,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [
+        {
+          "title": "Camisa Agro Brk Camo Long Horn Brasil Azul com Proteção Solar UV50+",
+          "handle": "camisa-agro-brk-camo-long-horn-brasil-azul-com-protecao-solar-uv50-1",
+          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-camo-long-horn-brasil-azul-com-protecao-solar-uv50-1",
+          "price": 169.9,
+          "missingSizes": [
+            "G"
+          ],
+          "availableSizes": [
+            "P",
+            "M",
+            "GG",
+            "G1",
+            "G2"
+          ],
+          "isResale": false,
+          "manufacturingType": "FABRICACAO_PROPRIA",
+          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
+          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
+          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+        },
+        {
+          "title": "Camisa Xadrez Farm Preto/Branco - Manga Longa",
+          "handle": "camisa-brk-m-l-western-preto-branco",
+          "url": "https://www.brkagro.com.br/products/camisa-brk-m-l-western-preto-branco",
+          "price": 229.6,
+          "missingSizes": [
+            "M",
+            "G",
+            "GG"
+          ],
+          "availableSizes": [
+            "P"
+          ],
+          "isResale": true,
+          "manufacturingType": "REVENDA",
+          "manufacturingCategory": "CAMISA_BOTAO_WORKWEAR",
+          "resaleReason": "Categoria de Revenda: Camisa de Botão",
+          "recommendedSupplyAction": "Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote."
+        },
+        {
+          "title": "Camisa Country Ranch Lilas/Laranja - Manga Longa",
+          "handle": "camisa-brk-m-l-ranch-lilas-laranja",
+          "url": "https://www.brkagro.com.br/products/camisa-brk-m-l-ranch-lilas-laranja",
+          "price": 229.6,
+          "missingSizes": [
+            "GG"
+          ],
+          "availableSizes": [
+            "G",
+            "G1",
+            "M",
+            "P"
+          ],
+          "isResale": true,
+          "manufacturingType": "REVENDA",
+          "manufacturingCategory": "CAMISA_BOTAO_WORKWEAR",
+          "resaleReason": "Categoria de Revenda: Camisa de Botão",
+          "recommendedSupplyAction": "Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote."
+        },
+        {
+          "title": "Camisa Agro Brk Básica Verde com Proteção Solar UV50+",
+          "handle": "camisa-agro-brk-basica-verde-com-protecao-solar-uv50-1",
+          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-basica-verde-com-protecao-solar-uv50-1",
+          "price": 169.9,
+          "missingSizes": [
+            "M"
+          ],
+          "availableSizes": [
+            "G",
+            "GG",
+            "G2"
+          ],
+          "isResale": false,
+          "manufacturingType": "FABRICACAO_PROPRIA",
+          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
+          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
+          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+        }
+      ],
+      "audited_at": "2026-09-11T16:54:28.718Z"
+    },
+    {
+      "id": "snap-1789145610775-q8u6",
+      "store_id": "store-4",
+      "brand_name": "Mercado Livre Loja Oficial",
+      "store_url": "https://lista.mercadolivre.com.br/camisa-pesca-uv",
+      "platform": "MERCADO_LIVRE",
+      "score": 97,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "in_house_broken_count": 0,
+      "resale_broken_count": 0,
+      "in_house_monthly_loss": 0,
+      "resale_monthly_loss": 0,
+      "total_skus_count": 1,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": {
+        "platformName": "Mercado Livre",
+        "isFull": true,
+        "hasBuyBox": true,
+        "sellerReputation": "MercadoLíder Platinum / Oficial"
+      },
+      "broken_products_details": [],
+      "audited_at": "2026-09-11T16:53:30.775Z"
+    },
+    {
+      "id": "snap-1789145610039-mr3h",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "store_url": "https://www.brkmotors.com.br",
+      "platform": "SHOPIFY",
+      "score": 99,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "in_house_broken_count": 0,
+      "resale_broken_count": 0,
+      "in_house_monthly_loss": 0,
+      "resale_monthly_loss": 0,
+      "total_skus_count": 30,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [],
+      "audited_at": "2026-09-11T16:53:30.039Z"
+    },
+    {
+      "id": "snap-1789145609496-xpb2",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "store_url": "https://www.brkfishing.com.br",
+      "platform": "SHOPIFY",
+      "score": 99,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "in_house_broken_count": 0,
+      "resale_broken_count": 0,
+      "in_house_monthly_loss": 0,
+      "resale_monthly_loss": 0,
+      "total_skus_count": 30,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [],
+      "audited_at": "2026-09-11T16:53:29.496Z"
+    },
+    {
+      "id": "snap-1789145608641-jnmk",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "store_url": "https://www.brkagro.com.br",
+      "platform": "SHOPIFY",
+      "score": 75,
+      "lift_min": 24,
+      "lift_max": 49,
+      "broken_skus_count": 4,
+      "in_house_broken_count": 2,
+      "resale_broken_count": 2,
+      "in_house_monthly_loss": 2718,
+      "resale_monthly_loss": 3674,
+      "total_skus_count": 30,
+      "estimated_monthly_loss": 6392,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [
+        {
+          "title": "Camisa Agro Brk Camo Long Horn Brasil Azul com Proteção Solar UV50+",
+          "handle": "camisa-agro-brk-camo-long-horn-brasil-azul-com-protecao-solar-uv50-1",
+          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-camo-long-horn-brasil-azul-com-protecao-solar-uv50-1",
+          "price": 169.9,
+          "missingSizes": [
+            "G"
+          ],
+          "availableSizes": [
+            "P",
+            "M",
+            "GG",
+            "G1",
+            "G2"
+          ],
+          "isResale": false,
+          "manufacturingType": "FABRICACAO_PROPRIA",
+          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
+          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
+          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+        },
+        {
+          "title": "Camisa Xadrez Farm Preto/Branco - Manga Longa",
+          "handle": "camisa-brk-m-l-western-preto-branco",
+          "url": "https://www.brkagro.com.br/products/camisa-brk-m-l-western-preto-branco",
+          "price": 229.6,
+          "missingSizes": [
+            "M",
+            "G",
+            "GG"
+          ],
+          "availableSizes": [
+            "P"
+          ],
+          "isResale": true,
+          "manufacturingType": "REVENDA",
+          "manufacturingCategory": "CAMISA_BOTAO_WORKWEAR",
+          "resaleReason": "Categoria de Revenda: Camisa de Botão",
+          "recommendedSupplyAction": "Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote."
+        },
+        {
+          "title": "Camisa Country Ranch Lilas/Laranja - Manga Longa",
+          "handle": "camisa-brk-m-l-ranch-lilas-laranja",
+          "url": "https://www.brkagro.com.br/products/camisa-brk-m-l-ranch-lilas-laranja",
+          "price": 229.6,
+          "missingSizes": [
+            "GG"
+          ],
+          "availableSizes": [
+            "G",
+            "G1",
+            "M",
+            "P"
+          ],
+          "isResale": true,
+          "manufacturingType": "REVENDA",
+          "manufacturingCategory": "CAMISA_BOTAO_WORKWEAR",
+          "resaleReason": "Categoria de Revenda: Camisa de Botão",
+          "recommendedSupplyAction": "Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote."
+        },
+        {
+          "title": "Camisa Agro Brk Básica Verde com Proteção Solar UV50+",
+          "handle": "camisa-agro-brk-basica-verde-com-protecao-solar-uv50-1",
+          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-basica-verde-com-protecao-solar-uv50-1",
+          "price": 169.9,
+          "missingSizes": [
+            "M"
+          ],
+          "availableSizes": [
+            "G",
+            "GG",
+            "G2"
+          ],
+          "isResale": false,
+          "manufacturingType": "FABRICACAO_PROPRIA",
+          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
+          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
+          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+        }
+      ],
+      "audited_at": "2026-09-11T16:53:28.641Z"
+    },
+    {
+      "id": "snap-1789145550745-hnll",
+      "store_id": "store-4",
+      "brand_name": "Mercado Livre Loja Oficial",
+      "store_url": "https://lista.mercadolivre.com.br/camisa-pesca-uv",
+      "platform": "MERCADO_LIVRE",
+      "score": 97,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "in_house_broken_count": 0,
+      "resale_broken_count": 0,
+      "in_house_monthly_loss": 0,
+      "resale_monthly_loss": 0,
+      "total_skus_count": 1,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": {
+        "platformName": "Mercado Livre",
+        "isFull": true,
+        "hasBuyBox": true,
+        "sellerReputation": "MercadoLíder Platinum / Oficial"
+      },
+      "broken_products_details": [],
+      "audited_at": "2026-09-11T16:52:30.745Z"
+    },
+    {
+      "id": "snap-1789145550002-sod5",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "store_url": "https://www.brkmotors.com.br",
+      "platform": "SHOPIFY",
+      "score": 99,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "in_house_broken_count": 0,
+      "resale_broken_count": 0,
+      "in_house_monthly_loss": 0,
+      "resale_monthly_loss": 0,
+      "total_skus_count": 30,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [],
+      "audited_at": "2026-09-11T16:52:30.002Z"
+    },
+    {
+      "id": "snap-1789145549411-o8fp",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "store_url": "https://www.brkfishing.com.br",
+      "platform": "SHOPIFY",
+      "score": 99,
+      "lift_min": 12,
+      "lift_max": 25,
+      "broken_skus_count": 0,
+      "in_house_broken_count": 0,
+      "resale_broken_count": 0,
+      "in_house_monthly_loss": 0,
+      "resale_monthly_loss": 0,
+      "total_skus_count": 30,
+      "estimated_monthly_loss": 0,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [],
+      "audited_at": "2026-09-11T16:52:29.411Z"
+    },
+    {
+      "id": "snap-1789145548486-xw09",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "store_url": "https://www.brkagro.com.br",
+      "platform": "SHOPIFY",
+      "score": 75,
+      "lift_min": 24,
+      "lift_max": 49,
+      "broken_skus_count": 4,
+      "in_house_broken_count": 2,
+      "resale_broken_count": 2,
+      "in_house_monthly_loss": 2718,
+      "resale_monthly_loss": 3674,
+      "total_skus_count": 30,
+      "estimated_monthly_loss": 6392,
+      "contrast_ratio": 4.8,
+      "wcag_passed": true,
+      "marketplace_details": null,
+      "broken_products_details": [
+        {
+          "title": "Camisa Agro Brk Camo Long Horn Brasil Azul com Proteção Solar UV50+",
+          "handle": "camisa-agro-brk-camo-long-horn-brasil-azul-com-protecao-solar-uv50-1",
+          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-camo-long-horn-brasil-azul-com-protecao-solar-uv50-1",
+          "price": 169.9,
+          "missingSizes": [
+            "G"
+          ],
+          "availableSizes": [
+            "P",
+            "M",
+            "GG",
+            "G1",
+            "G2"
+          ],
+          "isResale": false,
+          "manufacturingType": "FABRICACAO_PROPRIA",
+          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
+          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
+          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+        },
+        {
+          "title": "Camisa Xadrez Farm Preto/Branco - Manga Longa",
+          "handle": "camisa-brk-m-l-western-preto-branco",
+          "url": "https://www.brkagro.com.br/products/camisa-brk-m-l-western-preto-branco",
+          "price": 229.6,
+          "missingSizes": [
+            "M",
+            "G",
+            "GG"
+          ],
+          "availableSizes": [
+            "P"
+          ],
+          "isResale": true,
+          "manufacturingType": "REVENDA",
+          "manufacturingCategory": "CAMISA_BOTAO_WORKWEAR",
+          "resaleReason": "Categoria de Revenda: Camisa de Botão",
+          "recommendedSupplyAction": "Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote."
+        },
+        {
+          "title": "Camisa Country Ranch Lilas/Laranja - Manga Longa",
+          "handle": "camisa-brk-m-l-ranch-lilas-laranja",
+          "url": "https://www.brkagro.com.br/products/camisa-brk-m-l-ranch-lilas-laranja",
+          "price": 229.6,
+          "missingSizes": [
+            "GG"
+          ],
+          "availableSizes": [
+            "G",
+            "G1",
+            "M",
+            "P"
+          ],
+          "isResale": true,
+          "manufacturingType": "REVENDA",
+          "manufacturingCategory": "CAMISA_BOTAO_WORKWEAR",
+          "resaleReason": "Categoria de Revenda: Camisa de Botão",
+          "recommendedSupplyAction": "Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote."
+        },
+        {
+          "title": "Camisa Agro Brk Básica Verde com Proteção Solar UV50+",
+          "handle": "camisa-agro-brk-basica-verde-com-protecao-solar-uv50-1",
+          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-basica-verde-com-protecao-solar-uv50-1",
+          "price": 169.9,
+          "missingSizes": [
+            "M"
+          ],
+          "availableSizes": [
+            "G",
+            "GG",
+            "G2"
+          ],
+          "isResale": false,
+          "manufacturingType": "FABRICACAO_PROPRIA",
+          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
+          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
+          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+        }
+      ],
+      "audited_at": "2026-09-11T16:52:28.486Z"
+    },
     {
       "id": "snap-1789145490357-zeta",
       "store_id": "store-4",
@@ -32970,1325 +33662,345 @@
       },
       "broken_products_details": [],
       "audited_at": "2026-09-10T19:22:16.833Z"
-    },
-    {
-      "id": "snap-1789068136099-d6n3",
-      "store_id": "store-3",
-      "brand_name": "BRK Motors",
-      "store_url": "https://www.brkmotors.com.br",
-      "platform": "SHOPIFY",
-      "score": 99,
-      "lift_min": 12,
-      "lift_max": 25,
-      "broken_skus_count": 0,
-      "in_house_broken_count": 0,
-      "resale_broken_count": 0,
-      "in_house_monthly_loss": 0,
-      "resale_monthly_loss": 0,
-      "total_skus_count": 30,
-      "estimated_monthly_loss": 0,
-      "contrast_ratio": 4.8,
-      "wcag_passed": true,
-      "marketplace_details": null,
-      "broken_products_details": [],
-      "audited_at": "2026-09-10T19:22:16.099Z"
-    },
-    {
-      "id": "snap-1789068135542-gmic",
-      "store_id": "store-2",
-      "brand_name": "BRK Fishing",
-      "store_url": "https://www.brkfishing.com.br",
-      "platform": "SHOPIFY",
-      "score": 99,
-      "lift_min": 12,
-      "lift_max": 25,
-      "broken_skus_count": 0,
-      "in_house_broken_count": 0,
-      "resale_broken_count": 0,
-      "in_house_monthly_loss": 0,
-      "resale_monthly_loss": 0,
-      "total_skus_count": 30,
-      "estimated_monthly_loss": 0,
-      "contrast_ratio": 4.8,
-      "wcag_passed": true,
-      "marketplace_details": null,
-      "broken_products_details": [],
-      "audited_at": "2026-09-10T19:22:15.542Z"
-    },
-    {
-      "id": "snap-1789068134951-03ej",
-      "store_id": "store-1",
-      "brand_name": "BRK Agro",
-      "store_url": "https://www.brkagro.com.br",
-      "platform": "SHOPIFY",
-      "score": 75,
-      "lift_min": 48,
-      "lift_max": 97,
-      "broken_skus_count": 12,
-      "in_house_broken_count": 12,
-      "resale_broken_count": 0,
-      "in_house_monthly_loss": 16308,
-      "resale_monthly_loss": 0,
-      "total_skus_count": 30,
-      "estimated_monthly_loss": 16308,
-      "contrast_ratio": 4.8,
-      "wcag_passed": true,
-      "marketplace_details": null,
-      "broken_products_details": [
-        {
-          "title": "Camisa Agro Brk Unissex Basic Areia com Proteção Solar UV50+ Envio Imediato",
-          "handle": "camisa-agro-brk-unissex-basic-areia-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-unissex-basic-areia-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "G",
-            "GG"
-          ],
-          "availableSizes": [
-            "G1"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Agro Brk Básica Azul e Amarelo com Proteção Solar UV50+",
-          "handle": "camisa-agro-brk-basica-azul-e-amarelo-com-protecao-solar-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-basica-azul-e-amarelo-com-protecao-solar-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "G",
-            "GG"
-          ],
-          "availableSizes": [
-            "M"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Brk Preta Bandeira do Brasil com Proteção Solar UV50 Envio Imediato",
-          "handle": "camisa-brk-preta-bandeira-do-brasil-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-brk-preta-bandeira-do-brasil-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "G"
-          ],
-          "availableSizes": [
-            "GG",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Agro Feminina Brk Feminina Camuflada Bandeira do Brasil com Proteção Solar UV50+",
-          "handle": "camisa-agro-feminina-brk-feminina-camuflada-bandeira-do-brasil-com-protecao-solar-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-feminina-brk-feminina-camuflada-bandeira-do-brasil-com-protecao-solar-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "G"
-          ],
-          "availableSizes": [
-            "M",
-            "GG",
-            "G1",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Agro Brk Bandeira Brasil Estados Unidos com Proteção Solar UV50+",
-          "handle": "camisa-agro-brk-bandeira-brasil-estados-unidos-com-protecao-solar-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-bandeira-brasil-estados-unidos-com-protecao-solar-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "G"
-          ],
-          "availableSizes": [
-            "M",
-            "GG",
-            "G1",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Agro Brk Camu Verde Long Horn com Proteção UV50+",
-          "handle": "camisa-agro-brk-camu-verde-long-horn-com-protecao-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-camu-verde-long-horn-com-protecao-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "GG"
-          ],
-          "availableSizes": [
-            "P",
-            "M",
-            "G",
-            "G1",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Feminina Agro Brk Camuflado Preto e Rosa Bandeira do Brasil com Proteção Solar UV50+",
-          "handle": "camisa-feminina-agro-brk-camuflado-preto-e-rosa-bandeira-do-brasil-com-protecao-solar-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-feminina-agro-brk-camuflado-preto-e-rosa-bandeira-do-brasil-com-protecao-solar-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "G"
-          ],
-          "availableSizes": [
-            "GG",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Feminina Agro Brk O Agro Não Para Preta com Proteção Solar UV50+ Envio Imediato",
-          "handle": "camisa-feminina-agro-brk-o-agro-nao-para-preta-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-feminina-agro-brk-o-agro-nao-para-preta-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "G",
-            "GG",
-            "M"
-          ],
-          "availableSizes": [
-            "P",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Brk Rodagem com Proteção Solar UV50 Envio Imediato",
-          "handle": "camisa-brk-rodagem-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-brk-rodagem-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "GG"
-          ],
-          "availableSizes": [
-            "G",
-            "G1"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Feminina Brk Basica Preta com Proteção Solar UV50 Envio Imediato",
-          "handle": "camisa-feminina-brk-basica-preta-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-feminina-brk-basica-preta-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M"
-          ],
-          "availableSizes": [
-            "P",
-            "G",
-            "GG",
-            "G1",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Camuflada Real Tree Made In Agro com Proteção UV50 Envio Imediato",
-          "handle": "camisa-agro-brk-camuflado-real-tree-made-in-agro-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-camuflado-real-tree-made-in-agro-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "G",
-            "GG"
-          ],
-          "availableSizes": [
-            "P",
-            "G1"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Brk Bussola Brasil Camuflada com Proteção Solar UV50 Envio Imediato",
-          "handle": "camisa-brk-bussola-brasil-camuflada-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-brk-bussola-brasil-camuflada-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "G"
-          ],
-          "availableSizes": [
-            "M",
-            "GG",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        }
-      ],
-      "audited_at": "2026-09-10T19:22:14.951Z"
-    },
-    {
-      "id": "snap-1789068076812-p6ub",
-      "store_id": "store-4",
-      "brand_name": "Mercado Livre Loja Oficial",
-      "store_url": "https://lista.mercadolivre.com.br/camisa-pesca-uv",
-      "platform": "MERCADO_LIVRE",
-      "score": 97,
-      "lift_min": 12,
-      "lift_max": 25,
-      "broken_skus_count": 0,
-      "in_house_broken_count": 0,
-      "resale_broken_count": 0,
-      "in_house_monthly_loss": 0,
-      "resale_monthly_loss": 0,
-      "total_skus_count": 1,
-      "estimated_monthly_loss": 0,
-      "contrast_ratio": 4.8,
-      "wcag_passed": true,
-      "marketplace_details": {
-        "platformName": "Mercado Livre",
-        "isFull": true,
-        "hasBuyBox": true,
-        "sellerReputation": "MercadoLíder Platinum / Oficial"
-      },
-      "broken_products_details": [],
-      "audited_at": "2026-09-10T19:21:16.812Z"
-    },
-    {
-      "id": "snap-1789068076039-oixo",
-      "store_id": "store-3",
-      "brand_name": "BRK Motors",
-      "store_url": "https://www.brkmotors.com.br",
-      "platform": "SHOPIFY",
-      "score": 99,
-      "lift_min": 12,
-      "lift_max": 25,
-      "broken_skus_count": 0,
-      "in_house_broken_count": 0,
-      "resale_broken_count": 0,
-      "in_house_monthly_loss": 0,
-      "resale_monthly_loss": 0,
-      "total_skus_count": 30,
-      "estimated_monthly_loss": 0,
-      "contrast_ratio": 4.8,
-      "wcag_passed": true,
-      "marketplace_details": null,
-      "broken_products_details": [],
-      "audited_at": "2026-09-10T19:21:16.039Z"
-    },
-    {
-      "id": "snap-1789068075487-qn7g",
-      "store_id": "store-2",
-      "brand_name": "BRK Fishing",
-      "store_url": "https://www.brkfishing.com.br",
-      "platform": "SHOPIFY",
-      "score": 99,
-      "lift_min": 12,
-      "lift_max": 25,
-      "broken_skus_count": 0,
-      "in_house_broken_count": 0,
-      "resale_broken_count": 0,
-      "in_house_monthly_loss": 0,
-      "resale_monthly_loss": 0,
-      "total_skus_count": 30,
-      "estimated_monthly_loss": 0,
-      "contrast_ratio": 4.8,
-      "wcag_passed": true,
-      "marketplace_details": null,
-      "broken_products_details": [],
-      "audited_at": "2026-09-10T19:21:15.487Z"
-    },
-    {
-      "id": "snap-1789068074896-3vjc",
-      "store_id": "store-1",
-      "brand_name": "BRK Agro",
-      "store_url": "https://www.brkagro.com.br",
-      "platform": "SHOPIFY",
-      "score": 75,
-      "lift_min": 48,
-      "lift_max": 97,
-      "broken_skus_count": 12,
-      "in_house_broken_count": 12,
-      "resale_broken_count": 0,
-      "in_house_monthly_loss": 16308,
-      "resale_monthly_loss": 0,
-      "total_skus_count": 30,
-      "estimated_monthly_loss": 16308,
-      "contrast_ratio": 4.8,
-      "wcag_passed": true,
-      "marketplace_details": null,
-      "broken_products_details": [
-        {
-          "title": "Camisa Agro Brk Unissex Basic Areia com Proteção Solar UV50+ Envio Imediato",
-          "handle": "camisa-agro-brk-unissex-basic-areia-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-unissex-basic-areia-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "G",
-            "GG"
-          ],
-          "availableSizes": [
-            "G1"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Agro Brk Básica Azul e Amarelo com Proteção Solar UV50+",
-          "handle": "camisa-agro-brk-basica-azul-e-amarelo-com-protecao-solar-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-basica-azul-e-amarelo-com-protecao-solar-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "G",
-            "GG"
-          ],
-          "availableSizes": [
-            "M"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Brk Preta Bandeira do Brasil com Proteção Solar UV50 Envio Imediato",
-          "handle": "camisa-brk-preta-bandeira-do-brasil-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-brk-preta-bandeira-do-brasil-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "G"
-          ],
-          "availableSizes": [
-            "GG",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Agro Feminina Brk Feminina Camuflada Bandeira do Brasil com Proteção Solar UV50+",
-          "handle": "camisa-agro-feminina-brk-feminina-camuflada-bandeira-do-brasil-com-protecao-solar-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-feminina-brk-feminina-camuflada-bandeira-do-brasil-com-protecao-solar-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "G"
-          ],
-          "availableSizes": [
-            "M",
-            "GG",
-            "G1",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Agro Brk Bandeira Brasil Estados Unidos com Proteção Solar UV50+",
-          "handle": "camisa-agro-brk-bandeira-brasil-estados-unidos-com-protecao-solar-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-bandeira-brasil-estados-unidos-com-protecao-solar-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "G"
-          ],
-          "availableSizes": [
-            "M",
-            "GG",
-            "G1",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Agro Brk Camu Verde Long Horn com Proteção UV50+",
-          "handle": "camisa-agro-brk-camu-verde-long-horn-com-protecao-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-camu-verde-long-horn-com-protecao-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "GG"
-          ],
-          "availableSizes": [
-            "P",
-            "M",
-            "G",
-            "G1",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Feminina Agro Brk Camuflado Preto e Rosa Bandeira do Brasil com Proteção Solar UV50+",
-          "handle": "camisa-feminina-agro-brk-camuflado-preto-e-rosa-bandeira-do-brasil-com-protecao-solar-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-feminina-agro-brk-camuflado-preto-e-rosa-bandeira-do-brasil-com-protecao-solar-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "G"
-          ],
-          "availableSizes": [
-            "GG",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Feminina Agro Brk O Agro Não Para Preta com Proteção Solar UV50+ Envio Imediato",
-          "handle": "camisa-feminina-agro-brk-o-agro-nao-para-preta-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-feminina-agro-brk-o-agro-nao-para-preta-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "G",
-            "GG",
-            "M"
-          ],
-          "availableSizes": [
-            "P",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Brk Rodagem com Proteção Solar UV50 Envio Imediato",
-          "handle": "camisa-brk-rodagem-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-brk-rodagem-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "GG"
-          ],
-          "availableSizes": [
-            "G",
-            "G1"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Feminina Brk Basica Preta com Proteção Solar UV50 Envio Imediato",
-          "handle": "camisa-feminina-brk-basica-preta-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-feminina-brk-basica-preta-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M"
-          ],
-          "availableSizes": [
-            "P",
-            "G",
-            "GG",
-            "G1",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Camuflada Real Tree Made In Agro com Proteção UV50 Envio Imediato",
-          "handle": "camisa-agro-brk-camuflado-real-tree-made-in-agro-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-camuflado-real-tree-made-in-agro-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "G",
-            "GG"
-          ],
-          "availableSizes": [
-            "P",
-            "G1"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Brk Bussola Brasil Camuflada com Proteção Solar UV50 Envio Imediato",
-          "handle": "camisa-brk-bussola-brasil-camuflada-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-brk-bussola-brasil-camuflada-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "G"
-          ],
-          "availableSizes": [
-            "M",
-            "GG",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        }
-      ],
-      "audited_at": "2026-09-10T19:21:14.896Z"
-    },
-    {
-      "id": "snap-1789068016693-qa55",
-      "store_id": "store-4",
-      "brand_name": "Mercado Livre Loja Oficial",
-      "store_url": "https://lista.mercadolivre.com.br/camisa-pesca-uv",
-      "platform": "MERCADO_LIVRE",
-      "score": 97,
-      "lift_min": 12,
-      "lift_max": 25,
-      "broken_skus_count": 0,
-      "in_house_broken_count": 0,
-      "resale_broken_count": 0,
-      "in_house_monthly_loss": 0,
-      "resale_monthly_loss": 0,
-      "total_skus_count": 1,
-      "estimated_monthly_loss": 0,
-      "contrast_ratio": 4.8,
-      "wcag_passed": true,
-      "marketplace_details": {
-        "platformName": "Mercado Livre",
-        "isFull": true,
-        "hasBuyBox": true,
-        "sellerReputation": "MercadoLíder Platinum / Oficial"
-      },
-      "broken_products_details": [],
-      "audited_at": "2026-09-10T19:20:16.693Z"
-    },
-    {
-      "id": "snap-1789068015944-4zsf",
-      "store_id": "store-3",
-      "brand_name": "BRK Motors",
-      "store_url": "https://www.brkmotors.com.br",
-      "platform": "SHOPIFY",
-      "score": 99,
-      "lift_min": 12,
-      "lift_max": 25,
-      "broken_skus_count": 0,
-      "in_house_broken_count": 0,
-      "resale_broken_count": 0,
-      "in_house_monthly_loss": 0,
-      "resale_monthly_loss": 0,
-      "total_skus_count": 30,
-      "estimated_monthly_loss": 0,
-      "contrast_ratio": 4.8,
-      "wcag_passed": true,
-      "marketplace_details": null,
-      "broken_products_details": [],
-      "audited_at": "2026-09-10T19:20:15.944Z"
-    },
-    {
-      "id": "snap-1789068015412-xcep",
-      "store_id": "store-2",
-      "brand_name": "BRK Fishing",
-      "store_url": "https://www.brkfishing.com.br",
-      "platform": "SHOPIFY",
-      "score": 99,
-      "lift_min": 12,
-      "lift_max": 25,
-      "broken_skus_count": 0,
-      "in_house_broken_count": 0,
-      "resale_broken_count": 0,
-      "in_house_monthly_loss": 0,
-      "resale_monthly_loss": 0,
-      "total_skus_count": 30,
-      "estimated_monthly_loss": 0,
-      "contrast_ratio": 4.8,
-      "wcag_passed": true,
-      "marketplace_details": null,
-      "broken_products_details": [],
-      "audited_at": "2026-09-10T19:20:15.412Z"
-    },
-    {
-      "id": "snap-1789068014829-ycfi",
-      "store_id": "store-1",
-      "brand_name": "BRK Agro",
-      "store_url": "https://www.brkagro.com.br",
-      "platform": "SHOPIFY",
-      "score": 75,
-      "lift_min": 48,
-      "lift_max": 97,
-      "broken_skus_count": 12,
-      "in_house_broken_count": 12,
-      "resale_broken_count": 0,
-      "in_house_monthly_loss": 16308,
-      "resale_monthly_loss": 0,
-      "total_skus_count": 30,
-      "estimated_monthly_loss": 16308,
-      "contrast_ratio": 4.8,
-      "wcag_passed": true,
-      "marketplace_details": null,
-      "broken_products_details": [
-        {
-          "title": "Camisa Agro Brk Unissex Basic Areia com Proteção Solar UV50+ Envio Imediato",
-          "handle": "camisa-agro-brk-unissex-basic-areia-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-unissex-basic-areia-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "G",
-            "GG"
-          ],
-          "availableSizes": [
-            "G1"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Agro Brk Básica Azul e Amarelo com Proteção Solar UV50+",
-          "handle": "camisa-agro-brk-basica-azul-e-amarelo-com-protecao-solar-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-basica-azul-e-amarelo-com-protecao-solar-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "G",
-            "GG"
-          ],
-          "availableSizes": [
-            "M"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Brk Preta Bandeira do Brasil com Proteção Solar UV50 Envio Imediato",
-          "handle": "camisa-brk-preta-bandeira-do-brasil-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-brk-preta-bandeira-do-brasil-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "G"
-          ],
-          "availableSizes": [
-            "GG",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Agro Feminina Brk Feminina Camuflada Bandeira do Brasil com Proteção Solar UV50+",
-          "handle": "camisa-agro-feminina-brk-feminina-camuflada-bandeira-do-brasil-com-protecao-solar-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-feminina-brk-feminina-camuflada-bandeira-do-brasil-com-protecao-solar-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "G"
-          ],
-          "availableSizes": [
-            "M",
-            "GG",
-            "G1",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Agro Brk Bandeira Brasil Estados Unidos com Proteção Solar UV50+",
-          "handle": "camisa-agro-brk-bandeira-brasil-estados-unidos-com-protecao-solar-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-bandeira-brasil-estados-unidos-com-protecao-solar-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "G"
-          ],
-          "availableSizes": [
-            "M",
-            "GG",
-            "G1",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Agro Brk Camu Verde Long Horn com Proteção UV50+",
-          "handle": "camisa-agro-brk-camu-verde-long-horn-com-protecao-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-camu-verde-long-horn-com-protecao-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "GG"
-          ],
-          "availableSizes": [
-            "P",
-            "M",
-            "G",
-            "G1",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Feminina Agro Brk Camuflado Preto e Rosa Bandeira do Brasil com Proteção Solar UV50+",
-          "handle": "camisa-feminina-agro-brk-camuflado-preto-e-rosa-bandeira-do-brasil-com-protecao-solar-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-feminina-agro-brk-camuflado-preto-e-rosa-bandeira-do-brasil-com-protecao-solar-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "G"
-          ],
-          "availableSizes": [
-            "GG",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Feminina Agro Brk O Agro Não Para Preta com Proteção Solar UV50+ Envio Imediato",
-          "handle": "camisa-feminina-agro-brk-o-agro-nao-para-preta-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-feminina-agro-brk-o-agro-nao-para-preta-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "G",
-            "GG",
-            "M"
-          ],
-          "availableSizes": [
-            "P",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Brk Rodagem com Proteção Solar UV50 Envio Imediato",
-          "handle": "camisa-brk-rodagem-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-brk-rodagem-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "GG"
-          ],
-          "availableSizes": [
-            "G",
-            "G1"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Feminina Brk Basica Preta com Proteção Solar UV50 Envio Imediato",
-          "handle": "camisa-feminina-brk-basica-preta-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-feminina-brk-basica-preta-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M"
-          ],
-          "availableSizes": [
-            "P",
-            "G",
-            "GG",
-            "G1",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Camuflada Real Tree Made In Agro com Proteção UV50 Envio Imediato",
-          "handle": "camisa-agro-brk-camuflado-real-tree-made-in-agro-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-camuflado-real-tree-made-in-agro-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "G",
-            "GG"
-          ],
-          "availableSizes": [
-            "P",
-            "G1"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Brk Bussola Brasil Camuflada com Proteção Solar UV50 Envio Imediato",
-          "handle": "camisa-brk-bussola-brasil-camuflada-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-brk-bussola-brasil-camuflada-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "G"
-          ],
-          "availableSizes": [
-            "M",
-            "GG",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        }
-      ],
-      "audited_at": "2026-09-10T19:20:14.829Z"
-    },
-    {
-      "id": "snap-1789067956798-nmwd",
-      "store_id": "store-4",
-      "brand_name": "Mercado Livre Loja Oficial",
-      "store_url": "https://lista.mercadolivre.com.br/camisa-pesca-uv",
-      "platform": "MERCADO_LIVRE",
-      "score": 97,
-      "lift_min": 12,
-      "lift_max": 25,
-      "broken_skus_count": 0,
-      "in_house_broken_count": 0,
-      "resale_broken_count": 0,
-      "in_house_monthly_loss": 0,
-      "resale_monthly_loss": 0,
-      "total_skus_count": 1,
-      "estimated_monthly_loss": 0,
-      "contrast_ratio": 4.8,
-      "wcag_passed": true,
-      "marketplace_details": {
-        "platformName": "Mercado Livre",
-        "isFull": true,
-        "hasBuyBox": true,
-        "sellerReputation": "MercadoLíder Platinum / Oficial"
-      },
-      "broken_products_details": [],
-      "audited_at": "2026-09-10T19:19:16.798Z"
-    },
-    {
-      "id": "snap-1789067956022-mqjx",
-      "store_id": "store-3",
-      "brand_name": "BRK Motors",
-      "store_url": "https://www.brkmotors.com.br",
-      "platform": "SHOPIFY",
-      "score": 99,
-      "lift_min": 12,
-      "lift_max": 25,
-      "broken_skus_count": 0,
-      "in_house_broken_count": 0,
-      "resale_broken_count": 0,
-      "in_house_monthly_loss": 0,
-      "resale_monthly_loss": 0,
-      "total_skus_count": 30,
-      "estimated_monthly_loss": 0,
-      "contrast_ratio": 4.8,
-      "wcag_passed": true,
-      "marketplace_details": null,
-      "broken_products_details": [],
-      "audited_at": "2026-09-10T19:19:16.022Z"
-    },
-    {
-      "id": "snap-1789067955497-c959",
-      "store_id": "store-2",
-      "brand_name": "BRK Fishing",
-      "store_url": "https://www.brkfishing.com.br",
-      "platform": "SHOPIFY",
-      "score": 99,
-      "lift_min": 12,
-      "lift_max": 25,
-      "broken_skus_count": 0,
-      "in_house_broken_count": 0,
-      "resale_broken_count": 0,
-      "in_house_monthly_loss": 0,
-      "resale_monthly_loss": 0,
-      "total_skus_count": 30,
-      "estimated_monthly_loss": 0,
-      "contrast_ratio": 4.8,
-      "wcag_passed": true,
-      "marketplace_details": null,
-      "broken_products_details": [],
-      "audited_at": "2026-09-10T19:19:15.497Z"
-    },
-    {
-      "id": "snap-1789067954926-bylo",
-      "store_id": "store-1",
-      "brand_name": "BRK Agro",
-      "store_url": "https://www.brkagro.com.br",
-      "platform": "SHOPIFY",
-      "score": 75,
-      "lift_min": 48,
-      "lift_max": 97,
-      "broken_skus_count": 12,
-      "in_house_broken_count": 12,
-      "resale_broken_count": 0,
-      "in_house_monthly_loss": 16308,
-      "resale_monthly_loss": 0,
-      "total_skus_count": 30,
-      "estimated_monthly_loss": 16308,
-      "contrast_ratio": 4.8,
-      "wcag_passed": true,
-      "marketplace_details": null,
-      "broken_products_details": [
-        {
-          "title": "Camisa Agro Brk Unissex Basic Areia com Proteção Solar UV50+ Envio Imediato",
-          "handle": "camisa-agro-brk-unissex-basic-areia-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-unissex-basic-areia-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "G",
-            "GG"
-          ],
-          "availableSizes": [
-            "G1"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Agro Brk Básica Azul e Amarelo com Proteção Solar UV50+",
-          "handle": "camisa-agro-brk-basica-azul-e-amarelo-com-protecao-solar-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-basica-azul-e-amarelo-com-protecao-solar-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "G",
-            "GG"
-          ],
-          "availableSizes": [
-            "M"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Brk Preta Bandeira do Brasil com Proteção Solar UV50 Envio Imediato",
-          "handle": "camisa-brk-preta-bandeira-do-brasil-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-brk-preta-bandeira-do-brasil-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "G"
-          ],
-          "availableSizes": [
-            "GG",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Agro Feminina Brk Feminina Camuflada Bandeira do Brasil com Proteção Solar UV50+",
-          "handle": "camisa-agro-feminina-brk-feminina-camuflada-bandeira-do-brasil-com-protecao-solar-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-feminina-brk-feminina-camuflada-bandeira-do-brasil-com-protecao-solar-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "G"
-          ],
-          "availableSizes": [
-            "M",
-            "GG",
-            "G1",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Agro Brk Bandeira Brasil Estados Unidos com Proteção Solar UV50+",
-          "handle": "camisa-agro-brk-bandeira-brasil-estados-unidos-com-protecao-solar-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-bandeira-brasil-estados-unidos-com-protecao-solar-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "G"
-          ],
-          "availableSizes": [
-            "M",
-            "GG",
-            "G1",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Agro Brk Camu Verde Long Horn com Proteção UV50+",
-          "handle": "camisa-agro-brk-camu-verde-long-horn-com-protecao-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-camu-verde-long-horn-com-protecao-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "GG"
-          ],
-          "availableSizes": [
-            "P",
-            "M",
-            "G",
-            "G1",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Feminina Agro Brk Camuflado Preto e Rosa Bandeira do Brasil com Proteção Solar UV50+",
-          "handle": "camisa-feminina-agro-brk-camuflado-preto-e-rosa-bandeira-do-brasil-com-protecao-solar-uv50",
-          "url": "https://www.brkagro.com.br/products/camisa-feminina-agro-brk-camuflado-preto-e-rosa-bandeira-do-brasil-com-protecao-solar-uv50",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "G"
-          ],
-          "availableSizes": [
-            "GG",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Feminina Agro Brk O Agro Não Para Preta com Proteção Solar UV50+ Envio Imediato",
-          "handle": "camisa-feminina-agro-brk-o-agro-nao-para-preta-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-feminina-agro-brk-o-agro-nao-para-preta-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "G",
-            "GG",
-            "M"
-          ],
-          "availableSizes": [
-            "P",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Brk Rodagem com Proteção Solar UV50 Envio Imediato",
-          "handle": "camisa-brk-rodagem-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-brk-rodagem-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "GG"
-          ],
-          "availableSizes": [
-            "G",
-            "G1"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Feminina Brk Basica Preta com Proteção Solar UV50 Envio Imediato",
-          "handle": "camisa-feminina-brk-basica-preta-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-feminina-brk-basica-preta-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M"
-          ],
-          "availableSizes": [
-            "P",
-            "G",
-            "GG",
-            "G1",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Camuflada Real Tree Made In Agro com Proteção UV50 Envio Imediato",
-          "handle": "camisa-agro-brk-camuflado-real-tree-made-in-agro-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-agro-brk-camuflado-real-tree-made-in-agro-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "M",
-            "G",
-            "GG"
-          ],
-          "availableSizes": [
-            "P",
-            "G1"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        },
-        {
-          "title": "Camisa Brk Bussola Brasil Camuflada com Proteção Solar UV50 Envio Imediato",
-          "handle": "camisa-brk-bussola-brasil-camuflada-com-protecao-solar-uv50-envio-imediato",
-          "url": "https://www.brkagro.com.br/products/camisa-brk-bussola-brasil-camuflada-com-protecao-solar-uv50-envio-imediato",
-          "price": 169.9,
-          "missingSizes": [
-            "G"
-          ],
-          "availableSizes": [
-            "M",
-            "GG",
-            "G2"
-          ],
-          "isResale": false,
-          "manufacturingType": "FABRICACAO_PROPRIA",
-          "manufacturingCategory": "CONFECCAO_SUBLIMADA_PROPRIA",
-          "resaleReason": "Vestuário sublimado sob demanda de produção própria",
-          "recommendedSupplyAction": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
-        }
-      ],
-      "audited_at": "2026-09-10T19:19:14.926Z"
-    },
-    {
-      "id": "snap-1789067896912-9u26",
-      "store_id": "store-4",
-      "brand_name": "Mercado Livre Loja Oficial",
-      "store_url": "https://lista.mercadolivre.com.br/camisa-pesca-uv",
-      "platform": "MERCADO_LIVRE",
-      "score": 97,
-      "lift_min": 12,
-      "lift_max": 25,
-      "broken_skus_count": 0,
-      "in_house_broken_count": 0,
-      "resale_broken_count": 0,
-      "in_house_monthly_loss": 0,
-      "resale_monthly_loss": 0,
-      "total_skus_count": 1,
-      "estimated_monthly_loss": 0,
-      "contrast_ratio": 4.8,
-      "wcag_passed": true,
-      "marketplace_details": {
-        "platformName": "Mercado Livre",
-        "isFull": true,
-        "hasBuyBox": true,
-        "sellerReputation": "MercadoLíder Platinum / Oficial"
-      },
-      "broken_products_details": [],
-      "audited_at": "2026-09-10T19:18:16.912Z"
     }
   ],
   "job_logs": [
+    {
+      "id": "job-1789145730769-38a6",
+      "store_id": "store-4",
+      "brand_name": "Mercado Livre Loja Oficial",
+      "platform": "MERCADO_LIVRE",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 856,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_mercado_livre",
+      "products_scanned": 1,
+      "created_at": "2026-09-11T16:55:30.769Z"
+    },
+    {
+      "id": "job-1789145729893-5np8",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 502,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 30,
+      "created_at": "2026-09-11T16:55:29.893Z"
+    },
+    {
+      "id": "job-1789145729365-5ow0",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 730,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 30,
+      "created_at": "2026-09-11T16:55:29.365Z"
+    },
+    {
+      "id": "job-1789145728615-zn88",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 1002,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 30,
+      "created_at": "2026-09-11T16:55:28.615Z"
+    },
+    {
+      "id": "job-1789145670838-ik0a",
+      "store_id": "store-4",
+      "brand_name": "Mercado Livre Loja Oficial",
+      "platform": "MERCADO_LIVRE",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 700,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_mercado_livre",
+      "products_scanned": 1,
+      "created_at": "2026-09-11T16:54:30.838Z"
+    },
+    {
+      "id": "job-1789145670118-p12o",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 488,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 30,
+      "created_at": "2026-09-11T16:54:30.118Z"
+    },
+    {
+      "id": "job-1789145669609-07du",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 804,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 30,
+      "created_at": "2026-09-11T16:54:29.609Z"
+    },
+    {
+      "id": "job-1789145668784-dtzo",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 1176,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 30,
+      "created_at": "2026-09-11T16:54:28.784Z"
+    },
+    {
+      "id": "job-1789145610818-7gjq",
+      "store_id": "store-4",
+      "brand_name": "Mercado Livre Loja Oficial",
+      "platform": "MERCADO_LIVRE",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 710,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_mercado_livre",
+      "products_scanned": 1,
+      "created_at": "2026-09-11T16:53:30.818Z"
+    },
+    {
+      "id": "job-1789145610086-0j5j",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 520,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 30,
+      "created_at": "2026-09-11T16:53:30.086Z"
+    },
+    {
+      "id": "job-1789145609543-xzst",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 813,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 30,
+      "created_at": "2026-09-11T16:53:29.543Z"
+    },
+    {
+      "id": "job-1789145608708-egvq",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 1107,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 30,
+      "created_at": "2026-09-11T16:53:28.708Z"
+    },
+    {
+      "id": "job-1789145550789-pp9b",
+      "store_id": "store-4",
+      "brand_name": "Mercado Livre Loja Oficial",
+      "platform": "MERCADO_LIVRE",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 717,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_mercado_livre",
+      "products_scanned": 1,
+      "created_at": "2026-09-11T16:52:30.789Z"
+    },
+    {
+      "id": "job-1789145550048-466t",
+      "store_id": "store-3",
+      "brand_name": "BRK Motors",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 571,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 30,
+      "created_at": "2026-09-11T16:52:30.048Z"
+    },
+    {
+      "id": "job-1789145549457-h8as",
+      "store_id": "store-2",
+      "brand_name": "BRK Fishing",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 890,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 30,
+      "created_at": "2026-09-11T16:52:29.457Z"
+    },
+    {
+      "id": "job-1789145548548-m5xw",
+      "store_id": "store-1",
+      "brand_name": "BRK Agro",
+      "platform": "SHOPIFY",
+      "job_status": "SUCCESS",
+      "execution_time_ms": 963,
+      "agents_executed": [
+        "01_CRON",
+        "02_CEO",
+        "04_NICHE",
+        "05_CATALOG_UNIVERSAL",
+        "06_ADS_GROUNDED",
+        "08_VISION",
+        "11_DEVOPS"
+      ],
+      "grounding_score": 100,
+      "evidence_source": "live_shopify",
+      "products_scanned": 30,
+      "created_at": "2026-09-11T16:52:28.548Z"
+    },
     {
       "id": "job-1789145490407-mffw",
       "store_id": "store-4",
@@ -38152,345 +37864,45 @@
       "evidence_source": "live_shopify",
       "products_scanned": 30,
       "created_at": "2026-09-10T20:37:15.721Z"
-    },
-    {
-      "id": "job-1789072577423-v5q6",
-      "store_id": "store-4",
-      "brand_name": "Mercado Livre Loja Oficial",
-      "platform": "MERCADO_LIVRE",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 841,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_UNIVERSAL",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_mercado_livre",
-      "products_scanned": 1,
-      "created_at": "2026-09-10T20:36:17.423Z"
-    },
-    {
-      "id": "job-1789072576558-jtqz",
-      "store_id": "store-3",
-      "brand_name": "BRK Motors",
-      "platform": "SHOPIFY",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 515,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_UNIVERSAL",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_shopify",
-      "products_scanned": 30,
-      "created_at": "2026-09-10T20:36:16.558Z"
-    },
-    {
-      "id": "job-1789072576016-dkt4",
-      "store_id": "store-2",
-      "brand_name": "BRK Fishing",
-      "platform": "SHOPIFY",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 983,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_UNIVERSAL",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_shopify",
-      "products_scanned": 30,
-      "created_at": "2026-09-10T20:36:16.016Z"
-    },
-    {
-      "id": "job-1789072575007-dt7w",
-      "store_id": "store-1",
-      "brand_name": "BRK Agro",
-      "platform": "SHOPIFY",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 578,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_UNIVERSAL",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_shopify",
-      "products_scanned": 30,
-      "created_at": "2026-09-10T20:36:15.007Z"
-    },
-    {
-      "id": "job-1789072518163-u5m2",
-      "store_id": "store-4",
-      "brand_name": "Mercado Livre Loja Oficial",
-      "platform": "MERCADO_LIVRE",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 750,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_UNIVERSAL",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_mercado_livre",
-      "products_scanned": 1,
-      "created_at": "2026-09-10T20:35:18.163Z"
-    },
-    {
-      "id": "job-1789072517386-fzdx",
-      "store_id": "store-3",
-      "brand_name": "BRK Motors",
-      "platform": "SHOPIFY",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 544,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_UNIVERSAL",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_shopify",
-      "products_scanned": 30,
-      "created_at": "2026-09-10T20:35:17.386Z"
-    },
-    {
-      "id": "job-1789072516815-yqfq",
-      "store_id": "store-2",
-      "brand_name": "BRK Fishing",
-      "platform": "SHOPIFY",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 1180,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_UNIVERSAL",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_shopify",
-      "products_scanned": 30,
-      "created_at": "2026-09-10T20:35:16.815Z"
-    },
-    {
-      "id": "job-1789072515607-07bu",
-      "store_id": "store-1",
-      "brand_name": "BRK Agro",
-      "platform": "SHOPIFY",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 1191,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_UNIVERSAL",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_shopify",
-      "products_scanned": 30,
-      "created_at": "2026-09-10T20:35:15.607Z"
-    },
-    {
-      "id": "job-1789072459122-nbku",
-      "store_id": "store-4",
-      "brand_name": "Mercado Livre Loja Oficial",
-      "platform": "MERCADO_LIVRE",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 1305,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_UNIVERSAL",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_mercado_livre",
-      "products_scanned": 1,
-      "created_at": "2026-09-10T20:34:19.122Z"
-    },
-    {
-      "id": "job-1789072457790-42dw",
-      "store_id": "store-3",
-      "brand_name": "BRK Motors",
-      "platform": "SHOPIFY",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 707,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_UNIVERSAL",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_shopify",
-      "products_scanned": 30,
-      "created_at": "2026-09-10T20:34:17.790Z"
-    },
-    {
-      "id": "job-1789072457057-nho8",
-      "store_id": "store-2",
-      "brand_name": "BRK Fishing",
-      "platform": "SHOPIFY",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 1473,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_UNIVERSAL",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_shopify",
-      "products_scanned": 30,
-      "created_at": "2026-09-10T20:34:17.057Z"
-    },
-    {
-      "id": "job-1789072455560-koy9",
-      "store_id": "store-1",
-      "brand_name": "BRK Agro",
-      "platform": "SHOPIFY",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 1154,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_UNIVERSAL",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_shopify",
-      "products_scanned": 30,
-      "created_at": "2026-09-10T20:34:15.560Z"
-    },
-    {
-      "id": "job-1789072398131-nra7",
-      "store_id": "store-4",
-      "brand_name": "Mercado Livre Loja Oficial",
-      "platform": "MERCADO_LIVRE",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 754,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_UNIVERSAL",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_mercado_livre",
-      "products_scanned": 1,
-      "created_at": "2026-09-10T20:33:18.131Z"
-    },
-    {
-      "id": "job-1789072397352-o8ac",
-      "store_id": "store-3",
-      "brand_name": "BRK Motors",
-      "platform": "SHOPIFY",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 607,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_UNIVERSAL",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_shopify",
-      "products_scanned": 30,
-      "created_at": "2026-09-10T20:33:17.352Z"
-    },
-    {
-      "id": "job-1789072396717-ldty",
-      "store_id": "store-2",
-      "brand_name": "BRK Fishing",
-      "platform": "SHOPIFY",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 1051,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_UNIVERSAL",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_shopify",
-      "products_scanned": 30,
-      "created_at": "2026-09-10T20:33:16.717Z"
-    },
-    {
-      "id": "job-1789072395637-c6nm",
-      "store_id": "store-1",
-      "brand_name": "BRK Agro",
-      "platform": "SHOPIFY",
-      "job_status": "SUCCESS",
-      "execution_time_ms": 1238,
-      "agents_executed": [
-        "01_CRON",
-        "02_CEO",
-        "04_NICHE",
-        "05_CATALOG_UNIVERSAL",
-        "06_ADS_GROUNDED",
-        "08_VISION",
-        "11_DEVOPS"
-      ],
-      "grounding_score": 100,
-      "evidence_source": "live_shopify",
-      "products_scanned": 30,
-      "created_at": "2026-09-10T20:33:15.637Z"
     }
   ],
   "alert_dispatch_queue": [
+    {
+      "id": "alert-1789145730789",
+      "phone_number": "5511999999999",
+      "message_body": "🌅 *Relatório Executivo AdShield (11/09/2026 às 13:55:27)*\n\n🏢 *Lojas & Plataformas Auditadas:* 4 lojas (Shopify, VTEX, Nuvemshop, Marketplace)\n🩺 *Diagnóstico de Ruptura / Buy Box:* 4 item(ns) com alerta crítico\n💰 *Vazamento em Mídia:* R$ 6.392/mês em risco\n\n🔍 *Detalhes Reais Identificados (Própria vs Revenda):*\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Camo Long Horn Brasil Azul com Proteção Solar UV50+\" sem [G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🛍️ (Revenda): \"Camisa Xadrez Farm Preto/Branco - Manga Longa\" sem [M, G, GG]\n   ↳ Ação: Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote.\n• BRK Agro 🛍️ (Revenda): \"Camisa Country Ranch Lilas/Laranja - Manga Longa\" sem [GG]\n   ↳ Ação: Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Básica Verde com Proteção Solar UV50+\" sem [M]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 com Grounding Absoluto e Varredura Universal.",
+      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
+      "priority": "NORMAL",
+      "status": "PENDING",
+      "created_at": "2026-09-11T16:55:30.789Z"
+    },
+    {
+      "id": "alert-1789145670859",
+      "phone_number": "5511999999999",
+      "message_body": "🌅 *Relatório Executivo AdShield (11/09/2026 às 13:54:27)*\n\n🏢 *Lojas & Plataformas Auditadas:* 4 lojas (Shopify, VTEX, Nuvemshop, Marketplace)\n🩺 *Diagnóstico de Ruptura / Buy Box:* 4 item(ns) com alerta crítico\n💰 *Vazamento em Mídia:* R$ 6.392/mês em risco\n\n🔍 *Detalhes Reais Identificados (Própria vs Revenda):*\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Camo Long Horn Brasil Azul com Proteção Solar UV50+\" sem [G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🛍️ (Revenda): \"Camisa Xadrez Farm Preto/Branco - Manga Longa\" sem [M, G, GG]\n   ↳ Ação: Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote.\n• BRK Agro 🛍️ (Revenda): \"Camisa Country Ranch Lilas/Laranja - Manga Longa\" sem [GG]\n   ↳ Ação: Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Básica Verde com Proteção Solar UV50+\" sem [M]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 com Grounding Absoluto e Varredura Universal.",
+      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
+      "priority": "NORMAL",
+      "status": "PENDING",
+      "created_at": "2026-09-11T16:54:30.859Z"
+    },
+    {
+      "id": "alert-1789145610840",
+      "phone_number": "5511999999999",
+      "message_body": "🌅 *Relatório Executivo AdShield (11/09/2026 às 13:53:27)*\n\n🏢 *Lojas & Plataformas Auditadas:* 4 lojas (Shopify, VTEX, Nuvemshop, Marketplace)\n🩺 *Diagnóstico de Ruptura / Buy Box:* 4 item(ns) com alerta crítico\n💰 *Vazamento em Mídia:* R$ 6.392/mês em risco\n\n🔍 *Detalhes Reais Identificados (Própria vs Revenda):*\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Camo Long Horn Brasil Azul com Proteção Solar UV50+\" sem [G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🛍️ (Revenda): \"Camisa Xadrez Farm Preto/Branco - Manga Longa\" sem [M, G, GG]\n   ↳ Ação: Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote.\n• BRK Agro 🛍️ (Revenda): \"Camisa Country Ranch Lilas/Laranja - Manga Longa\" sem [GG]\n   ↳ Ação: Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Básica Verde com Proteção Solar UV50+\" sem [M]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 com Grounding Absoluto e Varredura Universal.",
+      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
+      "priority": "NORMAL",
+      "status": "PENDING",
+      "created_at": "2026-09-11T16:53:30.840Z"
+    },
+    {
+      "id": "alert-1789145550808",
+      "phone_number": "5511999999999",
+      "message_body": "🌅 *Relatório Executivo AdShield (11/09/2026 às 13:52:27)*\n\n🏢 *Lojas & Plataformas Auditadas:* 4 lojas (Shopify, VTEX, Nuvemshop, Marketplace)\n🩺 *Diagnóstico de Ruptura / Buy Box:* 4 item(ns) com alerta crítico\n💰 *Vazamento em Mídia:* R$ 6.392/mês em risco\n\n🔍 *Detalhes Reais Identificados (Própria vs Revenda):*\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Camo Long Horn Brasil Azul com Proteção Solar UV50+\" sem [G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🛍️ (Revenda): \"Camisa Xadrez Farm Preto/Branco - Manga Longa\" sem [M, G, GG]\n   ↳ Ação: Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote.\n• BRK Agro 🛍️ (Revenda): \"Camisa Country Ranch Lilas/Laranja - Manga Longa\" sem [GG]\n   ↳ Ação: Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Básica Verde com Proteção Solar UV50+\" sem [M]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 com Grounding Absoluto e Varredura Universal.",
+      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
+      "priority": "NORMAL",
+      "status": "PENDING",
+      "created_at": "2026-09-11T16:52:30.808Z"
+    },
     {
       "id": "alert-1789145490427",
       "phone_number": "5511999999999",
@@ -39354,42 +38766,6 @@
       "priority": "NORMAL",
       "status": "PENDING",
       "created_at": "2026-09-10T19:47:17.412Z"
-    },
-    {
-      "id": "alert-1789069577648",
-      "phone_number": "5511999999999",
-      "message_body": "🌅 *Relatório Executivo AdShield (10/09/2026 às 16:46:14)*\n\n🏢 *Lojas & Plataformas Auditadas:* 4 lojas (Shopify, VTEX, Nuvemshop, Marketplace)\n🩺 *Diagnóstico de Ruptura / Buy Box:* 12 item(ns) com alerta crítico\n💰 *Vazamento em Mídia:* R$ 16.308/mês em risco\n\n🔍 *Detalhes Reais Identificados (Própria vs Revenda):*\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Unissex Basic Areia com Proteção Solar UV50+ Envio Imediato\" sem [M, G, GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Básica Azul e Amarelo com Proteção Solar UV50+\" sem [G, GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Brk Preta Bandeira do Brasil com Proteção Solar UV50 Envio Imediato\" sem [M, G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Feminina Brk Feminina Camuflada Bandeira do Brasil com Proteção Solar UV50+\" sem [G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Bandeira Brasil Estados Unidos com Proteção Solar UV50+\" sem [G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Camu Verde Long Horn com Proteção UV50+\" sem [GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Feminina Agro Brk Camuflado Preto e Rosa Bandeira do Brasil com Proteção Solar UV50+\" sem [M, G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Feminina Agro Brk O Agro Não Para Preta com Proteção Solar UV50+ Envio Imediato\" sem [G, GG, M]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Brk Rodagem com Proteção Solar UV50 Envio Imediato\" sem [M, GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Feminina Brk Basica Preta com Proteção Solar UV50 Envio Imediato\" sem [M]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Camuflada Real Tree Made In Agro com Proteção UV50 Envio Imediato\" sem [M, G, GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Brk Bussola Brasil Camuflada com Proteção Solar UV50 Envio Imediato\" sem [G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 com Grounding Absoluto e Varredura Universal.",
-      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
-      "priority": "NORMAL",
-      "status": "PENDING",
-      "created_at": "2026-09-10T19:46:17.648Z"
-    },
-    {
-      "id": "alert-1789069517257",
-      "phone_number": "5511999999999",
-      "message_body": "🌅 *Relatório Executivo AdShield (10/09/2026 às 16:45:13)*\n\n🏢 *Lojas & Plataformas Auditadas:* 4 lojas (Shopify, VTEX, Nuvemshop, Marketplace)\n🩺 *Diagnóstico de Ruptura / Buy Box:* 12 item(ns) com alerta crítico\n💰 *Vazamento em Mídia:* R$ 16.308/mês em risco\n\n🔍 *Detalhes Reais Identificados (Própria vs Revenda):*\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Unissex Basic Areia com Proteção Solar UV50+ Envio Imediato\" sem [M, G, GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Básica Azul e Amarelo com Proteção Solar UV50+\" sem [G, GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Brk Preta Bandeira do Brasil com Proteção Solar UV50 Envio Imediato\" sem [M, G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Feminina Brk Feminina Camuflada Bandeira do Brasil com Proteção Solar UV50+\" sem [G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Bandeira Brasil Estados Unidos com Proteção Solar UV50+\" sem [G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Camu Verde Long Horn com Proteção UV50+\" sem [GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Feminina Agro Brk Camuflado Preto e Rosa Bandeira do Brasil com Proteção Solar UV50+\" sem [M, G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Feminina Agro Brk O Agro Não Para Preta com Proteção Solar UV50+ Envio Imediato\" sem [G, GG, M]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Brk Rodagem com Proteção Solar UV50 Envio Imediato\" sem [M, GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Feminina Brk Basica Preta com Proteção Solar UV50 Envio Imediato\" sem [M]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Camuflada Real Tree Made In Agro com Proteção UV50 Envio Imediato\" sem [M, G, GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Brk Bussola Brasil Camuflada com Proteção Solar UV50 Envio Imediato\" sem [G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 com Grounding Absoluto e Varredura Universal.",
-      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
-      "priority": "NORMAL",
-      "status": "PENDING",
-      "created_at": "2026-09-10T19:45:17.257Z"
-    },
-    {
-      "id": "alert-1789069457100",
-      "phone_number": "5511999999999",
-      "message_body": "🌅 *Relatório Executivo AdShield (10/09/2026 às 16:44:13)*\n\n🏢 *Lojas & Plataformas Auditadas:* 4 lojas (Shopify, VTEX, Nuvemshop, Marketplace)\n🩺 *Diagnóstico de Ruptura / Buy Box:* 12 item(ns) com alerta crítico\n💰 *Vazamento em Mídia:* R$ 16.308/mês em risco\n\n🔍 *Detalhes Reais Identificados (Própria vs Revenda):*\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Unissex Basic Areia com Proteção Solar UV50+ Envio Imediato\" sem [M, G, GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Básica Azul e Amarelo com Proteção Solar UV50+\" sem [G, GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Brk Preta Bandeira do Brasil com Proteção Solar UV50 Envio Imediato\" sem [M, G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Feminina Brk Feminina Camuflada Bandeira do Brasil com Proteção Solar UV50+\" sem [G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Bandeira Brasil Estados Unidos com Proteção Solar UV50+\" sem [G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Camu Verde Long Horn com Proteção UV50+\" sem [GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Feminina Agro Brk Camuflado Preto e Rosa Bandeira do Brasil com Proteção Solar UV50+\" sem [M, G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Feminina Agro Brk O Agro Não Para Preta com Proteção Solar UV50+ Envio Imediato\" sem [G, GG, M]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Brk Rodagem com Proteção Solar UV50 Envio Imediato\" sem [M, GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Feminina Brk Basica Preta com Proteção Solar UV50 Envio Imediato\" sem [M]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Camuflada Real Tree Made In Agro com Proteção UV50 Envio Imediato\" sem [M, G, GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Brk Bussola Brasil Camuflada com Proteção Solar UV50 Envio Imediato\" sem [G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 com Grounding Absoluto e Varredura Universal.",
-      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
-      "priority": "NORMAL",
-      "status": "PENDING",
-      "created_at": "2026-09-10T19:44:17.100Z"
-    },
-    {
-      "id": "alert-1789069396865",
-      "phone_number": "5511999999999",
-      "message_body": "🌅 *Relatório Executivo AdShield (10/09/2026 às 16:43:13)*\n\n🏢 *Lojas & Plataformas Auditadas:* 4 lojas (Shopify, VTEX, Nuvemshop, Marketplace)\n🩺 *Diagnóstico de Ruptura / Buy Box:* 12 item(ns) com alerta crítico\n💰 *Vazamento em Mídia:* R$ 16.308/mês em risco\n\n🔍 *Detalhes Reais Identificados (Própria vs Revenda):*\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Unissex Basic Areia com Proteção Solar UV50+ Envio Imediato\" sem [M, G, GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Básica Azul e Amarelo com Proteção Solar UV50+\" sem [G, GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Brk Preta Bandeira do Brasil com Proteção Solar UV50 Envio Imediato\" sem [M, G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Feminina Brk Feminina Camuflada Bandeira do Brasil com Proteção Solar UV50+\" sem [G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Bandeira Brasil Estados Unidos com Proteção Solar UV50+\" sem [G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Agro Brk Camu Verde Long Horn com Proteção UV50+\" sem [GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Feminina Agro Brk Camuflado Preto e Rosa Bandeira do Brasil com Proteção Solar UV50+\" sem [M, G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Feminina Agro Brk O Agro Não Para Preta com Proteção Solar UV50+ Envio Imediato\" sem [G, GG, M]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Brk Rodagem com Proteção Solar UV50 Envio Imediato\" sem [M, GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Feminina Brk Basica Preta com Proteção Solar UV50 Envio Imediato\" sem [M]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Camuflada Real Tree Made In Agro com Proteção UV50 Envio Imediato\" sem [M, G, GG]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n• BRK Agro 🏭 (Própria): \"Camisa Brk Bussola Brasil Camuflada com Proteção Solar UV50 Envio Imediato\" sem [G]\n   ↳ Ação: Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP.\n\n🛡️ *Status do Enxame:* 12 Agentes Operando 24/7 com Grounding Absoluto e Varredura Universal.",
-      "alert_type": "DAILY_EXECUTIVE_SUMMARY",
-      "priority": "NORMAL",
-      "status": "PENDING",
-      "created_at": "2026-09-10T19:43:16.865Z"
     }
   ]
 }

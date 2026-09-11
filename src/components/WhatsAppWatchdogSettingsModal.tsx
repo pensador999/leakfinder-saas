@@ -99,12 +99,12 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold">Vigia 24h & Disparador WhatsApp</h2>
+                <h2 className="text-lg font-bold">Agente 18 — WhatsApp Executive Watchdog Worker</h2>
                 <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-md">
                   Vigilância 07:00
                 </span>
               </div>
-              <p className="text-xs text-slate-400">Configure o gateway para envio dos relatórios executivos diários.</p>
+              <p className="text-xs text-slate-400">Gateway para entrega proativa de alertas de ruptura e relatórios executivos no WhatsApp do decisor.</p>
             </div>
           </div>
 

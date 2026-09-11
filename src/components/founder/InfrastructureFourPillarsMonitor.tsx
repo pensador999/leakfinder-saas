@@ -86,13 +86,13 @@ export const InfrastructureFourPillarsMonitor: React.FC = () => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-lg font-bold text-white tracking-tight">Monitor 360º de Infraestrutura & Rede</h3>
+              <h3 className="text-lg font-bold text-white tracking-tight">Agente 16 — DevOps Sentinel & Circuit Breaker</h3>
               <span className="px-2 py-0.5 text-[10px] font-mono uppercase font-extrabold bg-emerald-500/20 text-emerald-300 rounded border border-emerald-500/30">
                 SLA: 99.98%
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              Auditoria ativa dos 4 pilares: Internet, GitHub, Borda Vercel e Persistência de Dados.
+              Auditoria ativa dos 4 pilares de resiliência: Cloudflare Edge, GitHub CI/CD, Borda Vercel e Dual-Persistence (Local + Supabase).
             </p>
           </div>
         </div>
