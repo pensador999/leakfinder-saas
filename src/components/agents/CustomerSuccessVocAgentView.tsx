@@ -72,13 +72,13 @@ export const CustomerSuccessVocAgentView: React.FC = () => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-slate-900">Analista de Clientes, Dúvidas & Precificação (VoC Analyst)</h2>
+              <h2 className="text-xl font-bold text-slate-900">Agente 14 — Customer Success VoC & NPS Agent</h2>
               <span className="px-2.5 py-0.5 text-xs font-mono font-extrabold rounded-full bg-emerald-100 text-emerald-900 border border-emerald-200">
                 {dossier.totalClientInteractionsSampled} Interações Mapeadas
               </span>
             </div>
             <p className="text-xs text-slate-600 mt-1 max-w-2xl leading-relaxed">
-              Mapeamento contínuo das objeções de lojistas, modelagem de elasticidade de preço SaaS e calibragem da base de conhecimento do chatbot IA.
+              Mineração de feedbacks do consumidor (Voice of Customer), mapeamento contínuo de objeções de lojistas e calibragem da base de conhecimento de vendas.
             </p>
           </div>
         </div>

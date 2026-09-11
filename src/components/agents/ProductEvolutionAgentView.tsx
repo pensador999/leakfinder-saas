@@ -57,7 +57,7 @@ export const ProductEvolutionAgentView: React.FC = () => {
       const updated = [...approvedProposalIds, proposal.id];
       setApprovedProposalIds(updated);
       localStorage.setItem('adshield_approved_pm_proposals', JSON.stringify(updated));
-      setFeedbackSuccess(`🎉 Proposta "${proposal.title}" aprovada! Ela foi enviada para o Orquestrador CEO (Agente 02) na Sprint Ativa e para o Auto-Coder (Agente 12) para geração de código.`);
+      setFeedbackSuccess(`🎉 Proposta "${proposal.title}" aprovada! Ela foi enviada para o Chief Executive Orchestrator (Agente 01) na Sprint Ativa e para o Autonomous Code Patch Engineer (Agente 17) para aplicação.`);
       setTimeout(() => setFeedbackSuccess(''), 6000);
     }
   };
@@ -87,13 +87,13 @@ export const ProductEvolutionAgentView: React.FC = () => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-slate-900">Engenheiro de Auto-Evolução do AdShield (Product Evolution)</h2>
+              <h2 className="text-xl font-bold text-slate-900">Agente 15 — SaaS Product Evolution Engineer</h2>
               <span className="px-2.5 py-0.5 text-xs font-mono font-extrabold rounded-full bg-indigo-100 text-indigo-900 border border-indigo-200">
                 Score de Saúde: {dossier.overallHealthScore}/100
               </span>
             </div>
             <p className="text-xs text-slate-600 mt-1 max-w-2xl leading-relaxed">
-              Auto-inspeção contínua da arquitetura, queries PostgreSQL do Supabase e UX de conversão com propostas fundamentadas em ROI técnico.
+              Auto-inspeção contínua da arquitetura, consultas PostgreSQL do Supabase e roadmap técnico do produto orientado por telemetria e ROI.
             </p>
           </div>
         </div>

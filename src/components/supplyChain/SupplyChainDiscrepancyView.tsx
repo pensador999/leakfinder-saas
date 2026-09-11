@@ -50,9 +50,9 @@ export const SupplyChainDiscrepancyView: React.FC<SupplyChainDiscrepancyViewProp
         <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
           <div className="space-y-3 max-w-2xl">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-3 py-1 bg-rose-500/20 text-rose-300 border border-rose-500/40 rounded-full text-xs font-mono font-bold flex items-center gap-1.5 animate-pulse">
+              <span className="px-3 py-1 bg-rose-500/20 text-rose-300 border border-rose-500/40 rounded-full text-xs font-mono font-bold flex items-center gap-1.5">
                 <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
-                <span>Auditoria de Descompasso Operacional & Tráfego</span>
+                <span>Agente 13 — ERP & Supply Chain Discrepancy Engine</span>
               </span>
               <span className="px-2.5 py-0.5 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-full text-xs font-mono font-bold">
                 Sankhya ERP ⟷ Magis5 ⟷ Loja ⟷ Ads
