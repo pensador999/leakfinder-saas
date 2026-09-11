@@ -58,13 +58,13 @@ export const ComputerVisionInspectionView: React.FC<ComputerVisionInspectionView
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-slate-900">Motor de Visão Computacional & Heatmap IA</h2>
+              <h2 className="text-xl font-bold text-slate-900">Agente 11 — Engenheiro de Visão Computacional</h2>
               <span className="px-2.5 py-0.5 text-[10px] font-bold bg-indigo-50 text-indigo-700 rounded-full border border-indigo-200 flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-indigo-600" /> Vision Core V3
+                <Sparkles className="w-3 h-3 text-indigo-600" /> Saliência Ocular & WCAG 2.1 AAA
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1 font-medium">
-              Eye-Tracking visual, Ergonomia Mobile (Thumb Zone), Matriz WCAG e Selos em <span className="font-mono text-slate-900 font-bold">{realSiteData.domain}</span>
+              Simulação de eye-tracking (2.500ms), Ergonomia Mobile (Thumb Zone), Matriz de Contraste e Selos em <span className="font-mono text-slate-900 font-bold">{realSiteData.domain}</span>
             </p>
           </div>
         </div>

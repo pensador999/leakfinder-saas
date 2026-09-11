@@ -50,13 +50,13 @@ export const CoreWebVitalsAuditView: React.FC<CoreWebVitalsAuditViewProps> = ({ 
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-slate-900">Google Core Web Vitals 2026 & Rich Snippets</h2>
+              <h2 className="text-xl font-bold text-slate-900">Agente 12 — Core Web Vitals 2026 & Rich Snippets</h2>
               <span className="px-2.5 py-0.5 text-xs font-mono font-extrabold rounded-full bg-emerald-100 text-emerald-900 border border-emerald-200">
                 Padrão 2026 Ativo
               </span>
             </div>
             <p className="text-xs text-slate-600 mt-1 max-w-2xl">
-              Auditoria dos novos critérios do Google: <strong>LCP apertado para 2.0s</strong>, <strong>INP &lt; 200ms</strong> e indexação de dados estruturados <strong>Schema.org para Google Shopping Orgânico</strong>.
+              Auditoria de performance do Agente 12: <strong>LCP apertado para 2.0s</strong>, <strong>INP &lt; 200ms</strong> e indexação de dados estruturados <strong>Schema.org para Google Shopping Orgânico</strong>.
             </p>
           </div>
         </div>

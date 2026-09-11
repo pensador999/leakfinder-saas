@@ -7,7 +7,7 @@ interface BlindspotAuditViewProps {
   diagnostic: AgentDiagnosticResult;
 }
 
-type CatalogFilter = 'TODOS' | 'GRADE_FURADA' | 'ISENTOS_FULL' | 'SEM_FOTO' | 'SEM_DESCRICAO' | 'IMAGENS_PESADAS';
+type CatalogFilter = 'TODOS' | 'GRADE_FURADA' | 'ISENTOS_FULL' | 'REVENDA' | 'FABRICACAO_PROPRIA' | 'SEM_FOTO' | 'SEM_DESCRICAO' | 'IMAGENS_PESADAS';
 
 export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnostic }) => {
   const { realSiteData, guardrailReport } = diagnostic;
@@ -27,11 +27,16 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
   const filteredIssues = (catalogAudit?.issues || []).filter(issue => {
     if (activeFilter === 'GRADE_FURADA') return !issue.isFullPrintExempt && issue.missingSizes.length > 0;
     if (activeFilter === 'ISENTOS_FULL') return issue.isFullPrintExempt;
+    if (activeFilter === 'REVENDA') return issue.manufacturingType === 'REVENDA' || issue.isResaleAccessory;
+    if (activeFilter === 'FABRICACAO_PROPRIA') return issue.manufacturingType === 'FABRICACAO_PROPRIA' && !issue.isResaleAccessory;
     if (activeFilter === 'SEM_FOTO') return !issue.hasValidImage;
     if (activeFilter === 'SEM_DESCRICAO') return !issue.hasDescription || !issue.hasSizeGuide;
     if (activeFilter === 'IMAGENS_PESADAS') return issue.imageWeightKb > 350;
     return true;
   });
+
+  const resaleCount = (catalogAudit?.issues || []).filter(i => i.manufacturingType === 'REVENDA' || i.isResaleAccessory).length;
+  const inHouseCount = (catalogAudit?.issues || []).filter(i => i.manufacturingType === 'FABRICACAO_PROPRIA' && !i.isResaleAccessory).length;
 
   const isAgro = realSiteData.domain.toLowerCase().includes('agro');
   const isMotors = realSiteData.domain.toLowerCase().includes('motors');
@@ -53,13 +58,13 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-slate-900">Catálogo & SKU Doctor — {realSiteData.brandName}</h2>
+              <h2 className="text-xl font-bold text-slate-900">Agente 09 — Universal Catalog Doctor ({realSiteData.brandName})</h2>
               <span className="px-2.5 py-0.5 bg-blue-100 text-blue-800 text-xs font-bold rounded-full">
-                Validação Grade PP→G2 & _FULL
+                Validação Grade PP→G2 & Regra _FULL
               </span>
             </div>
             <p className="text-xs text-slate-600 mt-1 max-w-2xl">
-              Auditoria de integridade dos produtos: grade completa de tamanhos (PP ao G2), isenção para camisas <code className="bg-slate-100 text-indigo-700 px-1 py-0.5 rounded font-mono font-bold">_FULL</code>, fotos quebradas e links diretos para cada produto.
+              Auditoria de integridade dos produtos: segregação entre <strong>Revenda</strong> vs <strong>Fabricação Própria (PCP)</strong>, grade completa de tamanhos (PP ao G2), isenção para camisas <code className="bg-slate-100 text-indigo-700 px-1 py-0.5 rounded font-mono font-bold">_FULL</code> e URLs reais sem 404.
             </p>
           </div>
         </div>
@@ -180,6 +185,22 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
           ⚠️ Grades Furadas ({catalogAudit?.productsWithBrokenGrid || 0})
         </button>
         <button
+          onClick={() => setActiveFilter('REVENDA')}
+          className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
+            activeFilter === 'REVENDA' ? 'bg-amber-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+          }`}
+        >
+          📦 Revenda / Fornecedores ({resaleCount})
+        </button>
+        <button
+          onClick={() => setActiveFilter('FABRICACAO_PROPRIA')}
+          className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
+            activeFilter === 'FABRICACAO_PROPRIA' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+          }`}
+        >
+          🧵 Fabricação Própria PCP ({inHouseCount})
+        </button>
+        <button
           onClick={() => setActiveFilter('ISENTOS_FULL')}
           className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
             activeFilter === 'ISENTOS_FULL' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
@@ -235,6 +256,17 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                         {copiedId === issue.id ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
                       </button>
                     </span>
+
+                    {/* Manufacturing Type Badge */}
+                    {issue.manufacturingType === 'REVENDA' || issue.isResaleAccessory ? (
+                      <span className="px-2.5 py-0.5 bg-amber-50 text-amber-900 border border-amber-300 font-extrabold text-[10px] uppercase rounded-lg flex items-center gap-1">
+                        <PackageCheck className="w-3 h-3 text-amber-600" /> Revenda (Fornecedor Externo)
+                      </span>
+                    ) : (
+                      <span className="px-2.5 py-0.5 bg-indigo-50 text-indigo-900 border border-indigo-200 font-extrabold text-[10px] uppercase rounded-lg flex items-center gap-1">
+                        🧵 Fabr. Própria (PCP Têxtil)
+                      </span>
+                    )}
 
                     {issue.categoryType === 'VESTUARIO_CASUAL_ALGODAO' ? (
                       <span className="px-2.5 py-0.5 bg-amber-100 text-amber-800 border border-amber-200 font-bold text-[10px] uppercase rounded-lg flex items-center gap-1">

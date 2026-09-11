@@ -50,13 +50,13 @@ export const SeoAgentView: React.FC<SeoAgentViewProps> = ({ diagnostic }) => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-slate-900">Agente de SEO & Busca Orgânica</h2>
+              <h2 className="text-lg font-bold text-slate-900">Agente 12 — Engenheiro de SEO Técnico & Core Web Vitals</h2>
               <span className="px-2.5 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-700 rounded-full border border-blue-200">
-                Otimização On-Page & Schema JSON-LD
+                Schema JSON-LD & Core Web Vitals
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1 font-medium">
-              Foco: Dominar palavras-chave transacionais no Google e exibir estrelas nos resultados de busca.
+              Otimização de tráfego orgânico, Rich Snippets Google e indexação técnica em <span className="font-mono text-slate-900 font-bold">{realSiteData.domain}</span>
             </p>
           </div>
         </div>
@@ -65,6 +65,13 @@ export const SeoAgentView: React.FC<SeoAgentViewProps> = ({ diagnostic }) => {
           <div className="text-center">
             <p className="text-[10px] text-slate-500 uppercase font-semibold">Score SEO</p>
             <p className="text-xl font-bold font-mono text-blue-600">{seo.score}/100</p>
+          </div>
+          <div className="h-6 w-px bg-slate-200" />
+          <div className="text-center">
+            <p className="text-[10px] text-slate-500 uppercase font-semibold">Schema JSON-LD</p>
+            <p className={`text-xs font-bold font-mono ${realSiteData.hasSchemaJsonLd ? 'text-emerald-600' : 'text-amber-600'}`}>
+              {realSiteData.hasSchemaJsonLd ? 'Detectado' : 'Faltando'}
+            </p>
           </div>
         </div>
       </div>

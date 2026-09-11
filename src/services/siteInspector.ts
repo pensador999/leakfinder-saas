@@ -29,6 +29,7 @@ export interface CatalogProductIssue {
   isFullPrintExempt: boolean;
   isResaleAccessory?: boolean;
   categoryType?: 'VESTUARIO_LINHA' | 'FULL_PRINT' | 'REVENDA_ACESSORIO' | 'EQUIPAMENTO_PESCA' | 'VESTUARIO_CASUAL_ALGODAO';
+  manufacturingType?: 'REVENDA' | 'FABRICACAO_PROPRIA';
   hasDescription: boolean;
   descriptionLength: number;
   hasSizeGuide: boolean;
@@ -448,6 +449,13 @@ async function fetchRealLiveCatalogAudit(
           const firstImageSrc = hasValidImage ? images[0].src : '';
           const imageWeightKb = hasValidImage ? Math.round(180 + ((hashString(realHandle) % 250))) : 0;
 
+          // Detect manufacturing type: Resale vs In-House Manufacturing
+          const isResaleGood = isAccessoryOrResale || isCottonOrCasual || isFishingGear || isOneSizeVariant ||
+            titleUpper.includes('WORK') || titleUpper.includes('SAFARI') || titleUpper.includes('BOTINA') ||
+            titleUpper.includes('BOTÃO') || titleUpper.includes('BOTAO') || titleUpper.includes('ADVENTURE') ||
+            mainSku.startsWith('CMB') || mainSku.startsWith('CBT') || mainSku.startsWith('BT') || mainSku.startsWith('BOT');
+          const manufacturingType: 'REVENDA' | 'FABRICACAO_PROPRIA' = isResaleGood ? 'REVENDA' : 'FABRICACAO_PROPRIA';
+
           // Critical issues count
           let criticalIssuesCount = 0;
           if (!hasValidImage) criticalIssuesCount += 2;
@@ -486,6 +494,7 @@ async function fetchRealLiveCatalogAudit(
             isFullPrintExempt,
             isResaleAccessory: isAccessoryOrResale || isOneSizeVariant,
             categoryType,
+            manufacturingType,
             hasDescription,
             descriptionLength: rawDescription.length,
             hasSizeGuide,
@@ -537,6 +546,7 @@ async function fetchRealLiveCatalogAudit(
         availableSizes: ['Consultar no Produto'],
         missingSizes: [], // NUNCA inventar tamanhos esgotados sem inspecionar a API ou variantes reais
         isFullPrintExempt: true, // Se extraído de link genérico, isenta de ruptura para evitar falsos positivos
+        manufacturingType: 'FABRICACAO_PROPRIA',
         hasDescription: true,
         descriptionLength: 120,
         hasSizeGuide: themeHasSizeGuideAddon,
@@ -561,6 +571,7 @@ async function fetchRealLiveCatalogAudit(
       availableSizes: ['P', 'M', 'G', 'GG'],
       missingSizes: [],
       isFullPrintExempt: true,
+      manufacturingType: 'FABRICACAO_PROPRIA',
       hasDescription: true,
       descriptionLength: 150,
       hasSizeGuide: true,
