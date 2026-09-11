@@ -1,8 +1,10 @@
 // ==============================================================================
-// 🦅 AGENT 03: MARKET HUNTER & LIVE COMPETITOR SKU BENCHMARKING ENGINE
+// 🦅 AGENT 06: MARKET HUNTER & LIVE COMPETITOR SKU BENCHMARKING ENGINE
 // Scans ad libraries, e-commerce trends, and conducts real-time product-to-product
 // price matching against niche competitors to prevent tab-switching checkout dropoffs!
 // ==============================================================================
+
+import { AgentDiagnosticResult } from '../../types';
 
 export interface DiscoveredLeadOpportunity {
   id: string;
@@ -63,7 +65,8 @@ export interface WeeklyMarketReport {
  * 🦅 Market Hunter & Growth Agent Engine
  * Scans the web, ad libraries, and e-commerce trends for leads, CRO innovations, and SKU price matching
  */
-export async function runMarketHunterScan(nicheFilter: string = 'Todos'): Promise<WeeklyMarketReport> {
+export async function runMarketHunterScan(diagnostic?: AgentDiagnosticResult): Promise<WeeklyMarketReport> {
+  const brand = diagnostic?.realSiteData?.brandName || 'Sua Marca';
   const highValueProspects: DiscoveredLeadOpportunity[] = [
     {
       id: 'lead-1',

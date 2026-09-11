@@ -49,36 +49,37 @@ export const CompetitorAgentView: React.FC<CompetitorAgentViewProps> = ({ diagno
     EXTREMO: 'bg-red-100 text-red-700 border-red-200'
   };
 
+  const hasBrokenGrid = (realSiteData.catalogAudit?.productsWithBrokenGrid || 0) > 0;
   const dynamicComparisons = [
     {
       metric: 'Velocidade Mobile (LCP)',
       you: `${realSiteData.estimatedLoadTime || 1.8}s`,
       competitor: `${(Number(realSiteData.estimatedLoadTime || 1.8) + 0.9).toFixed(1)}s`,
-      status: 'VANTAGEM'
+      status: (Number(realSiteData.estimatedLoadTime || 1.8) <= 2.5) ? 'VANTAGEM' : 'DESVANTAGEM'
     },
     {
       metric: 'Grade Completa (PP ao G2)',
-      you: realSiteData.catalogAudit?.productsWithBrokenGrid === 0 ? '100% Grade Ativa' : 'Grade com Falhas',
+      you: !hasBrokenGrid ? '100% Grade Ativa' : `${realSiteData.catalogAudit?.productsWithBrokenGrid} Peças com Grade Rompida`,
       competitor: 'Apenas P, M, G',
-      status: 'VANTAGEM'
+      status: !hasBrokenGrid ? 'VANTAGEM' : 'DESVANTAGEM'
     },
     {
       metric: 'Desconto à Vista no Pix',
-      you: realSiteData.detectedCheckoutTerms.hasPix ? '10% de Desconto' : 'Não Destacado',
+      you: realSiteData.detectedCheckoutTerms?.hasPix ? '10% de Desconto' : 'Não Destacado na Vitrine',
       competitor: 'Sem desconto Pix',
-      status: 'VANTAGEM'
+      status: realSiteData.detectedCheckoutTerms?.hasPix ? 'VANTAGEM' : 'DESVANTAGEM'
     },
     {
       metric: 'Frete Grátis & Entrega',
-      you: realSiteData.detectedCheckoutTerms.hasFrete ? 'Regra por Região' : 'Calculadora Ativa',
+      you: realSiteData.detectedCheckoutTerms?.hasFrete ? 'Regra por Região Ativa' : 'Calculadora Genérica',
       competitor: 'Frete Fixo Alto',
-      status: 'VANTAGEM'
+      status: realSiteData.detectedCheckoutTerms?.hasFrete ? 'VANTAGEM' : 'EMPATE'
     },
     {
       metric: 'Contraste WCAG do Botão',
-      you: `${diagnostic.visionAnalysis.contrastAudit.contrastRatio}:1`,
+      you: `${diagnostic.visionAnalysis?.contrastAudit?.contrastRatio || 4.8}:1`,
       competitor: '3.4:1 (Abaixo do Padrão)',
-      status: 'VANTAGEM'
+      status: (diagnostic.visionAnalysis?.contrastAudit?.wcagPassed ?? true) ? 'VANTAGEM' : 'DESVANTAGEM'
     }
   ];
 

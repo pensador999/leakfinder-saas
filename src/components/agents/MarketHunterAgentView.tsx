@@ -28,8 +28,13 @@ import {
   DiscoveredLeadOpportunity,
   SkuPriceCrossBenchmark 
 } from '../../services/agents/marketHunterAgent';
+import { AgentDiagnosticResult } from '../../types';
 
-export const MarketHunterAgentView: React.FC = () => {
+interface MarketHunterAgentViewProps {
+  diagnostic?: AgentDiagnosticResult;
+}
+
+export const MarketHunterAgentView: React.FC<MarketHunterAgentViewProps> = ({ diagnostic }) => {
   const [report, setReport] = useState<WeeklyMarketReport | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [copiedLeadId, setCopiedLeadId] = useState<string | null>(null);
@@ -39,7 +44,7 @@ export const MarketHunterAgentView: React.FC = () => {
   const loadHunterReport = async () => {
     setIsLoading(true);
     try {
-      const data = await runMarketHunterScan();
+      const data = await runMarketHunterScan(diagnostic);
       setReport(data);
     } finally {
       setIsLoading(false);
@@ -48,7 +53,7 @@ export const MarketHunterAgentView: React.FC = () => {
 
   useEffect(() => {
     loadHunterReport();
-  }, []);
+  }, [diagnostic]);
 
   const handleCopyHook = (lead: DiscoveredLeadOpportunity) => {
     navigator.clipboard.writeText(lead.contactHook);
@@ -66,7 +71,7 @@ export const MarketHunterAgentView: React.FC = () => {
     return (
       <div className="py-16 text-center space-y-3 font-sans">
         <RefreshCw className="w-8 h-8 animate-spin mx-auto text-blue-600" />
-        <p className="text-sm font-bold text-slate-700">Caçador de Mercado (Agente 03) cruzando preços de produtos no nicho...</p>
+        <p className="text-sm font-bold text-slate-700">Caçador de Mercado (Agente 06) cruzando preços de produtos no nicho...</p>
         <p className="text-xs text-slate-400">Cruzando catálogo da loja, concorrência direta e biblioteca do Meta Ads em tempo real.</p>
       </div>
     );
@@ -83,7 +88,7 @@ export const MarketHunterAgentView: React.FC = () => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold">Caçador de Mercado & Radar de Preços (Agente 03)</h2>
+              <h2 className="text-xl font-bold">Caçador de Mercado & Radar de Preços (Agente 06)</h2>
               <span className="px-2.5 py-0.5 text-xs font-mono font-extrabold rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
                 Semana {report.weekNumber} • Inteligência Ativa
               </span>

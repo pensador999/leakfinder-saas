@@ -25,6 +25,12 @@ export const AdsAgentView: React.FC<AdsAgentViewProps> = ({ diagnostic }) => {
   const isAgro = domain.includes('agro');
   const isMotors = domain.includes('motors');
 
+  const catalogIssues = realSiteData.catalogAudit?.issues || [];
+  const brokenItems = catalogIssues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
+  const brokenInHouse = brokenItems.filter(i => i.manufacturingType !== 'REVENDA');
+  const brokenResale = brokenItems.filter(i => i.manufacturingType === 'REVENDA');
+  const monthlyLoss = realSiteData.catalogAudit?.monthlyLossEstimateBRL || (brokenItems.length * 1359);
+
   const coldSpend = Math.round(customBudget * 0.60);
   const retargetSpend = Math.round(customBudget * 0.25);
   const testSpend = Math.round(customBudget * 0.15);
@@ -67,6 +73,91 @@ export const AdsAgentView: React.FC<AdsAgentViewProps> = ({ diagnostic }) => {
           </div>
         </div>
       </div>
+
+      {/* 🚨 AD WASTE & RUPTURE RISK CARD */}
+      {brokenItems.length > 0 ? (
+        <div className="p-6 rounded-2xl bg-rose-50 border border-rose-200 shadow-sm space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-rose-600 text-white rounded-xl shadow-sm">
+                <ShieldAlert className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-bold text-rose-950">
+                    Alerta Crítico: Tráfego Pago em Risco de Queima de Verba
+                  </h3>
+                  <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded-full bg-rose-200 text-rose-900">
+                    {brokenItems.length} SKUs com Grade Rompida
+                  </span>
+                </div>
+                <p className="text-xs text-rose-700 mt-0.5">
+                  Campanhas ativas no Meta Ads direcionando para páginas onde os tamanhos centrais (M, G, GG) estão esgotados.
+                </p>
+              </div>
+            </div>
+
+            <div className="px-4 py-2 bg-white rounded-xl border border-rose-300 text-right shrink-0">
+              <span className="text-[10px] uppercase font-bold text-slate-500 block">Sangria Estimada em Ads</span>
+              <span className="text-lg font-black font-mono text-rose-600">- R$ {monthlyLoss.toLocaleString('pt-BR')}/mês</span>
+            </div>
+          </div>
+
+          {/* Breakdown Pills */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div className="p-3 bg-white rounded-xl border border-rose-200 text-xs">
+              <span className="font-bold text-slate-800 block">🛍️ Linha de Revenda Externa ({brokenResale.length} itens)</span>
+              <p className="text-slate-600 text-[11px] mt-0.5">
+                <strong className="text-rose-700">Ação Obrigatória:</strong> Pausar anúncios no Meta Ads imediatamente. Fornecedor externo tem lead time de reposição de 15 a 30 dias.
+              </p>
+            </div>
+            <div className="p-3 bg-white rounded-xl border border-rose-200 text-xs">
+              <span className="font-bold text-slate-800 block">🏭 Fabricação Própria Sublimada ({brokenInHouse.length} itens)</span>
+              <p className="text-slate-600 text-[11px] mt-0.5">
+                <strong className="text-blue-700">Ação no PCP:</strong> Abrir OP express no Sankhya (3 a 5 dias). Trocar criativos temporariamente para estampas com grade cheia.
+              </p>
+            </div>
+          </div>
+
+          {/* Broken Items Table Preview */}
+          <div className="space-y-1.5 pt-1">
+            <span className="text-[10px] font-bold uppercase text-rose-900 tracking-wider">Produtos com Anúncios em Risco:</span>
+            <div className="max-h-48 overflow-y-auto space-y-1.5 pr-1">
+              {brokenItems.slice(0, 5).map((item, idx) => (
+                <div key={idx} className="p-2.5 bg-white/80 rounded-lg border border-rose-200 flex items-center justify-between text-xs">
+                  <div className="truncate max-w-md">
+                    <span className="font-bold text-slate-900">{item.productTitle}</span>
+                    <span className="text-[10px] text-slate-500 ml-2">({item.manufacturingType === 'REVENDA' ? '🛍️ Revenda' : '🏭 Própria'})</span>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="px-1.5 py-0.5 bg-rose-100 text-rose-800 rounded font-mono font-bold text-[10px]">
+                      Faltam: [{item.missingSizes.join(', ')}]
+                    </span>
+                    <a href={item.productUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-[10px] font-bold flex items-center gap-0.5">
+                      Ver <ArrowRight className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 shadow-sm flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-emerald-600 text-white rounded-xl">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-emerald-950">Catálogo 100% Blindado contra Ruptura de Estoque</h4>
+              <p className="text-xs text-emerald-700">Todos os produtos possuem tamanhos centrais disponíveis. Verba de mídia segura para escala.</p>
+            </div>
+          </div>
+          <span className="px-3 py-1 bg-emerald-100 text-emerald-800 font-bold font-mono text-xs rounded-full border border-emerald-300">
+            R$ 0,00 Desperdício
+          </span>
+        </div>
+      )}
 
       {/* 🎛️ DYNAMIC BUDGET CALCULATOR */}
       <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 text-white border border-slate-800 shadow-md space-y-5">
