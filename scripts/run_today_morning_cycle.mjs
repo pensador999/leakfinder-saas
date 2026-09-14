@@ -49,7 +49,7 @@ async function runTodayCycle() {
   // Insert Alert in Queue
   await supabase.from('alert_dispatch_queue').insert([
     {
-      phone_number: '5511999999999',
+      phone_number: '5534991351122',
       message_body: `🌅 *Relatório Matinal AdShield (28/08)*\n\n- *Lojas Auditadas:* 3 lojas\n- *Rupturas Detectadas:* 9 SKUs com grade furada\n- *Mídia em Risco:* R$ 43.500/mês\n- *Ação:* Repor tamanhos G/GG nas Camisas Work e Calças Jeans.`,
       alert_type: 'DAILY_EXECUTIVE_SUMMARY',
       priority: 'HIGH',

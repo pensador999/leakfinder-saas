@@ -266,16 +266,17 @@ async function runAutonomousWorkerCycle(cycleNumber) {
     `🔍 *Detalhes Reais Identificados (Própria vs Revenda + Memória):*\n${findingsSummary}\n\n` +
     `🛡️ *Status do Enxame:* 18 Agentes Operando 24/7 com Rigor Popperiano, Memória CoALA e OSINT Ativo.`;
 
+  const targetRecipientPhone = stores[0]?.target_phone || '5534991351122';
   enqueueAlert({
     id: `alert-${Date.now()}`,
-    phone_number: '5511999999999',
+    phone_number: targetRecipientPhone,
     message_body: alertBody,
     alert_type: 'DAILY_EXECUTIVE_SUMMARY',
     priority: 'NORMAL',
     status: 'PENDING',
     created_at: new Date().toISOString()
   });
-  console.log(`\n📲 [Agente 10 Vigia WhatsApp] Resumo executivo com memória histórica enfileirado!`);
+  console.log(`\n📲 [Agente 10 Vigia WhatsApp] Resumo executivo enfileirado para ${targetRecipientPhone}!`);
 
   const profilerSummary = profiler.getSummary();
   console.log(`⚡ [Multi-Agent Profiler] Tempo total do ciclo: ${profilerSummary.totalDurationFormatted}`);

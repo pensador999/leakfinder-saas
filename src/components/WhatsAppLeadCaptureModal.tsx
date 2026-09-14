@@ -164,10 +164,17 @@ export const WhatsAppLeadCaptureModal: React.FC<WhatsAppLeadCaptureModalProps> =
                 type="tel"
                 value={phone}
                 onChange={handlePhoneChange}
-                placeholder="(11) 99999-9999"
+                placeholder="(34) 99135-1122"
                 required
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 font-mono font-bold"
               />
+              <button
+                type="button"
+                onClick={() => setPhone('(34) 99135-1122')}
+                className="mt-1 text-[11px] text-emerald-700 hover:text-emerald-900 font-semibold underline cursor-pointer"
+              >
+                Usar meu WhatsApp: (34) 99135-1122
+              </button>
             </div>
 
             <button

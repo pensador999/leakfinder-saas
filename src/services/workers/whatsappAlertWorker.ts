@@ -15,10 +15,11 @@ export interface WhatsAppAlertPayload {
 }
 
 export interface WhatsAppGatewayConfig {
-  provider: 'EVOLUTION_API' | 'Z_API' | 'GENERIC_WEBHOOK' | 'SIMULATION';
+  provider: 'DIRECT_LINK' | 'EVOLUTION_API' | 'Z_API' | 'GENERIC_WEBHOOK' | 'SIMULATION';
   endpointUrl: string;
   apiToken?: string;
   instanceName?: string;
+  defaultPhone?: string;
 }
 
 const LOCAL_GATEWAY_CONFIG_KEY = 'adshield_whatsapp_gateway_config';
@@ -33,15 +34,22 @@ export function getWhatsAppGatewayConfig(): WhatsAppGatewayConfig {
     }
   }
   return {
-    provider: 'SIMULATION',
+    provider: 'DIRECT_LINK',
     endpointUrl: '',
     apiToken: '',
-    instanceName: 'adshield-bot'
+    instanceName: 'adshield-bot',
+    defaultPhone: '5534991351122'
   };
 }
 
 export function saveWhatsAppGatewayConfig(config: WhatsAppGatewayConfig): void {
   localStorage.setItem(LOCAL_GATEWAY_CONFIG_KEY, JSON.stringify(config));
+}
+
+export function buildWhatsAppDirectUrl(phone: string, message: string): string {
+  const digits = phone.replace(/\D/g, '');
+  const canonicalPhone = digits.startsWith('55') ? digits : `55${digits}`;
+  return `https://api.whatsapp.com/send?phone=${canonicalPhone}&text=${encodeURIComponent(message)}`;
 }
 
 /**
@@ -90,14 +98,25 @@ export function formatDailyWhatsAppExecutiveSummary(
 export async function dispatchWhatsAppAlert(
   payload: WhatsAppAlertPayload,
   config?: WhatsAppGatewayConfig
-): Promise<{ success: boolean; dispatchId: string; error?: string }> {
+): Promise<{ success: boolean; dispatchId: string; directUrl?: string; error?: string }> {
   const gateway = config || getWhatsAppGatewayConfig();
+  const directUrl = buildWhatsAppDirectUrl(payload.to, payload.message);
 
-  // If simulation mode
+  // If Direct Link mode: immediately ready for 1-click WhatsApp opening
+  if (gateway.provider === 'DIRECT_LINK') {
+    return {
+      success: true,
+      dispatchId: `direct-wpp-${Date.now()}`,
+      directUrl
+    };
+  }
+
+  // If simulation mode or missing endpoint
   if (gateway.provider === 'SIMULATION' || !gateway.endpointUrl) {
     return {
       success: true,
-      dispatchId: `sim-wpp-${Date.now()}`
+      dispatchId: `sim-wpp-${Date.now()}`,
+      directUrl
     };
   }
 
@@ -135,13 +154,13 @@ export async function dispatchWhatsAppAlert(
     });
 
     if (response.ok) {
-      return { success: true, dispatchId: `wpp-sent-${Date.now()}` };
+      return { success: true, dispatchId: `wpp-sent-${Date.now()}`, directUrl };
     } else {
       const errText = await response.text();
-      return { success: false, dispatchId: `wpp-err-${Date.now()}`, error: errText };
+      return { success: false, dispatchId: `wpp-err-${Date.now()}`, directUrl, error: errText };
     }
   } catch (err: any) {
-    return { success: false, dispatchId: `wpp-fail-${Date.now()}`, error: err?.message || 'Network error' };
+    return { success: false, dispatchId: `wpp-fail-${Date.now()}`, directUrl, error: err?.message || 'Network error' };
   }
 }
 

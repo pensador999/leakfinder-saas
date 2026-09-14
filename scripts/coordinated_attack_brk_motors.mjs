@@ -362,7 +362,7 @@ async function executeCoordinatedSwarmAttackMotors() {
 
   enqueueAlert({
     id: `alert-attack-motors-${Date.now()}`,
-    phone_number: '5511999999999',
+    phone_number: '5534991351122',
     message_body: executiveWhatsAppMessage,
     alert_type: 'COORDINATED_ATTACK_DOSSIER',
     priority: 'HIGH',
