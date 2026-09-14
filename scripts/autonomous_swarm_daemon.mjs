@@ -1,4 +1,4 @@
-﻿// ==============================================================================
+// ==============================================================================
 // 🤖 ADSHIELD AUTONOMOUS SWARM DAEMON — 24/7 ADVANCED ENGINE (V2026.4)
 // Integrated with Elite Cognitive Skills:
 // - falsify: Popperian falsification tests (Zero False-Positives, Absolute Grounding)
@@ -109,7 +109,7 @@ async function runAutonomousWorkerCycle(cycleNumber) {
     profiler.startStep(`${brand}::catalog`);
     console.log(`   └─ Varredura multi-plataforma ao vivo...`);
     const catalogAudit = await auditLiveStoreCatalog(url, store.niche);
-    console.log(`   └─ Plataforma Identificada: [${catalogAudit.platform}] | Itens Auditados: ${catalogAudit.totalAudited}`);
+    console.log(`   └─ Plataforma: [${catalogAudit.platform}] | Produtos Pai: ${catalogAudit.totalAudited} | SKUs Reais: ${(catalogAudit.totalSkusAudited || catalogAudit.totalAudited).toLocaleString('pt-BR')}`);
     
     if (catalogAudit.marketplaceDetails) {
       const mp = catalogAudit.marketplaceDetails;
