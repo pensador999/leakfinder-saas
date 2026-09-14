@@ -116,4 +116,63 @@ export class SpreadsheetExporter {
       `Plano_de_Acao_e_Lucro_${brandName.replace(/[^a-zA-Z0-9]/g, '_')}.csv`
     );
   }
+
+  /**
+   * 🎯 Planilha 3: Exportação em Lote de Leads B2B & Pitches de WhatsApp (Lead Sniper)
+   */
+  public static exportProspectLeads(leads: any[]): void {
+    const headers = [
+      'Nome da Marca',
+      'URL da Loja',
+      'Nicho de Mercado',
+      'Status no Funil CRM',
+      'Meta Pixel Instalado',
+      'Link Meta Ads Library',
+      'Produto com Ruptura Detectado',
+      'Preço do Produto (R$)',
+      'Tamanhos Esgotados',
+      'Desperdício Estimado (R$/Mês)',
+      'WhatsApp de Contato',
+      'Score ICE',
+      'Pitch WhatsApp (Dono/Fundador)',
+      'Pitch Técnico (Gestor de Tráfego)',
+      'Link Click-to-Chat Pronto'
+    ];
+
+    const rows = leads.map((lead: any) => {
+      const primarySku = lead.primaryBrokenSku || {};
+      const pitches = lead.pitches || {};
+      const cleanPhone = (lead.contactTargetPhone || '').replace(/\D/g, '');
+      const clickToChatUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(pitches.directFounder || '')}`;
+
+      return [
+        `"${(lead.brandName || '').replace(/"/g, '""')}"`,
+        `"${lead.storeUrl || ''}"`,
+        `"${(lead.niche || '').replace(/"/g, '""')}"`,
+        `"${lead.status || 'NOVO_LEAD'}"`,
+        `"${lead.hasMetaPixel ? 'Sim (Ativo)' : 'Não'}"`,
+        `"${lead.metaAdsLibraryUrl || ''}"`,
+        `"${(primarySku.productTitle || '').replace(/"/g, '""')}"`,
+        primarySku.price || 0,
+        `"${(primarySku.missingSizes || []).join(', ')}"`,
+        lead.totalMonthlyWasteEstimated || 0,
+        `"${lead.contactTargetPhone || ''}"`,
+        lead.iceScore || 8.5,
+        `"${(pitches.directFounder || '').replace(/"/g, '""')}"`,
+        `"${(pitches.technicalMediaBuyer || '').replace(/"/g, '""')}"`,
+        `"${clickToChatUrl}"`
+      ];
+    });
+
+    const csvContent = [
+      headers.join(';'),
+      ...rows.map((row: (string | number)[]) => row.join(';'))
+    ].join('\r\n');
+
+    this.triggerDownload(
+      csvContent,
+      `AdShield_Leads_Prospectados_${new Date().toISOString().split('T')[0]}.csv`
+    );
+  }
 }
+

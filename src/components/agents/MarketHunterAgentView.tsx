@@ -29,8 +29,10 @@ import {
   Building2,
   Eye,
   Share2,
-  X
+  X,
+  Download
 } from 'lucide-react';
+import { SpreadsheetExporter } from '../../services/export/spreadsheetExporter';
 import { 
   runMarketHunterScan, 
   WeeklyMarketReport, 
@@ -284,7 +286,15 @@ export const MarketHunterAgentView: React.FC<MarketHunterAgentViewProps> = ({ di
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <span className="px-3 py-1 bg-white border border-blue-200 text-blue-950 font-mono font-bold rounded-lg text-[11px] shadow-2xs">
+              <button
+                onClick={() => SpreadsheetExporter.exportProspectLeads(leadsList)}
+                className="px-3.5 py-1.5 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 rounded-xl font-mono font-bold text-xs shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
+                title="Exportar todos os leads e pitches de WhatsApp para planilha Excel/CSV"
+              >
+                <Download className="w-3.5 h-3.5 text-blue-600" />
+                <span>Exportar Planilha Excel/CSV</span>
+              </button>
+              <span className="px-3 py-1.5 bg-blue-600 text-white font-mono font-bold rounded-xl text-[11px] shadow-xs">
                 {leadsList.length} Lojas Auditadas
               </span>
             </div>

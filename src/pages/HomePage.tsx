@@ -440,6 +440,20 @@ export function HomePage() {
                       </button>
 
                       <button
+                        onClick={() => { 
+                          setIsMetaAutoKillModalOpen(true); 
+                          setIsToolsMenuOpen(false); 
+                        }}
+                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-rose-50 text-xs font-semibold text-rose-900 flex items-center gap-2.5 transition-colors cursor-pointer"
+                      >
+                        <Zap className="w-4 h-4 text-rose-600 shrink-0" />
+                        <div>
+                          <span className="block text-slate-900 font-bold">⚡ Kill-Switch Meta Ads</span>
+                          <span className="text-[10px] text-slate-400 font-normal">Pausar campanhas em &lt;60s ao esgotar</span>
+                        </div>
+                      </button>
+
+                      <button
                         onClick={() => { setIsStoresManagerOpen(true); setIsToolsMenuOpen(false); }}
                         className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 flex items-center gap-2.5 transition-colors cursor-pointer"
                       >
@@ -876,6 +890,13 @@ export function HomePage() {
           isOpen={isWhiteLabelModalOpen}
           onClose={() => setIsWhiteLabelModalOpen(false)}
           diagnostic={diagnostic}
+        />
+      )}
+
+      {isMetaAutoKillModalOpen && diagnostic && (
+        <MetaAdsAutoKillSwitchModal
+          diagnostic={diagnostic}
+          onClose={() => setIsMetaAutoKillModalOpen(false)}
         />
       )}
 
