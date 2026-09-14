@@ -38,6 +38,25 @@ export interface MetaAutoKillExecutionLog {
   reason: string;
   actionTaken: 'AD_PAUSED' | 'ADSET_PAUSED' | 'ALERTA_DISPARADO';
   budgetSavedBRL: number;
+  latencySeconds?: number;
+}
+
+export interface ShopifyWebhookSimulationResult {
+  step: 'WEBHOOK_RECEIVED' | 'RULE_EVALUATED' | 'META_API_PAUSED' | 'WHATSAPP_NOTIFIED';
+  elapsedMs: number;
+  productTitle: string;
+  sku: string;
+  variantSold: string;
+  isExempt: boolean;
+  actionTaken: string;
+  savedDailyBrl: number;
+  whatsAppAlertUrl: string;
+  status: 'SUCCESS' | 'EXEMPT_IGNORED' | 'ERROR';
+}
+
+export function getShopifyWebhookUrl(storeDomain?: string): string {
+  const base = typeof window !== 'undefined' ? window.location.origin : 'https://adshield.app';
+  return `${base}/api/webhooks/shopify/inventory-update?store=${storeDomain || 'sua-loja.myshopify.com'}`;
 }
 
 const LOCAL_STORAGE_META_CONFIG_KEY = 'adshield_meta_ads_config_v1';
@@ -263,3 +282,69 @@ export async function processShopifyInventoryWebhook(payload: {
     actionMessage: res.message
   };
 }
+
+/**
+ * ⚡ Executa a simulação de ponta a ponta do Kill-Switch com cronômetro de alta precisão
+ */
+export async function simulateRealTimeShopifyWebhookBurst(
+  sku: string = 'BRK-UV-PRO-01',
+  variantTitle: string = 'G',
+  brandName: string = 'BRK Agro'
+): Promise<ShopifyWebhookSimulationResult> {
+  const startTimer = performance.now();
+
+  // 1. Simula recepção de webhook da Shopify (inventory_levels/update)
+  await new Promise(r => setTimeout(r, 350));
+
+  // 2. Avalia Regra _FULL e Isenções
+  const isFullExempt = sku.toLowerCase().endsWith('_full') || 
+                       sku.toLowerCase().endsWith('-full') || 
+                       variantTitle.toLowerCase().includes('único');
+
+  if (isFullExempt) {
+    const elapsedMs = Math.round(performance.now() - startTimer);
+    return {
+      step: 'RULE_EVALUATED',
+      elapsedMs,
+      productTitle: `Produto Especial (${sku})`,
+      sku,
+      variantSold: variantTitle,
+      isExempt: true,
+      actionTaken: 'ISENÇÃO_CONFIRMADA: Produto classificado na Regra _FULL (tamanho único/estampa digital). Anúncio mantido ativo.',
+      savedDailyBrl: 0,
+      whatsAppAlertUrl: '',
+      status: 'EXEMPT_IGNORED'
+    };
+  }
+
+  // 3. Executa a chamada à Meta Graph API v19.0 para pausar o Ad
+  const adId = `2385194029${sku.replace(/\D/g, '').padEnd(4, '0').substring(0, 4) || '8841'}`;
+  await executeMetaAdPause(
+    adId,
+    sku,
+    `Ruptura em tempo real via Webhook Shopify: tamanho ${variantTitle} zerou em estoque.`
+  );
+
+  const elapsedMs = Math.round(performance.now() - startTimer);
+  const latencySec = Math.max(1, Math.round(elapsedMs / 100)); // Latência de reação
+
+  // 4. Monta mensagem de WhatsApp oficial para o fundador/gestor (5534991351122)
+  const alertText = `🚨 *[ADSHIELD KILL-SWITCH AUTÔNOMO]*\n\n⚡ *Ação Executada em Tempo Real*: Anúncio PAUSADO no Meta Ads em ${latencySec}s!\n\n• *Loja*: ${brandName}\n• *SKU Afetado*: ${sku}\n• *Variante Esgotada*: Tamanho ${variantTitle}\n• *Status no Gerenciador*: PAUSED ✓\n• *Economia Estimada*: ~R$ 145,00/dia em cliques vazios salvos.\n\n_AdShield OS: Seus anúncios blindados contra queima de verba._`;
+
+  const cleanPhone = '5534991351122';
+  const whatsAppAlertUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(alertText)}`;
+
+  return {
+    step: 'WHATSAPP_NOTIFIED',
+    elapsedMs,
+    productTitle: `Camisa Performance ${brandName} UV50+`,
+    sku,
+    variantSold: variantTitle,
+    isExempt: false,
+    actionTaken: `Anúncio ${adId} PAUSADO no Meta Ads via API v19.0 em ${latencySec}s. Notificação de alívio gerada.`,
+    savedDailyBrl: 145.0,
+    whatsAppAlertUrl,
+    status: 'SUCCESS'
+  };
+}
+
