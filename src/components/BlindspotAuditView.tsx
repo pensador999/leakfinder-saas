@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Eye, Code, Zap, AlertCircle, ShieldCheck, ImageOff, Copy, Check, AlertTriangle, Layers, Ruler, FileText, Download, Sparkles, Filter, PackageCheck, ExternalLink, Link2, X } from 'lucide-react';
+import { Eye, Code, Zap, AlertCircle, ShieldCheck, ImageOff, Copy, Check, AlertTriangle, Layers, Ruler, FileText, Download, Sparkles, Filter, PackageCheck, ExternalLink, Link2, X, Power, ShieldAlert } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { SpreadsheetExporter } from '../services/export/spreadsheetExporter';
+import { OneClickActionModal, OneClickTargetProduct } from './actions/OneClickActionModal';
+import { OneClickMitigationService } from '../services/actions/oneClickMitigationService';
 
 interface BlindspotAuditViewProps {
   diagnostic: AgentDiagnosticResult;
@@ -15,6 +17,8 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<CatalogFilter>('TODOS');
   const [showSizeChartModal, setShowSizeChartModal] = useState<boolean>(false);
+  const [selectedOneClickProduct, setSelectedOneClickProduct] = useState<OneClickTargetProduct | null>(null);
+  const [actionSuccessMessage, setActionSuccessMessage] = useState<string | null>(null);
 
   const handleCopyText = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
@@ -323,8 +327,70 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                   </div>
                 </div>
 
-                {/* Direct Action Buttons: Open Link & Copy Link */}
-                <div className="flex items-center gap-2 shrink-0">
+                {/* Direct Action Buttons: 1-Click Mitigation, Admin Deep-Link, Open & Copy */}
+                <div className="flex flex-wrap items-center gap-2 shrink-0">
+                  {/* 1-Click Mitigation Action for Missing Image */}
+                  {!issue.hasValidImage && (
+                    <button
+                      onClick={() => setSelectedOneClickProduct({
+                        id: issue.id,
+                        title: issue.productTitle,
+                        sku: issue.sku,
+                        barcode: issue.barcode,
+                        price: 189.90,
+                        url: productDirectUrl,
+                        adminUrl: issue.adminUrl,
+                        imageSrc: issue.imageSrc,
+                        hasValidImage: false,
+                        missingSizes: issue.missingSizes,
+                        reason: 'MISSING_IMAGE'
+                      })}
+                      className="px-3 py-2 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm animate-pulse"
+                      title="1-Clique: Colocar produto sem foto em Rascunho na Shopify para parar de queimar tráfego"
+                    >
+                      <Zap className="w-3.5 h-3.5" />
+                      <span>1-Clique: Inativar (Rascunho)</span>
+                    </button>
+                  )}
+
+                  {/* 1-Click Mitigation Action for Stock Rupture */}
+                  {!issue.isFullPrintExempt && issue.missingSizes.length > 0 && (
+                    <button
+                      onClick={() => setSelectedOneClickProduct({
+                        id: issue.id,
+                        title: issue.productTitle,
+                        sku: issue.sku,
+                        barcode: issue.barcode,
+                        price: 189.90,
+                        url: productDirectUrl,
+                        adminUrl: issue.adminUrl,
+                        imageSrc: issue.imageSrc,
+                        hasValidImage: issue.hasValidImage,
+                        missingSizes: issue.missingSizes,
+                        reason: 'BROKEN_SIZES'
+                      })}
+                      className="px-3 py-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                      title="1-Clique: Pausar anúncios no Meta Ads ou gerenciar na Shopify"
+                    >
+                      <Zap className="w-3.5 h-3.5" />
+                      <span>1-Clique: Mitigar Sangria</span>
+                    </button>
+                  )}
+
+                  {/* Shopify Admin Direct Deep Link */}
+                  {issue.adminUrl && (
+                    <a
+                      href={issue.adminUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-2 text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                      title="Abrir diretamente na tela de edição do Shopify Admin"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Admin Shopify</span>
+                    </a>
+                  )}
+
                   <a
                     href={productDirectUrl}
                     target="_blank"
@@ -563,8 +629,39 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                 Fechar Visualização
               </button>
             </div>
-
           </div>
+        </div>
+      )}
+
+      {/* ⚡ ONE-CLICK ACTIVE MITIGATION MODAL (SHOPIFY DRAFT & META ADS KILL-SWITCH) */}
+      {selectedOneClickProduct && (
+        <OneClickActionModal
+          product={selectedOneClickProduct}
+          storeSlug={
+            realSiteData.domain.includes('brkfishing') 
+              ? 'k1y01s-5r' 
+              : realSiteData.domain.includes('brkagro') 
+              ? '54cea3-73' 
+              : realSiteData.domain.includes('brkmotors') 
+              ? 'zaevym-aj' 
+              : undefined
+          }
+          onClose={() => setSelectedOneClickProduct(null)}
+          onActionSuccess={(record) => {
+            setActionSuccessMessage(`Ação executada: ${record.notes || record.actionType}`);
+            setTimeout(() => setActionSuccessMessage(null), 5000);
+          }}
+        />
+      )}
+
+      {/* Action Success Toast Banner */}
+      {actionSuccessMessage && (
+        <div className="fixed bottom-6 right-6 z-50 p-4 rounded-xl bg-slate-900 border border-emerald-500/30 text-white shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom duration-300">
+          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+          <span className="text-xs font-semibold text-emerald-300">{actionSuccessMessage}</span>
+          <button onClick={() => setActionSuccessMessage(null)} className="text-slate-400 hover:text-white ml-2">
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
 

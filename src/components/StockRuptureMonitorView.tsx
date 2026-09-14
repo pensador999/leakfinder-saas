@@ -15,12 +15,16 @@ import {
   Sparkles,
   Zap,
   KeyRound,
-  Sliders
+  Sliders,
+  ExternalLink
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { analyzeStockRupture, StockRuptureAnalysisResult } from '../services/stockRuptureEngine';
 import { generateWhatsAppLink } from '../services/whatsappLeadService';
 import { OfficialIntegrationConnectModal } from './OfficialIntegrationConnectModal';
+import { MetaAdsAutoKillSwitchModal } from './ads/MetaAdsAutoKillSwitchModal';
+import { OneClickActionModal, OneClickTargetProduct } from './actions/OneClickActionModal';
+import { OneClickMitigationService } from '../services/actions/oneClickMitigationService';
 import { calculateStoreFinancialGrounding } from '../services/ai/storeFinancialGroundingEngine';
 
 interface StockRuptureMonitorViewProps {
@@ -50,6 +54,13 @@ export const StockRuptureMonitorView: React.FC<StockRuptureMonitorViewProps> = (
   const [copiedAlert, setCopiedAlert] = useState<boolean>(false);
   const [isAlertSubscribed, setIsAlertSubscribed] = useState<boolean>(false);
   const [isConnectModalOpen, setIsConnectModalOpen] = useState<boolean>(false);
+  const [isMetaKillSwitchModalOpen, setIsMetaKillSwitchModalOpen] = useState<boolean>(false);
+  const [selectedOneClickProduct, setSelectedOneClickProduct] = useState<OneClickTargetProduct | null>(null);
+  const [actionSuccessMessage, setActionSuccessMessage] = useState<string | null>(null);
+
+  const brokenCatalogProducts = (realSiteData.catalogAudit?.issues || []).filter(
+    i => !i.isFullPrintExempt && i.missingSizes.length > 0
+  );
 
   const availableSizes = ['PP', 'P', 'M', 'G', 'GG', 'G1', 'G2'];
 
@@ -131,13 +142,23 @@ export const StockRuptureMonitorView: React.FC<StockRuptureMonitorViewProps> = (
             </span>
           </div>
           
-          <button
-            onClick={() => setIsConnectModalOpen(true)}
-            className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs cursor-pointer shrink-0"
-          >
-            <KeyRound className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Conectar Meta Ads Real</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsMetaKillSwitchModalOpen(true)}
+              className="px-3.5 py-1.5 bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer shrink-0"
+              title="Pausar campanhas que anunciam produtos esgotados"
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-300" />
+              <span>Meta Ads Kill-Switch (1-Clique)</span>
+            </button>
+            <button
+              onClick={() => setIsConnectModalOpen(true)}
+              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs cursor-pointer shrink-0"
+            >
+              <KeyRound className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Conectar Meta Ads Real</span>
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -283,15 +304,136 @@ export const StockRuptureMonitorView: React.FC<StockRuptureMonitorViewProps> = (
                 <p className="text-[11px] text-slate-600 leading-relaxed">{action.description}</p>
               </div>
 
-              <div className="pt-2 border-t border-slate-200/60">
+              <div className="pt-2 border-t border-slate-200/60 space-y-2">
                 <p className="text-[10px] font-bold text-emerald-700 flex items-center gap-1">
                   <Sparkles className="w-3 h-3" /> {action.estimatedSavings}
                 </p>
+                {action.priority === 'URGENTE' && (
+                  <button
+                    onClick={() => setIsMetaKillSwitchModalOpen(true)}
+                    className="w-full py-1.5 px-3 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                  >
+                    <Zap className="w-3.5 h-3.5" />
+                    <span>Disparar Auto-Kill no Meta Ads</span>
+                  </button>
+                )}
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* 🚨 PRODUTOS CRÍTICOS IDENTIFICADOS NA AUDITORIA AO VIVO */}
+      {brokenCatalogProducts.length > 0 && (
+        <div className="p-6 bg-white rounded-3xl border border-rose-200 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-rose-100 pb-3">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-rose-100 text-rose-700 rounded-lg">
+                <AlertTriangle className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="font-bold text-sm text-slate-900">
+                  {brokenCatalogProducts.length} Produtos com Grade Rompida Queimando Anúncios
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Produtos ativos que perderam tamanhos centrais (M, G, GG). Ações de 1-clique disponíveis para estancar a perda.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsMetaKillSwitchModalOpen(true)}
+              className="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs cursor-pointer shrink-0"
+            >
+              <Zap className="w-3.5 h-3.5" />
+              <span>Pausar Todos os Anúncios Rompidos</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {brokenCatalogProducts.map((issue) => {
+              const shopSlug = OneClickMitigationService.getShopSlug(realSiteData.domain);
+              const directAdminUrl = issue.adminUrl || (shopSlug && issue.id ? `https://admin.shopify.com/store/${shopSlug}/products/${issue.id}` : undefined);
+              const estLoss = 1350;
+
+              return (
+                <div key={issue.id} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between gap-3 hover:border-rose-300 transition-all">
+                  <div className="flex items-start gap-3">
+                    {issue.imageSrc ? (
+                      <img src={issue.imageSrc} alt="" className="w-14 h-14 object-cover rounded-xl border border-slate-200 shrink-0 bg-white" />
+                    ) : (
+                      <div className="w-14 h-14 bg-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 shrink-0">Sem Foto</div>
+                    )}
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs font-bold text-slate-700 bg-white px-1.5 py-0.5 rounded border border-slate-200">
+                          {issue.sku || 'SEM SKU'}
+                        </span>
+                        {issue.barcode && (
+                          <span className="font-mono text-[10px] text-slate-500">
+                            EAN: {issue.barcode}
+                          </span>
+                        )}
+                      </div>
+                      <p className="font-bold text-xs text-slate-900 truncate" title={issue.productTitle}>
+                        {issue.productTitle}
+                      </p>
+                      <div className="flex flex-wrap items-center gap-1 pt-0.5">
+                        <span className="text-[10px] font-bold text-rose-700">Falta:</span>
+                        {issue.missingSizes.map((sz) => (
+                          <span key={sz} className="px-1.5 py-0.5 bg-rose-100 text-rose-800 text-[10px] font-mono font-bold rounded">
+                            {sz}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-200/80 flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-mono font-bold text-rose-600">
+                      Perda: ~R$ {estLoss.toLocaleString('pt-BR')}/mês
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => setSelectedOneClickProduct({
+                          id: issue.id,
+                          sku: issue.sku || 'SEM-SKU',
+                          title: issue.productTitle,
+                          barcode: issue.barcode,
+                          imageSrc: issue.imageSrc,
+                          hasValidImage: issue.hasValidImage,
+                          url: issue.productUrl,
+                          adminUrl: directAdminUrl,
+                          missingSizes: issue.missingSizes,
+                          price: 189.90,
+                          reason: 'BROKEN_SIZES'
+                        })}
+                        className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold flex items-center gap-1 transition-all cursor-pointer shadow-xs"
+                        title="Mitigar sangria com 1-clique"
+                      >
+                        <Zap className="w-3 h-3" />
+                        <span>1-Clique Mitigar</span>
+                      </button>
+
+                      {directAdminUrl && (
+                        <a
+                          href={directAdminUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold flex items-center gap-1 transition-all cursor-pointer"
+                          title="Abrir no painel da Shopify"
+                        >
+                          <ExternalLink className="w-3 h-3 text-emerald-400" />
+                          <span>Admin</span>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* 24/7 WhatsApp Watchdog Configurator */}
       <div className="p-6 bg-slate-900 rounded-3xl text-white shadow-xl space-y-4">
@@ -344,6 +486,37 @@ export const StockRuptureMonitorView: React.FC<StockRuptureMonitorViewProps> = (
           </pre>
         </div>
       </div>
+
+      {/* Toast Feedback */}
+      {actionSuccessMessage && (
+        <div className="fixed bottom-6 right-6 z-[90] p-4 bg-emerald-950 border border-emerald-500/50 rounded-2xl shadow-2xl flex items-center gap-3 text-white max-w-md animate-slideUp">
+          <div className="p-2 bg-emerald-500/20 text-emerald-400 rounded-xl">
+            <Check className="w-5 h-5" />
+          </div>
+          <p className="text-xs font-medium leading-relaxed">{actionSuccessMessage}</p>
+        </div>
+      )}
+
+      {/* One-Click Action Modal */}
+      {selectedOneClickProduct && (
+        <OneClickActionModal
+          product={selectedOneClickProduct}
+          storeSlug={OneClickMitigationService.getShopSlug(realSiteData.domain)}
+          onClose={() => setSelectedOneClickProduct(null)}
+          onActionSuccess={(record) => {
+            setActionSuccessMessage(`Ação executada: ${record.notes || record.actionType}`);
+            setTimeout(() => setActionSuccessMessage(null), 5000);
+          }}
+        />
+      )}
+
+      {/* Meta Ads Auto-Kill Switch Modal */}
+      {isMetaKillSwitchModalOpen && (
+        <MetaAdsAutoKillSwitchModal
+          diagnostic={diagnostic}
+          onClose={() => setIsMetaKillSwitchModalOpen(false)}
+        />
+      )}
 
       <OfficialIntegrationConnectModal
         isOpen={isConnectModalOpen}

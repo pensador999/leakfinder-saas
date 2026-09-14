@@ -16,10 +16,14 @@ import {
   Layers, 
   ArrowRight,
   TrendingDown,
-  ShieldCheck
+  ShieldCheck,
+  Zap,
+  X
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { generateShopifyTelemetryAnalysis, extractClarityProject } from '../services/shopifyTelemetryService';
+import { OneClickActionModal, OneClickTargetProduct } from './actions/OneClickActionModal';
+import { OneClickMitigationService } from '../services/actions/oneClickMitigationService';
 
 interface ShopifyTelemetryViewProps {
   diagnostic: AgentDiagnosticResult;
@@ -29,6 +33,8 @@ export const ShopifyTelemetryView: React.FC<ShopifyTelemetryViewProps> = ({ diag
   const { realSiteData } = diagnostic;
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [customAov, setCustomAov] = useState<number>(diagnostic.input.averageOrderValue || 159.90);
+  const [selectedOneClickProduct, setSelectedOneClickProduct] = useState<OneClickTargetProduct | null>(null);
+  const [actionSuccessMessage, setActionSuccessMessage] = useState<string | null>(null);
 
   const telemetryData = generateShopifyTelemetryAnalysis(
     realSiteData.domain,
@@ -293,16 +299,41 @@ export const ShopifyTelemetryView: React.FC<ShopifyTelemetryViewProps> = ({ diag
 
                     {/* Direct Action Link */}
                     <td className="p-3 text-center">
-                      <a
-                        href={item.productUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[11px] rounded-lg border border-blue-200 transition-all inline-flex items-center gap-1 cursor-pointer"
-                        title="Abrir página na loja"
-                      >
-                        <span>Abrir</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
+                      <div className="flex items-center justify-center gap-1.5">
+                        {(item.missingSizes.length > 0 || item.primaryReason === 'SEM_FOTO') && (
+                          <button
+                            onClick={() => {
+                              const shopSlug = OneClickMitigationService.getShopSlug(realSiteData.domain);
+                              const directAdminUrl = shopSlug && item.id ? `https://admin.shopify.com/store/${shopSlug}/products/${item.id}` : undefined;
+                              setSelectedOneClickProduct({
+                                id: item.id,
+                                title: item.productTitle,
+                                sku: item.sku,
+                                price: item.productPrice,
+                                url: item.productUrl,
+                                adminUrl: directAdminUrl,
+                                missingSizes: item.missingSizes,
+                                reason: item.primaryReason === 'SEM_FOTO' ? 'MISSING_IMAGE' : 'BROKEN_SIZES'
+                              });
+                            }}
+                            className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] rounded-lg transition-all inline-flex items-center gap-1 cursor-pointer shadow-xs"
+                            title="1-Clique: Mitigar sangria na Shopify ou Meta Ads"
+                          >
+                            <Zap className="w-3 h-3" />
+                            <span>1-Clique</span>
+                          </button>
+                        )}
+                        <a
+                          href={item.productUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[11px] rounded-lg border border-blue-200 transition-all inline-flex items-center gap-1 cursor-pointer"
+                          title="Abrir página na loja"
+                        >
+                          <span>Abrir</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
                     </td>
 
                   </tr>
@@ -312,6 +343,32 @@ export const ShopifyTelemetryView: React.FC<ShopifyTelemetryViewProps> = ({ diag
           </table>
         </div>
       </div>
+
+      {/* ⚡ ONE-CLICK ACTIVE MITIGATION MODAL */}
+      {selectedOneClickProduct && (
+        <OneClickActionModal
+          product={selectedOneClickProduct}
+          storeSlug={OneClickMitigationService.getShopSlug(realSiteData.domain)}
+          onClose={() => setSelectedOneClickProduct(null)}
+          onActionSuccess={(record) => {
+            setActionSuccessMessage(`Ação executada: ${record.notes || record.actionType}`);
+            setTimeout(() => setActionSuccessMessage(null), 5000);
+          }}
+        />
+      )}
+
+      {/* Toast Feedback */}
+      {actionSuccessMessage && (
+        <div className="fixed bottom-6 right-6 z-[90] p-4 bg-emerald-950 border border-emerald-500/50 rounded-2xl shadow-2xl flex items-center gap-3 text-white max-w-md animate-slideUp">
+          <div className="p-2 bg-emerald-500/20 text-emerald-400 rounded-xl">
+            <Check className="w-5 h-5" />
+          </div>
+          <p className="text-xs font-medium leading-relaxed flex-1">{actionSuccessMessage}</p>
+          <button onClick={() => setActionSuccessMessage(null)} className="text-slate-400 hover:text-white cursor-pointer">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
     </div>
   );

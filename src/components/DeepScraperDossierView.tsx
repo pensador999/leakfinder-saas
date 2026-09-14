@@ -5,6 +5,7 @@ import {
   ShieldCheck, 
   CheckCircle2, 
   XCircle, 
+  X,
   ExternalLink, 
   Copy, 
   Check, 
@@ -23,6 +24,8 @@ import {
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { ParallelSectionScraperSquad, ConsolidatedSectionSquadDossier } from '../services/orchestrator/parallelSectionScraperSquad';
+import { OneClickActionModal, OneClickTargetProduct } from './actions/OneClickActionModal';
+import { OneClickMitigationService } from '../services/actions/oneClickMitigationService';
 
 interface DeepScraperDossierViewProps {
   diagnostic: AgentDiagnosticResult;
@@ -32,6 +35,8 @@ export const DeepScraperDossierView: React.FC<DeepScraperDossierViewProps> = ({ 
   const { input, realSiteData } = diagnostic;
   const [copiedDossier, setCopiedDossier] = useState(false);
   const [activeSection, setActiveSection] = useState<'hero' | 'catalog' | 'pdp' | 'footer' | 'json'>('catalog');
+  const [selectedOneClickProduct, setSelectedOneClickProduct] = useState<OneClickTargetProduct | null>(null);
+  const [actionSuccessMessage, setActionSuccessMessage] = useState<string | null>(null);
 
   const squad = new ParallelSectionScraperSquad(input.siteUrl);
   
@@ -321,15 +326,42 @@ export const DeepScraperDossierView: React.FC<DeepScraperDossierViewProps> = ({ 
                       </div>
                     </td>
                     <td className="p-3 font-sans">
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-[11px] rounded-lg border border-indigo-200 transition-all inline-flex items-center gap-1"
-                      >
-                        <span>Abrir</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
+                      <div className="flex items-center gap-1.5">
+                        {(item.outOfStockSizes.length > 0 || !item.hasMainImage) && (
+                          <button
+                            onClick={() => {
+                              const shopSlug = OneClickMitigationService.getShopSlug(realSiteData.domain);
+                              const directAdminUrl = shopSlug && item.id ? `https://admin.shopify.com/store/${shopSlug}/products/${item.id}` : undefined;
+                              setSelectedOneClickProduct({
+                                id: item.id,
+                                title: item.title,
+                                sku: item.mainSku,
+                                price: item.price,
+                                url: item.url,
+                                adminUrl: directAdminUrl,
+                                imageSrc: item.imageSrc,
+                                hasValidImage: item.hasMainImage,
+                                missingSizes: item.outOfStockSizes,
+                                reason: !item.hasMainImage ? 'MISSING_IMAGE' : 'BROKEN_SIZES'
+                              });
+                            }}
+                            className="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-white font-bold text-[11px] rounded-lg transition-all inline-flex items-center gap-1 cursor-pointer shadow-xs"
+                            title="1-Clique: Mitigar sangria na Shopify ou Meta Ads"
+                          >
+                            <Zap className="w-3 h-3" />
+                            <span>1-Clique</span>
+                          </button>
+                        )}
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-[11px] rounded-lg border border-indigo-200 transition-all inline-flex items-center gap-1"
+                        >
+                          <span>Abrir</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -446,6 +478,32 @@ export const DeepScraperDossierView: React.FC<DeepScraperDossierViewProps> = ({ 
           <pre className="text-[11px] overflow-x-auto p-3 bg-slate-950 rounded-xl max-h-96 text-indigo-300">
             {JSON.stringify(squadDossier, null, 2)}
           </pre>
+        </div>
+      )}
+
+      {/* ⚡ ONE-CLICK ACTIVE MITIGATION MODAL */}
+      {selectedOneClickProduct && (
+        <OneClickActionModal
+          product={selectedOneClickProduct}
+          storeSlug={OneClickMitigationService.getShopSlug(realSiteData.domain)}
+          onClose={() => setSelectedOneClickProduct(null)}
+          onActionSuccess={(record) => {
+            setActionSuccessMessage(`Ação executada: ${record.notes || record.actionType}`);
+            setTimeout(() => setActionSuccessMessage(null), 5000);
+          }}
+        />
+      )}
+
+      {/* Toast Feedback */}
+      {actionSuccessMessage && (
+        <div className="fixed bottom-6 right-6 z-[90] p-4 bg-emerald-950 border border-emerald-500/50 rounded-2xl shadow-2xl flex items-center gap-3 text-white max-w-md animate-slideUp">
+          <div className="p-2 bg-emerald-500/20 text-emerald-400 rounded-xl">
+            <Check className="w-5 h-5" />
+          </div>
+          <p className="text-xs font-medium leading-relaxed flex-1">{actionSuccessMessage}</p>
+          <button onClick={() => setActionSuccessMessage(null)} className="text-slate-400 hover:text-white cursor-pointer">
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
 
