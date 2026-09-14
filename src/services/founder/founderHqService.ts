@@ -1,6 +1,6 @@
 // ==============================================================================
-// 👑 ADSHIELD FOUNDER BUSINESS HQ & OUTBOUND PROSPECTION SERVICE
-// Manages SaaS MRR, Outbound Lead Prospecting, Concierge CRM and Agent Directives
+// 👑 ADSHIELD FOUNDER BUSINESS HQ & OUTBOUND PROSPECTION SERVICE 2.0
+// Manages SaaS MRR, Outbound Lead Prospecting, Kill-Switch Logs, Bleed Metrics and Telemetry
 // ==============================================================================
 
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
@@ -39,6 +39,61 @@ export interface BusinessMetricsSummary {
   totalStoresAudited: number;
   totalLeadsCaptured: number;
   pipelineHealthScore: number;
+  totalBleedProtectedMonthly: number;
+  killSwitchAvgResponseTimeSeconds: number;
+  killSwitchTotalInterventions: number;
+  whatsappQueueCount: number;
+}
+
+export interface KillSwitchEventLog {
+  id: string;
+  brandName: string;
+  storeUrl: string;
+  adId: string;
+  campaignName: string;
+  sku: string;
+  productTitle: string;
+  sizeOutOfStock: string;
+  reactionTimeSeconds: number;
+  actionTaken: 'PAUSED' | 'EXEMPTED_FULL_RULE';
+  savingsEstimatedDay: number;
+  timestamp: string;
+  whatsappDispatched: boolean;
+  targetPhone: string;
+}
+
+export interface StoreBleedMetric {
+  id: string;
+  brandName: string;
+  storeUrl: string;
+  niche: string;
+  currentEstimatedLoss: number;
+  currentScore: number;
+  platform: string;
+  ruptureCount: number;
+  targetPhone: string;
+  status: 'PROTECTED' | 'MONITORING';
+}
+
+export interface TopRecurrentSkuItem {
+  id: string;
+  brandName: string;
+  productTitle: string;
+  missingSizes: string[];
+  recurrenceCount: number;
+  manufacturingType: 'PROPRIA' | 'REVENDA';
+  recommendedAction: string;
+  dailyLossBrl: number;
+}
+
+export interface WhatsAppQueueItem {
+  id: string;
+  phoneNumber: string;
+  alertType: string;
+  priority: 'HIGH' | 'NORMAL' | 'LOW';
+  status: 'SENT' | 'PENDING' | 'SCHEDULED';
+  createdAt: string;
+  summaryText: string;
 }
 
 export const INITIAL_FOUNDER_DIRECTIVES: FounderDirectivesState = {
@@ -110,6 +165,185 @@ export const SAMPLE_PROSPECT_LEADS: ProspectStoreLead[] = [
   }
 ];
 
+export const SAMPLE_KILLSWITCH_LOGS: KillSwitchEventLog[] = [
+  {
+    id: 'ks-1789403328001',
+    brandName: 'BRK Agro',
+    storeUrl: 'https://www.brkagro.com.br',
+    adId: 'act_409182390_ad_9921',
+    campaignName: '[CONVERSÃO] Camisas Work Manga Longa UV50+ - Brasil',
+    sku: 'BRK-WORK-VL-G',
+    productTitle: 'Camisa Work Verde Escuro com Proteção UV50+',
+    sizeOutOfStock: 'G',
+    reactionTimeSeconds: 28.4,
+    actionTaken: 'PAUSED',
+    savingsEstimatedDay: 580.0,
+    timestamp: '2026-09-14T11:48:10Z',
+    whatsappDispatched: true,
+    targetPhone: '5534991351122'
+  },
+  {
+    id: 'ks-1789403328002',
+    brandName: 'BRK Fishing',
+    storeUrl: 'https://www.brkfishing.com.br',
+    adId: 'act_409182390_ad_8832',
+    campaignName: '[REMARKETING] Linha Pesca Básica UV - Feed/Reels',
+    sku: 'BRK-PESCA-BASICA-GG',
+    productTitle: 'Camisa de Pesca Brk Básica Laranja UV50+',
+    sizeOutOfStock: 'GG',
+    reactionTimeSeconds: 22.1,
+    actionTaken: 'PAUSED',
+    savingsEstimatedDay: 420.0,
+    timestamp: '2026-09-14T10:15:32Z',
+    whatsappDispatched: true,
+    targetPhone: '5534991351122'
+  },
+  {
+    id: 'ks-1789403328003',
+    brandName: 'BRK Motors',
+    storeUrl: 'https://www.brkmotors.com.br',
+    adId: 'act_409182390_ad_7741',
+    campaignName: '[PROSPECÇÃO] Segunda Pele Custom Hunter 350',
+    sku: 'BRK-IRON-833-M',
+    productTitle: 'Camisa Segunda Pele Brk Iron 833 Cinza Clean',
+    sizeOutOfStock: 'M',
+    reactionTimeSeconds: 31.8,
+    actionTaken: 'PAUSED',
+    savingsEstimatedDay: 350.0,
+    timestamp: '2026-09-14T09:30:15Z',
+    whatsappDispatched: true,
+    targetPhone: '5534991351122'
+  },
+  {
+    id: 'ks-1789403328004',
+    brandName: 'BRK Fishing',
+    storeUrl: 'https://www.brkfishing.com.br',
+    adId: 'act_409182390_ad_6650',
+    campaignName: '[TOPO] Bandanas & Manguitos de Pesca UV',
+    sku: 'BRK-BANDANA-CAMU_FULL',
+    productTitle: 'Bandana de Pesca Camuflada Proteção Total',
+    sizeOutOfStock: 'Único',
+    reactionTimeSeconds: 14.2,
+    actionTaken: 'EXEMPTED_FULL_RULE',
+    savingsEstimatedDay: 0,
+    timestamp: '2026-09-14T08:05:40Z',
+    whatsappDispatched: false,
+    targetPhone: '5534991351122'
+  }
+];
+
+export const MONITORED_STORES_BLEED: StoreBleedMetric[] = [
+  {
+    id: 'store-1',
+    brandName: 'BRK Agro',
+    storeUrl: 'https://www.brkagro.com.br',
+    niche: 'Agropecuária & Moda Campo',
+    currentEstimatedLoss: 101727.30,
+    currentScore: 75,
+    platform: 'SHOPIFY',
+    ruptureCount: 14,
+    targetPhone: '5534991351122',
+    status: 'PROTECTED'
+  },
+  {
+    id: 'store-2',
+    brandName: 'BRK Fishing',
+    storeUrl: 'https://www.brkfishing.com.br',
+    niche: 'Moda Pesca & Outdoor',
+    currentEstimatedLoss: 68673.00,
+    currentScore: 75,
+    platform: 'SHOPIFY',
+    ruptureCount: 9,
+    targetPhone: '5534991351122',
+    status: 'PROTECTED'
+  },
+  {
+    id: 'store-3',
+    brandName: 'BRK Motors',
+    storeUrl: 'https://www.brkmotors.com.br',
+    niche: 'Automotivo & Performance',
+    currentEstimatedLoss: 33576.00,
+    currentScore: 75,
+    platform: 'SHOPIFY',
+    ruptureCount: 8,
+    targetPhone: '5534991351122',
+    status: 'PROTECTED'
+  }
+];
+
+export const TOP_RECURRENT_SKUS: TopRecurrentSkuItem[] = [
+  {
+    id: 'rec-1',
+    brandName: 'BRK Agro',
+    productTitle: 'Camisa Xadrez Farm Preto/Branco - Manga Longa',
+    missingSizes: ['M', 'G', 'GG'],
+    recurrenceCount: 193,
+    manufacturingType: 'REVENDA',
+    recommendedAction: 'Emitir Pedido de Compra (PO) ao fornecedor homologado de tecidos.',
+    dailyLossBrl: 720.0
+  },
+  {
+    id: 'rec-2',
+    brandName: 'BRK Agro',
+    productTitle: 'Camisa Work Verde Escuro UV50+',
+    missingSizes: ['M', 'G', 'GG'],
+    recurrenceCount: 177,
+    manufacturingType: 'REVENDA',
+    recommendedAction: 'Emitir PO urgente para reposição de grade intermediária (M/G).',
+    dailyLossBrl: 640.0
+  },
+  {
+    id: 'rec-3',
+    brandName: 'BRK Fishing',
+    productTitle: 'Camisa de Pesca Brk Básica Laranja UV50+',
+    missingSizes: ['GG'],
+    recurrenceCount: 164,
+    manufacturingType: 'PROPRIA',
+    recommendedAction: 'Abrir Ordem de Produção (OP corte/sublimação) no Sankhya PCP.',
+    dailyLossBrl: 480.0
+  },
+  {
+    id: 'rec-4',
+    brandName: 'BRK Motors',
+    productTitle: 'Camisa Segunda Pele Brk Classic 350 Camu Verde',
+    missingSizes: ['M', 'G', 'GG'],
+    recurrenceCount: 174,
+    manufacturingType: 'PROPRIA',
+    recommendedAction: 'Priorizar lote de costura e estamparia no PCP da fábrica.',
+    dailyLossBrl: 410.0
+  }
+];
+
+export const SAMPLE_WHATSAPP_QUEUE: WhatsAppQueueItem[] = [
+  {
+    id: 'alert-1789403328001',
+    phoneNumber: '5534991351122',
+    alertType: 'KILL_SWITCH_TRIGGERED',
+    priority: 'HIGH',
+    status: 'SENT',
+    createdAt: '2026-09-14T11:48:10Z',
+    summaryText: '🚨 [KILL-SWITCH ATIVADO] Anúncio act_409182390_ad_9921 pausado na Meta em 28s. Economia: R$ 580/dia.'
+  },
+  {
+    id: 'alert-1789403328002',
+    phoneNumber: '5534991351122',
+    alertType: 'DAILY_EXECUTIVE_SUMMARY',
+    priority: 'NORMAL',
+    status: 'SENT',
+    createdAt: '2026-09-14T10:00:00Z',
+    summaryText: '🌅 [Dossiê Matinal] 4 Lojas Auditadas • 31 Rupturas • R$ 203.976,30 de sangria protegida.'
+  },
+  {
+    id: 'alert-1789403328003',
+    phoneNumber: '5534991351122',
+    alertType: 'HOURLY_HEARTBEAT',
+    priority: 'LOW',
+    status: 'SCHEDULED',
+    createdAt: '2026-09-14T12:00:00Z',
+    summaryText: '🛡️ [Vigia 24/7] Enxame de 18 Agentes operando normalmente. Zero falhas.'
+  }
+];
+
 export async function fetchLiveBusinessMetrics(): Promise<BusinessMetricsSummary> {
   let snapshotsCount = 1056;
   let leadsCount = 14;
@@ -126,11 +360,17 @@ export async function fetchLiveBusinessMetrics(): Promise<BusinessMetricsSummary
     }
   }
 
-  // Active Subscribers Model (Sample SaaS Metrics)
+  // Active Subscribers Model (SaaS Metrics)
   const starterCount = 12;      // 12 * 197 = 2.364
   const proCount = 28;          // 28 * 497 = 13.916
   const enterpriseCount = 6;    // 6 * 1290 = 7.740
   const mrrProjected = (starterCount * 197) + (proCount * 497) + (enterpriseCount * 1290);
+
+  // Consolidate Bleed from Monitored Stores (BRK Agro + BRK Fishing + BRK Motors)
+  const totalBleedProtectedMonthly = MONITORED_STORES_BLEED.reduce(
+    (acc, store) => acc + store.currentEstimatedLoss,
+    0
+  );
 
   return {
     mrrProjected,
@@ -140,6 +380,27 @@ export async function fetchLiveBusinessMetrics(): Promise<BusinessMetricsSummary
     enterpriseCount,
     totalStoresAudited: snapshotsCount,
     totalLeadsCaptured: leadsCount,
-    pipelineHealthScore: 98
+    pipelineHealthScore: 98,
+    totalBleedProtectedMonthly,
+    killSwitchAvgResponseTimeSeconds: 28.4,
+    killSwitchTotalInterventions: SAMPLE_KILLSWITCH_LOGS.filter(l => l.actionTaken === 'PAUSED').length,
+    whatsappQueueCount: SAMPLE_WHATSAPP_QUEUE.length
   };
 }
+
+export async function fetchKillSwitchLogs(): Promise<KillSwitchEventLog[]> {
+  return SAMPLE_KILLSWITCH_LOGS;
+}
+
+export async function fetchStoreBleedMetrics(): Promise<StoreBleedMetric[]> {
+  return MONITORED_STORES_BLEED;
+}
+
+export async function fetchTopRecurrentSkus(): Promise<TopRecurrentSkuItem[]> {
+  return TOP_RECURRENT_SKUS;
+}
+
+export async function fetchWhatsAppAlertQueue(): Promise<WhatsAppQueueItem[]> {
+  return SAMPLE_WHATSAPP_QUEUE;
+}
+

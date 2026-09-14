@@ -1,6 +1,6 @@
 {
   "version": "2026.4",
-  "last_updated": "2026-09-14T15:16:30.023Z",
+  "last_updated": "2026-09-14T16:49:29.859Z",
   "semantic": {
     "registered_brands": {},
     "catalog_skus": {}
@@ -57,14 +57,14 @@
       },
       "BRK Agro::Camisa Xadrez Farm Preto/Branco - Manga Longa": {
         "first_seen": "2026-09-14T11:46:04.727Z",
-        "last_seen": "2026-09-14T15:16:29.986Z",
-        "detection_cycles": 217,
+        "last_seen": "2026-09-14T16:49:29.808Z",
+        "detection_cycles": 310,
         "missing_sizes": [
           "M",
           "G",
           "GG"
         ],
-        "cumulative_loss_brl": 56568
+        "cumulative_loss_brl": 77958
       },
       "BRK Agro::Camisa Country Ranch Lilas/Laranja - Manga Longa": {
         "first_seen": "2026-09-14T11:46:04.729Z",
@@ -77,93 +77,93 @@
       },
       "BRK Fishing::Camisa Work Bege Dunas com Proteção UV50+": {
         "first_seen": "2026-09-14T12:00:53.610Z",
-        "last_seen": "2026-09-14T15:15:36.743Z",
-        "detection_cycles": 198,
+        "last_seen": "2026-09-14T16:48:42.310Z",
+        "detection_cycles": 291,
         "missing_sizes": [
           "G"
         ],
-        "cumulative_loss_brl": 65827
+        "cumulative_loss_brl": 92797
       },
       "BRK Fishing::Camisa Work Verde Escuro com Proteção UV50+": {
         "first_seen": "2026-09-14T12:00:53.613Z",
-        "last_seen": "2026-09-14T15:15:36.746Z",
-        "detection_cycles": 198,
+        "last_seen": "2026-09-14T16:48:42.313Z",
+        "detection_cycles": 291,
         "missing_sizes": [
           "M",
           "G",
           "GG"
         ],
-        "cumulative_loss_brl": 65827
+        "cumulative_loss_brl": 92797
       },
       "BRK Fishing::Camisa Work Areia com Proteção UV50+": {
         "first_seen": "2026-09-14T12:00:53.616Z",
-        "last_seen": "2026-09-14T15:15:36.749Z",
-        "detection_cycles": 198,
+        "last_seen": "2026-09-14T16:48:42.315Z",
+        "detection_cycles": 291,
         "missing_sizes": [
           "M",
           "G"
         ],
-        "cumulative_loss_brl": 65827
+        "cumulative_loss_brl": 92797
       },
       "BRK Fishing::Camisa Work Cinza Chumbo com Proteção UV50+": {
         "first_seen": "2026-09-14T12:00:53.618Z",
-        "last_seen": "2026-09-14T15:15:36.751Z",
-        "detection_cycles": 198,
+        "last_seen": "2026-09-14T16:48:42.317Z",
+        "detection_cycles": 291,
         "missing_sizes": [
           "M",
           "G"
         ],
-        "cumulative_loss_brl": 65827
+        "cumulative_loss_brl": 92797
       },
       "BRK Fishing::Camisa Work Azul Navy com Proteção com Proteção UV50+": {
         "first_seen": "2026-09-14T12:00:53.619Z",
-        "last_seen": "2026-09-14T15:15:36.753Z",
-        "detection_cycles": 198,
+        "last_seen": "2026-09-14T16:48:42.321Z",
+        "detection_cycles": 291,
         "missing_sizes": [
           "M",
           "G",
           "GG"
         ],
-        "cumulative_loss_brl": 65827
+        "cumulative_loss_brl": 92797
       },
       "BRK Fishing::Camisa Work Cinza Ártico com Proteção UV50+": {
         "first_seen": "2026-09-14T12:00:53.621Z",
-        "last_seen": "2026-09-14T15:15:36.755Z",
-        "detection_cycles": 198,
+        "last_seen": "2026-09-14T16:48:42.324Z",
+        "detection_cycles": 291,
         "missing_sizes": [
           "M",
           "G"
         ],
-        "cumulative_loss_brl": 65827
+        "cumulative_loss_brl": 92797
       },
       "BRK Fishing::Camisa Work Verde Adventure com Proteção UV50+": {
         "first_seen": "2026-09-14T12:00:53.624Z",
-        "last_seen": "2026-09-14T15:15:36.757Z",
-        "detection_cycles": 198,
+        "last_seen": "2026-09-14T16:48:42.328Z",
+        "detection_cycles": 291,
         "missing_sizes": [
           "M",
           "G",
           "GG"
         ],
-        "cumulative_loss_brl": 65827
+        "cumulative_loss_brl": 92797
       },
       "BRK Fishing::Camisa de Pesca Brk Básica Laranja com Proteção Solar UV50+": {
         "first_seen": "2026-09-14T12:00:53.626Z",
-        "last_seen": "2026-09-14T15:15:36.760Z",
-        "detection_cycles": 187,
+        "last_seen": "2026-09-14T16:48:42.330Z",
+        "detection_cycles": 280,
         "missing_sizes": [
           "GG"
         ],
-        "cumulative_loss_brl": 34557
+        "cumulative_loss_brl": 49437
       },
       "BRK Fishing::Camisa Casual Brk Aqui é o Brasil Folhagem Tropical Amarela com Proteção UV50": {
         "first_seen": "2026-09-14T12:00:53.628Z",
-        "last_seen": "2026-09-14T15:15:36.762Z",
-        "detection_cycles": 198,
+        "last_seen": "2026-09-14T16:48:42.332Z",
+        "detection_cycles": 291,
         "missing_sizes": [
           "G"
         ],
-        "cumulative_loss_brl": 22697
+        "cumulative_loss_brl": 31997
       },
       "BRK Agro::Camisa Agro Brk Básica Verde com Proteção Solar UV50+": {
         "first_seen": "2026-09-14T12:01:39.851Z",
@@ -176,13 +176,13 @@
       },
       "BRK Agro::Camisa Xadrez Farm Preto/Branco - Manga Curta": {
         "first_seen": "2026-09-14T12:01:39.854Z",
-        "last_seen": "2026-09-14T15:16:29.989Z",
-        "detection_cycles": 201,
+        "last_seen": "2026-09-14T16:49:29.824Z",
+        "detection_cycles": 294,
         "missing_sizes": [
           "M",
           "GG"
         ],
-        "cumulative_loss_brl": 48993.3
+        "cumulative_loss_brl": 68802.3
       },
       "BRK Agro::Camisa Brk Preta Bandeira do Brasil com Proteção Solar UV50 Envio Imediato": {
         "first_seen": "2026-09-14T12:01:39.856Z",
@@ -319,212 +319,212 @@
       },
       "BRK Agro::Camisa Work Verde Escuro com Proteção UV50+": {
         "first_seen": "2026-09-14T12:01:39.883Z",
-        "last_seen": "2026-09-14T15:16:29.991Z",
-        "detection_cycles": 201,
+        "last_seen": "2026-09-14T16:49:29.835Z",
+        "detection_cycles": 294,
         "missing_sizes": [
           "M",
           "G",
           "GG"
         ],
-        "cumulative_loss_brl": 66697
+        "cumulative_loss_brl": 93667
       },
       "BRK Agro::Camisa Work Bege Dunas com Proteção UV50+": {
         "first_seen": "2026-09-14T12:01:39.885Z",
-        "last_seen": "2026-09-14T15:16:29.993Z",
-        "detection_cycles": 201,
+        "last_seen": "2026-09-14T16:49:29.838Z",
+        "detection_cycles": 294,
         "missing_sizes": [
           "G"
         ],
-        "cumulative_loss_brl": 66697
+        "cumulative_loss_brl": 93667
       },
       "BRK Agro::Camisa Work Chumbo com Proteção UV50+": {
         "first_seen": "2026-09-14T12:01:39.886Z",
-        "last_seen": "2026-09-14T15:16:29.996Z",
-        "detection_cycles": 201,
+        "last_seen": "2026-09-14T16:49:29.841Z",
+        "detection_cycles": 294,
         "missing_sizes": [
           "M",
           "G"
         ],
-        "cumulative_loss_brl": 66697
+        "cumulative_loss_brl": 93667
       },
       "BRK Agro::Camisa Work Cinza Ártico com Proteção UV50+": {
         "first_seen": "2026-09-14T12:01:39.887Z",
-        "last_seen": "2026-09-14T15:16:29.998Z",
-        "detection_cycles": 201,
+        "last_seen": "2026-09-14T16:49:29.843Z",
+        "detection_cycles": 294,
         "missing_sizes": [
           "M",
           "G"
         ],
-        "cumulative_loss_brl": 66697
+        "cumulative_loss_brl": 93667
       },
       "BRK Agro::Camisa Work Azul Navy com Proteção UV50+": {
         "first_seen": "2026-09-14T12:01:39.889Z",
-        "last_seen": "2026-09-14T15:16:30.000Z",
-        "detection_cycles": 201,
+        "last_seen": "2026-09-14T16:49:29.844Z",
+        "detection_cycles": 294,
         "missing_sizes": [
           "M",
           "G",
           "GG"
         ],
-        "cumulative_loss_brl": 66697
+        "cumulative_loss_brl": 93667
       },
       "BRK Agro::Camisa Work Verde Adventure com Proteção UV50+": {
         "first_seen": "2026-09-14T12:01:39.890Z",
-        "last_seen": "2026-09-14T15:16:30.002Z",
-        "detection_cycles": 201,
+        "last_seen": "2026-09-14T16:49:29.846Z",
+        "detection_cycles": 294,
         "missing_sizes": [
           "M",
           "G",
           "GG"
         ],
-        "cumulative_loss_brl": 66697
+        "cumulative_loss_brl": 93667
       },
       "BRK Agro::Camisa Work Areia com Proteção UV50+": {
         "first_seen": "2026-09-14T12:01:39.892Z",
-        "last_seen": "2026-09-14T15:16:30.004Z",
-        "detection_cycles": 201,
+        "last_seen": "2026-09-14T16:49:29.848Z",
+        "detection_cycles": 294,
         "missing_sizes": [
           "M",
           "G"
         ],
-        "cumulative_loss_brl": 66697
+        "cumulative_loss_brl": 93667
       },
       "BRK Agro::Camisa Xadrez Ranch Verde Militar - Manga Longa": {
         "first_seen": "2026-09-14T12:01:39.893Z",
-        "last_seen": "2026-09-14T15:16:30.014Z",
-        "detection_cycles": 201,
+        "last_seen": "2026-09-14T16:49:29.851Z",
+        "detection_cycles": 294,
         "missing_sizes": [
           "GG"
         ],
-        "cumulative_loss_brl": 52888
+        "cumulative_loss_brl": 74278
       },
       "BRK Agro::Camisa Xadrez Feminina Ranch Azul/Vermelho - Manga Longa": {
         "first_seen": "2026-09-14T12:01:39.894Z",
-        "last_seen": "2026-09-14T15:16:30.016Z",
-        "detection_cycles": 201,
+        "last_seen": "2026-09-14T16:49:29.854Z",
+        "detection_cycles": 294,
         "missing_sizes": [
           "GG"
         ],
-        "cumulative_loss_brl": 52888
+        "cumulative_loss_brl": 74278
       },
       "BRK Agro::Camisa Agro Kids Brk Laranja Animais do Campo com Proteção UV50": {
         "first_seen": "2026-09-14T12:01:39.896Z",
-        "last_seen": "2026-09-14T15:16:30.019Z",
-        "detection_cycles": 201,
+        "last_seen": "2026-09-14T16:49:29.856Z",
+        "detection_cycles": 294,
         "missing_sizes": [
           "M"
         ],
-        "cumulative_loss_brl": 27597
+        "cumulative_loss_brl": 38757
       },
       "BRK Agro::Camisa Infantil Camuflado Cow Print Creme Claro com Proteção UV50": {
         "first_seen": "2026-09-14T12:01:39.897Z",
-        "last_seen": "2026-09-14T15:16:30.021Z",
-        "detection_cycles": 201,
+        "last_seen": "2026-09-14T16:49:29.857Z",
+        "detection_cycles": 294,
         "missing_sizes": [
           "GG"
         ],
-        "cumulative_loss_brl": 39097
+        "cumulative_loss_brl": 54907
       },
       "BRK Agro::Camisa Agro Infantil Brk Eu Sou Do Agro Bandeiras com Proteção Solar UV50+": {
         "first_seen": "2026-09-14T12:01:39.898Z",
-        "last_seen": "2026-09-14T15:16:30.023Z",
-        "detection_cycles": 201,
+        "last_seen": "2026-09-14T16:49:29.859Z",
+        "detection_cycles": 294,
         "missing_sizes": [
           "G"
         ],
-        "cumulative_loss_brl": 39097
+        "cumulative_loss_brl": 54907
       },
       "BRK Motors::Camisa Segunda Pele Feminina Brk Iron 833 Blueprint Camu Azul com UV50+": {
         "first_seen": "2026-09-14T12:01:50.992Z",
-        "last_seen": "2026-09-14T15:15:39.244Z",
-        "detection_cycles": 197,
+        "last_seen": "2026-09-14T16:48:44.776Z",
+        "detection_cycles": 290,
         "missing_sizes": [
           "M",
           "G",
           "GG"
         ],
-        "cumulative_loss_brl": 31637
+        "cumulative_loss_brl": 44657
       },
       "BRK Motors::Camisa Segunda Pele Brk Classic 350 Camu Verde Militar com UV50+": {
         "first_seen": "2026-09-14T12:01:50.994Z",
-        "last_seen": "2026-09-14T15:15:39.246Z",
-        "detection_cycles": 197,
+        "last_seen": "2026-09-14T16:48:44.778Z",
+        "detection_cycles": 290,
         "missing_sizes": [
           "M",
           "G",
           "GG"
         ],
-        "cumulative_loss_brl": 31637
+        "cumulative_loss_brl": 44657
       },
       "BRK Motors::Camisa Segunda Pele Feminina Brk Iron 833 Cinza e Laranja Clean com UV50+": {
         "first_seen": "2026-09-14T12:01:50.997Z",
-        "last_seen": "2026-09-14T15:15:39.248Z",
-        "detection_cycles": 197,
+        "last_seen": "2026-09-14T16:48:44.780Z",
+        "detection_cycles": 290,
         "missing_sizes": [
           "M",
           "G",
           "GG"
         ],
-        "cumulative_loss_brl": 31637
+        "cumulative_loss_brl": 44657
       },
       "BRK Motors::Camisa Segunda Pele Brk Iron 833 Cinza e Laranja Clean com UV50+": {
         "first_seen": "2026-09-14T12:01:50.999Z",
-        "last_seen": "2026-09-14T15:15:39.251Z",
-        "detection_cycles": 197,
+        "last_seen": "2026-09-14T16:48:44.782Z",
+        "detection_cycles": 290,
         "missing_sizes": [
           "M",
           "G",
           "GG"
         ],
-        "cumulative_loss_brl": 31637
+        "cumulative_loss_brl": 44657
       },
       "BRK Motors::Camisa Segunda Pele Feminina Brk Iron 833 Cinza e Laranja com UV50+": {
         "first_seen": "2026-09-14T12:01:51.002Z",
-        "last_seen": "2026-09-14T15:15:39.254Z",
-        "detection_cycles": 197,
+        "last_seen": "2026-09-14T16:48:44.785Z",
+        "detection_cycles": 290,
         "missing_sizes": [
           "M",
           "G",
           "GG"
         ],
-        "cumulative_loss_brl": 31637
+        "cumulative_loss_brl": 44657
       },
       "BRK Motors::Camisa Segunda Pele Feminina Brk Custom V650S Cinza com UV50+": {
         "first_seen": "2026-09-14T12:01:51.004Z",
-        "last_seen": "2026-09-14T15:15:39.256Z",
-        "detection_cycles": 197,
+        "last_seen": "2026-09-14T16:48:44.787Z",
+        "detection_cycles": 290,
         "missing_sizes": [
           "M",
           "G",
           "GG"
         ],
-        "cumulative_loss_brl": 31637
+        "cumulative_loss_brl": 44657
       },
       "BRK Motors::Camisa Segunda Pele Feminina Custom Meteor Azul Clean com UV50+": {
         "first_seen": "2026-09-14T12:01:51.006Z",
-        "last_seen": "2026-09-14T15:15:39.258Z",
-        "detection_cycles": 197,
+        "last_seen": "2026-09-14T16:48:44.789Z",
+        "detection_cycles": 290,
         "missing_sizes": [
           "GG"
         ],
-        "cumulative_loss_brl": 31637
+        "cumulative_loss_brl": 44657
       },
       "BRK Motors::Camisa Segunda Pele Feminina Custom Hunter 350 Azul e Dourado com UV50+": {
         "first_seen": "2026-09-14T12:01:51.008Z",
-        "last_seen": "2026-09-14T15:15:39.259Z",
-        "detection_cycles": 197,
+        "last_seen": "2026-09-14T16:48:44.792Z",
+        "detection_cycles": 290,
         "missing_sizes": [
           "M",
           "G",
           "GG"
         ],
-        "cumulative_loss_brl": 31637
+        "cumulative_loss_brl": 44657
       }
     },
     "cumulative_losses": {
-      "BRK Agro": 25916139.300000116,
-      "BRK Fishing": 13544487,
-      "BRK Motors": 6614472
+      "BRK Agro": 35376778.20000012,
+      "BRK Fishing": 19931076,
+      "BRK Motors": 9737040
     }
   },
   "procedural": {
