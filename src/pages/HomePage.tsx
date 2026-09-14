@@ -20,7 +20,8 @@ import {
   LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, 
   KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, 
   Scale, BrainCircuit, Compass, Wrench, BarChart3, Crown, Plug, FileText, 
-  Globe, GitCompare, Zap, Lock, Unlock, GitFork, Database, BadgeCheck, Share2, Factory 
+  Globe, GitCompare, Zap, Lock, Unlock, GitFork, Database, BadgeCheck, Share2, Factory,
+  ChevronDown, Sparkles
 } from 'lucide-react';
 
 // ⚡ LAZY LOADED ANALYTICAL TABS (Demanded only when tab is active)
@@ -105,6 +106,7 @@ export function HomePage() {
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
   const [isPublicDossierMode, setIsPublicDossierMode] = useState<boolean>(false);
   const [isMitigationHistoryOpen, setIsMitigationHistoryOpen] = useState<boolean>(false);
+  const [isToolsMenuOpen, setIsToolsMenuOpen] = useState<boolean>(false);
 
   // 🔒 Master Founder Confidential Auth State
   const [isFounderAuthenticated, setIsFounderAuthenticated] = useState<boolean>(() => {
@@ -280,7 +282,7 @@ export function HomePage() {
   const activePillarTabs = currentPillar.tabs;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased pb-20">
+    <div className="min-h-screen bg-slate-50 bg-mesh-pattern text-slate-800 font-sans antialiased pb-24">
       
       {/* Sticky Header */}
       <Header 
@@ -333,13 +335,11 @@ export function HomePage() {
               onOpenWhatsApp={() => setIsWhatsAppModalOpen(true)}
             />
 
-            {/* 🎛️ 3-MODE SELECTOR SWITCHER (PROGRESSIVE DISCLOSURE) */}
-            <div className="p-3 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-500 uppercase font-mono">Modo de Visualização:</span>
-              </div>
-
-              <div className="flex items-center bg-slate-100 p-1 rounded-xl gap-1 text-xs font-bold w-full sm:w-auto">
+            {/* 🎛️ EXECUTIVE CONTROL & MODE CENTER (PROGRESSIVE DISCLOSURE) */}
+            <div className="p-2.5 bg-white/90 backdrop-blur-xl rounded-2xl border border-slate-200/80 shadow-premium flex flex-wrap items-center justify-between gap-3 relative z-30">
+              
+              {/* Left: Modern Segmented Mode Switcher */}
+              <div className="flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/60 text-xs font-bold">
                 <button
                   onClick={() => {
                     setViewMode('merchant');
@@ -349,12 +349,12 @@ export function HomePage() {
                   }}
                   className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
                     viewMode === 'merchant'
-                      ? 'bg-white text-slate-900 shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80'
+                      : 'text-slate-500 hover:text-slate-900'
                   }`}
                 >
                   <ShoppingCart className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>🛍️ Modo Lojista (6 Abas de Lucro)</span>
+                  <span>Visão Lojista (Lucro)</span>
                 </button>
 
                 <button
@@ -362,96 +362,140 @@ export function HomePage() {
                   className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
                     viewMode === 'war_room'
                       ? 'bg-slate-900 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
+                      : 'text-slate-500 hover:text-slate-900'
                   }`}
                 >
                   <Cpu className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>⚡ Modo Engenheiro / War Room</span>
+                  <span>War Room Técnico</span>
                 </button>
+              </div>
 
-                <button
-                  onClick={() => setIsStoresManagerOpen(true)}
-                  className="px-3.5 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all flex items-center gap-1.5 cursor-pointer font-bold border border-blue-200"
-                >
-                  <Store className="w-3.5 h-3.5 text-blue-600" />
-                  <span>📡 Lojas no Radar</span>
-                </button>
-
-                <button
-                  onClick={() => setIsBatchAuditorOpen(true)}
-                  className="px-3.5 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-all flex items-center gap-1.5 cursor-pointer font-bold border border-indigo-200"
-                >
-                  <Layers className="w-3.5 h-3.5 text-indigo-600" />
-                  <span>🏢 Scanner em Lote (Agências)</span>
-                </button>
-
-                <button
-                  onClick={() => setIsChromeExtensionOpen(true)}
-                  className="px-3.5 py-1.5 rounded-lg bg-amber-50 text-amber-800 hover:bg-amber-100 transition-all flex items-center gap-1.5 cursor-pointer font-bold border border-amber-200"
-                >
-                  <Globe className="w-3.5 h-3.5 text-amber-600" />
-                  <span>🧩 Extensão Chrome</span>
-                </button>
-
+              {/* Right: Clean Action Cluster */}
+              <div className="flex items-center gap-2 flex-wrap">
+                
+                {/* 📲 Vigia WhatsApp 24/7 (High Priority Status Button) */}
                 <button
                   onClick={() => setIsWhatsAppWatchdogOpen(true)}
-                  className="px-3.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all flex items-center gap-1.5 cursor-pointer font-bold border border-emerald-200"
+                  className="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold flex items-center gap-2 transition-all shadow-2xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                  title="Configurar entrega diária dos relatórios executivos no WhatsApp"
                 >
-                  <Activity className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>📲 Vigia WhatsApp (07:00)</span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse inline-block" />
+                  <span>Vigia WhatsApp (07:00)</span>
                 </button>
 
-                {/* 🔒 Master Founder Secret Trigger */}
-                {!isFounderAuthenticated ? (
-                  <button
-                    onClick={() => setIsFounderModalOpen(true)}
-                    className="p-2 rounded-xl text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-all flex items-center gap-1 cursor-pointer"
-                    title="Acesso Sigiloso do Fundador"
-                  >
-                    <Lock className="w-3.5 h-3.5" />
-                  </button>
-                ) : (
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => setActiveTab('founder_hq')}
-                      className={`px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
-                        activeTab === 'founder_hq' || activeTab === 'agent_flowchart'
-                          ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                          : 'bg-amber-100 text-amber-900 hover:bg-amber-200'
-                      }`}
-                    >
-                      <Crown className="w-3.5 h-3.5" />
-                      <span>👑 Painel Fundador</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        sessionStorage.removeItem('adshield_founder_authenticated');
-                        setIsFounderAuthenticated(false);
-                        setActiveTab('summary');
-                      }}
-                      className="p-1.5 hover:bg-slate-200 rounded-lg text-slate-400 hover:text-slate-700 text-xs"
-                      title="Sair do Modo Fundador"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                )}
-
+                {/* 🔌 Conectar Loja (1-Click) */}
                 <button
                   onClick={() => setIsIntegrationsModalOpen(true)}
-                  className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-500 hover:to-teal-500 transition-all flex items-center gap-1.5 cursor-pointer font-bold shadow-xs"
+                  className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                  title="Conectar Shopify, Mercado Livre ou VTEX"
                 >
-                  <Plug className="w-3.5 h-3.5" />
-                  <span>🔌 Conectar Loja (1-Click)</span>
+                  <Plug className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Conectar Loja</span>
                 </button>
 
-                <button
-                  onClick={() => setIsWhiteLabelModalOpen(true)}
-                  className="px-3.5 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-all flex items-center gap-1.5 cursor-pointer font-bold border border-indigo-200"
-                >
-                  <FileText className="w-3.5 h-3.5 text-indigo-600" />
-                  <span>📄 Dossiê PDF (Agência)</span>
-                </button>
+                {/* ⚡ Dropdown de Ferramentas & Dossiês */}
+                <div className="relative">
+                  <button
+                    onClick={() => setIsToolsMenuOpen(!isToolsMenuOpen)}
+                    className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs ${
+                      isToolsMenuOpen 
+                        ? 'bg-slate-100 border-slate-400 text-slate-900' 
+                        : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>Ferramentas & Dossiês</span>
+                    <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {/* Popover Menu */}
+                  {isToolsMenuOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl border border-slate-200 shadow-2xl p-1.5 z-50 animate-fadeIn space-y-0.5 font-sans">
+                      <button
+                        onClick={() => { setIsStoresManagerOpen(true); setIsToolsMenuOpen(false); }}
+                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 flex items-center gap-2.5 transition-colors cursor-pointer"
+                      >
+                        <Store className="w-4 h-4 text-blue-600 shrink-0" />
+                        <div>
+                          <span className="block text-slate-900 font-bold">Lojas no Radar</span>
+                          <span className="text-[10px] text-slate-400 font-normal">Monitoramento de múltiplos domínios</span>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => { setIsBatchAuditorOpen(true); setIsToolsMenuOpen(false); }}
+                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 flex items-center gap-2.5 transition-colors cursor-pointer"
+                      >
+                        <Layers className="w-4 h-4 text-indigo-600 shrink-0" />
+                        <div>
+                          <span className="block text-slate-900 font-bold">Scanner em Lote</span>
+                          <span className="text-[10px] text-slate-400 font-normal">Auditar 20 lojas de clientes em lote</span>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => { setIsChromeExtensionOpen(true); setIsToolsMenuOpen(false); }}
+                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 flex items-center gap-2.5 transition-colors cursor-pointer"
+                      >
+                        <Globe className="w-4 h-4 text-amber-600 shrink-0" />
+                        <div>
+                          <span className="block text-slate-900 font-bold">Extensão Chrome</span>
+                          <span className="text-[10px] text-slate-400 font-normal">Auditar com 1 clique no navegador</span>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => { setIsExportModalOpen(true); setIsToolsMenuOpen(false); }}
+                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 flex items-center gap-2.5 transition-colors cursor-pointer"
+                      >
+                        <FileText className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <div>
+                          <span className="block text-slate-900 font-bold">Exportar Dossiê PDF</span>
+                          <span className="text-[10px] text-slate-400 font-normal">Relatório executivo para reuniões</span>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => { setIsWhiteLabelModalOpen(true); setIsToolsMenuOpen(false); }}
+                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 flex items-center gap-2.5 transition-colors cursor-pointer"
+                      >
+                        <Sparkles className="w-4 h-4 text-purple-600 shrink-0" />
+                        <div>
+                          <span className="block text-slate-900 font-bold">Personalização White-Label</span>
+                          <span className="text-[10px] text-slate-400 font-normal">Logo e paleta da sua agência</span>
+                        </div>
+                      </button>
+
+                      <div className="h-px bg-slate-100 my-1" />
+
+                      {/* Founder Access Section */}
+                      {!isFounderAuthenticated ? (
+                        <button
+                          onClick={() => { setIsFounderModalOpen(true); setIsToolsMenuOpen(false); }}
+                          className="w-full px-3 py-2 text-left rounded-xl hover:bg-amber-50 text-xs font-semibold text-amber-900 flex items-center gap-2.5 transition-colors cursor-pointer"
+                        >
+                          <Lock className="w-4 h-4 text-amber-600 shrink-0" />
+                          <div>
+                            <span className="block text-amber-950 font-bold">Acesso do Fundador</span>
+                            <span className="text-[10px] text-amber-700/80 font-normal">Painel confidencial HQ</span>
+                          </div>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => { setActiveTab('founder_hq'); setIsToolsMenuOpen(false); }}
+                          className="w-full px-3 py-2 text-left rounded-xl bg-amber-50 hover:bg-amber-100 text-xs font-bold text-amber-950 flex items-center gap-2.5 transition-colors cursor-pointer"
+                        >
+                          <Crown className="w-4 h-4 text-amber-600 shrink-0" />
+                          <div>
+                            <span className="block font-bold">Painel Fundador Ativo</span>
+                            <span className="text-[10px] text-amber-700 font-normal">Abrir Torre do Fundador (HQ)</span>
+                          </div>
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+
               </div>
             </div>
 
@@ -459,7 +503,7 @@ export function HomePage() {
             <div className="space-y-2">
               
               {/* Top Segmented Pillar Selector (4 Pillars Max) */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 bg-slate-200/70 p-1.5 rounded-2xl border border-slate-300/60 shadow-xs">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 bg-slate-100/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/80 shadow-inner">
                 {pillarCategories.map((pillar) => {
                   const isPillarActive = activePillar === pillar.id;
                   return (
@@ -471,12 +515,12 @@ export function HomePage() {
                           setActiveTab(pillar.tabs[0].id);
                         }
                       }}
-                      className={`p-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-between gap-2 text-left font-bold text-xs ${
+                      className={`px-3.5 py-2.5 rounded-xl transition-all duration-200 cursor-pointer flex items-center justify-between gap-2 text-left font-bold text-xs ${
                         isPillarActive
                           ? pillar.id === 'FOUNDER_SUITE'
                             ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                            : 'bg-white text-slate-900 shadow-md shadow-slate-900/10'
-                          : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                            : 'bg-white text-slate-900 shadow-sm border border-slate-200/90'
+                          : 'text-slate-500 hover:text-slate-900 hover:bg-white/60'
                       }`}
                     >
                       <span className="truncate">{pillar.label}</span>
@@ -484,7 +528,7 @@ export function HomePage() {
                         <span className={`px-2 py-0.5 rounded-md text-[10px] font-mono shrink-0 ${
                           isPillarActive 
                             ? pillar.id === 'FOUNDER_SUITE' ? 'bg-amber-600/30 text-slate-950 font-black' : 'bg-slate-100 text-slate-700'
-                            : 'bg-slate-300/60 text-slate-600'
+                            : 'bg-slate-200/80 text-slate-600'
                         }`}>
                           {pillar.badge}
                         </span>
@@ -494,8 +538,8 @@ export function HomePage() {
                 })}
               </div>
 
-              {/* Focused Sub-Tabs Row (Only 3-4 Clean Buttons Max!) */}
-              <div className="flex flex-wrap items-center gap-1.5 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs animate-fadeIn">
+              {/* Focused Sub-Tabs Row (Linear / Raycast Style) */}
+              <div className="flex flex-wrap items-center gap-1.5 bg-white/90 backdrop-blur-xl p-2 rounded-2xl border border-slate-200/80 shadow-premium">
                 {activePillarTabs.map((tab) => {
                   const TabIcon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -508,15 +552,15 @@ export function HomePage() {
                         isActive
                           ? activePillar === 'FOUNDER_SUITE'
                             ? 'bg-amber-500 text-slate-950 border-amber-600 shadow-md shadow-amber-500/20'
-                            : 'bg-[#0056b3] text-white border-[#0056b3] shadow-md shadow-blue-500/20'
-                          : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-[#0056b3] hover:bg-slate-50'
+                            : 'bg-slate-900 text-white border-slate-900 shadow-md shadow-slate-900/15'
+                          : 'bg-slate-50/80 text-slate-600 border-slate-200/90 hover:border-slate-300 hover:text-slate-900 hover:bg-white'
                       }`}
                     >
                       <TabIcon className={`w-3.5 h-3.5 ${isActive ? (activePillar === 'FOUNDER_SUITE' ? 'text-slate-950' : 'text-white') : 'text-slate-400'}`} />
                       <span>{tab.label}</span>
                       {tab.badge !== undefined && (
                         <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold ${
-                          isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+                          isActive ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'
                         }`}>
                           {tab.badge}
                         </span>

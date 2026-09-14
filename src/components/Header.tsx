@@ -340,11 +340,11 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* 🚀 STORE BRAND QUICK-SWITCHER BAR */}
-      <div className="bg-slate-100/95 border-t border-slate-200/90 px-4 lg:px-8 py-2.5 shadow-2xs">
+      <div className="bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-4 lg:px-8 py-2">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 font-mono flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-indigo-600" /> Alternar Marca:
+            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 font-mono flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 text-blue-600" /> Marcas Monitoradas:
             </span>
             <div className="flex items-center gap-1.5 flex-wrap">
               {brandPresets.map((preset) => {
@@ -354,19 +354,19 @@ export const Header: React.FC<HeaderProps> = ({
                   <button
                     key={preset.key}
                     onClick={() => onSelectStorePreset && onSelectStorePreset(preset)}
-                    className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer border ${
+                    className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all duration-200 cursor-pointer border ${
                       isActive 
                         ? preset.activeClass 
-                        : 'bg-white text-slate-700 hover:text-slate-950 border-slate-200 hover:border-slate-300 shadow-2xs hover:scale-[1.02]'
+                        : 'bg-slate-50 text-slate-600 hover:text-slate-900 border-slate-200/80 hover:border-slate-300 hover:bg-white shadow-2xs hover:scale-[1.02]'
                     }`}
                     title={`Auditar catálogo oficial de ${preset.name} (${preset.niche})`}
                   >
                     <IconComponent className="w-3.5 h-3.5" />
                     <span>{preset.name}</span>
                     {isActive ? (
-                      <span className="w-1.5 h-1.5 rounded-full bg-white inline-block ml-0.5 animate-ping" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-white inline-block ml-0.5 animate-pulse" />
                     ) : (
-                      <span className="text-[10px] text-slate-400 font-normal">({preset.slug})</span>
+                      <span className="text-[10px] text-slate-400 font-mono font-normal">({preset.slug})</span>
                     )}
                   </button>
                 );

@@ -34,7 +34,7 @@ export const PublicDossierMerchantHeader: React.FC<PublicDossierMerchantHeaderPr
   const estimatedMonthlyLoss = finances.financialRisk.totalMonthlyLoss;
   const brokenSkusCount = finances.brokenSkusCount;
 
-  const whatsappPitchUrl = `https://api.whatsapp.com/send?phone=5511999999999&text=${encodeURIComponent(
+  const whatsappPitchUrl = `https://api.whatsapp.com/send?phone=5534991351122&text=${encodeURIComponent(
     `Olá! Vi o dossiê de auditoria da minha loja (${realSiteData.brandName}) no AdShield e quero entender como recuperar os ${finances.financialRisk.formattedMonthlyLoss} em risco por ruptura de grade e checkout.`
   )}`;
 
