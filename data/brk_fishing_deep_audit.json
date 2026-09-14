@@ -1,0 +1,397 @@
+{
+  "audited_at": "2026-09-14T11:59:46.929Z",
+  "store": "BRK Fishing",
+  "url": "https://www.brkfishing.com.br",
+  "total_parent_products": 2202,
+  "total_variants_skus": 12315,
+  "apparel_products_count": 1523,
+  "exempt_items_count": 492,
+  "in_house_broken_count": 13,
+  "resale_broken_count": 7,
+  "in_house_monthly_loss_brl": 62061,
+  "resale_monthly_loss_brl": 60879,
+  "total_monthly_loss_brl": 122940,
+  "in_house_broken_sample": [
+    {
+      "id": 7598641971266,
+      "title": "Camisa FusionX Brk Deep Camuflada Parcial Cinza com Capuz e Proteção UV50+ Envio Imediato",
+      "handle": "camisa-fusionx-brk-deep-camuflada-parcial-cinza-com-capuz-e-protecao-uv50-envio-imediato",
+      "url": "https://www.brkfishing.com.br/products/camisa-fusionx-brk-deep-camuflada-parcial-cinza-com-capuz-e-protecao-uv50-envio-imediato",
+      "price": 199.9,
+      "missingSizes": [
+        "P",
+        "M",
+        "G"
+      ],
+      "availableSizes": [
+        "GG"
+      ],
+      "isResale": false,
+      "manufacturingType": "FABRICACAO_PROPRIA",
+      "category": "CONFECCAO_SUBLIMADA_PROPRIA",
+      "action": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+    },
+    {
+      "id": 7595719917634,
+      "title": "Camisa de Pesca Brk Garateia Clean Bandeira Brasil com Proteção UV50 Envio Imediato",
+      "handle": "camisa-de-pesca-brk-garateia-clean-bandeira-brasil-com-protecao-solar-uv50-1",
+      "url": "https://www.brkfishing.com.br/products/camisa-de-pesca-brk-garateia-clean-bandeira-brasil-com-protecao-solar-uv50-1",
+      "price": 159.9,
+      "missingSizes": [
+        "P"
+      ],
+      "availableSizes": [
+        "M",
+        "G",
+        "GG"
+      ],
+      "isResale": false,
+      "manufacturingType": "FABRICACAO_PROPRIA",
+      "category": "CONFECCAO_SUBLIMADA_PROPRIA",
+      "action": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+    },
+    {
+      "id": 7595720048706,
+      "title": "Camisa de Pesca BRK Cinza e Azul Camuflado com Proteção UV50+",
+      "handle": "camisa-de-pesca-brk-cinza-e-azul-camuflado-com-protecao-uv50-1",
+      "url": "https://www.brkfishing.com.br/products/camisa-de-pesca-brk-cinza-e-azul-camuflado-com-protecao-uv50-1",
+      "price": 159.9,
+      "missingSizes": [
+        "P",
+        "M",
+        "G"
+      ],
+      "availableSizes": [
+        "GG"
+      ],
+      "isResale": false,
+      "manufacturingType": "FABRICACAO_PROPRIA",
+      "category": "CONFECCAO_SUBLIMADA_PROPRIA",
+      "action": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+    },
+    {
+      "id": 7595720310850,
+      "title": "Camisa Brk Brasil com Proteção UV50 Envio Imediato",
+      "handle": "camisa-brk-brasil-com-protecao-uv50-envio-imediato",
+      "url": "https://www.brkfishing.com.br/products/camisa-brk-brasil-com-protecao-uv50-envio-imediato",
+      "price": 159.9,
+      "missingSizes": [
+        "P"
+      ],
+      "availableSizes": [
+        "M",
+        "G",
+        "GG"
+      ],
+      "isResale": false,
+      "manufacturingType": "FABRICACAO_PROPRIA",
+      "category": "CONFECCAO_SUBLIMADA_PROPRIA",
+      "action": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+    },
+    {
+      "id": 7595720081474,
+      "title": "Camisa Brk Preta Bandeira do Brasil com Proteção Solar UV50 Envio Imediato",
+      "handle": "camisa-brk-preta-bandeira-do-brasil-com-protecao-solar-uv50-envio-imediato",
+      "url": "https://www.brkfishing.com.br/products/camisa-brk-preta-bandeira-do-brasil-com-protecao-solar-uv50-envio-imediato",
+      "price": 159.9,
+      "missingSizes": [
+        "P",
+        "M",
+        "G"
+      ],
+      "availableSizes": [
+        "GG"
+      ],
+      "isResale": false,
+      "manufacturingType": "FABRICACAO_PROPRIA",
+      "category": "CONFECCAO_SUBLIMADA_PROPRIA",
+      "action": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+    },
+    {
+      "id": 7595719557186,
+      "title": "Camisa de Pesca Brk Compass Camuflado com Proteção Solar UV50+",
+      "handle": "camisa-de-pesca-brk-compass-camuflado-com-protecao-solar-uv50-1",
+      "url": "https://www.brkfishing.com.br/products/camisa-de-pesca-brk-compass-camuflado-com-protecao-solar-uv50-1",
+      "price": 159.9,
+      "missingSizes": [
+        "P",
+        "GG"
+      ],
+      "availableSizes": [
+        "M",
+        "G"
+      ],
+      "isResale": false,
+      "manufacturingType": "FABRICACAO_PROPRIA",
+      "category": "CONFECCAO_SUBLIMADA_PROPRIA",
+      "action": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+    },
+    {
+      "id": 7595719852098,
+      "title": "Camisa Brk Bussola Brasil Camuflada com Proteção Solar UV50 Envio Imediato",
+      "handle": "camisa-brk-bussola-brasil-camuflada-com-protecao-solar-uv50-envio-imediato",
+      "url": "https://www.brkfishing.com.br/products/camisa-brk-bussola-brasil-camuflada-com-protecao-solar-uv50-envio-imediato",
+      "price": 159.9,
+      "missingSizes": [
+        "P",
+        "G"
+      ],
+      "availableSizes": [
+        "M",
+        "GG"
+      ],
+      "isResale": false,
+      "manufacturingType": "FABRICACAO_PROPRIA",
+      "category": "CONFECCAO_SUBLIMADA_PROPRIA",
+      "action": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+    },
+    {
+      "id": 7595720343618,
+      "title": "Camisa Brk Estados Unidos Com Proteção Solar UV50 Envio Imediato",
+      "handle": "camisa-brk-estados-unidos-com-protecao-solar-uv50-envio-imediato",
+      "url": "https://www.brkfishing.com.br/products/camisa-brk-estados-unidos-com-protecao-solar-uv50-envio-imediato",
+      "price": 159.9,
+      "missingSizes": [
+        "P"
+      ],
+      "availableSizes": [
+        "M",
+        "G",
+        "GG"
+      ],
+      "isResale": false,
+      "manufacturingType": "FABRICACAO_PROPRIA",
+      "category": "CONFECCAO_SUBLIMADA_PROPRIA",
+      "action": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+    },
+    {
+      "id": 7595719721026,
+      "title": "Camisa Feminina Brk Preta Bandeira do Brasil com Proteção Solar UV50 Envio Imediato",
+      "handle": "camisa-feminina-brk-preta-bandeira-do-brasil-com-protecao-solar-uv50-envio-imediato-1",
+      "url": "https://www.brkfishing.com.br/products/camisa-feminina-brk-preta-bandeira-do-brasil-com-protecao-solar-uv50-envio-imediato-1",
+      "price": 159.9,
+      "missingSizes": [
+        "G"
+      ],
+      "availableSizes": [
+        "P",
+        "M",
+        "GG"
+      ],
+      "isResale": false,
+      "manufacturingType": "FABRICACAO_PROPRIA",
+      "category": "CONFECCAO_SUBLIMADA_PROPRIA",
+      "action": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+    },
+    {
+      "id": 7595719655490,
+      "title": "Camisa Feminina Brk Basica Preta com Proteção Solar UV50 Envio Imediato",
+      "handle": "camisa-feminina-brk-basica-preta-com-protecao-solar-uv50-envio-imediato",
+      "url": "https://www.brkfishing.com.br/products/camisa-feminina-brk-basica-preta-com-protecao-solar-uv50-envio-imediato",
+      "price": 159.9,
+      "missingSizes": [
+        "M"
+      ],
+      "availableSizes": [
+        "P",
+        "G",
+        "GG"
+      ],
+      "isResale": false,
+      "manufacturingType": "FABRICACAO_PROPRIA",
+      "category": "CONFECCAO_SUBLIMADA_PROPRIA",
+      "action": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+    },
+    {
+      "id": 7524070752322,
+      "title": "Camisa de Pesca Brk Básica Laranja com Proteção Solar UV50+",
+      "handle": "camisa-de-pesca-brk-basica-laranja-com-protecao-solar-uv50",
+      "url": "https://www.brkfishing.com.br/products/camisa-de-pesca-brk-basica-laranja-com-protecao-solar-uv50",
+      "price": 159.9,
+      "missingSizes": [
+        "GG"
+      ],
+      "availableSizes": [
+        "P",
+        "M",
+        "G"
+      ],
+      "isResale": false,
+      "manufacturingType": "FABRICACAO_PROPRIA",
+      "category": "CONFECCAO_SUBLIMADA_PROPRIA",
+      "action": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+    },
+    {
+      "id": 8233534619714,
+      "title": "Camisa Casual Brk Aqui é o Brasil Folhagem Tropical Amarela com Proteção UV50",
+      "handle": "camisa-casual-brk-aqui-e-o-brasil-folhagem-tropical-amarela-com-protecao-solar-uv50",
+      "url": "https://www.brkfishing.com.br/products/camisa-casual-brk-aqui-e-o-brasil-folhagem-tropical-amarela-com-protecao-solar-uv50",
+      "price": 99.9,
+      "missingSizes": [
+        "P",
+        "G"
+      ],
+      "availableSizes": [
+        "M",
+        "GG"
+      ],
+      "isResale": false,
+      "manufacturingType": "FABRICACAO_PROPRIA",
+      "category": "CONFECCAO_SUBLIMADA_PROPRIA",
+      "action": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+    },
+    {
+      "id": 7710565433410,
+      "title": "Camisa ArmorX Coral com Proteção UV50+",
+      "handle": "camisa-armorx-brk-fishing-coral-com-protecao-uv50",
+      "url": "https://www.brkfishing.com.br/products/camisa-armorx-brk-fishing-coral-com-protecao-uv50",
+      "price": 169.9,
+      "missingSizes": [
+        "P"
+      ],
+      "availableSizes": [
+        "M",
+        "G",
+        "GG"
+      ],
+      "isResale": false,
+      "manufacturingType": "FABRICACAO_PROPRIA",
+      "category": "CONFECCAO_SUBLIMADA_PROPRIA",
+      "action": "Abrir Ordem de Produção (OP de corte e sublimação) no Sankhya PCP."
+    }
+  ],
+  "resale_broken_sample": [
+    {
+      "id": 8337841127490,
+      "title": "Camisa Work Bege Dunas com Proteção UV50+",
+      "handle": "camisa-work-bege-dunas-com-protecao-uv50",
+      "url": "https://www.brkfishing.com.br/products/camisa-work-bege-dunas-com-protecao-uv50",
+      "price": 289.9,
+      "missingSizes": [
+        "P",
+        "G"
+      ],
+      "availableSizes": [
+        "M",
+        "GG"
+      ],
+      "isResale": true,
+      "manufacturingType": "REVENDA",
+      "category": "CAMISA_BOTAO_WORKWEAR",
+      "action": "Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote."
+    },
+    {
+      "id": 8337841225794,
+      "title": "Camisa Work Verde Escuro com Proteção UV50+",
+      "handle": "camisa-work-verde-escuro-com-protecao-uv50",
+      "url": "https://www.brkfishing.com.br/products/camisa-work-verde-escuro-com-protecao-uv50",
+      "price": 289.9,
+      "missingSizes": [
+        "M",
+        "G",
+        "GG"
+      ],
+      "availableSizes": [
+        "P"
+      ],
+      "isResale": true,
+      "manufacturingType": "REVENDA",
+      "category": "CAMISA_BOTAO_WORKWEAR",
+      "action": "Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote."
+    },
+    {
+      "id": 8337841651778,
+      "title": "Camisa Work Areia com Proteção UV50+",
+      "handle": "camisa-work-areia-com-protecao-uv50",
+      "url": "https://www.brkfishing.com.br/products/camisa-work-areia-com-protecao-uv50",
+      "price": 289.9,
+      "missingSizes": [
+        "P",
+        "M",
+        "G"
+      ],
+      "availableSizes": [
+        "GG"
+      ],
+      "isResale": true,
+      "manufacturingType": "REVENDA",
+      "category": "CAMISA_BOTAO_WORKWEAR",
+      "action": "Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote."
+    },
+    {
+      "id": 8337842044994,
+      "title": "Camisa Work Cinza Chumbo com Proteção UV50+",
+      "handle": "camisa-work-chumbo-com-protecao-uv50",
+      "url": "https://www.brkfishing.com.br/products/camisa-work-chumbo-com-protecao-uv50",
+      "price": 289.9,
+      "missingSizes": [
+        "M",
+        "G"
+      ],
+      "availableSizes": [
+        "P",
+        "GG"
+      ],
+      "isResale": true,
+      "manufacturingType": "REVENDA",
+      "category": "CAMISA_BOTAO_WORKWEAR",
+      "action": "Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote."
+    },
+    {
+      "id": 8337841324098,
+      "title": "Camisa Work Azul Navy com Proteção com Proteção UV50+",
+      "handle": "camisa-work-azul-navy-com-protecao-com-protecao-uv50",
+      "url": "https://www.brkfishing.com.br/products/camisa-work-azul-navy-com-protecao-com-protecao-uv50",
+      "price": 289.9,
+      "missingSizes": [
+        "P",
+        "M",
+        "G",
+        "GG"
+      ],
+      "availableSizes": [],
+      "isResale": true,
+      "manufacturingType": "REVENDA",
+      "category": "CAMISA_BOTAO_WORKWEAR",
+      "action": "Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote."
+    },
+    {
+      "id": 8337841553474,
+      "title": "Camisa Work Cinza Ártico com Proteção UV50+",
+      "handle": "camisa-work-cinza-artico-com-protecao-uv50",
+      "url": "https://www.brkfishing.com.br/products/camisa-work-cinza-artico-com-protecao-uv50",
+      "price": 289.9,
+      "missingSizes": [
+        "M",
+        "G"
+      ],
+      "availableSizes": [
+        "P",
+        "GG"
+      ],
+      "isResale": true,
+      "manufacturingType": "REVENDA",
+      "category": "CAMISA_BOTAO_WORKWEAR",
+      "action": "Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote."
+    },
+    {
+      "id": 8337841717314,
+      "title": "Camisa Work Verde Adventure com Proteção UV50+",
+      "handle": "camisa-work-verde-adventure-com-protecao-uv50",
+      "url": "https://www.brkfishing.com.br/products/camisa-work-verde-adventure-com-protecao-uv50",
+      "price": 289.9,
+      "missingSizes": [
+        "M",
+        "G",
+        "GG"
+      ],
+      "availableSizes": [
+        "P"
+      ],
+      "isResale": true,
+      "manufacturingType": "REVENDA",
+      "category": "CAMISA_BOTAO_WORKWEAR",
+      "action": "Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar campanhas se esgotado sem previsão de lote."
+    }
+  ]
+}

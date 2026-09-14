@@ -172,43 +172,73 @@ export function detectProductManufacturingType(product) {
 }
 
 /**
- * 🟢 1. SHOPIFY ENGINE (/products.json)
+ * 🟢 1. SHOPIFY ENGINE (/products.json) — MASSIVE FULL-CATALOG CRAWLER
+ * Crawls in batches of 250 products per page to audit 100% of SKUs.
  */
-async function fetchShopifyCatalog(cleanUrl) {
-  const jsonUrl = `${cleanUrl}/products.json?limit=30`;
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 4500);
+async function fetchShopifyCatalog(cleanUrl, maxPages = 15) {
+  let page = 1;
+  const allProducts = [];
+  let totalVariantsCount = 0;
 
-  const res = await fetch(jsonUrl, {
-    headers: { 'User-Agent': 'AdShield-Universal-Bot/2.4 (Shopify)' },
-    signal: controller.signal
-  });
-  clearTimeout(timeout);
+  while (page <= maxPages) {
+    const jsonUrl = `${cleanUrl}/products.json?limit=250&page=${page}`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
 
-  if (!res.ok) {
-    throw new Error(`Shopify endpoint returned HTTP ${res.status}`);
+    try {
+      const res = await fetch(jsonUrl, {
+        headers: { 'User-Agent': 'AdShield-Universal-Bot/2026.4 (Shopify-Deep)' },
+        signal: controller.signal
+      });
+      clearTimeout(timeout);
+
+      if (!res.ok) {
+        if (page === 1) throw new Error(`Shopify endpoint returned HTTP ${res.status}`);
+        break; // End of pagination or rate limit protection
+      }
+
+      const data = await res.json();
+      const pageProducts = data.products || [];
+      if (pageProducts.length === 0) break;
+
+      allProducts.push(...pageProducts);
+      if (pageProducts.length < 250) break; // Last page reached
+
+      page++;
+      // Polite delay between pages to preserve bandwidth and avoid 429
+      await new Promise(resolve => setTimeout(resolve, 150));
+    } catch (err) {
+      clearTimeout(timeout);
+      if (page === 1) throw err;
+      break;
+    }
   }
 
-  const data = await res.json();
-  const products = data.products || [];
-  if (products.length === 0) return null;
+  if (allProducts.length === 0) return null;
 
-  return {
-    platform: 'SHOPIFY',
-    products: products.map(p => ({
+  const mapped = allProducts.map(p => {
+    const vars = (p.variants || []).map(v => ({
+      title: String(v.title || '').trim(),
+      price: parseFloat(v.price || '169.90'),
+      available: Boolean(v.available),
+      sku: v.sku || ''
+    }));
+    totalVariantsCount += vars.length;
+    return {
       id: String(p.id),
       title: p.title || 'Produto Shopify',
       handle: p.handle || '',
       url: `${cleanUrl}/products/${p.handle}`,
       productType: p.product_type || '',
       tags: p.tags || [],
-      variants: (p.variants || []).map(v => ({
-        title: String(v.title || '').trim(),
-        price: parseFloat(v.price || '169.90'),
-        available: Boolean(v.available),
-        sku: v.sku || ''
-      }))
-    }))
+      variants: vars
+    };
+  });
+
+  return {
+    platform: 'SHOPIFY',
+    totalVariantsCount,
+    products: mapped
   };
 }
 
@@ -534,9 +564,12 @@ export async function auditUniversalStoreCatalog(storeUrl, niche) {
   const inHouseMonthlyLossBRL = inHouseBroken.reduce((sum, item) => sum + Math.round(item.price * 8), 0);
   const resaleMonthlyLossBRL = resaleBroken.reduce((sum, item) => sum + Math.round(item.price * 8), 0);
 
+  const totalSkusAudited = rawCatalog?.totalVariantsCount || products.reduce((sum, p) => sum + (p.variants?.length || 1), 0);
+
   return {
     platform: detectedPlatform,
     totalAudited: products.length,
+    totalSkusAudited,
     apparelCount,
     brokenProducts,
     inHouseBrokenCount: inHouseBroken.length,
