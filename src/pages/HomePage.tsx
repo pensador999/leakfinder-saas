@@ -1,8 +1,9 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import confetti from 'canvas-confetti';
-import { Header } from '../components/Header';
+import { Header, StorePreset } from '../components/Header';
 import { HeroUrlBar } from '../components/HeroUrlBar';
 import { ExecutiveSummary } from '../components/ExecutiveSummary';
+import { MitigationHistoryDrawer } from '../components/actions/MitigationHistoryDrawer';
 import { MerchantTripleImpactDossier } from '../components/merchant/MerchantTripleImpactDossier';
 import { AnalysisLoadingState } from '../components/AnalysisLoadingState';
 import { ErrorBoundary } from '../components/ErrorBoundary';
@@ -103,6 +104,7 @@ export function HomePage() {
   const [analyzingUrl, setAnalyzingUrl] = useState<string>('');
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
   const [isPublicDossierMode, setIsPublicDossierMode] = useState<boolean>(false);
+  const [isMitigationHistoryOpen, setIsMitigationHistoryOpen] = useState<boolean>(false);
 
   // 🔒 Master Founder Confidential Auth State
   const [isFounderAuthenticated, setIsFounderAuthenticated] = useState<boolean>(() => {
@@ -289,6 +291,21 @@ export function HomePage() {
         onOpenAdmin={() => setIsLeadsDrawerOpen(true)}
         onOpenPricing={() => setIsPricingModalOpen(true)}
         onOpenWhatsAppLeadModal={() => setIsWhatsAppModalOpen(true)}
+        onSelectStorePreset={(preset: StorePreset) => {
+          handleStartRealAudit({
+            siteUrl: preset.url,
+            businessName: preset.brandName,
+            businessType: 'ecommerce',
+            niche: preset.niche,
+            monthlyRevenue: 'R$ 50k a R$ 200k',
+            averageOrderValue: preset.aov,
+            mainChallenge: 'low_conversion',
+            targetRegion: 'Brasil',
+            grossMargin: 45,
+            competitorsUrl: 'https://concorrente.com.br'
+          });
+        }}
+        onOpenMitigationHistory={() => setIsMitigationHistoryOpen(true)}
       />
 
       {/* Main Container */}
@@ -799,6 +816,11 @@ export function HomePage() {
           setIsFounderModalOpen(false);
           setActiveTab('founder_hq');
         }}
+      />
+
+      <MitigationHistoryDrawer
+        isOpen={isMitigationHistoryOpen}
+        onClose={() => setIsMitigationHistoryOpen(false)}
       />
 
       <FloatingAiChatWidget />

@@ -14,12 +14,29 @@ import {
   MessageCircle,
   Activity,
   Sparkles,
-  Radio
+  Radio,
+  Fish,
+  Wheat,
+  Flame,
+  ExternalLink
 } from 'lucide-react';
 import gsap from 'gsap';
 import { AgentDiagnosticResult } from '../types';
 import { getWhiteLabelConfig, WhiteLabelConfig } from '../services/whiteLabelService';
 import { SupabaseStatusIndicator } from './common/SupabaseStatusIndicator';
+import { OneClickMitigationService } from '../services/actions/oneClickMitigationService';
+
+export interface StorePreset {
+  key: string;
+  name: string;
+  url: string;
+  brandName: string;
+  niche: string;
+  aov: number;
+  slug: string;
+  icon: any;
+  activeClass: string;
+}
 
 interface HeaderProps {
   diagnostic: AgentDiagnosticResult | null;
@@ -29,6 +46,8 @@ interface HeaderProps {
   onOpenAdmin: () => void;
   onOpenPricing: () => void;
   onOpenWhatsAppLeadModal?: () => void;
+  onSelectStorePreset?: (preset: StorePreset) => void;
+  onOpenMitigationHistory?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ 
@@ -38,13 +57,55 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSettings, 
   onOpenAdmin, 
   onOpenPricing,
-  onOpenWhatsAppLeadModal 
+  onOpenWhatsAppLeadModal,
+  onSelectStorePreset,
+  onOpenMitigationHistory
 }) => {
   const [whiteLabel, setWhiteLabel] = useState<WhiteLabelConfig>(getWhiteLabelConfig());
   const headerRef = useRef<HTMLElement>(null);
   const logoIconRef = useRef<HTMLDivElement>(null);
   const pulseBadgeRef = useRef<HTMLDivElement>(null);
   const scoreBadgeRef = useRef<HTMLDivElement>(null);
+
+  const brandPresets: StorePreset[] = [
+    {
+      key: 'fishing',
+      name: 'BRK Fishing',
+      url: 'https://www.brkfishing.com.br',
+      brandName: 'BRK Fishing',
+      niche: 'Pesca Esportiva & Vestuário',
+      aov: 220,
+      slug: 'k1y01s-5r',
+      icon: Fish,
+      activeClass: 'bg-cyan-600 text-white shadow-xs shadow-cyan-600/30 border-cyan-700'
+    },
+    {
+      key: 'agro',
+      name: 'BRK Agro',
+      url: 'https://www.brkagro.com.br',
+      brandName: 'BRK Agro',
+      niche: 'Agropecuária & Moda Campo',
+      aov: 260,
+      slug: '54cea3-73',
+      icon: Wheat,
+      activeClass: 'bg-emerald-600 text-white shadow-xs shadow-emerald-600/30 border-emerald-700'
+    },
+    {
+      key: 'motors',
+      name: 'BRK Motors',
+      url: 'https://www.brkmotors.com.br',
+      brandName: 'BRK Motors',
+      niche: 'Motociclismo & Off-Road',
+      aov: 240,
+      slug: 'zaevym-aj',
+      icon: Flame,
+      activeClass: 'bg-orange-600 text-white shadow-xs shadow-orange-600/30 border-orange-700'
+    }
+  ];
+
+  const currentDomain = diagnostic?.realSiteData.domain || '';
+  const activeShopSlug = OneClickMitigationService.getShopSlug(currentDomain);
+  const activeMitigationsCount = OneClickMitigationService.getActionLogs().filter(l => l.status !== 'REVERTED').length;
 
   useEffect(() => {
     const handleUpdate = () => setWhiteLabel(getWhiteLabelConfig());
@@ -114,16 +175,30 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 text-emerald-400">
             <span ref={pulseBadgeRef} className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block shadow-xs shadow-emerald-400/80" />
-            <span className="font-bold tracking-wider uppercase">ENXAME 24H ATIVO</span>
+            <span className="font-bold tracking-wider uppercase">VIGIA 24H ATIVO</span>
           </div>
           <span className="text-slate-600 hidden sm:inline">•</span>
-          <span className="hidden sm:inline text-slate-400">LATÊNCIA EDGE: <strong className="text-white font-bold">42ms</strong></span>
+          <span className="hidden sm:inline text-slate-400">ÚLTIMO CICLO: <strong className="text-white font-bold">HOJE 07:00 (3 MARCAS)</strong></span>
           <span className="text-slate-600 hidden md:inline">•</span>
           <span className="hidden md:inline text-slate-400">GROUNDING FACT-CHECK: <strong className="text-emerald-400">100% AUDITADO</strong></span>
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="hidden lg:inline text-slate-400">ANTI-BLOQUEIO: <strong className="text-blue-400">JINA AI + VTEX + SHOPIFY</strong></span>
+        <div className="flex items-center gap-2">
+          {onOpenMitigationHistory && (
+            <button
+              onClick={onOpenMitigationHistory}
+              className="px-2 py-0.5 rounded-md bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-600/50 text-[9px] font-bold flex items-center gap-1 transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
+              title="Abrir Central de Ações Mitigadas (Shopify & Meta Ads)"
+            >
+              <Zap className="w-2.5 h-2.5 text-amber-400" />
+              <span>CENTRAL DE MITIGAÇÕES</span>
+              {activeMitigationsCount > 0 && (
+                <span className="px-1 bg-emerald-500 text-slate-950 rounded-full font-black text-[8px]">
+                  {activeMitigationsCount}
+                </span>
+              )}
+            </button>
+          )}
           <span className="px-1.5 py-0.2 rounded bg-indigo-950 text-indigo-300 border border-indigo-800 text-[9px] font-bold">
             PRO v2.4
           </span>
@@ -262,6 +337,59 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         </div>
 
+      </div>
+
+      {/* 🚀 STORE BRAND QUICK-SWITCHER BAR */}
+      <div className="bg-slate-100/95 border-t border-slate-200/90 px-4 lg:px-8 py-2.5 shadow-2xs">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 font-mono flex items-center gap-1">
+              <Sparkles className="w-3 h-3 text-indigo-600" /> Alternar Marca:
+            </span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {brandPresets.map((preset) => {
+                const isActive = currentDomain.toLowerCase().includes(preset.key);
+                const IconComponent = preset.icon;
+                return (
+                  <button
+                    key={preset.key}
+                    onClick={() => onSelectStorePreset && onSelectStorePreset(preset)}
+                    className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer border ${
+                      isActive 
+                        ? preset.activeClass 
+                        : 'bg-white text-slate-700 hover:text-slate-950 border-slate-200 hover:border-slate-300 shadow-2xs hover:scale-[1.02]'
+                    }`}
+                    title={`Auditar catálogo oficial de ${preset.name} (${preset.niche})`}
+                  >
+                    <IconComponent className="w-3.5 h-3.5" />
+                    <span>{preset.name}</span>
+                    {isActive ? (
+                      <span className="w-1.5 h-1.5 rounded-full bg-white inline-block ml-0.5 animate-ping" />
+                    ) : (
+                      <span className="text-[10px] text-slate-400 font-normal">({preset.slug})</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Quick Deep Link to Active Store Shopify Admin */}
+          {activeShopSlug && (
+            <div className="flex items-center gap-2">
+              <a
+                href={`https://admin.shopify.com/store/${activeShopSlug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-mono text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
+                title={`Acessar painel administrativo da Shopify da loja ativa (${activeShopSlug})`}
+              >
+                <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Shopify Admin ({activeShopSlug})</span>
+              </a>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

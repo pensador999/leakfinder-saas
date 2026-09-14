@@ -296,10 +296,10 @@ export class OneClickMitigationService {
   /**
    * 🔄 Rollback a previously executed action
    */
-  public static async rollbackAction(actionId: string): Promise<boolean> {
+  public static async rollbackAction(actionId: string): Promise<{ success: boolean; message: string }> {
     const logs = this.getActionLogs();
     const target = logs.find(l => l.id === actionId);
-    if (!target) return false;
+    if (!target) return { success: false, message: 'Ação não encontrada no histórico.' };
 
     if (target.targetPlatform === 'SHOPIFY' && target.productId) {
       await this.restoreShopifyProductActive({
@@ -307,9 +307,19 @@ export class OneClickMitigationService {
         productTitle: target.productTitle,
         storeSlug: target.storeSlug
       });
-      return true;
     }
 
-    return true;
+    // Mark status as REVERTED in persistent logs
+    const updated = logs.map(l => l.id === actionId ? { ...l, status: 'REVERTED' as const } : l);
+    try {
+      localStorage.setItem(STORAGE_MITIGATION_LOGS_KEY, JSON.stringify(updated));
+    } catch {
+      // ignore
+    }
+
+    return { 
+      success: true, 
+      message: `Ação em "${target.productTitle}" revertida com sucesso!` 
+    };
   }
 }
