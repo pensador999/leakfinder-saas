@@ -4,6 +4,8 @@ import { AgentDiagnosticResult } from '../types';
 import { SpreadsheetExporter } from '../services/export/spreadsheetExporter';
 import { OneClickActionModal, OneClickTargetProduct } from './actions/OneClickActionModal';
 import { OneClickMitigationService } from '../services/actions/oneClickMitigationService';
+import { ProductSkuDetailModal } from './catalog/ProductSkuDetailModal';
+import { auditProductDeepSkus, AuditedProductWithSkus } from '../services/catalog/deepSkuAuditEngine';
 
 interface BlindspotAuditViewProps {
   diagnostic: AgentDiagnosticResult;
@@ -18,6 +20,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
   const [activeFilter, setActiveFilter] = useState<CatalogFilter>('TODOS');
   const [showSizeChartModal, setShowSizeChartModal] = useState<boolean>(false);
   const [selectedOneClickProduct, setSelectedOneClickProduct] = useState<OneClickTargetProduct | null>(null);
+  const [selectedSkuDetailProduct, setSelectedSkuDetailProduct] = useState<AuditedProductWithSkus | null>(null);
   const [actionSuccessMessage, setActionSuccessMessage] = useState<string | null>(null);
 
   const handleCopyText = (id: string, text: string) => {
@@ -402,6 +405,50 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
 
+                  {/* 🔬 Raio-X Detalhado de Cada SKU & Variante */}
+                  <button
+                    onClick={() => {
+                      const simulatedVariants = [
+                        ...issue.availableSizes.map(sz => ({
+                          id: `var-avail-${sz}-${issue.id}`,
+                          title: sz,
+                          sku: `${issue.sku}-${sz}`,
+                          price: 189.90,
+                          available: true,
+                          barcode: issue.barcode
+                        })),
+                        ...issue.missingSizes.map(sz => ({
+                          id: `var-miss-${sz}-${issue.id}`,
+                          title: sz,
+                          sku: `${issue.sku}-${sz}`,
+                          price: 189.90,
+                          available: false,
+                          barcode: issue.barcode
+                        }))
+                      ];
+
+                      const deepProduct = auditProductDeepSkus({
+                        id: issue.id,
+                        title: issue.productTitle,
+                        handle: issue.id,
+                        url: productDirectUrl,
+                        product_type: issue.manufacturingType === 'REVENDA' ? 'Revenda' : 'Vestuário Sublimado',
+                        tags: issue.isFullPrintExempt ? ['Full'] : [],
+                        images: [issue.imageSrc],
+                        variants: simulatedVariants.length > 0 ? simulatedVariants : [
+                          { id: '1', title: 'Padrão', sku: issue.sku, price: 189.90, available: true, barcode: issue.barcode }
+                        ]
+                      }, realSiteData.domain);
+
+                      setSelectedSkuDetailProduct(deepProduct);
+                    }}
+                    className="px-3 py-2 text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer border border-slate-300 shadow-xs"
+                    title="Inspecionar todos os SKUs, tamanhos e barcodes desta peça individualmente"
+                  >
+                    <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>Raio-X de SKUs</span>
+                  </button>
+
                   <button
                     onClick={() => handleCopyText(`link-${issue.id}`, productDirectUrl)}
                     className="px-3 py-2 text-xs font-bold bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
@@ -637,20 +684,20 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
       {selectedOneClickProduct && (
         <OneClickActionModal
           product={selectedOneClickProduct}
-          storeSlug={
-            realSiteData.domain.includes('brkfishing') 
-              ? 'k1y01s-5r' 
-              : realSiteData.domain.includes('brkagro') 
-              ? '54cea3-73' 
-              : realSiteData.domain.includes('brkmotors') 
-              ? 'zaevym-aj' 
-              : undefined
-          }
+          storeSlug={OneClickMitigationService.getShopSlug(realSiteData.domain)}
           onClose={() => setSelectedOneClickProduct(null)}
           onActionSuccess={(record) => {
             setActionSuccessMessage(`Ação executada: ${record.notes || record.actionType}`);
             setTimeout(() => setActionSuccessMessage(null), 5000);
           }}
+        />
+      )}
+
+      {/* 🔬 RAIO-X DE SKUS MODAL */}
+      {selectedSkuDetailProduct && (
+        <ProductSkuDetailModal
+          product={selectedSkuDetailProduct}
+          onClose={() => setSelectedSkuDetailProduct(null)}
         />
       )}
 

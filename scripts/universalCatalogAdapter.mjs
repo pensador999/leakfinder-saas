@@ -181,14 +181,12 @@ export function detectProductManufacturingType(product) {
 }
 
 /**
- * Maps known store domains to their Shopify Admin internal store slugs.
+ * Resolves Shopify Admin direct URL using safe native redirection.
+ * Shopify automatically redirects https://{cleanUrl}/admin/products/{id} to the authenticated store.
+ * Never hardcodes private store administrative slugs in source code (Zero-Trust).
  */
 export function getShopifyAdminSlug(cleanUrl) {
-  const urlLower = cleanUrl.toLowerCase();
-  if (urlLower.includes('brkfishing')) return 'k1y01s-5r';
-  if (urlLower.includes('brkagro')) return '54cea3-73';
-  if (urlLower.includes('brkmotors')) return 'zaevym-aj';
-  return null;
+  return null; // Protected: Never leak private administrative store slugs
 }
 
 /**
@@ -236,8 +234,6 @@ async function fetchShopifyCatalog(cleanUrl, maxPages = 15) {
 
   if (allProducts.length === 0) return null;
 
-  const shopSlug = getShopifyAdminSlug(cleanUrl);
-
   const mapped = allProducts.map(p => {
     const vars = (p.variants || []).map(v => ({
       id: String(v.id || ''),
@@ -250,7 +246,7 @@ async function fetchShopifyCatalog(cleanUrl, maxPages = 15) {
     totalVariantsCount += vars.length;
     const primarySku = vars.find(v => v.sku && v.sku.trim())?.sku || vars[0]?.sku || 'SEM_SKU';
     const primaryBarcode = vars.find(v => v.barcode && v.barcode.trim())?.barcode || vars[0]?.barcode || '';
-    const adminUrl = shopSlug ? `https://admin.shopify.com/store/${shopSlug}/products/${p.id}` : null;
+    const adminUrl = `${cleanUrl}/admin/products/${p.id}`;
 
     return {
       id: String(p.id),

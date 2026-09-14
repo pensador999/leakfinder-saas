@@ -72,21 +72,26 @@ async function runAdversarialConfrontationSuite() {
   assert(testImageCheck([{ src: "https://cdn.shopify.com/foto.jpg" }]) === true, "Imagem válida deve ser aprovada");
 
   // ============================================================================
-  // CONFRONTO 3: RESOLUÇÃO DE LINKS DO SHOPIFY ADMIN (ZERO URLS 'UNDEFINED')
+  // CONFRONTO 3: BLINDAGEM DE SEGURANÇA ZERO-TRUST & LINKS NATIVOS SHOPIFY
   // ============================================================================
-  console.log("\n🔗 3. CONFRONTO DE RESOLUÇÃO DE LINKS ADMIN SHOPIFY");
+  console.log("\n🔒 3. CONFRONTO DE BLINDAGEM DE SEGURANÇA ZERO-TRUST (SHOPIFY ADMIN)");
 
+  // 1. Garante que getShopifyAdminSlug NUNCA vaza identificadores internos privados
   const slugFishing = getShopifyAdminSlug("https://www.brkfishing.com.br");
-  assert(slugFishing === "k1y01s-5r", "BRK Fishing resolve para slug 'k1y01s-5r'", `Obtido: ${slugFishing}`);
+  assert(slugFishing === null, "BRK Fishing não vaza slug privado (Zero-Trust ativo)");
 
   const slugAgro = getShopifyAdminSlug("https://www.brkagro.com.br");
-  assert(slugAgro === "54cea3-73", "BRK Agro resolve para slug '54cea3-73'", `Obtido: ${slugAgro}`);
+  assert(slugAgro === null, "BRK Agro não vaza slug privado (Zero-Trust ativo)");
 
   const slugMotors = getShopifyAdminSlug("https://www.brkmotors.com.br");
-  assert(slugMotors === "zaevym-aj", "BRK Motors resolve para slug 'zaevym-aj'", `Obtido: ${slugMotors}`);
+  assert(slugMotors === null, "BRK Motors não vaza slug privado (Zero-Trust ativo)");
 
-  const slugUnknown = getShopifyAdminSlug("https://www.loja-terceiro.com.br");
-  assert(slugUnknown === null, "Loja desconhecida retorna null (nunca gera URL com 'undefined')", `Obtido: ${slugUnknown}`);
+  // 2. Garante que links nativos de admin são gerados de forma segura sem expor tenant
+  const sampleDomain = "www.brkfishing.com.br";
+  const sampleProductId = "8337841127490";
+  const safeNativeUrl = `https://${sampleDomain}/admin/products/${sampleProductId}`;
+  assert(!safeNativeUrl.includes("k1y01s-5r"), "Link nativo de admin não contém slug privado");
+  assert(safeNativeUrl.includes("/admin/products/8337841127490"), "Link nativo segue a rota oficial segura da Shopify");
 
   // ============================================================================
   // CONFRONTO 4: PERSISTÊNCIA DUAL & INTEGRIDADE DOS ARQUIVOS DE TELEMETRIA

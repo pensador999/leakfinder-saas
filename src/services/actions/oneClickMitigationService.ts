@@ -81,14 +81,29 @@ export class OneClickMitigationService {
   }
 
   /**
-   * Resolves Shopify store slug from domain
+   * Resolves Shopify store slug from user local storage if configured (Zero-Trust)
+   * Never hardcodes private store administrative slugs in source code.
    */
   public static getShopSlug(domain: string = ''): string | undefined {
-    const d = domain.toLowerCase();
-    if (d.includes('brkfishing')) return 'k1y01s-5r';
-    if (d.includes('brkagro')) return '54cea3-73';
-    if (d.includes('brkmotors')) return 'zaevym-aj';
+    try {
+      const saved = localStorage.getItem(`adshield_custom_shopify_slug_${domain.toLowerCase()}`);
+      if (saved && saved.trim()) return saved.trim();
+      const globalSaved = localStorage.getItem('adshield_user_shopify_slug');
+      if (globalSaved && globalSaved.trim()) return globalSaved.trim();
+    } catch {
+      // ignore
+    }
     return undefined;
+  }
+
+  /**
+   * 🛡️ Generates safe native Shopify admin URL without exposing internal tenant slugs.
+   * Shopify natively routes https://{domain}/admin/products/{productId} to the authenticated store.
+   */
+  public static getSafeAdminProductUrl(domain: string = '', productId: string = ''): string {
+    const clean = domain.replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim();
+    if (!clean || !productId) return '#';
+    return `https://${clean}/admin/products/${productId}`;
   }
 
   /**

@@ -33,7 +33,7 @@ export interface StorePreset {
   brandName: string;
   niche: string;
   aov: number;
-  slug: string;
+  slug?: string;
   icon: any;
   activeClass: string;
 }
@@ -75,7 +75,6 @@ export const Header: React.FC<HeaderProps> = ({
       brandName: 'BRK Fishing',
       niche: 'Pesca Esportiva & Vestuário',
       aov: 220,
-      slug: 'k1y01s-5r',
       icon: Fish,
       activeClass: 'bg-cyan-600 text-white shadow-xs shadow-cyan-600/30 border-cyan-700'
     },
@@ -86,7 +85,6 @@ export const Header: React.FC<HeaderProps> = ({
       brandName: 'BRK Agro',
       niche: 'Agropecuária & Moda Campo',
       aov: 260,
-      slug: '54cea3-73',
       icon: Wheat,
       activeClass: 'bg-emerald-600 text-white shadow-xs shadow-emerald-600/30 border-emerald-700'
     },
@@ -97,7 +95,6 @@ export const Header: React.FC<HeaderProps> = ({
       brandName: 'BRK Motors',
       niche: 'Motociclismo & Off-Road',
       aov: 240,
-      slug: 'zaevym-aj',
       icon: Flame,
       activeClass: 'bg-orange-600 text-white shadow-xs shadow-orange-600/30 border-orange-700'
     }

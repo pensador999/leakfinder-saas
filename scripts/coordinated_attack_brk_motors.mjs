@@ -26,7 +26,7 @@ import { executeGoInDepthScan } from './modules/goInDepthMarketIntelligence.mjs'
 const TARGET_URL = 'https://www.brkmotors.com.br';
 const TARGET_BRAND = 'BRK Motors';
 const TARGET_NICHE = 'Automotivo & Performance';
-const SHOPIFY_ADMIN_SLUG = 'zaevym-aj';
+const SHOPIFY_ADMIN_SLUG = process.env.SHOPIFY_ADMIN_SLUG || null;
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://sstirifglteqmhvpsjbz.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'sb_secret_iziVMX78wmE0Duxc59_sXQ_sbjmmQ6i';
