@@ -140,6 +140,13 @@ async function runAutonomousWorkerCycle(cycleNumber) {
     totalBrokenSkus += brokenSkus;
     profiler.endStep(`${brand}::catalog`);
 
+    if (catalogAudit.productsWithoutImages && catalogAudit.productsWithoutImages.length > 0) {
+      console.log(`📸 [08 Auditoria de Imagens] 🚨 ALERTA: ${catalogAudit.productsWithoutImages.length} produto(s) sem fotos detectados!`);
+      catalogAudit.productsWithoutImages.forEach(p => {
+        console.log(`      • 🏷️ "${p.title}" | SKU: ${p.sku} | Admin: ${p.adminUrl || 'N/A'}`);
+      });
+    }
+
     if (brokenSkus === 0) {
       console.log(`🩺 [05 Doctor Catálogo] ✅ Grade/Anúncio 100% Saudável! Zero rupturas confirmadas.`);
     } else {
@@ -149,11 +156,13 @@ async function runAutonomousWorkerCycle(cycleNumber) {
         const typeBadge = bp.isResale ? '🛍️ [REVENDA]' : '🏭 [FABRICAÇÃO PRÓPRIA]';
         const streakBadge = bp.episodicStreak > 1 ? ` (Recorrência: ${bp.episodicStreak} ciclos detectados)` : ' (Novo)';
         console.log(`      • ${typeBadge} "${bp.title}"${streakBadge}`);
-        console.log(`        └─ Risco/Falta: [${bp.missingSizes.join(', ')}] | Preço: R$ ${bp.price.toFixed(2)} | Ação: ${bp.recommendedSupplyAction}`);
+        console.log(`        └─ SKU: ${bp.sku || 'N/A'} | Falta: [${bp.missingSizes.join(', ')}] | Preço: R$ ${bp.price.toFixed(2)} | Ação: ${bp.recommendedSupplyAction}`);
         
         criticalFindings.push({ 
           brand, 
           title: bp.title, 
+          sku: bp.sku,
+          adminUrl: bp.adminUrl,
           missing: bp.missingSizes,
           isResale: bp.isResale,
           manufacturingType: bp.manufacturingType,

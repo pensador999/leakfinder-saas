@@ -181,6 +181,17 @@ export function detectProductManufacturingType(product) {
 }
 
 /**
+ * Maps known store domains to their Shopify Admin internal store slugs.
+ */
+export function getShopifyAdminSlug(cleanUrl) {
+  const urlLower = cleanUrl.toLowerCase();
+  if (urlLower.includes('brkfishing')) return 'k1y01s-5r';
+  if (urlLower.includes('brkagro')) return '54cea3-73';
+  if (urlLower.includes('brkmotors')) return 'zaevym-aj';
+  return null;
+}
+
+/**
  * 🟢 1. SHOPIFY ENGINE (/products.json) — MASSIVE FULL-CATALOG CRAWLER
  * Crawls in batches of 250 products per page to audit 100% of SKUs.
  */
@@ -225,19 +236,30 @@ async function fetchShopifyCatalog(cleanUrl, maxPages = 15) {
 
   if (allProducts.length === 0) return null;
 
+  const shopSlug = getShopifyAdminSlug(cleanUrl);
+
   const mapped = allProducts.map(p => {
     const vars = (p.variants || []).map(v => ({
+      id: String(v.id || ''),
       title: String(v.title || '').trim(),
       price: parseFloat(v.price || '169.90'),
       available: Boolean(v.available),
-      sku: v.sku || ''
+      sku: v.sku || '',
+      barcode: v.barcode || ''
     }));
     totalVariantsCount += vars.length;
+    const primarySku = vars.find(v => v.sku && v.sku.trim())?.sku || vars[0]?.sku || 'SEM_SKU';
+    const primaryBarcode = vars.find(v => v.barcode && v.barcode.trim())?.barcode || vars[0]?.barcode || '';
+    const adminUrl = shopSlug ? `https://admin.shopify.com/store/${shopSlug}/products/${p.id}` : null;
+
     return {
       id: String(p.id),
       title: p.title || 'Produto Shopify',
       handle: p.handle || '',
       url: `${cleanUrl}/products/${p.handle}`,
+      adminUrl,
+      primarySku,
+      primaryBarcode,
       productType: p.product_type || '',
       tags: p.tags || [],
       images: p.images || [],
@@ -509,6 +531,9 @@ export async function auditUniversalStoreCatalog(storeUrl, niche) {
         title: p.title,
         handle: p.handle,
         url: p.url,
+        adminUrl: p.adminUrl,
+        sku: p.primarySku || p.variants?.[0]?.sku || 'SEM_SKU',
+        barcode: p.primaryBarcode || p.variants?.[0]?.barcode || '',
         price: p.variants?.[0]?.price || 169.90
       });
     }
@@ -535,9 +560,13 @@ export async function auditUniversalStoreCatalog(storeUrl, niche) {
         const mfgInfo = detectProductManufacturingType(p);
 
         brokenProducts.push({
+          id: p.id,
           title: p.title,
           handle: p.handle,
           url: p.url,
+          adminUrl: p.adminUrl,
+          sku: p.primarySku || p.variants?.[0]?.sku || 'SEM_SKU',
+          barcode: p.primaryBarcode || p.variants?.[0]?.barcode || '',
           price: price,
           missingSizes: missingCoreSizes,
           availableSizes: sizeVariants.filter(v => v.available).map(v => v.title.trim()),

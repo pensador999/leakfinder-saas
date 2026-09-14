@@ -165,8 +165,12 @@ async function executeCoordinatedSwarmAttackAgro() {
     console.log(`   └─ 🚨 ALERTA CRÍTICO: Detectados ${missingImagesList.length} produto(s) ATIVOS NO SITE SEM NENHUMA IMAGEM!`);
     console.log(`      ↳ [Risco Máximo em Anúncios]: Tráfego enviado para produto sem foto tem taxa de conversão ZERO e 100% de rejeição.`);
     missingImagesList.forEach((p, idx) => {
-      console.log(`      [${idx + 1}] ID: ${p.id} | "${p.title}" | Preço: R$ ${parseFloat(p.price).toFixed(2)}`);
-      console.log(`          URL: ${p.url}`);
+      console.log(`      [${idx + 1}] 🏷️ "${p.title}" | Preço: R$ ${parseFloat(p.price).toFixed(2)}`);
+      console.log(`          • 🔍 SKU para Busca (Shopify / Sankhya ERP): ${p.sku}`);
+      if (p.barcode) console.log(`          • 📦 Código de Barras (EAN-13): ${p.barcode}`);
+      if (p.adminUrl) console.log(`          • 🛠️ Link Direto do Admin Shopify: ${p.adminUrl}`);
+      console.log(`          • 🌐 Link Público da Loja: ${p.url}`);
+      console.log(`          • 🆔 ID Interno Shopify: ${p.id} (Nota: No painel Admin use o SKU ou o Link Direto para abrir o produto)`);
     });
   }
 
@@ -193,7 +197,9 @@ async function executeCoordinatedSwarmAttackAgro() {
       const typeBadge = item.isResale ? '🛍️ [REVENDA / FORNECEDOR EXTERNO]' : '🏭 [FABRICAÇÃO PRÓPRIA]';
       const streakTxt = item.episodicStreak > 1 ? ` [Recorrência: ${item.episodicStreak} ciclos em memória]` : ' [Novo Incidente]';
       console.log(`      [${idx + 1}] ${typeBadge} "${item.title}"${streakTxt}`);
-      console.log(`          • URL: ${item.url}`);
+      console.log(`          • 🔍 SKU de Busca (Sankhya/Shopify): ${item.sku}`);
+      if (item.adminUrl) console.log(`          • 🛠️ Link Direto Admin: ${item.adminUrl}`);
+      console.log(`          • 🌐 Link Público: ${item.url}`);
       console.log(`          • Preço Real: R$ ${item.price.toFixed(2)}`);
       console.log(`          • Tamanhos em Falta: [${item.missingSizes.join(', ')}]`);
       console.log(`          • Ação Tática Sankhya/Compras: ${item.recommendedSupplyAction}`);
@@ -282,12 +288,19 @@ async function executeCoordinatedSwarmAttackAgro() {
   const brokenListTxt = verifiedBrokenProducts.length > 0
     ? verifiedBrokenProducts.slice(0, 8).map(b => {
       const badge = b.isResale ? '🛍️ (Revenda)' : '🏭 (Própria)';
-      return `• ${badge} *${b.title}*\n   Preço: R$ ${b.price.toFixed(2)} | Faltam: [${b.missingSizes.join(', ')}]\n   ↳ Ação: ${b.recommendedSupplyAction}`;
+      return `• ${badge} *${b.title}*\n   Preço: R$ ${b.price.toFixed(2)} | SKU: \`${b.sku || 'N/A'}\` | Faltam: [${b.missingSizes.join(', ')}]\n   ↳ Link Admin: ${b.adminUrl || b.url}\n   ↳ Ação: ${b.recommendedSupplyAction}`;
     }).join('\n')
     : '• Todas as grades centrais (P, M, G, GG) disponíveis no momento.';
 
   const missingImagesTxt = missingImagesList.length > 0
-    ? `\n📸 *Alerta Crítico de Mídia:* ${missingImagesList.length} produto(s) ATIVOS SEM FOTO no site (Ex: "${missingImagesList[0].title}" - R$ ${parseFloat(missingImagesList[0].price).toFixed(2)})\n   ↳ Risco: Se receber tráfego pago, a rejeição é de 100% e conversão zero!\n`
+    ? `\n📸 *Alerta Crítico de Mídia:* ${missingImagesList.length} produto(s) ATIVOS SEM FOTO no site:\n` +
+      missingImagesList.map(p => 
+        `• 🏷️ *${p.title}* (R$ ${parseFloat(p.price).toFixed(2)})\n` +
+        `  ↳ SKU de Busca (Sankhya/Shopify): \`${p.sku}\`\n` +
+        `  ↳ Link Direto Admin: ${p.adminUrl || 'Painel Shopify'}\n` +
+        `  ↳ Link Loja: ${p.url}`
+      ).join('\n') +
+      `\n  ↳ Risco: Se receber tráfego pago, a rejeição é de 100% e conversão zero!\n`
     : '';
 
   const executiveWhatsAppMessage = 

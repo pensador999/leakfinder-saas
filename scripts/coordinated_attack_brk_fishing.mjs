@@ -156,6 +156,23 @@ async function executeCoordinatedSwarmAttackFishing() {
   console.log(`   └─ 🏭 Fabricação Própria (Sublimação): ${catalogAudit.inHouseBrokenCount || 0} produto(s) com ruptura de grade`);
   console.log(`   └─ 🛍️ Revenda Externa (Fornecedor Parceiro): ${catalogAudit.resaleBrokenCount || 0} produto(s) com ruptura de grade`);
 
+  const missingImagesList = catalogAudit.productsWithoutImages || [];
+  console.log(`\n📸 [AGENTE 08 • AUDITORIA DE INTEGRIDADE DE IMAGENS (ZERO ALUCINAÇÃO)]`);
+  if (missingImagesList.length === 0) {
+    console.log(`   └─ ✅ 100% dos produtos auditados possuem fotos válidas cadastradas.`);
+  } else {
+    console.log(`   └─ 🚨 ALERTA CRÍTICO: Detectados ${missingImagesList.length} produto(s) ATIVOS NO SITE SEM NENHUMA IMAGEM!`);
+    console.log(`      ↳ [Risco Máximo em Anúncios]: Tráfego enviado para produto sem foto tem taxa de conversão ZERO e 100% de rejeição.`);
+    missingImagesList.forEach((p, idx) => {
+      console.log(`      [${idx + 1}] 🏷️ "${p.title}" | Preço: R$ ${parseFloat(p.price).toFixed(2)}`);
+      console.log(`          • 🔍 SKU para Busca (Shopify / Sankhya ERP): ${p.sku}`);
+      if (p.barcode) console.log(`          • 📦 Código de Barras (EAN-13): ${p.barcode}`);
+      if (p.adminUrl) console.log(`          • 🛠️ Link Direto do Admin Shopify: ${p.adminUrl}`);
+      console.log(`          • 🌐 Link Público da Loja: ${p.url}`);
+      console.log(`          • 🆔 ID Interno Shopify: ${p.id} (Nota: No painel Admin use o SKU ou o Link Direto para abrir o produto)`);
+    });
+  }
+
   const verifiedBrokenProducts = [];
   const rawBroken = catalogAudit.brokenProducts || [];
 
@@ -179,7 +196,9 @@ async function executeCoordinatedSwarmAttackFishing() {
       const typeBadge = item.isResale ? '🛍️ [REVENDA / FORNECEDOR EXTERNO]' : '🏭 [FABRICAÇÃO PRÓPRIA]';
       const streakTxt = item.episodicStreak > 1 ? ` [Recorrência: ${item.episodicStreak} ciclos em memória]` : ' [Novo Incidente]';
       console.log(`      [${idx + 1}] ${typeBadge} "${item.title}"${streakTxt}`);
-      console.log(`          • URL: ${item.url}`);
+      console.log(`          • 🔍 SKU de Busca (Sankhya/Shopify): ${item.sku}`);
+      if (item.adminUrl) console.log(`          • 🛠️ Link Direto Admin: ${item.adminUrl}`);
+      console.log(`          • 🌐 Link Público: ${item.url}`);
       console.log(`          • Preço Real: R$ ${item.price.toFixed(2)}`);
       console.log(`          • Tamanhos em Falta: [${item.missingSizes.join(', ')}]`);
       console.log(`          • Ação Tática Sankhya/Compras: ${item.recommendedSupplyAction}`);
@@ -266,8 +285,19 @@ async function executeCoordinatedSwarmAttackFishing() {
   console.log(`\n📲 [AGENTE 18 • VIGIA WHATSAPP & COPY DE FECHAMENTO]`);
   
   const brokenListTxt = verifiedBrokenProducts.length > 0
-    ? verifiedBrokenProducts.map(b => `• 🛍️ *${b.title}* (Revenda Externa)\n   Preço: R$ ${b.price.toFixed(2)} | Faltam: [${b.missingSizes.join(', ')}]\n   ↳ Ação: ${b.recommendedSupplyAction}`).join('\n')
+    ? verifiedBrokenProducts.map(b => `• 🛍️ *${b.title}* (Revenda Externa)\n   Preço: R$ ${b.price.toFixed(2)} | SKU: \`${b.sku || 'N/A'}\` | Faltam: [${b.missingSizes.join(', ')}]\n   ↳ Link Admin: ${b.adminUrl || b.url}\n   ↳ Ação: ${b.recommendedSupplyAction}`).join('\n')
     : '• Todas as grades centrais (P, M, G, GG) disponíveis no momento.';
+
+  const missingImagesTxt = missingImagesList.length > 0
+    ? `\n📸 *Alerta Crítico de Mídia:* ${missingImagesList.length} produto(s) ATIVOS SEM FOTO no site:\n` +
+      missingImagesList.slice(0, 3).map(p => 
+        `• 🏷️ *${p.title}* (R$ ${parseFloat(p.price).toFixed(2)})\n` +
+        `  ↳ SKU de Busca (Sankhya/Shopify): \`${p.sku}\`\n` +
+        `  ↳ Link Direto Admin: ${p.adminUrl || 'Painel Shopify'}\n` +
+        `  ↳ Link Loja: ${p.url}`
+      ).join('\n') +
+      `\n  ↳ Risco: Se receber tráfego pago, a rejeição é de 100% e conversão zero!\n`
+    : '';
 
   const executiveWhatsAppMessage = 
     `🚨 *DOSSIÊ DE AUDITORIA DE ELITE — ADSHIELD SWARM*\n` +
@@ -277,7 +307,8 @@ async function executeCoordinatedSwarmAttackFishing() {
     `🩺 *Diagnóstico do Catálogo ao Vivo (Rigor Popperiano):*\n` +
     `• 🏭 Fabricação Própria (Sublimação): *${catalogAudit.inHouseBrokenCount || 0} produto(s) com ruptura de grade*\n` +
     `• 🛍️ Revenda Externa (Fornecedor Parceiro): *${catalogAudit.resaleBrokenCount || 0} produto(s) com ruptura de grade*\n\n` +
-    `${brokenListTxt}\n\n` +
+    `${brokenListTxt}\n` +
+    `${missingImagesTxt}\n` +
     `💰 *Impacto Financeiro em Anúncios:*\n` +
     `• Desperdício em Tráfego Pago: *R$ ${monthlyBleed.toLocaleString('pt-BR')}/mês*\n` +
     `• Causa: Tráfego de mídia pago sendo direcionado para itens com tamanhos centrais (P, M, G, GG) esgotados.\n\n` +
