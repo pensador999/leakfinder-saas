@@ -1,13 +1,15 @@
 // Local Test Runner for Vercel Cron Endpoint
+import './utils/envLoader.mjs';
 import handler from '../api/cron/swarm-runner.ts';
 
 async function testVercelCron() {
   console.log('🚀 [AdShield Vercel Cron Test] Simulando disparo agendado das 07:00 AM...');
 
+  const cronToken = process.env.CRON_SECRET || 'test_token';
   const mockRequest = new Request('http://localhost:3000/api/cron/swarm-runner', {
     method: 'GET',
     headers: {
-      'authorization': 'Bearer adshield_cron_super_secret_2026'
+      'authorization': `Bearer ${cronToken}`
     }
   });
 

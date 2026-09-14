@@ -9,8 +9,14 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const supabaseUrl = 'https://sstirifglteqmhvpsjbz.supabase.co';
-const serviceRoleKey = 'sb_secret_iziVMX78wmE0Duxc59_sXQ_sbjmmQ6i';
+import './utils/envLoader.mjs';
+
+const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://sstirifglteqmhvpsjbz.supabase.co';
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!serviceRoleKey) {
+  throw new Error('AdShield Security Guard: SUPABASE_SERVICE_ROLE_KEY is required in environment variables or .env file.');
+}
 
 const supabase = createClient(supabaseUrl, serviceRoleKey, {
   auth: {

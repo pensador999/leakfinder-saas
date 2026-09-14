@@ -44,8 +44,12 @@ export async function executeMasterAutonomous24hPipeline(
   const envUrl = (globalThis as any)?.process?.env?.VITE_SUPABASE_URL || (import.meta as any)?.env?.VITE_SUPABASE_URL;
   const envKey = (globalThis as any)?.process?.env?.SUPABASE_SERVICE_ROLE_KEY || (import.meta as any)?.env?.VITE_SUPABASE_ANON_KEY;
 
-  const url = supabaseUrl || envUrl || 'https://sstirifglteqmhvpsjbz.supabase.co';
-  const key = supabaseKey || envKey || 'sb_secret_iziVMX78wmE0Duxc59_sXQ_sbjmmQ6i';
+  const url = supabaseUrl || envUrl;
+  const key = supabaseKey || envKey;
+
+  if (!url || !key) {
+    throw new Error('AdShield Security Guard: Supabase credentials are required in environment variables or invocation parameters.');
+  }
 
   const supabase = createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false }

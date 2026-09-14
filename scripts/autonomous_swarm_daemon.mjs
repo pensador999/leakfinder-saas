@@ -21,8 +21,14 @@ import { recordEpisodicIncident, queryProductMemory } from './modules/agentMemor
 import { MultiAgentProfiler } from './modules/multiAgentOptimizer.mjs';
 import { executeGoInDepthScan } from './modules/goInDepthMarketIntelligence.mjs';
 
+import './utils/envLoader.mjs';
+
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://sstirifglteqmhvpsjbz.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'sb_secret_iziVMX78wmE0Duxc59_sXQ_sbjmmQ6i';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!SUPABASE_KEY) {
+  throw new Error('AdShield Security Guard: SUPABASE_SERVICE_ROLE_KEY is required in environment variables or .env file.');
+}
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false }

@@ -29,3 +29,28 @@ dist-ssr
 *.sln
 *.sw?
 *.pdf
+
+# Security & Secrets Defense
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+id_rsa*
+credentials.json
+serviceAccountKey.json
+
+# Database Dumps & Local Backups
+*.sql
+*.dump
+*.backup
+*.sqlite
+*.sqlite3
+*.db
+
+# Temporary Local HTML Reports & Previews
+*_preview.html
+debate_agentes_preview.html
+relatorio_executivo_adshield_swarm.html
+
