@@ -1,56 +1,47 @@
 import React, { useEffect, useState } from 'react';
-import { Database, Zap, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Cloud, CloudCheck, RefreshCw, Sparkles } from 'lucide-react';
 import { circuitBreaker, CircuitState } from '../../lib/circuitBreaker';
 
 export const SupabaseStatusIndicator: React.FC = () => {
   const [circuitState, setCircuitState] = useState<CircuitState>('CLOSED');
-  const [isResetting, setIsResetting] = useState(false);
+  const [isAutoSyncing, setIsAutoSyncing] = useState(false);
 
   useEffect(() => {
     const unsubscribe = circuitBreaker.subscribe(stats => {
       setCircuitState(stats.state);
+      setIsAutoSyncing(stats.isAutoSyncing || false);
     });
     return () => unsubscribe();
   }, []);
 
-  const handleTestReconnection = () => {
-    setIsResetting(true);
-    circuitBreaker.reset();
-    setTimeout(() => {
-      setIsResetting(false);
-    }, 800);
-  };
-
-  const isLocalOnly = circuitState === 'OPEN';
-
   return (
-    <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium transition-all bg-slate-900/80 border border-slate-800 text-slate-300">
-      {isLocalOnly ? (
-        <>
-          <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-          <span className="text-[11px] text-amber-300 font-mono flex items-center gap-1">
-            <Zap className="w-3 h-3 text-amber-400" />
-            Modo Local Resiliente (Zero Lag)
-          </span>
-          <button
-            onClick={handleTestReconnection}
-            disabled={isResetting}
-            title="Clique para testar reconexão com a nuvem"
-            className="ml-1 text-[10px] text-slate-400 hover:text-white transition-colors cursor-pointer flex items-center gap-0.5"
-          >
-            <RefreshCw className={`w-2.5 h-2.5 ${isResetting ? 'animate-spin' : ''}`} />
-            <span>Reconectar</span>
-          </button>
-        </>
-      ) : (
-        <>
-          <div className="w-2 h-2 rounded-full bg-emerald-400" />
-          <span className="text-[11px] text-emerald-300 font-mono flex items-center gap-1">
-            <Database className="w-3 h-3 text-emerald-400" />
-            Nuvem Sincronizada
-          </span>
-        </>
-      )}
+    <div 
+      className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium transition-all bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 shadow-xs backdrop-blur-xs select-none"
+      title="Nuvem & Telemetria Durável Ativa (Auto-Sync 24/7 Ativo em Segundo Plano)"
+    >
+      <div className="relative flex items-center justify-center">
+        <div className="w-2 h-2 rounded-full bg-emerald-400" />
+        <div className="absolute w-3.5 h-3.5 rounded-full bg-emerald-400/30 animate-ping" />
+      </div>
+
+      <span className="text-[11px] text-emerald-200 font-mono flex items-center gap-1.5 font-bold">
+        {isAutoSyncing ? (
+          <>
+            <RefreshCw className="w-3 h-3 text-emerald-400 animate-spin" />
+            <span>Sincronizando Nuvem...</span>
+          </>
+        ) : (
+          <>
+            <Cloud className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Nuvem & Telemetria Sincronizadas</span>
+          </>
+        )}
+      </span>
+
+      <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded font-mono font-bold border border-emerald-500/30">
+        24/7 Ativo
+      </span>
     </div>
   );
 };
+
