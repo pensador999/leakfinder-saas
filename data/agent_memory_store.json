@@ -1,0 +1,89 @@
+{
+  "version": "2026.4",
+  "last_updated": "2026-09-14T11:46:04.729Z",
+  "semantic": {
+    "registered_brands": {},
+    "catalog_skus": {}
+  },
+  "episodic": {
+    "incident_streaks": {
+      "BRK Agro::Camisa Masculina Agro Brk Mescla Azul Escuro com Proteção Solar UV50+": {
+        "first_seen": "2026-09-14T11:46:04.717Z",
+        "last_seen": "2026-09-14T11:46:04.717Z",
+        "detection_cycles": 1,
+        "missing_sizes": [
+          "M",
+          "GG"
+        ],
+        "cumulative_loss_brl": 5097
+      },
+      "BRK Agro::Camisa Agro Brk Medalhão São Bento com UV50+ Envio Imediato": {
+        "first_seen": "2026-09-14T11:46:04.720Z",
+        "last_seen": "2026-09-14T11:46:04.720Z",
+        "detection_cycles": 1,
+        "missing_sizes": [
+          "G"
+        ],
+        "cumulative_loss_brl": 5097
+      },
+      "BRK Agro::Camisa Produtor de Leite com Proteção UV50": {
+        "first_seen": "2026-09-14T11:46:04.721Z",
+        "last_seen": "2026-09-14T11:46:04.722Z",
+        "detection_cycles": 1,
+        "missing_sizes": [
+          "M",
+          "G"
+        ],
+        "cumulative_loss_brl": 5097
+      },
+      "BRK Agro::Camisa Agro Brk O Agro Move o Brasil com Proteção Solar UV50+ Envio Imediato": {
+        "first_seen": "2026-09-14T11:46:04.723Z",
+        "last_seen": "2026-09-14T11:46:04.723Z",
+        "detection_cycles": 1,
+        "missing_sizes": [
+          "M",
+          "G"
+        ],
+        "cumulative_loss_brl": 5097
+      },
+      "BRK Agro::Camisa Agro Brk Camo Long Horn Brasil Azul com Proteção Solar UV50+": {
+        "first_seen": "2026-09-14T11:46:04.725Z",
+        "last_seen": "2026-09-14T11:46:04.725Z",
+        "detection_cycles": 1,
+        "missing_sizes": [
+          "G"
+        ],
+        "cumulative_loss_brl": 5097
+      },
+      "BRK Agro::Camisa Xadrez Farm Preto/Branco - Manga Longa": {
+        "first_seen": "2026-09-14T11:46:04.727Z",
+        "last_seen": "2026-09-14T11:46:04.727Z",
+        "detection_cycles": 1,
+        "missing_sizes": [
+          "M",
+          "G",
+          "GG"
+        ],
+        "cumulative_loss_brl": 6888
+      },
+      "BRK Agro::Camisa Country Ranch Lilas/Laranja - Manga Longa": {
+        "first_seen": "2026-09-14T11:46:04.729Z",
+        "last_seen": "2026-09-14T11:46:04.729Z",
+        "detection_cycles": 1,
+        "missing_sizes": [
+          "GG"
+        ],
+        "cumulative_loss_brl": 6888
+      }
+    },
+    "cumulative_losses": {
+      "BRK Agro": 39261
+    }
+  },
+  "procedural": {
+    "supply_playbooks": {
+      "FABRICACAO_PROPRIA": "Emitir Ordem de Produção (OP) de corte e sublimação no Sankhya ERP PCP.",
+      "REVENDA_EXTERNA": "Emitir Pedido de Compra (PO) ao fornecedor homologado ou pausar criativo no Meta Ads."
+    }
+  }
+}
