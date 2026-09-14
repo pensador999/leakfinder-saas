@@ -5,6 +5,9 @@
 // ==============================================================================
 
 import { AgentDiagnosticResult } from '../../types';
+import { ProspectLead, getSavedProspectLeads } from '../prospecting/leadSniperEngine';
+
+export * from '../prospecting/leadSniperEngine';
 
 export interface DiscoveredLeadOpportunity {
   id: string;
@@ -56,6 +59,7 @@ export interface WeeklyMarketReport {
   weekNumber: number;
   totalLeadsScanned: number;
   highValueProspects: DiscoveredLeadOpportunity[];
+  prospectLeads: ProspectLead[];
   topEmergingTrends: EmergingCroTrend[];
   skuPriceCrossBenchmarks: SkuPriceCrossBenchmark[];
   hunterSummary: string;
@@ -208,6 +212,7 @@ export async function runMarketHunterScan(diagnostic?: AgentDiagnosticResult): P
     weekNumber: 36,
     totalLeadsScanned: 1056,
     highValueProspects,
+    prospectLeads: getSavedProspectLeads(),
     topEmergingTrends,
     skuPriceCrossBenchmarks,
     hunterSummary: 'Varrimento ativo de mercado concluído. Foram cruzados dados de preços de 3 SKUs críticos contra concorrentes diretos e minerados 3 leads de alta conversão para abordagem no WhatsApp.'

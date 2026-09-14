@@ -127,3 +127,34 @@ export function updateMonitoredStore(brandName, updates) {
     writeLocalDb(db);
   }
 }
+
+export function saveProspectLead(lead) {
+  const db = readLocalDb();
+  if (!db.prospect_leads) {
+    db.prospect_leads = [];
+  }
+  const existingIdx = db.prospect_leads.findIndex(l => l.id === lead.id || l.domain === lead.domain);
+  if (existingIdx >= 0) {
+    db.prospect_leads[existingIdx] = { ...db.prospect_leads[existingIdx], ...lead };
+  } else {
+    db.prospect_leads.unshift(lead);
+  }
+  writeLocalDb(db);
+}
+
+export function getProspectLeads() {
+  const db = readLocalDb();
+  return db.prospect_leads || [];
+}
+
+export function updateProspectLeadStatus(leadId, status, notes) {
+  const db = readLocalDb();
+  if (!db.prospect_leads) return;
+  const lead = db.prospect_leads.find(l => l.id === leadId);
+  if (lead) {
+    lead.status = status;
+    if (notes !== undefined) lead.notes = notes;
+    writeLocalDb(db);
+  }
+}
+

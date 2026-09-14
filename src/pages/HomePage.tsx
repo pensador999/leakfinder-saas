@@ -373,6 +373,19 @@ export function HomePage() {
               {/* Right: Clean Action Cluster */}
               <div className="flex items-center gap-2 flex-wrap">
                 
+                {/* 🎯 Lead Sniper B2B (Meta Ads & WhatsApp Closer) */}
+                <button
+                  onClick={() => {
+                    setActivePillar('MEDIA_INTELLIGENCE');
+                    setActiveTab('market_hunter');
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                  title="Abrir Motor de Prospecção Outbound B2B e Lead Sniper"
+                >
+                  <Target className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Lead Sniper B2B</span>
+                </button>
+
                 {/* 📲 Vigia WhatsApp 24/7 (High Priority Status Button) */}
                 <button
                   onClick={() => setIsWhatsAppWatchdogOpen(true)}
@@ -411,6 +424,21 @@ export function HomePage() {
                   {/* Popover Menu */}
                   {isToolsMenuOpen && (
                     <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl border border-slate-200 shadow-2xl p-1.5 z-50 animate-fadeIn space-y-0.5 font-sans">
+                      <button
+                        onClick={() => { 
+                          setActivePillar('MEDIA_INTELLIGENCE');
+                          setActiveTab('market_hunter'); 
+                          setIsToolsMenuOpen(false); 
+                        }}
+                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-blue-50 text-xs font-semibold text-blue-900 flex items-center gap-2.5 transition-colors cursor-pointer"
+                      >
+                        <Target className="w-4 h-4 text-blue-600 shrink-0" />
+                        <div>
+                          <span className="block text-slate-900 font-bold">🎯 Lead Sniper (Prospecção)</span>
+                          <span className="text-[10px] text-slate-400 font-normal">Buscar lojas no Meta Ads com estoque furado</span>
+                        </div>
+                      </button>
+
                       <button
                         onClick={() => { setIsStoresManagerOpen(true); setIsToolsMenuOpen(false); }}
                         className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 flex items-center gap-2.5 transition-colors cursor-pointer"
@@ -637,7 +665,7 @@ export function HomePage() {
                 )}
 
                 {activeTab === 'market_hunter' && (
-                  <MarketHunterAgentView />
+                  <MarketHunterAgentView diagnostic={diagnostic} />
                 )}
 
                 {activeTab === 'product_evolution' && (
