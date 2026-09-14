@@ -45,6 +45,23 @@ export interface BusinessMetricsSummary {
   whatsappQueueCount: number;
 }
 
+export interface BleedHistoricalTrend {
+  weekLabel: string;
+  bleedPreventedBrl: number;
+  activeAdsProtectedCount: number;
+  topContributingStore: string;
+}
+
+export interface KillSwitchMetaPayload {
+  endpoint: string;
+  method: string;
+  adId: string;
+  requestBody: { status: string; stop_loss_reason: string; triggered_by: string };
+  responseStatus: number;
+  latencyMs: number;
+  apiTimestamp: string;
+}
+
 export interface KillSwitchEventLog {
   id: string;
   brandName: string;
@@ -60,6 +77,7 @@ export interface KillSwitchEventLog {
   timestamp: string;
   whatsappDispatched: boolean;
   targetPhone: string;
+  metaPayload?: KillSwitchMetaPayload;
 }
 
 export interface StoreBleedMetric {
@@ -95,6 +113,33 @@ export interface WhatsAppQueueItem {
   createdAt: string;
   summaryText: string;
 }
+
+export const BLEED_HISTORICAL_TRENDS: BleedHistoricalTrend[] = [
+  {
+    weekLabel: 'Semana 1 (21/Ago - 27/Ago)',
+    bleedPreventedBrl: 42150.00,
+    activeAdsProtectedCount: 8,
+    topContributingStore: 'BRK Agro'
+  },
+  {
+    weekLabel: 'Semana 2 (28/Ago - 03/Set)',
+    bleedPreventedBrl: 51230.50,
+    activeAdsProtectedCount: 11,
+    topContributingStore: 'BRK Agro'
+  },
+  {
+    weekLabel: 'Semana 3 (04/Set - 10/Set)',
+    bleedPreventedBrl: 54120.00,
+    activeAdsProtectedCount: 13,
+    topContributingStore: 'BRK Fishing'
+  },
+  {
+    weekLabel: 'Semana 4 (11/Set - 14/Set - Atual)',
+    bleedPreventedBrl: 56475.80,
+    activeAdsProtectedCount: 16,
+    topContributingStore: 'BRK Motors'
+  }
+];
 
 export const INITIAL_FOUNDER_DIRECTIVES: FounderDirectivesState = {
   croMinIceScore: 8.0,
@@ -180,23 +225,49 @@ export const SAMPLE_KILLSWITCH_LOGS: KillSwitchEventLog[] = [
     savingsEstimatedDay: 580.0,
     timestamp: '2026-09-14T11:48:10Z',
     whatsappDispatched: true,
-    targetPhone: '5534991351122'
+    targetPhone: '5534991351122',
+    metaPayload: {
+      endpoint: 'POST https://graph.facebook.com/v20.0/act_409182390_ad_9921',
+      method: 'POST',
+      adId: 'act_409182390_ad_9921',
+      requestBody: {
+        status: 'PAUSED',
+        stop_loss_reason: 'Ruptura de tamanho de alto giro (G) detectada via DOM /products.json',
+        triggered_by: 'AdShield Media Buyer Kill-Switch Worker'
+      },
+      responseStatus: 200,
+      latencyMs: 382,
+      apiTimestamp: '2026-09-14T11:48:10.382Z'
+    }
   },
   {
     id: 'ks-1789403328002',
     brandName: 'BRK Fishing',
     storeUrl: 'https://www.brkfishing.com.br',
-    adId: 'act_409182390_ad_8832',
-    campaignName: '[REMARKETING] Linha Pesca Básica UV - Feed/Reels',
-    sku: 'BRK-PESCA-BASICA-GG',
-    productTitle: 'Camisa de Pesca Brk Básica Laranja UV50+',
+    adId: 'act_409182390_ad_8812',
+    campaignName: '[CATÁLOGO] Camisas de Pesca Tucunaré Monster Blue',
+    sku: 'BRK-FISH-TUC-GG',
+    productTitle: 'Camisa de Pesca Esportiva Tucunaré Monster Proteção Solar',
     sizeOutOfStock: 'GG',
-    reactionTimeSeconds: 22.1,
+    reactionTimeSeconds: 19.1,
     actionTaken: 'PAUSED',
     savingsEstimatedDay: 420.0,
-    timestamp: '2026-09-14T10:15:32Z',
+    timestamp: '2026-09-14T10:15:22Z',
     whatsappDispatched: true,
-    targetPhone: '5534991351122'
+    targetPhone: '5534991351122',
+    metaPayload: {
+      endpoint: 'POST https://graph.facebook.com/v20.0/act_409182390_ad_8812',
+      method: 'POST',
+      adId: 'act_409182390_ad_8812',
+      requestBody: {
+        status: 'PAUSED',
+        stop_loss_reason: 'Variante GG com estoque zerado e tráfego pago ativo',
+        triggered_by: 'AdShield Media Buyer Kill-Switch Worker'
+      },
+      responseStatus: 200,
+      latencyMs: 295,
+      apiTimestamp: '2026-09-14T10:15:22.295Z'
+    }
   },
   {
     id: 'ks-1789403328003',
@@ -212,7 +283,20 @@ export const SAMPLE_KILLSWITCH_LOGS: KillSwitchEventLog[] = [
     savingsEstimatedDay: 350.0,
     timestamp: '2026-09-14T09:30:15Z',
     whatsappDispatched: true,
-    targetPhone: '5534991351122'
+    targetPhone: '5534991351122',
+    metaPayload: {
+      endpoint: 'POST https://graph.facebook.com/v20.0/act_409182390_ad_7741',
+      method: 'POST',
+      adId: 'act_409182390_ad_7741',
+      requestBody: {
+        status: 'PAUSED',
+        stop_loss_reason: 'Tamanho M esgotado (responsável por 38% das vendas da linha Motors)',
+        triggered_by: 'AdShield Media Buyer Kill-Switch Worker'
+      },
+      responseStatus: 200,
+      latencyMs: 410,
+      apiTimestamp: '2026-09-14T09:30:15.410Z'
+    }
   },
   {
     id: 'ks-1789403328004',
@@ -228,7 +312,20 @@ export const SAMPLE_KILLSWITCH_LOGS: KillSwitchEventLog[] = [
     savingsEstimatedDay: 0,
     timestamp: '2026-09-14T08:05:40Z',
     whatsappDispatched: false,
-    targetPhone: '5534991351122'
+    targetPhone: '5534991351122',
+    metaPayload: {
+      endpoint: 'AUDIT_ONLY https://graph.facebook.com/v20.0/act_409182390_ad_6650',
+      method: 'GET',
+      adId: 'act_409182390_ad_6650',
+      requestBody: {
+        status: 'ACTIVE',
+        stop_loss_reason: 'Regra _FULL aplicada com sucesso (item de tamanho único/revenda isento de corte)',
+        triggered_by: 'Universal Niche Recognition Guardrail'
+      },
+      responseStatus: 200,
+      latencyMs: 140,
+      apiTimestamp: '2026-09-14T08:05:40.140Z'
+    }
   }
 ];
 
@@ -403,4 +500,29 @@ export async function fetchTopRecurrentSkus(): Promise<TopRecurrentSkuItem[]> {
 export async function fetchWhatsAppAlertQueue(): Promise<WhatsAppQueueItem[]> {
   return SAMPLE_WHATSAPP_QUEUE;
 }
+
+export async function fetchBleedHistoricalTrends(): Promise<BleedHistoricalTrend[]> {
+  return BLEED_HISTORICAL_TRENDS;
+}
+
+export function generateMasterHqCsvExport(): string {
+  const headers = ['Categoria', 'Identificador / Marca', 'Métrica / Detalhe', 'Valor Financeiro (R$)', 'Status'];
+  const rows: string[][] = [
+    ['SaaS MRR', 'Base Ativa AdShield', '46 Assinantes Ativos (Starter/Pro/Enterprise)', '24020.00', 'PROJETADO'],
+    ['Sangria Protegida', 'BRK Agro', '14 Rupturas de Grade M/G', '101727.30', 'PROTEGIDO'],
+    ['Sangria Protegida', 'BRK Fishing', '9 Rupturas de Grade GG', '68673.00', 'PROTEGIDO'],
+    ['Sangria Protegida', 'BRK Motors', '8 Rupturas de Grade M', '33576.00', 'PROTEGIDO'],
+    ['Kill-Switch', 'BRK Agro (act_409182390_ad_9921)', 'Camisa Work VL - Tamanho G', '580.00/dia', 'PAUSED (<28.4s)'],
+    ['Kill-Switch', 'BRK Fishing (act_409182390_ad_8812)', 'Camisa Pesca Tucunaré - Tamanho GG', '420.00/dia', 'PAUSED (<19.1s)'],
+    ['Kill-Switch', 'BRK Motors (act_409182390_ad_7741)', 'Segunda Pele Iron 833 - Tamanho M', '350.00/dia', 'PAUSED (<31.8s)']
+  ];
+
+  const csvContent = [
+    headers.join(';'),
+    ...rows.map(r => r.map(c => `"${c.replace(/"/g, '""')}"`).join(';'))
+  ].join('\n');
+
+  return csvContent;
+}
+
 

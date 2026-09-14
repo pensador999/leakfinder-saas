@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "package:extension": "node scripts/package_chrome_extension.mjs",
+    "test:extension": "node scripts/test_chrome_extension.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.1",

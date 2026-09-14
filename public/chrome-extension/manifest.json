@@ -1,18 +1,29 @@
 {
   "manifest_version": 3,
   "name": "AdShield AI • Detector de Grade Furada & Meta Ads Guard",
-  "version": "1.0.0",
-  "description": "Inspeciona qualquer e-commerce ao vivo e detecta se há anúncios ativos caindo em produtos com tamanhos esgotados.",
+  "version": "2.0.0",
+  "description": "Inspeciona qualquer e-commerce ao vivo e detecta se há anúncios ativos caindo em produtos com tamanhos esgotados ou falhas de conversão.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "permissions": [
     "activeTab",
-    "scripting"
+    "scripting",
+    "storage"
   ],
   "host_permissions": [
     "<all_urls>"
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Auditar com AdShield AI"
+    "default_title": "Auditar com AdShield AI",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   },
   "content_scripts": [
     {
@@ -22,3 +33,4 @@
     }
   ]
 }
+

@@ -2,15 +2,20 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>AdShield AI Quick Audit</title>
+  <title>AdShield AI • E-Commerce Inspector</title>
   <style>
-    body {
-      width: 360px;
+    * {
+      box-sizing: border-box;
       margin: 0;
+      padding: 0;
+    }
+    body {
+      width: 380px;
       padding: 16px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: #0f172a;
+      background: #090d16;
       color: #f8fafc;
+      overflow-x: hidden;
     }
     .header {
       display: flex;
@@ -18,128 +23,257 @@
       justify-content: space-between;
       border-bottom: 1px solid #1e293b;
       padding-bottom: 12px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
     .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
       font-weight: 900;
-      font-size: 14px;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+    }
+    .logo-icon {
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, #6366f1, #4338ca);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      border: 1px solid #818cf8;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+    }
+    .badge-platform {
+      font-size: 10px;
+      font-weight: 800;
+      font-family: monospace;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #064e3b;
+      color: #34d399;
+      border: 1px solid #059669;
+      text-transform: uppercase;
+    }
+    .domain-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      font-size: 11px;
+    }
+    .domain-name {
+      font-weight: 800;
       color: #38bdf8;
+      font-family: monospace;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .score-badge {
+      font-family: monospace;
+      font-weight: 900;
+      font-size: 11px;
+      color: #a7f3d0;
+      background: rgba(16, 185, 129, 0.15);
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .loss-card {
+      background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+      border: 1px solid #3730a3;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    }
+    .loss-label {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #c7d2fe;
+      font-family: monospace;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .loss-amount {
+      font-size: 24px;
+      font-weight: 900;
+      color: #fb7185;
+      font-family: monospace;
+      letter-spacing: -0.5px;
+    }
+    .loss-sub {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-top: 3px;
+    }
+    .checklist-card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .checklist-title {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #64748b;
+      font-family: monospace;
+      margin-bottom: 2px;
+    }
+    .check-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      padding: 5px 0;
+      border-bottom: 1px solid #1e293b;
+    }
+    .check-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .check-label {
+      color: #cbd5e1;
       display: flex;
       align-items: center;
       gap: 6px;
     }
-    .badge {
-      font-size: 9px;
-      font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: #059669;
-      color: #ffffff;
-      text-transform: uppercase;
-    }
-    .card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 10px;
-    }
-    .card-title {
-      font-size: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-      color: #94a3b8;
-      margin-bottom: 4px;
-    }
-    .loss-value {
-      font-size: 22px;
-      font-weight: 900;
-      color: #f43f5e;
+    .check-status {
       font-family: monospace;
+      font-weight: 800;
+      font-size: 11px;
+    }
+    .status-green { color: #34d399; }
+    .status-red { color: #f43f5e; }
+    .status-amber { color: #fbbf24; }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
     .btn {
       width: 100%;
-      padding: 10px;
-      background: #2563eb;
-      color: #ffffff;
-      border: none;
-      border-radius: 10px;
-      font-weight: 700;
+      padding: 11px 14px;
+      border-radius: 12px;
       font-size: 12px;
+      font-weight: 800;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
+      transition: all 0.2s;
+      border: none;
     }
-    .btn:hover {
-      background: #1d4ed8;
-    }
-    .btn-green {
+    .btn-whatsapp {
       background: #059669;
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(5, 150, 105, 0.3);
     }
-    .btn-green:hover {
+    .btn-whatsapp:hover {
       background: #047857;
     }
-    .status-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      padding: 4px 0;
-      border-bottom: 1px solid #334155;
+    .btn-saas {
+      background: #4f46e5;
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(79, 70, 229, 0.3);
     }
-    .status-row:last-child {
-      border-bottom: none;
+    .btn-saas:hover {
+      background: #4338ca;
     }
-    .red { color: #f43f5e; font-weight: 700; }
-    .green { color: #10b981; font-weight: 700; }
+    .footer-note {
+      text-align: center;
+      font-size: 9px;
+      color: #64748b;
+      margin-top: 10px;
+      font-family: monospace;
+    }
   </style>
 </head>
 <body>
 
+  <!-- Header -->
   <div class="header">
     <div class="logo">
-      <span>🛡️</span>
-      <span>AdShield AI Quick Audit</span>
+      <div class="logo-icon">🛡️</div>
+      <span>AdShield AI Inspector</span>
     </div>
-    <span class="badge" id="platformBadge">Auto-Detect</span>
+    <span class="badge-platform" id="platformBadge">Auto-Detect</span>
   </div>
 
-  <div class="card">
-    <div class="card-title">Vazamento Estimado em Anúncios</div>
-    <div class="loss-value" id="adWasteValue">R$ 2.450/mês</div>
-    <div style="font-size: 10px; color: #94a3b8; margin-top: 2px;" id="domainLabel">Auditando aba ativa...</div>
+  <!-- Active Domain Bar -->
+  <div class="domain-bar">
+    <span class="domain-name" id="domainLabel">Carregando aba ativa...</span>
+    <span class="score-badge" id="scoreBadge">Score: --/100</span>
   </div>
 
-  <div class="card">
-    <div class="card-title">Checklist de Integridade ao Vivo</div>
-    <div class="status-row">
-      <span>Pixel Meta / Tráfego Ativo:</span>
-      <span class="green" id="metaPixelStatus">Detectado (Ativo)</span>
+  <!-- Loss Card -->
+  <div class="loss-card">
+    <div class="loss-label">
+      <span>Vazamento Financeiro Estimado</span>
+      <span style="color: #fb7185;">🚨 Risco em Ads</span>
     </div>
-    <div class="status-row">
-      <span>Ruptura de Grade (M / G):</span>
-      <span class="red" id="brokenGridStatus">2 SKUs Rompidos</span>
+    <div class="loss-amount" id="adWasteValue">R$ 2.500 /mês</div>
+    <div class="loss-sub" id="lossSubText">Calculado com base em tamanhos rompidos no tráfego pago</div>
+  </div>
+
+  <!-- Checklist Card -->
+  <div class="checklist-card">
+    <div class="checklist-title">Diagnóstico ao Vivo (DOM & Pixels)</div>
+    
+    <div class="check-row">
+      <span class="check-label"><span>🎯</span> Meta Pixel / Tráfego:</span>
+      <span class="check-status status-green" id="metaPixelStatus">Detectando...</span>
     </div>
-    <div class="status-row">
-      <span>Tabela de Medidas (PDP):</span>
-      <span class="green" id="sizeChartStatus">Instalada</span>
+
+    <div class="check-row">
+      <span class="check-label"><span>⚠️</span> Ruptura de Grade (M/G):</span>
+      <span class="check-status status-red" id="brokenGridStatus">Inspecionando...</span>
     </div>
-    <div class="status-row">
-      <span>CNPJ no Rodapé:</span>
-      <span class="green" id="cnpjStatus">Conforme</span>
+
+    <div class="check-row">
+      <span class="check-label"><span>📏</span> Tabela de Medidas (PDP):</span>
+      <span class="check-status status-green" id="sizeChartStatus">Inspecionando...</span>
+    </div>
+
+    <div class="check-row">
+      <span class="check-label"><span>⚖️</span> Conformidade CNPJ:</span>
+      <span class="check-status status-green" id="cnpjStatus">Inspecionando...</span>
     </div>
   </div>
 
-  <div style="display: flex; flex-direction: column; gap: 8px;">
-    <button class="btn btn-green" id="btnCopyAlert">
+  <!-- Action Buttons -->
+  <div class="btn-group">
+    <button class="btn btn-whatsapp" id="btnCopyAlert">
       <span>📋 Copiar Alerta WhatsApp para o Gestor</span>
     </button>
-    <button class="btn" id="btnOpenFullDossier">
-      <span>🚀 Abrir Dossiê Completo no SaaS</span>
+    <button class="btn btn-saas" id="btnOpenFullDossier">
+      <span>🚀 Abrir Diagnóstico Completo no SaaS</span>
     </button>
+  </div>
+
+  <div class="footer-note">
+    AdShield AI 2026.4 • Powered by 18 Autonomous Swarm Agents
   </div>
 
   <script src="popup.js"></script>
 </body>
 </html>
+
