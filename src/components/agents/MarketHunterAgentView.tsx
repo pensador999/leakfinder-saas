@@ -33,6 +33,7 @@ import {
   Download
 } from 'lucide-react';
 import { SpreadsheetExporter } from '../../services/export/spreadsheetExporter';
+import { BatchLeadExportModal } from '../export/BatchLeadExportModal';
 import { 
   runMarketHunterScan, 
   WeeklyMarketReport, 
@@ -66,6 +67,7 @@ export const MarketHunterAgentView: React.FC<MarketHunterAgentViewProps> = ({ di
   const [copiedLeadId, setCopiedLeadId] = useState<string | null>(null);
   const [copiedHookId, setCopiedHookId] = useState<string | null>(null);
   const [activeDossierLead, setActiveDossierLead] = useState<ProspectLead | null>(null);
+  const [isBatchExportModalOpen, setIsBatchExportModalOpen] = useState<boolean>(false);
 
   const loadHunterReport = async () => {
     setIsLoading(true);
@@ -287,12 +289,12 @@ export const MarketHunterAgentView: React.FC<MarketHunterAgentViewProps> = ({ di
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <button
-                onClick={() => SpreadsheetExporter.exportProspectLeads(leadsList)}
+                onClick={() => setIsBatchExportModalOpen(true)}
                 className="px-3.5 py-1.5 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 rounded-xl font-mono font-bold text-xs shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
-                title="Exportar todos os leads e pitches de WhatsApp para planilha Excel/CSV"
+                title="Exportar leads em lote para Excel, WhatsApp em massa ou CRM B2B"
               >
                 <Download className="w-3.5 h-3.5 text-blue-600" />
-                <span>Exportar Planilha Excel/CSV</span>
+                <span>Exportar Leads em Lote</span>
               </button>
               <span className="px-3 py-1.5 bg-blue-600 text-white font-mono font-bold rounded-xl text-[11px] shadow-xs">
                 {leadsList.length} Lojas Auditadas
@@ -827,6 +829,14 @@ export const MarketHunterAgentView: React.FC<MarketHunterAgentViewProps> = ({ di
             </div>
           </div>
         </div>
+      )}
+
+      {/* 📊 MODAL: EXPORTAÇÃO EM LOTE MULTI-FORMATO */}
+      {isBatchExportModalOpen && (
+        <BatchLeadExportModal
+          leads={leadsList}
+          onClose={() => setIsBatchExportModalOpen(false)}
+        />
       )}
 
     </div>
