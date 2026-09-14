@@ -87,6 +87,10 @@ async function executeCoordinatedSwarmAttackFishing() {
   let hasGa4 = false;
   let hasCnpj = false;
   let platformDetected = 'Shopify';
+  let ga4Id = null;
+  let clarityId = null;
+  let gtmId = null;
+  let pixelId = null;
 
   try {
     const probeStart = Date.now();
@@ -99,10 +103,23 @@ async function executeCoordinatedSwarmAttackFishing() {
     httpStatus = res.status;
     storeHtml = await res.text();
 
-    hasMetaPixel = storeHtml.includes('fbevents.js') || storeHtml.includes('fbq(');
-    hasGtm = storeHtml.includes('googletagmanager.com/gtm.js');
-    hasClarity = storeHtml.includes('clarity.ms/tag/');
-    hasGa4 = storeHtml.includes('gtag(') || storeHtml.includes('G-');
+    // Extração rigorosa com Grounding Absoluto (Zero Adivinhações)
+    const ga4Matches = storeHtml.match(/G-[A-Z0-9]{6,12}/g);
+    ga4Id = ga4Matches ? Array.from(new Set(ga4Matches))[0] : null;
+
+    const clarityMatch = storeHtml.match(/clarity\.ms\/tag\/([a-zA-Z0-9]+)/i);
+    clarityId = clarityMatch ? clarityMatch[1] : null;
+
+    const gtmMatch = storeHtml.match(/GTM-[A-Z0-9]{4,10}/i);
+    gtmId = gtmMatch ? gtmMatch[0] : null;
+
+    const pixelMatch = storeHtml.match(/fbq\s*\(\s*['"]init['"]\s*,\s*['"](\d+)['"]/i);
+    pixelId = pixelMatch ? pixelMatch[1] : null;
+
+    hasMetaPixel = Boolean(pixelId || storeHtml.includes('connect.facebook.net') || storeHtml.includes('fbevents.js'));
+    hasGtm = Boolean(gtmId);
+    hasClarity = Boolean(clarityId);
+    hasGa4 = Boolean(ga4Id);
     hasCnpj = /\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/.test(storeHtml);
     if (storeHtml.includes('Shopify.shop') || storeHtml.includes('cdn.shopify.com')) {
       platformDetected = 'Shopify Plus / Core';
@@ -113,11 +130,13 @@ async function executeCoordinatedSwarmAttackFishing() {
 
   console.log(`   └─ Resposta HTTP: ${httpStatus} OK em ${latencyMs}ms`);
   console.log(`   └─ Plataforma Identificada: ${platformDetected}`);
-  console.log(`   └─ Pixels & Tags de Rastreamento:`);
-  console.log(`      • Meta Pixel (Facebook/Instagram Ads): ${hasMetaPixel ? '✅ ATIVO' : '⚠️ Não Detectado no DOM Primário'}`);
-  console.log(`      • Google Tag Manager (GTM): ${hasGtm ? '✅ INSTALADO' : '⚠️ Não Detectado'}`);
-  console.log(`      • Google Analytics 4 (GA4): ${hasGa4 ? '✅ ATIVO' : '⚠️ Não Detectado'}`);
-  console.log(`      • Microsoft Clarity (Heatmaps): ${hasClarity ? '✅ ATIVO' : '⚠️ Não Detectado'}`);
+  console.log(`   └─ Auditoria de Tags & Rastreamento (Rigor Técnico):`);
+  console.log(`      • Google Analytics 4 (GA4): ${hasGa4 ? `✅ ATIVO NO DOM (Measurement ID: ${ga4Id})` : '⚠️ NÃO DETECTADO'}`);
+  console.log(`        ↳ [Regra AGENTS.md Camada 3]: O script público está ativo, mas taxas de rejeição históricas reais requerem autorização via Google Analytics Data API.`);
+  console.log(`      • Microsoft Clarity: ${hasClarity ? `✅ ATIVO (Project ID: ${clarityId})` : '⚠️ NÃO DETECTADO NO DOM PRIMÁRIO (Sem scripts de gravação ativos no HTML inicial)'}`);
+  console.log(`        ↳ [Regra AGENTS.md Camada 3]: Gravações individuais de tela e heatmaps de cliques são métricas confidenciais que requerem conexão oficial.`);
+  console.log(`      • Google Tag Manager (GTM): ${hasGtm ? `✅ INSTALADO (Container: ${gtmId})` : '⚠️ Não Detectado no HTML Estático'}`);
+  console.log(`      • Meta Pixel: ${hasMetaPixel ? `✅ DETECTADO (${pixelId ? `ID: ${pixelId}` : 'Carregado via SDK'})` : '⚠️ Não Detectado no HTML Estático (Injetado via Shopify Web Pixels API)'}`);
   console.log(`   └─ Conformidade Legal: CNPJ no Rodapé: ${hasCnpj ? '✅ REGULARIZADO' : '⚠️ NÃO ENCONTRADO NO DOM'}`);
   profiler.endStep('03_DEEP_SCRAPER');
 
