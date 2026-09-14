@@ -15,6 +15,7 @@ export interface ContrastAudit {
   contrastRatio: number;
   wcagAaPassed: boolean;
   wcagAaaPassed: boolean;
+  wcagPassed?: boolean;
   protanopiaSafe: boolean;
   deuteranopiaSafe: boolean;
   recommendation: string;

@@ -21,6 +21,8 @@ export interface CatalogProductIssue {
   sku: string;
   productTitle: string;
   productUrl: string; // 100% REAL URL — NUNCA 404!
+  adminUrl?: string;
+  barcode?: string;
   imageSrc: string;
   hasValidImage: boolean;
   imageResolutionStatus: 'ALTA' | 'BAIXA' | 'QUEBRADA';
@@ -40,6 +42,7 @@ export interface CatalogProductIssue {
 
 export interface CatalogAuditSummary {
   totalProductsScanned: number;
+  totalSkusAudited?: number;
   productsWithMissingImages: number;
   productsWithBrokenGrid: number;
   productsWithFullExemption: number;
@@ -47,6 +50,7 @@ export interface CatalogAuditSummary {
   productsWithoutSizeGuide: number;
   heavyImagesCount: number;
   catalogHealthScore: number; // 0 to 100
+  monthlyLossEstimateBRL?: number;
   issues: CatalogProductIssue[];
 }
 

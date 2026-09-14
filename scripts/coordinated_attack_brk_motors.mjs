@@ -422,8 +422,8 @@ async function executeCoordinatedSwarmAttackMotors() {
 
   console.log(`\n⚡ [Multi-Agent Profiler] Resumo de Performance:`);
   console.log(`   └─ Tempo Total da Operação: ${(profileSummary.totalDurationMs / 1000).toFixed(2)}s`);
-  profileSummary.steps.forEach(st => {
-    console.log(`   └─ [${st.stepName}]: ${st.durationMs}ms`);
+  Object.entries(profileSummary.breakdown || {}).forEach(([step, dur]) => {
+    console.log(`   └─ [${step}]: ${dur}`);
   });
 
   console.log(`\n🏁 [MISSÃO CUMPRIDA] Ataque Coordenado ao BRK Motors concluído com 100% de Grounding e Rigor Popperiano!`);
