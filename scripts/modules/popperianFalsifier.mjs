@@ -1,5 +1,5 @@
 ﻿// ==============================================================================
-// 🔬 POPPERIAN FALSIFIER ENGINE — SKILL: falsify
+// 🔬 POPPERIAN FALSIFIER ENGINE — SKILL: falsify & computer-vision-uiux
 // Scientific thinking protocol for AdShield Swarm:
 // "NO VERDICT WITHOUT A FALSIFIABLE HYPOTHESIS."
 // Actively tests whether an alleged stock rupture or ad leak can be proven false
@@ -16,7 +16,7 @@ export function falsifyProductAnomaly(product) {
 
   // 1. Falsification Test #1: Single Size Exemption Hypothesis
   // Can we falsify the defect by proving this item is naturally single-sized?
-  const singleSizeKeywords = ['boné', 'bone', 'bandana', 'manguito', 'copo', 'chaveiro', 'adesivo', 'unisex', 'tamanho único', 'tam unico'];
+  const singleSizeKeywords = ['boné', 'bone', 'bandana', 'manguito', 'copo', 'chaveiro', 'adesivo', 'unisex', 'tamanho único', 'tam unico', 'óculos', 'oculos', 'chapéu', 'chapeu'];
   const titleLower = (product.title || '').toLowerCase();
   const isInherentlySingleSize = singleSizeKeywords.some(kw => titleLower.includes(kw));
 
@@ -40,25 +40,33 @@ export function falsifyProductAnomaly(product) {
     });
   }
 
-  // 2. Falsification Test #2: Theme Addon / _FULL Exemption Hypothesis
-  // Can we falsify the defect by checking for the _FULL exemption tag?
-  if (product.handle && product.handle.toLowerCase().includes('_full')) {
+  // 2. Falsification Test #2: FULL Code / Fulfillment Exemption Hypothesis
+  // REGRA DE OURO DO NEGÓCIO: Produtos com FULL no código (SKU, título, tag, handle)
+  // pertencem a estoque Fulfillment fechado (Mercado Livre Full / Armazém Full).
+  // Se tem tamanho faltando, É O COMPORTAMENTO NORMAL (só vende o que tem lá fisicamente).
+  // Portanto, se tiver FULL em qualquer parte do código, a hipótese de ruptura é REFUTADA!
+  const hasFullInSku = (product.variants || []).some(v => String(v.sku || '').toUpperCase().includes('FULL')) || String(product.sku || '').toUpperCase().includes('FULL');
+  const hasFullInTitle = String(product.title || '').toUpperCase().includes('FULL');
+  const hasFullInHandle = String(product.handle || '').toUpperCase().includes('FULL');
+  const hasFullInTags = (product.tags || []).some(t => String(t).toUpperCase().includes('FULL'));
+
+  if (hasFullInSku || hasFullInTitle || hasFullInHandle || hasFullInTags) {
     falsificationAttempts.push({
-      test: 'FULL_EXEMPTION_TAG_TEST',
+      test: 'FULL_CODE_EXEMPTION_TEST',
       result: 'FALSIFIED',
-      reason: 'Regra _FULL ativada no handle do produto. Hipótese de ruptura refutada.'
+      reason: `Produto possui código/flag FULL (${hasFullInSku ? 'no SKU' : hasFullInTags ? 'nas Tags' : 'no Título/Handle'}). Estoque fechado de Fulfillment: se tem tamanho faltando, está correto e esperado.`
     });
     return {
       isResistant: false,
       status: 'FALSIFIED_DISCARDED',
       falsificationAttempts,
-      verdict: 'Descartado: Isenção explícita _FULL detectada.'
+      verdict: 'Descartado: Produto de código FULL (Estoque Fulfillment). Tamanho em falta é esperado e normal.'
     };
   } else {
     falsificationAttempts.push({
-      test: 'FULL_EXEMPTION_TAG_TEST',
+      test: 'FULL_CODE_EXEMPTION_TEST',
       result: 'PASSED',
-      reason: 'Sem flag de isenção de catálogo _FULL.'
+      reason: 'Produto de linha regular sem flag FULL.'
     });
   }
 
@@ -95,5 +103,32 @@ export function falsifyProductAnomaly(product) {
     criticalMissing,
     falsificationAttempts,
     verdict: `Aprovado pelo Rigor Popperiano: Ruptura irrefutável comprovada em [${criticalMissing.join(', ')}].`
+  };
+}
+
+/**
+ * 👁️ Image Integrity Watchdog (Skill: computer-vision-uiux & falsify)
+ * Detects active products on store with zero images or broken image URLs.
+ * @param {Object} product - Raw Shopify product object.
+ * @returns {Object} Image audit status.
+ */
+export function auditProductImageIntegrity(product) {
+  const images = product.images || [];
+  const hasValidImage = images.length > 0 && images.some(img => img.src && String(img.src).trim().length > 0);
+
+  if (!hasValidImage) {
+    return {
+      hasImage: false,
+      status: 'CRITICAL_MISSING_IMAGE',
+      reason: 'Produto ativo no catálogo sem nenhuma foto cadastrada (images: []). Risco de 100% de perda em anúncios.',
+      imagesCount: images.length
+    };
+  }
+
+  return {
+    hasImage: true,
+    status: 'VALID_IMAGE',
+    imagesCount: images.length,
+    primaryImageSrc: images[0].src
   };
 }

@@ -34,13 +34,15 @@ export function detectStorePlatform(url) {
 /**
  * 🎣 Exemption Rules: Fishing gear, accessories, one-size, and _FULL
  */
-function isExemptProduct(title, tags = [], productType = '') {
+function isExemptProduct(title, tags = [], productType = '', variants = [], handle = '') {
   const titleUpper = String(title || '').toUpperCase();
   const typeUpper = String(productType || '').toUpperCase();
+  const handleUpper = String(handle || '').toUpperCase();
   const tagsUpper = (tags || []).map(t => String(t).toUpperCase());
+  const skusUpper = (variants || []).map(v => String(v.sku || '').toUpperCase());
 
-  // 1. Fishing Gear
-  const isFishingGear = 
+  // 1. Fishing Gear / Farm Gear
+  const isEquipment = 
     titleUpper.includes('ISCA') ||
     titleUpper.includes('ANZOL') ||
     titleUpper.includes('VARA') ||
@@ -55,7 +57,7 @@ function isExemptProduct(title, tags = [], productType = '') {
     tagsUpper.some(t => t.includes('ISCA') || t.includes('VARA') || t.includes('CARRETILHA'));
 
   // 2. One-Size Accessories & Colors
-  const isAccessory = !isFishingGear && (
+  const isAccessory = !isEquipment && (
     titleUpper.includes('ÓCULOS') ||
     titleUpper.includes('OCULOS') ||
     titleUpper.includes('BONÉ') ||
@@ -71,10 +73,17 @@ function isExemptProduct(title, tags = [], productType = '') {
     typeUpper.includes('ACESSORIO')
   );
 
-  // 3. _FULL Print Rule
-  const isFullPrint = titleUpper.includes('_FULL') || tagsUpper.includes('_FULL');
+  // 3. FULL Exemption Rule (SKU, Title, Handle, Tags)
+  // REGRA DE NEGÓCIO: Produtos com FULL no código pertencem a estoque Fulfillment fechado.
+  // Se faltar tamanho lá, está correto e esperado (é apenas o saldo disponível no Full).
+  // Isento 100% de falso-positivo de ruptura de fábrica.
+  const isFullStock = 
+    titleUpper.includes('FULL') ||
+    handleUpper.includes('FULL') ||
+    tagsUpper.some(t => t.includes('FULL')) ||
+    skusUpper.some(s => s.includes('FULL'));
 
-  return isFishingGear || isAccessory || isFullPrint;
+  return isEquipment || isAccessory || isFullStock;
 }
 
 /**
@@ -231,6 +240,7 @@ async function fetchShopifyCatalog(cleanUrl, maxPages = 15) {
       url: `${cleanUrl}/products/${p.handle}`,
       productType: p.product_type || '',
       tags: p.tags || [],
+      images: p.images || [],
       variants: vars
     };
   });
@@ -486,10 +496,25 @@ export async function auditUniversalStoreCatalog(storeUrl, niche) {
   // 3. Process and Audit Products
   const products = rawCatalog?.products || [];
   const brokenProducts = [];
+  const productsWithoutImages = [];
   let apparelCount = 0;
 
   for (const p of products) {
-    if (isExemptProduct(p.title, p.tags, p.productType)) {
+    // 3.1. Auditoria de Integridade de Imagem (Zero Alucinações)
+    const images = p.images || [];
+    const hasValidImage = images.length > 0 && images.some(img => img.src && String(img.src).trim().length > 0);
+    if (!hasValidImage) {
+      productsWithoutImages.push({
+        id: p.id,
+        title: p.title,
+        handle: p.handle,
+        url: p.url,
+        price: p.variants?.[0]?.price || 169.90
+      });
+    }
+
+    // 3.2. Isenções (Acessórios, Equipamento e Regra do FULL no código/SKU)
+    if (isExemptProduct(p.title, p.tags, p.productType, p.variants, p.handle)) {
       continue;
     }
 
@@ -576,6 +601,8 @@ export async function auditUniversalStoreCatalog(storeUrl, niche) {
     resaleBrokenCount: resaleBroken.length,
     inHouseMonthlyLossBRL,
     resaleMonthlyLossBRL,
+    productsWithoutImages,
+    productsWithoutImagesCount: productsWithoutImages.length,
     marketplaceDetails: rawCatalog?.marketplaceDetails,
     catalogScore,
     monthlyLossBRL

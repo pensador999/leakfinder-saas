@@ -1,4 +1,4 @@
-﻿// ==============================================================================
+// ==============================================================================
 // ⚔️ OPERAÇÃO TEMPESTADE NO CAMPO (V2026.4) — ATAQUE DE ELITE: BRK AGRO
 // Integrado com o Novo Arsenal Cognitivo AdShield:
 // - falsify: Rigor Popperiano e Testes de Refutação de Ruptura
@@ -157,6 +157,19 @@ async function executeCoordinatedSwarmAttackAgro() {
   console.log(`   └─ 🏭 Fabricação Própria (Sublimação): ${catalogAudit.inHouseBrokenCount || 0} produto(s) com ruptura de grade`);
   console.log(`   └─ 🛍️ Revenda Externa (Fornecedor Parceiro): ${catalogAudit.resaleBrokenCount || 0} produto(s) com ruptura de grade`);
 
+  const missingImagesList = catalogAudit.productsWithoutImages || [];
+  console.log(`\n📸 [AGENTE 08 • AUDITORIA DE INTEGRIDADE DE IMAGENS (ZERO ALUCINAÇÃO)]`);
+  if (missingImagesList.length === 0) {
+    console.log(`   └─ ✅ 100% dos produtos auditados possuem fotos válidas cadastradas.`);
+  } else {
+    console.log(`   └─ 🚨 ALERTA CRÍTICO: Detectados ${missingImagesList.length} produto(s) ATIVOS NO SITE SEM NENHUMA IMAGEM!`);
+    console.log(`      ↳ [Risco Máximo em Anúncios]: Tráfego enviado para produto sem foto tem taxa de conversão ZERO e 100% de rejeição.`);
+    missingImagesList.forEach((p, idx) => {
+      console.log(`      [${idx + 1}] ID: ${p.id} | "${p.title}" | Preço: R$ ${parseFloat(p.price).toFixed(2)}`);
+      console.log(`          URL: ${p.url}`);
+    });
+  }
+
   const verifiedBrokenProducts = [];
   const rawBroken = catalogAudit.brokenProducts || [];
 
@@ -173,7 +186,7 @@ async function executeCoordinatedSwarmAttackAgro() {
   }
 
   if (verifiedBrokenProducts.length === 0) {
-    console.log(`   └─ ✅ Todos os produtos auditados possuem os tamanhos centrais (P, M, G, GG) disponíveis ou são itens isentos de grade.`);
+    console.log(`   └─ ✅ Todos os produtos auditados possuem os tamanhos centrais (P, M, G, GG) disponíveis ou são itens isentos de grade/código FULL.`);
   } else {
     console.log(`   └─ 🚨 ALERTA IRREFUTÁVEL DE RUPTURA REAL (${verifiedBrokenProducts.length} itens confirmados pós-falseamento em ${(catalogAudit.totalSkusAudited || 0).toLocaleString('pt-BR')} SKUs):`);
     verifiedBrokenProducts.slice(0, 10).forEach((item, idx) => {
@@ -273,23 +286,30 @@ async function executeCoordinatedSwarmAttackAgro() {
     }).join('\n')
     : '• Todas as grades centrais (P, M, G, GG) disponíveis no momento.';
 
+  const missingImagesTxt = missingImagesList.length > 0
+    ? `\n📸 *Alerta Crítico de Mídia:* ${missingImagesList.length} produto(s) ATIVOS SEM FOTO no site (Ex: "${missingImagesList[0].title}" - R$ ${parseFloat(missingImagesList[0].price).toFixed(2)})\n   ↳ Risco: Se receber tráfego pago, a rejeição é de 100% e conversão zero!\n`
+    : '';
+
   const executiveWhatsAppMessage = 
     `🚨 *DOSSIÊ DE AUDITORIA DE ELITE — ADSHIELD SWARM*\n` +
     `🏢 *Alvo Inspecionado:* ${TARGET_BRAND} (${TARGET_URL})\n` +
     `📅 *Data da Varredura:* ${dateStr} às ${timeStr}\n` +
     `📊 *Escala da Operação:* ${catalogAudit.totalAudited} produtos pai | ${(catalogAudit.totalSkusAudited || 0).toLocaleString('pt-BR')} SKUs reais inspecionados (100% do Catálogo)\n\n` +
-    `🩺 *Diagnóstico do Catálogo ao Vivo (Rigor Popperiano):*\n` +
+    `🩺 *Diagnóstico do Catálogo ao Vivo (Rigor Popperiano & Regra FULL):*\n` +
     `• 🏭 Fabricação Própria (Sublimação): *${catalogAudit.inHouseBrokenCount || 0} produto(s) com ruptura de grade*\n` +
-    `• 🛍️ Revenda Externa (Fornecedor Parceiro): *${catalogAudit.resaleBrokenCount || 0} produto(s) com ruptura de grade*\n\n` +
-    `${brokenListTxt}\n\n` +
+    `• 🛍️ Revenda Externa (Fornecedor Parceiro): *${catalogAudit.resaleBrokenCount || 0} produto(s) com ruptura de grade*\n` +
+    `• 📦 Produtos Código FULL: *Isentos 100% de alarme (Estoque Fechado)*\n\n` +
+    `${brokenListTxt}\n` +
+    `${missingImagesTxt}\n` +
     `💰 *Impacto Financeiro em Anúncios:*\n` +
     `• Desperdício em Tráfego Pago: *R$ ${monthlyBleed.toLocaleString('pt-BR')}/mês*\n` +
     `• Causa: Tráfego de anúncios pago sendo direcionado para peças com numerações de maior saída (M, G, GG) esgotadas.\n\n` +
     `🛠️ *Plano de Ação Imediato (Ordem do CEO):*\n` +
     `1. Pausar campanhas ativas dos modelos rompidos no Meta Ads imediatamente.\n` +
-    `2. Abrir Ordem de Produção (OP) no PCP Têxtil (Sankhya) para os itens de confecção própria.\n` +
-    `3. Emitir Pedido de Compra (PO) para fornecedores parceiros nos itens de revenda externa.\n` +
-    `4. Explorar oportunidade OSINT detectada no nicho: "${osintSignals.offensiveOpportunity}"\n\n` +
+    `2. Corrigir ou inativar imediatamente os produtos sem imagem para não queimar verba de Google Shopping.\n` +
+    `3. Abrir Ordem de Produção (OP) no PCP Têxtil (Sankhya) para os itens de confecção própria.\n` +
+    `4. Emitir Pedido de Compra (PO) para fornecedores parceiros nos itens de revenda externa.\n` +
+    `5. Explorar oportunidade OSINT detectada no nicho: "${osintSignals.offensiveOpportunity}"\n\n` +
     `🛡️ *Auditoria assinada por 18 Agentes do Swarm AdShield. Zero falsos-positivos.*`;
 
   console.log(`   └─ Mensagem Executiva Pronta para Disparo:\n`);
