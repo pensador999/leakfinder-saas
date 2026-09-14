@@ -34,7 +34,7 @@ export function detectStorePlatform(url) {
 /**
  * 🎣 Exemption Rules: Fishing gear, accessories, one-size, and _FULL
  */
-function isExemptProduct(title, tags = [], productType = '', variants = [], handle = '') {
+export function isExemptProduct(title, tags = [], productType = '', variants = [], handle = '') {
   const titleUpper = String(title || '').toUpperCase();
   const typeUpper = String(productType || '').toUpperCase();
   const handleUpper = String(handle || '').toUpperCase();
