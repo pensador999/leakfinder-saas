@@ -68,35 +68,44 @@ O LeakFinder opera sob o protocolo rigoroso estabelecido em **[`AGENTS.md`](./AG
 
 ## 🚀 Como Executar o Projeto
 
-### Pré-requisitos
-* Node.js 18+ instalado
-* Git
+## 📚 Documentação Central & Governança
 
-### Instalação e Execução Local
+* 🏛️ **[Arquitetura Global & C4 Model (ARCHITECTURE.md)](./ARCHITECTURE.md)**
+* 🤖 **[Dossiê Completo dos 18 Agentes (docs/AGENTS_ECOSYSTEM.md)](./docs/AGENTS_ECOSYSTEM.md)**
+* 🧭 **[Fluxo de Projeto & Workflow dos Agentes (docs/PROJECT_WORKFLOW_AND_GOVERNANCE.md)](./docs/PROJECT_WORKFLOW_AND_GOVERNANCE.md)**
+* 💼 **[Plano de Negócios & Pricing SaaS (docs/BUSINESS_PLAN_LEAKFINDER_SAAS.md)](./docs/BUSINESS_PLAN_LEAKFINDER_SAAS.md)**
+* ⚖️ **[Conformidade Legal & Tributária (docs/LEGAL_AND_TAX_COMPLIANCE.md)](./docs/LEGAL_AND_TAX_COMPLIANCE.md)**
+* 🎯 **[Campanha Piloto Outbound B2B (docs/DOSSIE_CAMPANHA_OUTBOUND_PILOTO.md)](./docs/DOSSIE_CAMPANHA_OUTBOUND_PILOTO.md)**
+* 🛡️ **[Protocolo de Integridade de Dados (AGENTS.md)](./AGENTS.md)**
+
+---
+
+## 🛠️ Comandos de Engenharia & Qualidade
+
 ```bash
-# 1. Clone o repositório
-git clone https://github.com/pensador999/leakfinder-saas.git
-
-# 2. Acesse a pasta do projeto
-cd leakfinder-saas
-
-# 3. Instale as dependências
-npm install
-
-# 4. Inicie o servidor de desenvolvimento
+# Executa servidor de desenvolvimento local (Porta 3000)
 npm run dev
-```
 
-Acesse **`http://localhost:3000`** no seu navegador.
+# Validação estrita de lint e tipagem TypeScript
+npm run check
+
+# Bateria completa de 50 testes de segurança, SSRF e integridade
+npm run audit:system
+
+# Compilação e empacotamento de produção (Vite + Rollup)
+npm run build
+```
 
 ---
 
 ## 📦 Stack Tecnológica
 
-* **Frontend:** React 19, TypeScript, Tailwind CSS, Lucide Icons, Canvas Confetti.
-* **Build Tool:** Vite 8.2.
+* **Frontend:** React 19, TypeScript, Tailwind CSS, Lucide Icons, FontAwesome, Canvas Confetti.
+* **Build Tool:** Vite 8.2 & Rollup.
+* **Linter & Qualidade:** Oxlint + TypeScript Compiler (`tsc`).
 * **Database & Auth:** Supabase PostgreSQL.
-* **Multi-threading:** Web Workers (`siteInspectorWorker.ts`).
+* **Multi-threading & Scraping:** Web Workers (`siteInspectorWorker.ts`) + Chromium Headless em contêiner Docker.
+
 
 ---
 

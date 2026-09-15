@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "oxlint",
+    "lint": "oxlint src",
+    "check": "oxlint src && tsc -b",
     "preview": "vite preview",
+    "audit:system": "python scripts/audit_suite.py",
     "package:extension": "node scripts/package_chrome_extension.mjs",
     "test:extension": "node scripts/test_chrome_extension.mjs"
   },

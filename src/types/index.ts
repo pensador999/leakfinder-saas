@@ -183,3 +183,6 @@ export interface ChatMessage {
   text: string;
   timestamp: string;
 }
+
+export * from './swarmAgentContract';
+
