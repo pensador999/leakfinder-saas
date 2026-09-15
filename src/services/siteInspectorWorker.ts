@@ -44,15 +44,28 @@ export async function runSiteInspectorWorker(inputUrl: string, targetRegion: Tar
   const inferredBrandName = rawBrand.toUpperCase();
 
   let detectedNiche = customNiche || 'Geral & E-commerce';
-  const combinedText = `${siteData.title} ${siteData.metaDescription} ${siteData.h1List.join(' ')}`.toLowerCase();
+  const catalogTitles = (siteData.catalogAudit?.issues || []).map(i => i.productTitle).join(' ').toLowerCase();
+  const combinedText = `${siteData.title} ${siteData.metaDescription} ${siteData.h1List.join(' ')} ${catalogTitles}`.toLowerCase();
+  const domainLower = siteData.domain.toLowerCase();
 
-  if (combinedText.includes('moda') || combinedText.includes('roupa') || combinedText.includes('vestido') || combinedText.includes('calçado') || combinedText.includes('shoes')) {
-    detectedNiche = 'Moda, Roupas & Acessórios';
-  } else if (combinedText.includes('suplemento') || combinedText.includes('saúde') || combinedText.includes('whey')) {
-    detectedNiche = 'Saúde, Suplementos & Bem-Estar';
+  const shoeKeywords = ['calçado', 'calcado', 'calçados', 'calcados', 'tênis', 'tenis', 'sapato', 'sapatos', 'sandália', 'sandalia', 'bota', 'botas', 'mule', 'mocassim', 'sneaker', 'sneakers', 'coturno', 'scarpin', 'chinelo', 'chinelos', 'rasteira', 'rasteirinha', 'sapatilha', 'shoes', 'footwear'];
+  const hasShoeSignal = shoeKeywords.some(w => combinedText.includes(w) || domainLower.includes(w));
+
+  if (hasShoeSignal) {
+    detectedNiche = 'Calçados, Tênis & Sapatos';
+  } else if (combinedText.includes('suplemento') || combinedText.includes('whey') || combinedText.includes('creatina') || domainLower.includes('suplemento')) {
+    detectedNiche = 'Saúde, Suplementos & Nutrição';
+  } else if (combinedText.includes('pesca') || combinedText.includes('fishing') || domainLower.includes('fishing') || domainLower.includes('pesca')) {
+    detectedNiche = 'Pesca Esportiva & Aventura';
+  } else if (combinedText.includes('agro') || combinedText.includes('campo') || domainLower.includes('agro')) {
+    detectedNiche = 'Agropecuária & Campo';
+  } else if (combinedText.includes('motor') || combinedText.includes('moto') || domainLower.includes('motors')) {
+    detectedNiche = 'Motociclismo & Off-Road';
+  } else if (combinedText.includes('moda') || combinedText.includes('roupa') || combinedText.includes('vestido') || combinedText.includes('camisa') || combinedText.includes('calça')) {
+    detectedNiche = 'Moda, Roupas & Vestuário';
   } else if (combinedText.includes('eletrônico') || combinedText.includes('tech') || combinedText.includes('gadget') || combinedText.includes('fone')) {
     detectedNiche = 'Eletrônicos & Tecnologia';
-  } else if (combinedText.includes('beleza') || combinedText.includes('cosmético') || combinedText.includes('skincare')) {
+  } else if (combinedText.includes('beleza') || combinedText.includes('cosmético') || combinedText.includes('skincare') || combinedText.includes('maquiagem')) {
     detectedNiche = 'Beleza & Cosméticos';
   }
 

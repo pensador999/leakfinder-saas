@@ -24,7 +24,7 @@ interface CompanyPreset {
 
 export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, currentUrl }) => {
   const [urlInput, setUrlInput] = useState(currentUrl || '');
-  const [nicheInput, setNicheInput] = useState('E-commerce / Vendas');
+  const [nicheInput, setNicheInput] = useState('');
   const [aovInput, setAovInput] = useState(180);
   const [instagramInput, setInstagramInput] = useState('');
   const [whiteLabel, setWhiteLabel] = useState<WhiteLabelConfig>(getWhiteLabelConfig());
@@ -231,9 +231,10 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
               <span className="font-medium">Nicho:</span>
               <input
                 type="text"
+                placeholder="Auto (IA detecta)"
                 value={nicheInput}
                 onChange={(e) => setNicheInput(e.target.value)}
-                className="px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-slate-800 font-semibold outline-none text-xs w-44"
+                className="px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-slate-800 font-semibold outline-none text-xs w-44 placeholder-slate-400"
               />
             </div>
 

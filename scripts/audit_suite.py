@@ -151,7 +151,7 @@ assert_test("lead.contactTargetPhone || lead.detectedWhatsApp || '5534991351122'
 # ------------------------------------------------------------------------------
 # TESTE 4: Estrutura da Serverless Function api/audit.ts e Docker Inspector
 # ------------------------------------------------------------------------------
-print('\n🔍 [4/4] Validando Estrutura de Resiliência de api/audit.ts & Inspector...')
+print('\n🔍 [4/5] Validando Estrutura de Resiliência de api/audit.ts & Inspector...')
 
 audit_api_text = (root_dir / 'api/audit.ts').read_text(encoding='utf-8')
 assert_test('validateAndSanitizeUrl(targetUrl)' in audit_api_text, 'api/audit.ts invoca validateAndSanitizeUrl')
@@ -162,6 +162,36 @@ assert_test('await browser.close()' in audit_api_text, 'api/audit.ts garante fec
 inspector_text = (root_dir / 'docker/mcp-headless-worker/src/inspector.ts').read_text(encoding='utf-8')
 assert_test('validateAndSanitizeUrl(targetUrl)' in inspector_text, 'inspector.ts invoca validateAndSanitizeUrl')
 assert_test('[SSRF Blocked]' in inspector_text, 'inspector.ts lança erro SSRF Blocked para URLs inseguras')
+
+# ------------------------------------------------------------------------------
+# TESTE 5: Blindagem & Integridade de Nicho de Calçados (Zero UV50+ / Zero Dados Iguais)
+# ------------------------------------------------------------------------------
+print('\n🔍 [5/5] Testando Reconhecimento de Nicho de Calçados & Integridade Semântica...')
+
+agent_skills_text = (root_dir / 'src/services/agentSkills.ts').read_text(encoding='utf-8')
+worker_inspector_text = (root_dir / 'src/services/siteInspectorWorker.ts').read_text(encoding='utf-8')
+site_inspector_text = (root_dir / 'src/services/siteInspector.ts').read_text(encoding='utf-8')
+
+# 1. Validação de Reconhecimento de Nicho de Calçados
+assert_test("Calçados, Tênis & Sapatos" in worker_inspector_text, 'Reconhecimento de nicho "Calçados, Tênis & Sapatos" registrado em siteInspectorWorker.ts')
+assert_test("'sneaker'" in worker_inspector_text and "'mocassim'" in worker_inspector_text, 'Vocabulário exaustivo de calçados (sneaker, mocassim, sapato, etc.)')
+
+# 2. Validação de Grade Numérica de Calçados (Zero P, M, G, GG em Calçados)
+assert_test("['38', '39', '40', '41', '42', '43']" in site_inspector_text, 'Grade numérica de calçados (38 a 43) ativa como fallback em siteInspector.ts')
+
+# 3. Validação de CRO Especializado em Calçados (Medida da palmilha em cm e numeração central)
+assert_test("Guia de Tamanhos da Palmilha em Centímetros" in agent_skills_text, 'CRO especializado em calçados: Guia de medidas da palmilha em cm')
+assert_test("Alerta de Ruptura na Numeração Central (39, 40 e 41)" in agent_skills_text, 'CRO especializado em calçados: Alerta de ruptura nos números centrais (39-41)')
+
+# 4. Validação de Copywriting e Ads Especializados
+assert_test("Cansado de Calçados que Machucam seus Pés" in agent_skills_text, 'Copywriting especializado para calçados e conforto anatômico')
+assert_test("Carrossel de Coleção de Calçados & Sneakers" in agent_skills_text, 'Ads Buyer especializado em calçados e coleções com indicação de grade')
+
+# 5. Proibição de Alucinação UV50+ em Calçados e Concorrentes
+assert_test("Criar anúncios demonstrando a durabilidade da proteção UV50+" not in agent_skills_text, 'Zero menção indevida de UV50+ em análise de concorrentes genéricos/calçados')
+
+# 6. Conexão do Motor Serverless Puppeteer
+assert_test("fetchHeadlessServerlessAudit" in site_inspector_text, 'Conexão nativa com motor Chromium Serverless (/api/audit) ativa')
 
 print('\n================================================================')
 print(f'📊 RESULTADO DA AUDITORIA: {passed_tests}/{total_tests} TESTES APROVADOS ({round((passed_tests/total_tests)*100)}%)')

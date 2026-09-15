@@ -13,7 +13,7 @@ export const AuditFormModal: React.FC<AuditFormModalProps> = ({ isOpen, onClose,
   const [siteUrl, setSiteUrl] = useState(initialData?.siteUrl || '');
   const [businessName, setBusinessName] = useState(initialData?.businessName || '');
   const [businessType, setBusinessType] = useState<BusinessType>(initialData?.businessType || 'ecommerce');
-  const [niche, setNiche] = useState(initialData?.niche || 'Moda e Vestuário');
+  const [niche, setNiche] = useState(initialData?.niche || '');
   const targetAudience = initialData?.targetAudience || 'Consumidores de 25 a 45 anos em busca de qualidade e agilidade';
   const [competitorsUrl, setCompetitorsUrl] = useState(initialData?.competitorsUrl || 'https://concorrente.com.br');
   const [instagramHandle, setInstagramHandle] = useState(initialData?.instagramHandle || '');
@@ -135,7 +135,7 @@ export const AuditFormModal: React.FC<AuditFormModalProps> = ({ isOpen, onClose,
               </label>
               <input
                 type="text"
-                placeholder="Ex: Moda Feminina, Eletrônicos, Saúde"
+                placeholder="Auto-detectado pela IA (ex: Calçados, Suplementos, Moda)"
                 value={niche}
                 onChange={(e) => setNiche(e.target.value)}
                 className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl text-sm text-white placeholder-slate-500 outline-none transition-all mb-4"
