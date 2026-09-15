@@ -135,8 +135,8 @@ export const VERIFIED_HIGH_VALUE_PROSPECTS: ProspectLead[] = [
     metaPixelId: '1092837412984',
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('BRK Agro'),
     activeAdsCountEstimated: 24,
-    detectedWhatsApp: '5534991351122',
-    contactTargetPhone: '5534991351122',
+    detectedWhatsApp: undefined,
+    contactTargetPhone: '',
     brokenSkus: [
       {
         productTitle: 'Camisa Manga Longa Proteção Solar Agro Pro UV50+',
@@ -204,8 +204,8 @@ export const VERIFIED_HIGH_VALUE_PROSPECTS: ProspectLead[] = [
     metaPixelId: '9871236541289',
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('BRK Fishing'),
     activeAdsCountEstimated: 18,
-    detectedWhatsApp: '5534991351122',
-    contactTargetPhone: '5534991351122',
+    detectedWhatsApp: undefined,
+    contactTargetPhone: '',
     brokenSkus: [
       {
         productTitle: 'Camisa de Pesca Monster Bass Pro Dry',
@@ -261,9 +261,9 @@ export const VERIFIED_HIGH_VALUE_PROSPECTS: ProspectLead[] = [
     hasMetaPixel: true,
     metaPixelId: '5461238794561',
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('BRK Motors'),
-    activeAdsCountEstimated: 12,
-    detectedWhatsApp: '5534991351122',
-    contactTargetPhone: '5534991351122',
+    activeAdsCountEstimated: 42,
+    detectedWhatsApp: undefined,
+    contactTargetPhone: '',
     brokenSkus: [
       {
         productTitle: 'Jaqueta Corta-Vento Racing Softshell',
@@ -319,8 +319,8 @@ export const VERIFIED_HIGH_VALUE_PROSPECTS: ProspectLead[] = [
     hasMetaPixel: true,
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Pantanal Outdoor'),
     activeAdsCountEstimated: 15,
-    detectedWhatsApp: '5534991351122',
-    contactTargetPhone: '5534991351122',
+    detectedWhatsApp: undefined,
+    contactTargetPhone: '',
     brokenSkus: [
       {
         productTitle: 'Camisa Térmica UV50+ Expedição Pantanal',
@@ -467,7 +467,7 @@ export async function scanTargetStoreForLeadSniper(rawUrl: string): Promise<Pros
       explanation: `Identificada falta de estoque nos tamanhos mais vendidos (${missingSizes.join(', ')}). Anúncio rodando com Meta Pixel ativo.`
     };
 
-    const detectedWhatsApp = evidence.ui?.whatsAppNumberFound || '5534991351122';
+    const detectedWhatsApp = evidence.ui?.whatsAppNumberFound || '';
 
     const newLead: ProspectLead = {
       id: `lead-${Date.now()}`,
@@ -480,8 +480,8 @@ export async function scanTargetStoreForLeadSniper(rawUrl: string): Promise<Pros
       metaPixelId: evidence.headTags?.metaPixelId,
       metaAdsLibraryUrl: generateMetaAdsLibraryUrl(evidence.targetBrand || brandName),
       activeAdsCountEstimated: 12,
-      detectedWhatsApp,
-      contactTargetPhone: detectedWhatsApp,
+      detectedWhatsApp: detectedWhatsApp || undefined,
+      contactTargetPhone: detectedWhatsApp || '',
       brokenSkus: [primarySku],
       primaryBrokenSku: primarySku,
       totalMonthlyWasteEstimated: estimatedMonthlyLoss,
@@ -525,8 +525,8 @@ export async function scanTargetStoreForLeadSniper(rawUrl: string): Promise<Pros
       hasMetaPixel: true,
       metaAdsLibraryUrl: generateMetaAdsLibraryUrl(brandName),
       activeAdsCountEstimated: 8,
-      detectedWhatsApp: '5534991351122',
-      contactTargetPhone: '5534991351122',
+      detectedWhatsApp: undefined,
+      contactTargetPhone: '',
       brokenSkus: [primarySku],
       primaryBrokenSku: primarySku,
       totalMonthlyWasteEstimated: estimatedMonthlyLoss,

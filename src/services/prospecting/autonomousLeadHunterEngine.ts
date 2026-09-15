@@ -184,16 +184,22 @@ export async function startAutonomousHuntingSession(
         );
       }
 
-      // Mineração de WhatsApp
-      let detectedWhatsApp = evidence.ui?.whatsAppNumberFound;
-      if (!detectedWhatsApp && config.autoExtractWhatsApp) {
-        detectedWhatsApp = '5534991351122';
-      }
+      // Mineração de WhatsApp (Grounded Factual)
+      const detectedWhatsApp = evidence.ui?.whatsAppNumberFound || undefined;
 
       if (detectedWhatsApp) {
         emitEvent(
           'WHATSAPP_MINED',
-          `Canal oficial de WhatsApp extraído: ${detectedWhatsApp} (Pronto para abordagem direta).`,
+          `Canal oficial de WhatsApp extraído da vitrine: ${detectedWhatsApp} (Pronto para abordagem direta).`,
+          cleanUrl,
+          brandName,
+          undefined,
+          currentProgress + 4
+        );
+      } else {
+        emitEvent(
+          'WHATSAPP_MINED',
+          `WhatsApp não identificado no código público de ${brandName}. Necessária checagem manual no Instagram ou SAC.`,
           cleanUrl,
           brandName,
           undefined,

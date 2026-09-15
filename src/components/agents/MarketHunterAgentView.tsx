@@ -130,7 +130,11 @@ export const MarketHunterAgentView: React.FC<MarketHunterAgentViewProps> = ({ di
         ? lead.pitches.technicalMediaBuyer 
         : lead.pitches.audioScript45s;
     
-    const targetPhone = phoneToUse || lead.contactTargetPhone || '5534991351122';
+    const targetPhone = phoneToUse || lead.contactTargetPhone || lead.detectedWhatsApp || '';
+    if (!targetPhone) {
+      alert(`⚠️ Nenhum WhatsApp público foi detectado para a vitrine "${lead.brandName}".\n\nVocê pode testar a abordagem usando o botão "Testar no Meu WhatsApp" ou copiar a mensagem para enviar via direct no Instagram.`);
+      return;
+    }
     const url = buildWhatsAppClickToChatUrl(targetPhone, text);
     window.open(url, '_blank', 'noopener,noreferrer');
   };

@@ -16,9 +16,10 @@ export type ExportTargetFormat =
 /**
  * Normaliza qualquer número de telefone brasileiro para o padrão E.164 (55 + DDD + 9 dígitos)
  */
-export function normalizePhoneForWhatsApp(phone: string): string {
+export function normalizePhoneForWhatsApp(phone?: string): string {
+  if (!phone) return '';
   const digits = phone.replace(/\D/g, '');
-  if (!digits) return '5534991351122';
+  if (!digits) return '';
 
   // Se já tem DDI 55
   if (digits.startsWith('55')) {
@@ -30,7 +31,7 @@ export function normalizePhoneForWhatsApp(phone: string): string {
     return `55${digits}`;
   }
 
-  return `55${digits}`;
+  return digits;
 }
 
 /**
@@ -110,7 +111,9 @@ export class BatchLeadExportService {
       const primarySku = lead.primaryBrokenSku;
       const cleanPhone = normalizePhoneForWhatsApp(lead.contactTargetPhone);
       const pitch = generateSpintaxPitch(lead, idx);
-      const clickToChatUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(pitch)}`;
+      const clickToChatUrl = cleanPhone 
+        ? `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(pitch)}`
+        : '';
 
       return [
         `"${lead.brandName.replace(/"/g, '""')}"`,

@@ -25,6 +25,91 @@ function sendResponse(response: any, statusCode: number, data: any) {
   });
 }
 
+// ==============================================================================
+// 🔒 VALIDAÇÃO ANTI-SSRF (Server-Side Request Forgery)
+// ==============================================================================
+function validateAndSanitizeUrl(rawUrl: string): { isValid: boolean; sanitizedUrl: string; error?: string } {
+  if (!rawUrl || typeof rawUrl !== 'string') {
+    return { isValid: false, sanitizedUrl: '', error: 'URL vazia ou inválida.' };
+  }
+
+  let formatted = rawUrl.trim();
+  const hasProtocol = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(formatted);
+  if (hasProtocol) {
+    if (!formatted.startsWith('http://') && !formatted.startsWith('https://')) {
+      return { isValid: false, sanitizedUrl: '', error: 'Protocolo proibido. Apenas HTTP e HTTPS são permitidos.' };
+    }
+  } else {
+    formatted = `https://${formatted}`;
+  }
+
+  let parsed: URL;
+  try {
+    parsed = new URL(formatted);
+  } catch {
+    return { isValid: false, sanitizedUrl: '', error: 'Formato de URL malformado.' };
+  }
+
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    return { isValid: false, sanitizedUrl: '', error: 'Protocolo proibido. Apenas HTTP e HTTPS são permitidos.' };
+  }
+
+  const hostname = parsed.hostname.toLowerCase();
+
+  // Bloqueio de localhost e nomes locais
+  if (hostname === 'localhost' || hostname.endsWith('.localhost') || hostname === 'local') {
+    return { isValid: false, sanitizedUrl: '', error: 'Acesso a endereços locais (localhost) é bloqueado por segurança.' };
+  }
+
+  // Bloqueio de metadados de Cloud Providers (AWS, GCP, Vercel, Azure)
+  if (
+    hostname === '169.254.169.254' ||
+    hostname === 'metadata.google.internal' ||
+    hostname === 'metadata' ||
+    hostname.includes('internal')
+  ) {
+    return { isValid: false, sanitizedUrl: '', error: 'Acesso a serviços de metadados internos de nuvem é bloqueado.' };
+  }
+
+  // Bloqueio de ranges IPv4 privados e loopback
+  const ipv4Regex = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
+  const ipMatch = hostname.match(ipv4Regex);
+  if (ipMatch) {
+    const [, a, b, c, d] = ipMatch.map(Number);
+    if (a === 0 || a === 127) {
+      return { isValid: false, sanitizedUrl: '', error: 'Acesso a IPs de loopback (127.x.x.x ou 0.0.0.0) é proibido.' };
+    }
+    if (a === 10) {
+      return { isValid: false, sanitizedUrl: '', error: 'Acesso à rede privada (10.x.x.x) é proibido.' };
+    }
+    if (a === 172 && b >= 16 && b <= 31) {
+      return { isValid: false, sanitizedUrl: '', error: 'Acesso à rede privada (172.16-31.x.x) é proibido.' };
+    }
+    if (a === 192 && b === 168) {
+      return { isValid: false, sanitizedUrl: '', error: 'Acesso à rede privada (192.168.x.x) é proibido.' };
+    }
+    if (a === 169 && b === 254) {
+      return { isValid: false, sanitizedUrl: '', error: 'Acesso a link-local (169.254.x.x) é proibido.' };
+    }
+  }
+
+  // Bloqueio de IPv6 loopback ou local
+  if (hostname === '::1' || hostname === '[::1]' || hostname.startsWith('fe80:') || hostname.startsWith('fc00:')) {
+    return { isValid: false, sanitizedUrl: '', error: 'Acesso a IPv6 de loopback ou privado é proibido.' };
+  }
+
+  // Bloqueio de portas de infraestrutura interna
+  if (parsed.port) {
+    const portNum = parseInt(parsed.port, 10);
+    const blockedPorts = [22, 25, 110, 143, 445, 2049, 2375, 2376, 3306, 5432, 6379, 8080, 9200, 27017];
+    if (blockedPorts.includes(portNum)) {
+      return { isValid: false, sanitizedUrl: '', error: `Acesso à porta ${portNum} é bloqueado por segurança.` };
+    }
+  }
+
+  return { isValid: true, sanitizedUrl: formatted };
+}
+
 export default async function handler(request: any, response: any) {
   // 1. CORS Preflight
   const method = (request.method || (typeof request.headers?.get === 'function' ? 'GET' : 'GET')).toUpperCase();
@@ -58,10 +143,16 @@ export default async function handler(request: any, response: any) {
     });
   }
 
-  // Sanitiza URL
-  if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
-    targetUrl = `https://${targetUrl}`;
+  // Validação e Proteção Estrita Anti-SSRF
+  const validation = validateAndSanitizeUrl(targetUrl);
+  if (!validation.isValid) {
+    return sendResponse(response, 403, {
+      success: false,
+      error: `[SSRF Protection] ${validation.error}`
+    });
   }
+
+  targetUrl = validation.sanitizedUrl;
 
   const startTime = Date.now();
   let browser = null;
@@ -256,9 +347,6 @@ export default async function handler(request: any, response: any) {
       screenshotBase64 = `data:image/jpeg;base64,${buffer}`;
     }
 
-    await browser.close();
-    browser = null;
-
     return sendResponse(response, 200, {
       success: true,
       environment: isWindows ? 'local_windows' : 'vercel_serverless',
@@ -295,12 +383,16 @@ export default async function handler(request: any, response: any) {
 
   } catch (err: any) {
     console.error('[Vercel Serverless Audit Error]:', err);
-    if (browser) {
-      await browser.close().catch(() => {});
-    }
     return sendResponse(response, 500, {
       success: false,
       error: err.message || 'Erro inesperado na execução do Chromium Serverless na Vercel.'
     });
+  } finally {
+    if (browser) {
+      await browser.close().catch((closeErr: any) => {
+        console.warn('[Vercel Serverless Audit] Aviso ao fechar Chromium:', closeErr.message);
+      });
+      browser = null;
+    }
   }
 }

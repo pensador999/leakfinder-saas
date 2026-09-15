@@ -123,7 +123,12 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
 
   const handleOpenWhatsApp = (lead: ProspectLead, pitchType: 'directFounder' | 'technicalMediaBuyer' | 'audioScript45s') => {
     const text = lead.pitches[pitchType];
-    const phone = lead.contactTargetPhone || lead.detectedWhatsApp || '5534991351122';
+    const phone = lead.contactTargetPhone || lead.detectedWhatsApp || '';
+    if (!phone) {
+      handleCopyPitch(lead.id, text);
+      alert(`⚠️ A vitrine "${lead.brandName}" não possui número público de WhatsApp detectado.\n\nO roteiro de abordagem foi copiado para sua área de transferência para contato via direct do Instagram ou SAC.`);
+      return;
+    }
     const url = buildWhatsAppClickToChatUrl(phone, text);
     updateLeadProspectStatus(lead.id, 'CONTATADO');
     setLeadsList(getSavedProspectLeads());
@@ -490,13 +495,21 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                       </button>
                     )}
 
-                    <button
-                      onClick={() => handleOpenWhatsApp(lead, currentPitchType)}
-                      className="flex-1 sm:flex-none px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                      <span>Disparar WhatsApp (1-Clique)</span>
-                    </button>
+                    {(() => {
+                      const hasPhone = Boolean(lead.contactTargetPhone || lead.detectedWhatsApp);
+                      return (
+                        <button
+                          onClick={() => handleOpenWhatsApp(lead, currentPitchType)}
+                          className={`flex-1 sm:flex-none px-4 py-2 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-sm ${
+                            hasPhone ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-slate-600 hover:bg-slate-700'
+                          }`}
+                          title={hasPhone ? 'Abrir conversa no WhatsApp oficial da loja' : 'WhatsApp não detectado. Clique para copiar roteiro e abordar via Instagram/SAC'}
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                          <span>{hasPhone ? 'Disparar WhatsApp (1-Clique)' : 'Copiar Pitch (WhatsApp Pendente)'}</span>
+                        </button>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>
