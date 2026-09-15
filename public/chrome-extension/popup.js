@@ -1,7 +1,8 @@
 // ==============================================================================
-// 🛡️ ADSHIELD CHROME EXTENSION POPUP SCRIPT 2.0
+// 🛡️ ADSHIELD SENTINEL • EXTENSION POPUP SCRIPT 3.0
 // Receives live audit telemetry from content.js, formats risk calculations,
-// provides 1-click WhatsApp copy, and deep-links directly into the SaaS dossier.
+// provides 1-click WhatsApp copy, deep-links directly into the SaaS dossier,
+// and activates 24/7 continuous cloud monitoring for the store.
 // ==============================================================================
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -20,12 +21,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     const domainLabelEl = document.getElementById('domainLabel');
     if (domainLabelEl) domainLabelEl.textContent = currentDomain;
 
+    // Check if store is already in 24/7 monitored list
+    chrome.storage.local.get(['monitoredStores'], (data) => {
+      const stores = data.monitoredStores || [];
+      const found = stores.find((s) => s.domain === currentDomain);
+      if (found) {
+        const whatsappInput = document.getElementById('whatsappInput');
+        if (whatsappInput && found.whatsapp) whatsappInput.value = found.whatsapp;
+
+        const badge = document.getElementById('sentinelSuccessBadge');
+        if (badge) {
+          badge.style.display = 'block';
+          badge.textContent = '✓ Loja protegida pelo Sentinela 24/7!';
+        }
+        const btnSentinel = document.getElementById('btnActivateSentinel');
+        if (btnSentinel) {
+          btnSentinel.textContent = 'Atualizar';
+        }
+      }
+    });
+
     // Send audit message to content script
     chrome.tabs.sendMessage(tab.id, { action: 'AUDIT_PAGE' }, (response) => {
       if (chrome.runtime.lastError || !response || !response.success) {
-        // Fallback for pages where content script didn't respond (e.g. chrome:// or restricted)
         const platformEl = document.getElementById('platformBadge');
-        if (platformEl) platformEl.textContent = 'Modo Sandbox';
+        if (platformEl) platformEl.textContent = 'Modo Geral';
         return;
       }
 
@@ -85,7 +105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const cnpjEl = document.getElementById('cnpjStatus');
       if (cnpjEl) {
         if (response.hasCnpj) {
-          cnpjEl.textContent = 'Conforme (No Rodapé)';
+          cnpjEl.textContent = 'Conforme (Rodapé)';
           cnpjEl.className = 'check-status status-green';
         } else {
           cnpjEl.textContent = 'Não Encontrado';
@@ -102,6 +122,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         lossEl.textContent = `R$ ${estimatedLoss.toLocaleString('pt-BR')} /mês`;
       }
     });
+
+    // 24/7 Sentinel Activation Button
+    const btnActivateSentinel = document.getElementById('btnActivateSentinel');
+    if (btnActivateSentinel) {
+      btnActivateSentinel.addEventListener('click', () => {
+        const whatsappInput = document.getElementById('whatsappInput');
+        const whatsapp = whatsappInput ? whatsappInput.value.trim() : '';
+
+        chrome.runtime.sendMessage({
+          action: 'REGISTER_STORE_247',
+          payload: { domain: currentDomain, whatsapp }
+        }, (res) => {
+          const badge = document.getElementById('sentinelSuccessBadge');
+          if (badge) {
+            badge.style.display = 'block';
+            badge.textContent = '✓ Loja conectada com sucesso ao Sentinela 24/7!';
+          }
+          btnActivateSentinel.textContent = 'Ativado ✓';
+          btnActivateSentinel.style.background = '#059669';
+        });
+      });
+    }
 
     // WhatsApp Script Copy Button
     const btnCopyAlert = document.getElementById('btnCopyAlert');
@@ -135,4 +177,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('Extension popup initialization error:', e);
   }
 });
-

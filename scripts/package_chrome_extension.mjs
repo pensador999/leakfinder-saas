@@ -18,6 +18,7 @@ if (!fs.existsSync(extDir)) {
 const requiredFiles = [
   'manifest.json',
   'content.js',
+  'background.js',
   'popup.html',
   'popup.js',
   'icons/icon16.png',

@@ -110,13 +110,13 @@ export const ChromeExtensionModal: React.FC<ChromeExtensionModalProps> = ({ onCl
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-black text-base tracking-tight text-white">Extensão Oficial AdShield Inspector 2.0</h3>
+                <h3 className="font-black text-base tracking-tight text-white">Extensão Oficial AdShield Sentinel 3.0</h3>
                 <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full text-[10px] font-mono font-bold">
-                  Manifest V3 • Chrome & Edge
+                  Manifest V3 • Vigilância 24/7
                 </span>
               </div>
               <p className="text-[11px] text-slate-400">
-                Inspecione lojas em tempo real ao navegar, detecte rupturas de grade, pixels e gere scripts de fechamento para WhatsApp.
+                Inspecione lojas ao vivo com HUD flutuante in-page e ative o Sentinela 24/7 na nuvem para receber alertas no WhatsApp.
               </p>
             </div>
           </div>
@@ -137,13 +137,13 @@ export const ChromeExtensionModal: React.FC<ChromeExtensionModalProps> = ({ onCl
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-mono font-bold">
-                  📦 PACOTE .ZIP HOMOLOGADO
+                  📦 PACOTE .ZIP HOMOLOGADO V3.0
                 </span>
-                <span className="text-xs font-mono text-slate-400 font-bold">Versão 2.0.0 (6.85 KB)</span>
+                <span className="text-xs font-mono text-slate-400 font-bold">Versão 3.0.0 (HUD + Background Worker)</span>
               </div>
-              <h4 className="text-sm font-bold text-white">Baixe o Pacote da Extensão Pronto para Instalação</h4>
+              <h4 className="text-sm font-bold text-white">Baixe a Extensão com Sentinela 24/7 e HUD Flutuante</h4>
               <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
-                Arquivo compactado com todos os scripts (`manifest.json`, `content.js`, `popup.html`, ícones 16/48/128px) 100% pronto para carregar no navegador.
+                Inclui `manifest.json` V3, `background.js` (service worker de alarmes), `content.js` com HUD in-page isolado via Shadow DOM e popup completo.
               </p>
             </div>
 

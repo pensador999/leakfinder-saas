@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>AdShield AI • E-Commerce Inspector</title>
+  <title>AdShield Sentinel • E-Commerce Guard 24/7</title>
   <style>
     * {
       box-sizing: border-box;
@@ -23,7 +23,7 @@
       justify-content: space-between;
       border-bottom: 1px solid #1e293b;
       padding-bottom: 12px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .logo {
       display: flex;
@@ -91,7 +91,7 @@
       background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
       border: 1px solid #3730a3;
       border-radius: 14px;
-      padding: 14px;
+      padding: 12px 14px;
       margin-bottom: 12px;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
     }
@@ -107,7 +107,7 @@
       justify-content: space-between;
     }
     .loss-amount {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 900;
       color: #fb7185;
       font-family: monospace;
@@ -122,11 +122,11 @@
       background: #0f172a;
       border: 1px solid #1e293b;
       border-radius: 14px;
-      padding: 12px;
-      margin-bottom: 14px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 6px;
     }
     .checklist-title {
       font-size: 10px;
@@ -141,7 +141,7 @@
       align-items: center;
       justify-content: space-between;
       font-size: 11px;
-      padding: 5px 0;
+      padding: 4px 0;
       border-bottom: 1px solid #1e293b;
     }
     .check-row:last-child {
@@ -163,16 +163,79 @@
     .status-red { color: #f43f5e; }
     .status-amber { color: #fbbf24; }
 
+    /* Sentinel 24/7 Card */
+    .sentinel-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .sentinel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .sentinel-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .sentinel-input-group {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .sentinel-input {
+      flex: 1;
+      background: #090d16;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 7px 10px;
+      color: #f8fafc;
+      font-size: 11px;
+      outline: none;
+    }
+    .sentinel-input:focus {
+      border-color: #38bdf8;
+    }
+    .btn-sentinel {
+      background: #0284c7;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .btn-sentinel:hover {
+      background: #0369a1;
+    }
+    .sentinel-status-badge {
+      font-size: 9px;
+      font-family: monospace;
+      color: #34d399;
+      margin-top: 6px;
+      display: none;
+    }
+
     .btn-group {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 7px;
     }
     .btn {
       width: 100%;
-      padding: 11px 14px;
-      border-radius: 12px;
-      font-size: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 11px;
       font-weight: 800;
       cursor: pointer;
       display: flex;
@@ -185,7 +248,7 @@
     .btn-whatsapp {
       background: #059669;
       color: #ffffff;
-      box-shadow: 0 2px 10px rgba(5, 150, 105, 0.3);
+      box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
     }
     .btn-whatsapp:hover {
       background: #047857;
@@ -193,7 +256,7 @@
     .btn-saas {
       background: #4f46e5;
       color: #ffffff;
-      box-shadow: 0 2px 10px rgba(79, 70, 229, 0.3);
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
     }
     .btn-saas:hover {
       background: #4338ca;
@@ -202,7 +265,7 @@
       text-align: center;
       font-size: 9px;
       color: #64748b;
-      margin-top: 10px;
+      margin-top: 8px;
       font-family: monospace;
     }
   </style>
@@ -213,9 +276,9 @@
   <div class="header">
     <div class="logo">
       <div class="logo-icon">🛡️</div>
-      <span>AdShield AI Inspector</span>
+      <span>AdShield Sentinel</span>
     </div>
-    <span class="badge-platform" id="platformBadge">Auto-Detect</span>
+    <span class="badge-platform" id="platformBadge">Detectando</span>
   </div>
 
   <!-- Active Domain Bar -->
@@ -249,13 +312,31 @@
     </div>
 
     <div class="check-row">
-      <span class="check-label"><span>📏</span> Tabela de Medidas (PDP):</span>
+      <span class="check-label"><span>📏</span> Tabela de Medidas:</span>
       <span class="check-status status-green" id="sizeChartStatus">Inspecionando...</span>
     </div>
 
     <div class="check-row">
       <span class="check-label"><span>⚖️</span> Conformidade CNPJ:</span>
       <span class="check-status status-green" id="cnpjStatus">Inspecionando...</span>
+    </div>
+  </div>
+
+  <!-- Sentinel 24/7 Cloud Activation Card -->
+  <div class="sentinel-card">
+    <div class="sentinel-header">
+      <span class="sentinel-title">⚡ Vigilância Contínua 24/7</span>
+      <span style="font-size: 9px; color: #94a3b8;">Nuvem Ativa</span>
+    </div>
+    <div style="font-size: 10px; color: #94a3b8; line-height: 1.3;">
+      Monitore esta loja dia e noite. Receba aviso no WhatsApp se faltar M/G em produtos com anúncio ativo.
+    </div>
+    <div class="sentinel-input-group">
+      <input type="tel" class="sentinel-input" id="whatsappInput" placeholder="WhatsApp (ex: 11999998888)">
+      <button class="btn-sentinel" id="btnActivateSentinel">Ativar</button>
+    </div>
+    <div class="sentinel-status-badge" id="sentinelSuccessBadge">
+      ✓ Sentinela 24/7 ativado para esta loja!
     </div>
   </div>
 
@@ -270,10 +351,9 @@
   </div>
 
   <div class="footer-note">
-    AdShield AI 2026.4 • Powered by 18 Autonomous Swarm Agents
+    AdShield Sentinel V3.0 • Monitoramento 24/7 por 18 Agentes
   </div>
 
   <script src="popup.js"></script>
 </body>
 </html>
-

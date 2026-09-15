@@ -28,10 +28,13 @@ const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 assertTest(manifest.manifest_version === 3, 'manifest_version deve ser 3 (Manifest V3)', `Versão atual: ${manifest.manifest_version}`);
 assertTest(manifest.name && manifest.name.includes('AdShield'), 'Nome deve conter AdShield', `Nome: ${manifest.name}`);
 assertTest(Array.isArray(manifest.permissions) && manifest.permissions.includes('activeTab'), 'Deve ter permissão activeTab', 'Permissão ausente');
+assertTest(Array.isArray(manifest.permissions) && manifest.permissions.includes('alarms'), 'Deve ter permissão alarms', 'Permissão ausente');
+assertTest(manifest.background && manifest.background.service_worker === 'background.js', 'Service worker deve ser background.js', 'Background worker ausente');
 assertTest(manifest.action && manifest.action.default_popup === 'popup.html', 'Action popup deve ser popup.html', 'Popup incorreto');
 
-// TEST 2: Content script and Popup files existence
+// TEST 2: Content script, Background worker and Popup files existence
 assertTest(fs.existsSync(path.join(extDir, 'content.js')), 'content.js deve existir', 'Arquivo ausente');
+assertTest(fs.existsSync(path.join(extDir, 'background.js')), 'background.js deve existir', 'Arquivo ausente');
 assertTest(fs.existsSync(path.join(extDir, 'popup.html')), 'popup.html deve existir', 'Arquivo ausente');
 assertTest(fs.existsSync(path.join(extDir, 'popup.js')), 'popup.js deve existir', 'Arquivo ausente');
 
@@ -52,10 +55,12 @@ for (const size of iconSizes) {
 const bannedSlugs = ['k1y01s-5r', '54cea3-73', 'zaevym-aj'];
 const contentJsCode = fs.readFileSync(path.join(extDir, 'content.js'), 'utf8');
 const popupJsCode = fs.readFileSync(path.join(extDir, 'popup.js'), 'utf8');
+const backgroundJsCode = fs.readFileSync(path.join(extDir, 'background.js'), 'utf8');
 
 for (const slug of bannedSlugs) {
   assertTest(!contentJsCode.includes(slug), `content.js não deve conter slug privado (${slug})`, 'Slug vazado');
   assertTest(!popupJsCode.includes(slug), `popup.js não deve conter slug privado (${slug})`, 'Slug vazado');
+  assertTest(!backgroundJsCode.includes(slug), `background.js não deve conter slug privado (${slug})`, 'Slug vazado');
 }
 
 // TEST 5: Packaging ZIP validation
