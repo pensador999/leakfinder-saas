@@ -168,7 +168,9 @@ export function HomePage() {
       const result = await runAgentDiagnosticAsync(cleanInput);
       setDiagnostic(result);
       setIsAnalyzing(false);
-      setActiveTab('summary');
+
+      const isMkt = result.realSiteData.isMarketplaceSeller || detectMarketplace(result.realSiteData.url, result.realSiteData.domain).isMarketplace;
+      setActiveTab(isMkt ? 'marketplace' : 'summary');
 
       // 🗄️ Save audit to Supabase and update continuous score evolution timeline
       saveAuditToDatabase(result).catch(e => console.warn('[Supabase Auto-Save] Manual audit save error:', e));
@@ -190,7 +192,7 @@ export function HomePage() {
                              (diagnostic?.realSiteData.catalogAudit?.productsWithMissingImages || 0));
 
   const isMarketplaceStore = diagnostic 
-    ? detectMarketplace(diagnostic.realSiteData.url, diagnostic.realSiteData.domain).isMarketplace 
+    ? (detectMarketplace(diagnostic.realSiteData.url, diagnostic.realSiteData.domain).isMarketplace || Boolean(diagnostic.realSiteData.isMarketplaceSeller))
     : false;
 
   type NavigationPillar = 'PROFIT_DIAGNOSTIC' | 'CATALOG_STOCK' | 'MEDIA_INTELLIGENCE' | 'FOUNDER_SUITE';
@@ -217,6 +219,7 @@ export function HomePage() {
       badge: 'Essencial',
       tabs: [
         { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
+        ...(isMarketplaceStore ? [{ id: 'marketplace', label: 'Auditoria de Marketplace & Buy Box', icon: Store, highlight: true }] : []),
         { id: 'pricing', label: 'Simulador Pix & Margem', icon: Calculator, highlight: true },
         { id: 'omnichannel_social', label: 'Redes Sociais & Venda Direta', icon: Share2, highlight: true },
         { id: 'collection_audit', label: 'Coleções & Hero Banner', icon: Target, highlight: true },

@@ -141,6 +141,7 @@ export function extractCleanDomainAndBrand(targetUrl: string): {
   brandName: string;
   isMarketplaceSeller?: boolean;
   sellerIdentifier?: string;
+  itemId?: string;
 } {
   let cleanUrl = targetUrl.trim();
   if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
@@ -166,22 +167,27 @@ export function extractCleanDomainAndBrand(targetUrl: string): {
     if (isShopee && (pathParts.length > 0 || urlObj.searchParams.has('itemId') || urlObj.searchParams.has('shopId'))) {
       const candidate = pathParts.find(p => p !== 'shop' && p !== 'product' && !p.startsWith('cat.')) || pathParts[0] || 'VENDEDOR-SHOPEE';
       const sellerIdentifier = candidate.split('?')[0];
+      const itemId = urlObj.searchParams.get('itemId') || undefined;
       const brandName = `LOJA ${sellerIdentifier.toUpperCase()} (SHOPEE)`;
-      return { cleanUrl, domain, brandName, isMarketplaceSeller: true, sellerIdentifier };
+      return { cleanUrl, domain, brandName, isMarketplaceSeller: true, sellerIdentifier, itemId };
     }
 
     if (isMeli && (pathParts.length > 0 || domainLower.includes('produto.mercadolivre') || domainLower.includes('lista.mercadolivre'))) {
       const candidate = pathParts.find(p => !p.startsWith('MLB-') && p !== 'p' && p !== 'item') || pathParts[0] || 'VENDEDOR-MELI';
       const sellerIdentifier = candidate.split('?')[0];
+      const mlbMatch = cleanUrl.match(/(MLB-?\d+)/i);
+      const itemId = mlbMatch ? mlbMatch[1] : undefined;
       const brandName = `LOJA ${sellerIdentifier.toUpperCase()} (MERCADO LIVRE)`;
-      return { cleanUrl, domain, brandName, isMarketplaceSeller: true, sellerIdentifier };
+      return { cleanUrl, domain, brandName, isMarketplaceSeller: true, sellerIdentifier, itemId };
     }
 
     if (isAmazon && (pathParts.length > 0 && (urlLower.includes('/dp/') || urlLower.includes('/gp/') || urlLower.includes('/stores/')))) {
       const candidate = pathParts.find(p => p !== 'dp' && p !== 'gp' && p !== 'stores') || pathParts[0] || 'SELLER-AMAZON';
       const sellerIdentifier = candidate.split('?')[0];
+      const asinMatch = cleanUrl.match(/\/(?:dp|gp\/product)\/([A-Z0-9]{10})/i);
+      const itemId = asinMatch ? asinMatch[1] : undefined;
       const brandName = `LOJA ${sellerIdentifier.toUpperCase()} (AMAZON)`;
-      return { cleanUrl, domain, brandName, isMarketplaceSeller: true, sellerIdentifier };
+      return { cleanUrl, domain, brandName, isMarketplaceSeller: true, sellerIdentifier, itemId };
     }
   } catch {
     // Fallback if URL parsing fails
@@ -893,10 +899,15 @@ async function fetchHeadlessServerlessAudit(cleanUrl: string): Promise<any | nul
 export async function inspectRealWebsite(targetUrl: string): Promise<RealSiteData> {
   const startTime = performance.now();
   const brandExtraction = extractCleanDomainAndBrand(targetUrl);
-  const { cleanUrl, domain, brandName, isMarketplaceSeller, sellerIdentifier } = brandExtraction;
+  const { cleanUrl, domain, brandName, isMarketplaceSeller, sellerIdentifier, itemId } = brandExtraction;
   const domainHash = hashString(domain);
 
-  const cached = inspectionCache.get(domain);
+  // 🛡️ Cache Granular: Isola vendedores de marketplace (Shopee, Meli, Amazon) para evitar colisão no domínio global
+  const cacheKey = isMarketplaceSeller && sellerIdentifier
+    ? `${domain}_${sellerIdentifier}_${itemId || ''}`
+    : domain;
+
+  const cached = inspectionCache.get(cacheKey);
   if (cached && (Date.now() - cached.timestamp < CACHE_TTL_MS)) {
     return cached.data;
   }
@@ -909,6 +920,27 @@ export async function inspectRealWebsite(targetUrl: string): Promise<RealSiteDat
     const conv = headlessData.conversionElements || {};
     const contact = headlessData.contactChannels || {};
     const snapshot = headlessData.catalogSnapshot || {};
+
+    // Detecção adaptativa de plataforma e tier
+    const { platform, isEnterprise, brandTier } = detectEcommercePlatform(headlessData.rawHtmlSnippet || '', domain, cleanUrl);
+
+    // 🛡️ Higienização de Título de Marketplace: Evita adotar cegamente o título SPA institucional da Shopee / Meli
+    let resolvedTitle = headlessData.pageTitle || `${brandName} — Loja Oficial`;
+    const isGenericMarketplaceTitle = (
+      resolvedTitle.toLowerCase().includes('shopee brasil') ||
+      resolvedTitle.toLowerCase().includes('mercado livre brasil') ||
+      resolvedTitle.toLowerCase().includes('amazon.com.br') ||
+      resolvedTitle.trim().toLowerCase() === 'shopee' ||
+      resolvedTitle.trim().toLowerCase() === 'mercado livre'
+    );
+
+    if (isMarketplaceSeller && isGenericMarketplaceTitle) {
+      if (itemId) {
+        resolvedTitle = `${brandName} • Anúncio #${itemId} (Seller Oficial)`;
+      } else if (sellerIdentifier) {
+        resolvedTitle = `${brandName} • Vitrine do Vendedor (Loja Oficial)`;
+      }
+    }
 
     const rawProducts = Array.isArray(snapshot.sampleProducts) ? snapshot.sampleProducts : [];
     const headlessIssues: CatalogProductIssue[] = rawProducts.map((p: any, idx: number) => {
@@ -956,7 +988,7 @@ export async function inspectRealWebsite(targetUrl: string): Promise<RealSiteDat
         {
           id: 'live-prod-1',
           sku: `${brandName}-PROD-01`,
-          productTitle: `${brandName} — ${headlessData.pageTitle || 'Vitrine Oficial'}`,
+          productTitle: `${brandName} — ${resolvedTitle}`,
           productUrl: cleanUrl,
           imageSrc: '',
           hasValidImage: true,
@@ -980,12 +1012,16 @@ export async function inspectRealWebsite(targetUrl: string): Promise<RealSiteDat
       domain,
       brandName,
       isHttps: cleanUrl.startsWith('https://'),
-      ecommercePlatform: 'Enterprise / Custom',
-      isEnterpriseBrand: false,
-      brandTier: 'DTC_LINE_STORE',
-      title: headlessData.pageTitle || `${brandName} — Loja Oficial`,
-      metaDescription: `Confira os produtos e ofertas exclusivas na loja oficial ${brandName}.`,
-      h1List: [headlessData.pageTitle || `${brandName} Oficial`],
+      ecommercePlatform: platform,
+      isEnterpriseBrand: isEnterprise,
+      brandTier,
+      isMarketplaceSeller: Boolean(isMarketplaceSeller),
+      sellerIdentifier,
+      title: resolvedTitle,
+      metaDescription: isMarketplaceSeller
+        ? `Auditoria especializada do vendedor ${sellerIdentifier || brandName} no marketplace ${platform}. Análise de Buy Box, SEO de Título e Ficha Técnica.`
+        : `Confira os produtos e ofertas exclusivas na loja oficial ${brandName}.`,
+      h1List: [resolvedTitle],
       h2Count: 6,
       totalImages: 18,
       imagesWithoutAlt: 2,
@@ -1018,7 +1054,7 @@ export async function inspectRealWebsite(targetUrl: string): Promise<RealSiteDat
       screenshotUrl: headlessData.screenshotBase64
     };
 
-    inspectionCache.set(domain, { data: result, timestamp: Date.now() });
+    inspectionCache.set(cacheKey, { data: result, timestamp: Date.now() });
     return result;
   }
 
@@ -1186,6 +1222,24 @@ export async function inspectRealWebsite(targetUrl: string): Promise<RealSiteDat
     const hasEmail = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}/.test(bodyText);
     const hasPhone = /(?:^|\s)(\(?\d{2}\)?\s?(?:9\d{4}|\d{4})-?\d{4})(?:$|\s)/.test(bodyText);
 
+    // 🛡️ Higienização de Título de Marketplace no Provedor Secundário
+    let resolvedTitle = rawTitle;
+    const isGenericMarketplaceTitle = (
+      resolvedTitle.toLowerCase().includes('shopee brasil') ||
+      resolvedTitle.toLowerCase().includes('mercado livre brasil') ||
+      resolvedTitle.toLowerCase().includes('amazon.com.br') ||
+      resolvedTitle.trim().toLowerCase() === 'shopee' ||
+      resolvedTitle.trim().toLowerCase() === 'mercado livre'
+    );
+
+    if (isMarketplaceSeller && isGenericMarketplaceTitle) {
+      if (itemId) {
+        resolvedTitle = `${brandName} • Anúncio #${itemId} (Seller Oficial)`;
+      } else if (sellerIdentifier) {
+        resolvedTitle = `${brandName} • Vitrine do Vendedor (Loja Oficial)`;
+      }
+    }
+
     result = {
       url: cleanUrl,
       domain,
@@ -1196,8 +1250,10 @@ export async function inspectRealWebsite(targetUrl: string): Promise<RealSiteDat
       brandTier,
       isMarketplaceSeller: Boolean(isMarketplaceSeller),
       sellerIdentifier,
-      title: rawTitle,
-      metaDescription,
+      title: resolvedTitle,
+      metaDescription: isMarketplaceSeller
+        ? `Auditoria especializada do vendedor ${sellerIdentifier || brandName} no marketplace ${platform}. Análise de Buy Box, SEO de Título e Ficha Técnica.`
+        : metaDescription,
       h1List: h1Elements.length > 0 ? h1Elements : [`${brandName}`],
       h2Count,
       totalImages,
@@ -1238,6 +1294,6 @@ export async function inspectRealWebsite(targetUrl: string): Promise<RealSiteDat
     if (scrapedMarkdown) result.scrapedMarkdown = scrapedMarkdown;
   }
 
-  inspectionCache.set(domain, { data: result, timestamp: Date.now() });
+  inspectionCache.set(cacheKey, { data: result, timestamp: Date.now() });
   return result;
 }

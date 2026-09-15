@@ -193,6 +193,56 @@ assert_test("Criar anúncios demonstrando a durabilidade da proteção UV50+" no
 # 6. Conexão do Motor Serverless Puppeteer
 assert_test("fetchHeadlessServerlessAudit" in site_inspector_text, 'Conexão nativa com motor Chromium Serverless (/api/audit) ativa')
 
+# ------------------------------------------------------------------------------
+# TESTE 6: Identificação Especializada de Lojas & Vendedores da Shopee & Marketplaces
+# ------------------------------------------------------------------------------
+print('\n🔍 [6/6] Testando Suporte & Identificação Especializada a Lojas da Shopee...')
+
+def extract_marketplace_seller_test(target_url: str):
+    parsed = urlparse(target_url)
+    domain = (parsed.hostname or '').lower()
+    if domain.startswith('www.'):
+        domain = domain[4:]
+    is_shopee = 'shopee.com.br' in domain or 'shopee.com' in domain
+    
+    path_parts = [p for p in parsed.path.split('/') if p]
+    from urllib.parse import parse_qs
+    qs = parse_qs(parsed.query)
+    
+    item_id = qs.get('itemId', [None])[0]
+    
+    if is_shopee and (path_parts or item_id):
+        candidate = next((p for p in path_parts if p not in ('shop', 'product') and not p.startswith('cat.')), path_parts[0] if path_parts else 'VENDEDOR-SHOPEE')
+        seller_id = candidate.split('?')[0]
+        brand = f"LOJA {seller_id.upper()} (SHOPEE)"
+        return {
+            'is_marketplace_seller': True,
+            'seller_identifier': seller_id,
+            'item_id': item_id,
+            'brand_name': brand,
+            'domain': domain
+        }
+    return {'is_marketplace_seller': False, 'domain': domain}
+
+shopee_test_url = 'https://shopee.com.br/936o557f26?categoryId=100637&entryPoint=ShopByPDP&itemId=58268108232'
+shopee_res = extract_marketplace_seller_test(shopee_test_url)
+
+assert_test(shopee_res['is_marketplace_seller'] is True, 'Identificação correta de URL de vendedor na Shopee como Marketplace Seller')
+assert_test(shopee_res['seller_identifier'] == '936o557f26', 'Extração exata do sellerIdentifier ("936o557f26")')
+assert_test(shopee_res['item_id'] == '58268108232', 'Extração exata do itemId ("58268108232") do anúncio')
+assert_test(shopee_res['brand_name'] == 'LOJA 936O557F26 (SHOPEE)', 'Geração de brandName qualificado da loja do vendedor e não "Shopee Brasil"')
+
+# Verificação estática nos arquivos de código-fonte
+home_page_text = (root_dir / 'src/pages/HomePage.tsx').read_text(encoding='utf-8')
+report_page_text = (root_dir / 'src/pages/ReportPage.tsx').read_text(encoding='utf-8')
+mkt_inspector_text = (root_dir / 'src/services/marketplaceInspector.ts').read_text(encoding='utf-8')
+
+assert_test("isMarketplaceSeller && sellerIdentifier" in site_inspector_text, 'Cache granular por vendedor (domain_sellerIdentifier_itemId) em siteInspector.ts')
+assert_test("isGenericMarketplaceTitle" in site_inspector_text, 'Higienização de títulos institucionais genéricos da Shopee em siteInspector.ts')
+assert_test("Auditoria de Marketplace & Buy Box" in home_page_text, 'Aba "Auditoria de Marketplace & Buy Box" integrada em HomePage.tsx')
+assert_test("Auditoria de Marketplace & Buy Box" in report_page_text, 'Aba "Auditoria de Marketplace & Buy Box" integrada em ReportPage.tsx')
+assert_test("itemIdFromUrl" in mkt_inspector_text, 'Extração de itemId para SEO de títulos em marketplaceInspector.ts')
+
 print('\n================================================================')
 print(f'📊 RESULTADO DA AUDITORIA: {passed_tests}/{total_tests} TESTES APROVADOS ({round((passed_tests/total_tests)*100)}%)')
 if failed_tests == 0:

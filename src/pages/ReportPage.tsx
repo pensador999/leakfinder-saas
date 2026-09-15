@@ -104,12 +104,13 @@ export function ReportPage() {
                              (diagnostic?.realSiteData.catalogAudit?.productsWithMissingImages || 0));
 
   const isMarketplaceStore = diagnostic 
-    ? detectMarketplace(diagnostic.realSiteData.url, diagnostic.realSiteData.domain).isMarketplace 
+    ? (detectMarketplace(diagnostic.realSiteData.url, diagnostic.realSiteData.domain).isMarketplace || Boolean(diagnostic.realSiteData.isMarketplaceSeller))
     : false;
 
-  // 🛍️ 1. MODO LOJISTA: As 6 Abas Essenciais de Negócio & Lucro
+  // 🛍️ 1. MODO LOJISTA: As Abas Essenciais de Negócio & Lucro
   const merchantTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
+    ...(isMarketplaceStore ? [{ id: 'marketplace', label: 'Auditoria de Marketplace & Buy Box', icon: Store, highlight: true }] : []),
     { id: 'rupture_monitor', label: 'Vigia 24h Ruptura', icon: Flame, highlight: true },
     { id: 'pricing', label: 'Simulador Pix & Margem', icon: Calculator, highlight: true },
     { id: 'catalog', label: 'Catálogo & Estoque', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
@@ -117,9 +118,10 @@ export function ReportPage() {
     ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : [])
   ];
 
-  // 🔐 2. MODO ENGENHARIA / WAR ROOM: As 4 Abas Profundas + Especialistas
+  // 🔐 2. MODO ENGENHARIA / WAR ROOM: As Abas Profundas + Especialistas
   const warRoomTabs = [
     { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
+    ...(isMarketplaceStore ? [{ id: 'marketplace', label: 'Auditoria de Marketplace & Buy Box', icon: Store, highlight: true }] : []),
     { id: 'orchestrator', label: 'Torre do Maestro', icon: Cpu, highlight: true },
     { id: 'scraper_dossier', label: 'Dossier de Evidências', icon: Search, highlight: true },
     { id: 'truth_auditor', label: 'Tribunal de Veracidade', icon: Scale, highlight: true },

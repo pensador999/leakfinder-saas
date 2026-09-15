@@ -323,6 +323,20 @@ export default async function handler(request: any, response: any) {
         }
       });
 
+      // Marketplace Seller & Listing Title Extraction (Shopee, Meli, Amazon)
+      let marketplaceSellerName: string | undefined;
+      let marketplaceItemTitle: string | undefined;
+
+      const sellerEl = document.querySelector('.section-seller-overview-horizontal__seller-name, [data-sqe="seller_name"], [class*="seller-name"], [class*="seller_name"], .ui-pdp-seller__link-trigger');
+      if (sellerEl) {
+        marketplaceSellerName = sellerEl.textContent?.trim();
+      }
+
+      const itemTitleEl = document.querySelector('h1, [class*="product-briefing"] h1, [class*="item-title"], [data-sqe="item_name"], .ui-pdp-title');
+      if (itemTitleEl) {
+        marketplaceItemTitle = itemTitleEl.textContent?.trim();
+      }
+
       return {
         hasMetaPixel,
         metaPixelId,
@@ -337,9 +351,22 @@ export default async function handler(request: any, response: any) {
         whatsAppLink,
         hasFloatingChatWidget,
         visibleProductsCount: productCards.length,
-        sampleProducts
+        sampleProducts,
+        marketplaceSellerName,
+        marketplaceItemTitle
       };
     });
+
+    // Se o título SPA for institucional da Shopee/Meli, prioriza o título do anúncio extraído do DOM
+    let effectiveTitle = pageTitle;
+    if (rawAudit.marketplaceItemTitle && (
+      effectiveTitle.toLowerCase().includes('shopee brasil') || 
+      effectiveTitle.toLowerCase().includes('mercado livre brasil') || 
+      effectiveTitle.trim().toLowerCase() === 'shopee' ||
+      effectiveTitle.trim().toLowerCase() === 'mercado livre'
+    )) {
+      effectiveTitle = rawAudit.marketplaceItemTitle;
+    }
 
     let screenshotBase64: string | undefined;
     if (includeScreenshot) {
@@ -352,7 +379,9 @@ export default async function handler(request: any, response: any) {
       environment: isWindows ? 'local_windows' : 'vercel_serverless',
       data: {
         targetUrl,
-        pageTitle,
+        pageTitle: effectiveTitle,
+        marketplaceSellerName: rawAudit.marketplaceSellerName,
+        marketplaceItemTitle: rawAudit.marketplaceItemTitle,
         loadTimeMs,
         httpStatus,
         headTags: {

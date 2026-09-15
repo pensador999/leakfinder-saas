@@ -110,9 +110,38 @@ export function generateMarketplaceListingAudit(
   const marketplaceType = type || 'MERCADO_LIVRE';
   const marketplaceName = name || 'Mercado Livre';
 
-  const cleanTitle = rawTitle && !rawTitle.includes('— Site Oficial') && rawTitle.length > 8 
+  // Extração inteligente de parâmetros de anúncio da URL
+  let itemIdFromUrl = '';
+  try {
+    const parsed = new URL(url);
+    itemIdFromUrl = parsed.searchParams.get('itemId') || '';
+    if (!itemIdFromUrl) {
+      const mlbMatch = url.match(/(MLB-?\d+)/i);
+      if (mlbMatch) itemIdFromUrl = mlbMatch[1];
+    }
+  } catch {
+    const match = url.match(/itemId=(\d+)/i) || url.match(/(MLB-?\d+)/i);
+    if (match) itemIdFromUrl = match[1];
+  }
+
+  // Higienização de títulos institucionais de marketplaces
+  let cleanTitle = rawTitle && !rawTitle.includes('— Site Oficial') && rawTitle.length > 8 
     ? rawTitle.replace(/\|.*$/g, '').replace(/ - .*$/g, '').trim()
-    : `${brandName} Camisa Proteção Solar UV50+ Dry Fit Linha Oficial`;
+    : `${brandName} Linha Oficial & Catálogo de Alta Demanda`;
+
+  const isGenericPortalTitle = (
+    cleanTitle.toLowerCase().includes('shopee brasil') ||
+    cleanTitle.toLowerCase().includes('mercado livre brasil') ||
+    cleanTitle.toLowerCase().includes('amazon.com.br') ||
+    cleanTitle.trim().toLowerCase() === 'shopee' ||
+    cleanTitle.trim().toLowerCase() === 'mercado livre'
+  );
+
+  if (isGenericPortalTitle) {
+    cleanTitle = itemIdFromUrl 
+      ? `${brandName} Anúncio #${itemIdFromUrl} Catálogo Oficial` 
+      : `${brandName} Vitrine de Produtos & Alta Demanda`;
+  }
 
   const marketplaceColor = marketplaceType === 'MERCADO_LIVRE' 
     ? '#FFE600' 
@@ -127,17 +156,21 @@ export function generateMarketplaceListingAudit(
   const currentChars = cleanTitle.length;
   
   const optimizedTitle = marketplaceType === 'MERCADO_LIVRE'
-    ? `${cleanTitle.slice(0, 38)} UV50+ Original Garantia`.slice(0, 60)
-    : `${cleanTitle} Térmica UV50+ Manga Longa Secagem Rápida Original com Nota Fiscal`;
+    ? `${cleanTitle.slice(0, 36)} Original Garantia Pronta Entrega`.slice(0, 60)
+    : marketplaceType === 'SHOPEE'
+    ? `${cleanTitle} Original Alta Qualidade com Nota Fiscal e Envio Imediato Pronta Entrega`.slice(0, 120)
+    : `${cleanTitle} Premium Original com Garantia e Envio Rápido`.slice(0, 150);
 
   const titleAudit: MarketplaceTitleAudit = {
     originalTitle: cleanTitle,
     charCount: currentChars,
     maxRecommendedChars,
     keywordScore: Math.min(100, Math.max(65, Math.round((currentChars / maxRecommendedChars) * 100))),
-    missingKeywords: ['Original', 'Garantia', 'Nota Fiscal', 'Secagem Rápida'],
+    missingKeywords: ['Original', 'Garantia', 'Nota Fiscal', 'Pronta Entrega'],
     optimizedTitle,
-    structuralFormula: '[Produto] + [Marca] + [Modelo/Especificação] + [Benefício Chave] + [Garantia/Tamanho]'
+    structuralFormula: marketplaceType === 'SHOPEE'
+      ? '[Produto Principal] + [Marca/Seller] + [Variação/Especificação] + [Benefício] + [Pronta Entrega/NF]'
+      : '[Produto] + [Marca] + [Modelo/Especificação] + [Benefício Chave] + [Garantia/Tamanho]'
   };
 
   // 2. AUDITORIA DE FOTOS (DIRETRIZES DO ALGORITMO)
