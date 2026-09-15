@@ -54,8 +54,9 @@ const LOCAL_STORAGE_MCP_KEY = 'adshield_remote_mcp_config_v1';
 
 export function getRemoteMcpConfig(): RemoteMcpConfig {
   const envUrl = (import.meta as any)?.env?.VITE_REMOTE_MCP_WORKER_URL || '';
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const defaultCfg: RemoteMcpConfig = {
-    workerUrl: envUrl || 'http://localhost:3001',
+    workerUrl: envUrl || origin || 'http://localhost:3000',
     apiKey: '',
     timeoutMs: 35000
   };

@@ -62,5 +62,11 @@
       "path": "/api/cron/swarm-runner",
       "schedule": "0 10 * * *"
     }
-  ]
+  ],
+  "functions": {
+    "api/audit.ts": {
+      "memory": 1024,
+      "maxDuration": 60
+    }
+  }
 }
