@@ -62,7 +62,9 @@ export const PublicDossierMerchantHeader: React.FC<PublicDossierMerchantHeaderPr
               <span>Catálogo & Preços Auditados ao Vivo</span>
             </span>
             <span className="px-2.5 py-0.5 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-full text-xs font-mono font-bold">
-              Simulação Dinâmica • {finances.tierLabel}
+              {realSiteData.isMarketplaceSeller 
+                ? `Loja Marketplace • ${realSiteData.ecommercePlatform}` 
+                : `Simulação Dinâmica • ${finances.tierLabel}`}
             </span>
           </div>
 
@@ -81,7 +83,15 @@ export const PublicDossierMerchantHeader: React.FC<PublicDossierMerchantHeaderPr
             </h1>
             
             <p className="text-sm text-slate-300 leading-relaxed max-w-2xl">
-              Nossa inteligência inspecionou o catálogo público de <strong>{realSiteData.domain}</strong> e detectou <strong>{brokenSkusCount} produto(s) com grade furada</strong> e fuga no checkout, calculando o risco com base no ticket médio auditado de <strong>{finances.formattedAverageTicket}</strong>.
+              {realSiteData.isMarketplaceSeller ? (
+                <>
+                  Nossa inteligência inspecionou a vitrine e o catálogo do vendedor <strong>{realSiteData.brandName}</strong> no marketplace <strong>{realSiteData.ecommercePlatform}</strong> {realSiteData.sellerIdentifier ? `(Seller ID: ${realSiteData.sellerIdentifier})` : ''} e detectou <strong>{brokenSkusCount} produto(s) com grade furada</strong> e atrito na conversão, calculando o risco com base no ticket médio auditado de <strong>{finances.formattedAverageTicket}</strong>.
+                </>
+              ) : (
+                <>
+                  Nossa inteligência inspecionou o catálogo público de <strong>{realSiteData.domain}</strong> e detectou <strong>{brokenSkusCount} produto(s) com grade furada</strong> e fuga no checkout, calculando o risco com base no ticket médio auditado de <strong>{finances.formattedAverageTicket}</strong>.
+                </>
+              )}
             </p>
 
             <div className="p-2.5 bg-slate-900/90 rounded-xl border border-indigo-500/20 text-[11px] text-slate-400 flex items-start gap-2">

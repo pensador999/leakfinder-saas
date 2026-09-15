@@ -86,6 +86,53 @@ export const MarketplaceAuditView: React.FC<MarketplaceAuditViewProps> = ({ diag
         </div>
       </div>
 
+      {/* 🏬 IDENTIFICAÇÃO EXATA DA LOJA & ANÚNCIO (GROUNDING DE SELLER) */}
+      <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border border-indigo-500/30 shadow-md flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white shadow-inner" style={{ backgroundColor: isMeli ? '#2D3277' : isShopee ? '#EE4D2D' : '#232F3E' }}>
+            {isShopee ? 'S' : isMeli ? 'ML' : 'AZ'}
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs text-indigo-300 font-mono font-bold uppercase tracking-wider">Vendedor Auditado:</span>
+              <strong className="text-sm font-black text-white">{realSiteData.brandName}</strong>
+              {audit.sellerIdentifier && (
+                <span className="px-2 py-0.5 bg-white/10 text-white rounded-md text-[10px] font-mono border border-white/20">
+                  Seller ID: {audit.sellerIdentifier}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-slate-300 mt-0.5 flex items-center gap-2 flex-wrap">
+              <span>Plataforma: <strong>{audit.marketplaceName}</strong></span>
+              {audit.itemId && (
+                <>
+                  <span className="text-slate-500">•</span>
+                  <span>Anúncio / Item: <strong className="text-amber-300 font-mono">#{audit.itemId}</strong></span>
+                </>
+              )}
+              {audit.categoryId && (
+                <>
+                  <span className="text-slate-500">•</span>
+                  <span>Categoria: <strong className="text-slate-300 font-mono">#{audit.categoryId}</strong></span>
+                </>
+              )}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <a
+            href={realSiteData.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold font-mono transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+          >
+            <span>Abrir Anúncio na {audit.marketplaceName}</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        </div>
+      </div>
+
       {/* 🏷️ 1. OTIMIZADOR DE TÍTULO ALGORÍTMICO */}
       <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">

@@ -41,7 +41,9 @@ export async function runSiteInspectorWorker(inputUrl: string, targetRegion: Tar
   if (rawBrand === 'www' && domainParts.length > 1) {
     rawBrand = domainParts[1];
   }
-  const inferredBrandName = rawBrand.toUpperCase();
+  const inferredBrandName = siteData.isMarketplaceSeller && siteData.brandName
+    ? siteData.brandName
+    : rawBrand.toUpperCase();
 
   let detectedNiche = customNiche || 'Geral & E-commerce';
   const catalogTitles = (siteData.catalogAudit?.issues || []).map(i => i.productTitle).join(' ').toLowerCase();

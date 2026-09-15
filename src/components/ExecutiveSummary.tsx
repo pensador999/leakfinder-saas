@@ -69,21 +69,28 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                 DOM Auditado ao Vivo
               </span>
-              {shopSlug && (
+              {realSiteData.isMarketplaceSeller ? (
+                <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold bg-orange-100 text-orange-800 rounded-md border border-orange-300 inline-flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-orange-500 inline-block" />
+                  {realSiteData.ecommercePlatform} Seller: {realSiteData.sellerIdentifier || realSiteData.brandName}
+                </span>
+              ) : shopSlug ? (
                 <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-slate-100 text-slate-700 rounded-md border border-slate-200">
                   Shopify: {shopSlug}
                 </span>
-              )}
+              ) : null}
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              Auditoria profunda de catálogo, imagens, grade de tamanhos e integridade de checkout.
+              {realSiteData.isMarketplaceSeller 
+                ? `Auditoria de Seller em Marketplace: SEO de título, ficha técnica, Buy Box e conformidade algorítmica na ${realSiteData.ecommercePlatform}.`
+                : 'Auditoria profunda de catálogo, imagens, grade de tamanhos e integridade de checkout.'}
             </p>
           </div>
         </div>
 
         {/* Quick Links & Direct Admin Button */}
         <div className="flex items-center gap-2 w-full lg:w-auto justify-start lg:justify-end flex-wrap">
-          {shopSlug && (
+          {!realSiteData.isMarketplaceSeller && shopSlug && (
             <a
               href={`https://admin.shopify.com/store/${shopSlug}`}
               target="_blank"
@@ -95,6 +102,12 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
               <span>Shopify Admin ({shopSlug})</span>
             </a>
           )}
+          {realSiteData.isMarketplaceSeller && (
+            <span className="px-3 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold font-mono flex items-center gap-1.5 shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-orange-400 inline-block" />
+              <span>Seller Oficial ({realSiteData.sellerIdentifier || realSiteData.brandName})</span>
+            </span>
+          )}
           <a
             href={realSiteData.url}
             target="_blank"
@@ -102,7 +115,7 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
             className="px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
             title="Abrir vitrine da loja em nova aba"
           >
-            <span>Ver Loja</span>
+            <span>{realSiteData.isMarketplaceSeller ? `Ver Anúncio na ${realSiteData.ecommercePlatform}` : 'Ver Loja'}</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>

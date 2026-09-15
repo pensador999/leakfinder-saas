@@ -66,6 +66,10 @@ export interface MarketplaceListingAuditResult {
   marketplaceName: string;
   marketplaceColor: string;
   badgeLabel: string;
+  sellerName?: string;
+  sellerIdentifier?: string;
+  itemId?: string;
+  categoryId?: string;
   listingScore: number; // 0 to 100
   titleAudit: MarketplaceTitleAudit;
   photoAudit: MarketplacePhotoAudit;
@@ -110,11 +114,19 @@ export function generateMarketplaceListingAudit(
   const marketplaceType = type || 'MERCADO_LIVRE';
   const marketplaceName = name || 'Mercado Livre';
 
-  // Extração inteligente de parâmetros de anúncio da URL
+  // Extração inteligente de parâmetros de anúncio e vendedor da URL
   let itemIdFromUrl = '';
+  let categoryIdFromUrl = '';
+  let sellerIdentifierFromUrl = '';
+
   try {
     const parsed = new URL(url);
     itemIdFromUrl = parsed.searchParams.get('itemId') || '';
+    categoryIdFromUrl = parsed.searchParams.get('categoryId') || '';
+    const pathParts = parsed.pathname.split('/').filter(Boolean);
+    if (pathParts.length > 0) {
+      sellerIdentifierFromUrl = pathParts.find(p => p !== 'shop' && p !== 'product' && !p.startsWith('cat.')) || pathParts[0] || '';
+    }
     if (!itemIdFromUrl) {
       const mlbMatch = url.match(/(MLB-?\d+)/i);
       if (mlbMatch) itemIdFromUrl = mlbMatch[1];
@@ -122,6 +134,8 @@ export function generateMarketplaceListingAudit(
   } catch {
     const match = url.match(/itemId=(\d+)/i) || url.match(/(MLB-?\d+)/i);
     if (match) itemIdFromUrl = match[1];
+    const catMatch = url.match(/categoryId=(\d+)/i);
+    if (catMatch) categoryIdFromUrl = catMatch[1];
   }
 
   // Higienização de títulos institucionais de marketplaces
@@ -320,6 +334,10 @@ export function generateMarketplaceListingAudit(
     marketplaceName,
     marketplaceColor,
     badgeLabel: `Modo Marketplace: ${marketplaceName}`,
+    sellerName: brandName,
+    sellerIdentifier: sellerIdentifierFromUrl || undefined,
+    itemId: itemIdFromUrl || undefined,
+    categoryId: categoryIdFromUrl || undefined,
     listingScore: 84,
     titleAudit,
     photoAudit,

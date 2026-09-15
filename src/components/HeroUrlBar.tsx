@@ -5,6 +5,7 @@ import { faFish, faWheatAwn, faFire, faGlobe, faArrowRight as faArrowRightSolid,
 import gsap from 'gsap';
 import { AuditInput } from '../types';
 import { getWhiteLabelConfig, WhiteLabelConfig } from '../services/whiteLabelService';
+import { extractCleanDomainAndBrand } from '../services/siteInspector';
 
 interface HeroUrlBarProps {
   onAnalyze: (input: AuditInput) => void;
@@ -122,13 +123,14 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
       clean = `https://${clean}`;
     }
 
-    const domainName = clean.replace(/^https?:\/\//, '').split('.')[0].toUpperCase();
+    const extraction = extractCleanDomainAndBrand(clean);
+    const domainName = extraction.brandName || clean.replace(/^https?:\/\//, '').split('.')[0].toUpperCase();
 
     onAnalyze({
       siteUrl: clean,
       businessName: domainName,
-      businessType: 'ecommerce',
-      niche: nicheInput,
+      businessType: extraction.isMarketplaceSeller ? 'ecommerce' : 'ecommerce',
+      niche: nicheInput || (extraction.isMarketplaceSeller ? 'Vendas em Marketplace (Shopee/Meli)' : ''),
       monthlyRevenue: 'R$ 50k a R$ 200k',
       averageOrderValue: Number(aovInput) || 180,
       mainChallenge: 'low_conversion',
