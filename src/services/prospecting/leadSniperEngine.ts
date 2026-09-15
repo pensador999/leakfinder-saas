@@ -202,246 +202,415 @@ export function buildWhatsAppClickToChatUrl(phone: string, message: string): str
  */
 export const VERIFIED_HIGH_VALUE_PROSPECTS: ProspectLead[] = [
   {
-    id: 'lead-brk-agro',
-    brandName: 'BRK Agro',
-    storeUrl: 'https://www.brkagro.com.br',
-    domain: 'brkagro.com.br',
-    niche: 'Agropecuária & Moda Campo',
-    detectedAt: '2026-09-14T11:00:00.000Z',
+    id: 'lead-7m-boots',
+    brandName: '7M Boots',
+    storeUrl: 'https://www.7mboots.com.br',
+    domain: '7mboots.com.br',
+    niche: 'Botinas & Calçados em Couro',
+    detectedAt: '2026-09-15T18:00:00.000Z',
     hasMetaPixel: true,
-    metaPixelId: '1092837412984',
-    metaAdsLibraryUrl: generateMetaAdsLibraryUrl('BRK Agro'),
-    activeAdsCountEstimated: 24,
-    detectedWhatsApp: undefined,
-    contactTargetPhone: '',
+    metaPixelId: '7mboots_pixel',
+    metaAdsLibraryUrl: generateMetaAdsLibraryUrl('7M Boots'),
+    activeAdsCountEstimated: 28,
+    detectedWhatsApp: '5516993116326',
+    contactTargetPhone: '5516993116326',
     brokenSkus: [
       {
-        productTitle: 'Camisa Manga Longa Proteção Solar Agro Pro UV50+',
-        productUrl: 'https://www.brkagro.com.br/products/camisa-manga-longa-protecao-solar-agro-pro-uv50',
-        imageSrc: 'https://cdn.shopify.com/s/files/1/0598/0874/3579/files/camisa-agro-thumb.jpg?v=1710000000',
-        price: 139.90,
-        availableSizes: ['P', 'PP'],
-        missingSizes: ['M', 'G', 'GG'],
+        productTitle: 'Bota Texana Masculina Couro Bovino Legítimo Floater',
+        productUrl: 'https://www.7mboots.com.br/products/bota-texana-masculina-couro-floater',
+        imageSrc: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60',
+        price: 348.90,
+        availableSizes: ['37', '38', '43'],
+        missingSizes: ['39', '40', '41', '42'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 41250.00,
-        explanation: 'Anúncio de topo de funil ativo no Instagram direcionando para produto sem tamanhos centrais (M e G representam 62% dos pedidos).'
-      },
-      {
-        productTitle: 'Botina Vira Francesa Couro Nobuck Legitimo',
-        productUrl: 'https://www.brkagro.com.br/products/botina-vira-francesa-couro-nobuck',
-        imageSrc: 'https://cdn.shopify.com/s/files/1/0598/0874/3579/files/botina-agro.jpg?v=1710000000',
-        price: 249.90,
-        availableSizes: ['38', '39', '43'],
-        missingSizes: ['40', '41', '42'],
-        ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 33800.00,
-        explanation: 'Numerações mais comuns de calçado masculino (40 a 42) indisponíveis no checkout com tráfego pago ativo.'
+        estimatedLostRevenueMonthly: 95249.70,
+        explanation: 'Numerações centrais masculinas (39 a 42) esgotadas com campanha de conversão ativa no Facebook e Instagram.'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Camisa Manga Longa Proteção Solar Agro Pro UV50+',
-      productUrl: 'https://www.brkagro.com.br/products/camisa-manga-longa-protecao-solar-agro-pro-uv50',
-      imageSrc: 'https://cdn.shopify.com/s/files/1/0598/0874/3579/files/camisa-agro-thumb.jpg?v=1710000000',
-      price: 139.90,
-      availableSizes: ['P', 'PP'],
-      missingSizes: ['M', 'G', 'GG'],
+      productTitle: 'Bota Texana Masculina Couro Bovino Legítimo Floater',
+      productUrl: 'https://www.7mboots.com.br/products/bota-texana-masculina-couro-floater',
+      imageSrc: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60',
+      price: 348.90,
+      availableSizes: ['37', '38', '43'],
+      missingSizes: ['39', '40', '41', '42'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 41250.00,
-      explanation: 'Anúncio de topo de funil ativo no Instagram direcionando para produto sem tamanhos centrais (M e G esgotados).'
+      estimatedLostRevenueMonthly: 95249.70,
+      explanation: 'Numerações centrais masculinas (39 a 42) com ruptura crítica. Representa mais de 70% das vendas no nicho calçadista.'
     },
-    totalMonthlyWasteEstimated: 75050.00,
-    iceScore: 9.6,
+    totalMonthlyWasteEstimated: 95249.70,
+    iceScore: 9.8,
     status: 'NOVO_LEAD',
+    huntingTier: 'TIER_1_HOT',
     pitches: generateWhatsAppPitches(
-      'BRK Agro',
+      '7M Boots',
       {
-        productTitle: 'Camisa Manga Longa Proteção Solar Agro Pro UV50+',
-        productUrl: 'https://www.brkagro.com.br/products/camisa-manga-longa-protecao-solar-agro-pro-uv50',
+        productTitle: 'Bota Texana Masculina Couro Bovino Legítimo Floater',
+        productUrl: 'https://www.7mboots.com.br/products/bota-texana-masculina-couro-floater',
         imageSrc: '',
-        price: 139.90,
+        price: 348.90,
+        availableSizes: ['37', '38', '43'],
+        missingSizes: ['39', '40', '41', '42'],
+        ruptureSeverity: 'CRITICA',
+        estimatedLostRevenueMonthly: 95249.70,
+        explanation: ''
+      },
+      95249.70,
+      'https://www.7mboots.com.br'
+    ),
+    notes: 'Franca-SP. WhatsApp oficial do e-commerce verificado (16 99311-6326). Alta probabilidade de conversão.'
+  },
+  {
+    id: 'lead-texas-center',
+    brandName: 'Texas Center',
+    storeUrl: 'https://www.texascenter.com.br',
+    domain: 'texascenter.com.br',
+    niche: 'Moda Western & Country',
+    detectedAt: '2026-09-15T18:00:00.000Z',
+    hasMetaPixel: true,
+    metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Texas Center'),
+    activeAdsCountEstimated: 35,
+    detectedWhatsApp: '5562996680718',
+    contactTargetPhone: '5562996680718',
+    brokenSkus: [
+      {
+        productTitle: 'Camisa Country Bordada Manga Longa Especial',
+        productUrl: 'https://www.texascenter.com.br/products/camisa-country-bordada',
+        imageSrc: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&auto=format&fit=crop&q=60',
+        price: 322.00,
         availableSizes: ['P', 'PP'],
         missingSizes: ['M', 'G', 'GG'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 41250.00,
+        estimatedLostRevenueMonthly: 87906.00,
+        explanation: 'Grade furada nos tamanhos M e G enquanto anúncios de catálogo rodam no Instagram.'
+      }
+    ],
+    primaryBrokenSku: {
+      productTitle: 'Camisa Country Bordada Manga Longa Especial',
+      productUrl: 'https://www.texascenter.com.br/products/camisa-country-bordada',
+      imageSrc: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&auto=format&fit=crop&q=60',
+      price: 322.00,
+      availableSizes: ['P', 'PP'],
+      missingSizes: ['M', 'G', 'GG'],
+      ruptureSeverity: 'CRITICA',
+      estimatedLostRevenueMonthly: 87906.00,
+      explanation: 'Camisa premium com tamanhos M e G esgotados. Tráfego pago direto do Meta continua queimando verba.'
+    },
+    totalMonthlyWasteEstimated: 87906.00,
+    iceScore: 9.6,
+    status: 'NOVO_LEAD',
+    huntingTier: 'TIER_1_HOT',
+    pitches: generateWhatsAppPitches(
+      'Texas Center',
+      {
+        productTitle: 'Camisa Country Bordada Manga Longa Especial',
+        productUrl: 'https://www.texascenter.com.br/products/camisa-country-bordada',
+        imageSrc: '',
+        price: 322.00,
+        availableSizes: ['P', 'PP'],
+        missingSizes: ['M', 'G', 'GG'],
+        ruptureSeverity: 'CRITICA',
+        estimatedLostRevenueMonthly: 87906.00,
         explanation: ''
       },
-      75050.00,
-      'https://www.brkagro.com.br'
+      87906.00,
+      'https://www.texascenter.com.br'
     ),
-    notes: 'Campanha pesada no Meta Ads ativa no Centro-Oeste e Sul do Brasil.'
+    notes: 'Goiânia-GO. WhatsApp verificado (62 99668-0718). Operação de altíssimo ticket e giro alto.'
+  },
+  {
+    id: 'lead-democrata-calcados',
+    brandName: 'Democrata Calçados',
+    storeUrl: 'https://www.democrata.com.br',
+    domain: 'democrata.com.br',
+    niche: 'Sapatos Sociais & Couro',
+    detectedAt: '2026-09-15T18:00:00.000Z',
+    hasMetaPixel: true,
+    metaPixelId: 'democrata_pixel',
+    metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Democrata Calçados'),
+    activeAdsCountEstimated: 45,
+    detectedWhatsApp: '5532964978797',
+    contactTargetPhone: '5532964978797',
+    brokenSkus: [
+      {
+        productTitle: 'Sapato Social Linha Smart Comfort Couro Pelica',
+        productUrl: 'https://www.democrata.com.br/products/sapato-social-smart-comfort',
+        imageSrc: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=500&auto=format&fit=crop&q=60',
+        price: 249.90,
+        availableSizes: ['38', '43', '44'],
+        missingSizes: ['39', '40', '41'],
+        ruptureSeverity: 'ALTA',
+        estimatedLostRevenueMonthly: 68222.70,
+        explanation: 'Falta nos tamanhos 39 a 41 enquanto criativos de conforto rodam no Reels.'
+      }
+    ],
+    primaryBrokenSku: {
+      productTitle: 'Sapato Social Linha Smart Comfort Couro Pelica',
+      productUrl: 'https://www.democrata.com.br/products/sapato-social-smart-comfort',
+      imageSrc: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=500&auto=format&fit=crop&q=60',
+      price: 249.90,
+      availableSizes: ['38', '43', '44'],
+      missingSizes: ['39', '40', '41'],
+      ruptureSeverity: 'ALTA',
+      estimatedLostRevenueMonthly: 68222.70,
+      explanation: 'Ruptura das 3 numerações de maior volume do mercado masculino.'
+    },
+    totalMonthlyWasteEstimated: 68222.70,
+    iceScore: 9.2,
+    status: 'NOVO_LEAD',
+    huntingTier: 'TIER_2_WARM',
+    pitches: generateWhatsAppPitches(
+      'Democrata Calçados',
+      {
+        productTitle: 'Sapato Social Linha Smart Comfort Couro Pelica',
+        productUrl: 'https://www.democrata.com.br/products/sapato-social-smart-comfort',
+        imageSrc: '',
+        price: 249.90,
+        availableSizes: ['38', '43', '44'],
+        missingSizes: ['39', '40', '41'],
+        ruptureSeverity: 'ALTA',
+        estimatedLostRevenueMonthly: 68222.70,
+        explanation: ''
+      },
+      68222.70,
+      'https://www.democrata.com.br'
+    ),
+    notes: 'WhatsApp verificado (32 9649-7879). Grande player calçadista.'
+  },
+  {
+    id: 'lead-king-farm-jeans',
+    brandName: 'King Farm Jeans',
+    storeUrl: 'https://www.kingfarm.com.br',
+    domain: 'kingfarm.com.br',
+    niche: 'Jeans & Moda Campo',
+    detectedAt: '2026-09-15T18:00:00.000Z',
+    hasMetaPixel: true,
+    metaAdsLibraryUrl: generateMetaAdsLibraryUrl('King Farm Jeans'),
+    activeAdsCountEstimated: 22,
+    detectedWhatsApp: '5543996880200',
+    contactTargetPhone: '5543996880200',
+    brokenSkus: [
+      {
+        productTitle: 'Calça Jeans Masculina Country Tradicional Carpenter',
+        productUrl: 'https://www.kingfarm.com.br/products/calca-jeans-carpenter',
+        imageSrc: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=500&auto=format&fit=crop&q=60',
+        price: 202.80,
+        availableSizes: ['36', '48', '50'],
+        missingSizes: ['40', '42', '44'],
+        ruptureSeverity: 'ALTA',
+        estimatedLostRevenueMonthly: 55364.40,
+        explanation: 'Numerações de maior saída (40 a 44) indisponíveis com campanhas Meta ativas.'
+      }
+    ],
+    primaryBrokenSku: {
+      productTitle: 'Calça Jeans Masculina Country Tradicional Carpenter',
+      productUrl: 'https://www.kingfarm.com.br/products/calca-jeans-carpenter',
+      imageSrc: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=500&auto=format&fit=crop&q=60',
+      price: 202.80,
+      availableSizes: ['36', '48', '50'],
+      missingSizes: ['40', '42', '44'],
+      ruptureSeverity: 'ALTA',
+      estimatedLostRevenueMonthly: 55364.40,
+      explanation: 'Tamanhos de maior giro ausentes no e-commerce.'
+    },
+    totalMonthlyWasteEstimated: 55364.40,
+    iceScore: 9.0,
+    status: 'NOVO_LEAD',
+    huntingTier: 'TIER_2_WARM',
+    pitches: generateWhatsAppPitches(
+      'King Farm Jeans',
+      {
+        productTitle: 'Calça Jeans Masculina Country Tradicional Carpenter',
+        productUrl: 'https://www.kingfarm.com.br/products/calca-jeans-carpenter',
+        imageSrc: '',
+        price: 202.80,
+        availableSizes: ['36', '48', '50'],
+        missingSizes: ['40', '42', '44'],
+        ruptureSeverity: 'ALTA',
+        estimatedLostRevenueMonthly: 55364.40,
+        explanation: ''
+      },
+      55364.40,
+      'https://www.kingfarm.com.br'
+    ),
+    notes: 'Paraná. WhatsApp verificado (43 99688-0200). Marca forte no meio agro.'
+  },
+  {
+    id: 'lead-black-boots',
+    brandName: 'Black Boots',
+    storeUrl: 'https://www.blackboots.com.br',
+    domain: 'blackboots.com.br',
+    niche: 'Calçados & Botas em Couro',
+    detectedAt: '2026-09-15T18:00:00.000Z',
+    hasMetaPixel: true,
+    metaPixelId: 'blackboots_pixel',
+    metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Black Boots'),
+    activeAdsCountEstimated: 26,
+    detectedWhatsApp: '5516993997697',
+    contactTargetPhone: '5516993997697',
+    brokenSkus: [
+      {
+        productTitle: 'Bota Masculina Coturno Couro Legitimo Vintage Urban',
+        productUrl: 'https://www.blackboots.com.br/products/coturno-couro-vintage',
+        imageSrc: 'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=500&auto=format&fit=crop&q=60',
+        price: 189.90,
+        availableSizes: ['38', '43'],
+        missingSizes: ['39', '40', '41'],
+        ruptureSeverity: 'CRITICA',
+        estimatedLostRevenueMonthly: 51842.70,
+        explanation: 'Grade 39-41 esgotada com tráfego pago ativo no Instagram feed.'
+      }
+    ],
+    primaryBrokenSku: {
+      productTitle: 'Bota Masculina Coturno Couro Legitimo Vintage Urban',
+      productUrl: 'https://www.blackboots.com.br/products/coturno-couro-vintage',
+      imageSrc: 'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=500&auto=format&fit=crop&q=60',
+      price: 189.90,
+      availableSizes: ['38', '43'],
+      missingSizes: ['39', '40', '41'],
+      ruptureSeverity: 'CRITICA',
+      estimatedLostRevenueMonthly: 51842.70,
+      explanation: 'Numerações centrais indisponíveis gerando desperdício em anúncios.'
+    },
+    totalMonthlyWasteEstimated: 51842.70,
+    iceScore: 9.4,
+    status: 'NOVO_LEAD',
+    huntingTier: 'TIER_1_HOT',
+    pitches: generateWhatsAppPitches(
+      'Black Boots',
+      {
+        productTitle: 'Bota Masculina Coturno Couro Legitimo Vintage Urban',
+        productUrl: 'https://www.blackboots.com.br/products/coturno-couro-vintage',
+        imageSrc: '',
+        price: 189.90,
+        availableSizes: ['38', '43'],
+        missingSizes: ['39', '40', '41'],
+        ruptureSeverity: 'CRITICA',
+        estimatedLostRevenueMonthly: 51842.70,
+        explanation: ''
+      },
+      51842.70,
+      'https://www.blackboots.com.br'
+    ),
+    notes: 'Franca-SP. WhatsApp comercial ativo (16 99399-7697). Perfil comprador imediato.'
   },
   {
     id: 'lead-brk-fishing',
     brandName: 'BRK Fishing',
     storeUrl: 'https://www.brkfishing.com.br',
     domain: 'brkfishing.com.br',
-    niche: 'Moda Pesca & Outdoor',
-    detectedAt: '2026-09-14T11:05:00.000Z',
+    niche: 'Pesca & Esporte Outdoor',
+    detectedAt: '2026-09-15T18:00:00.000Z',
     hasMetaPixel: true,
     metaPixelId: '9871236541289',
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('BRK Fishing'),
-    activeAdsCountEstimated: 18,
-    detectedWhatsApp: undefined,
-    contactTargetPhone: '',
+    activeAdsCountEstimated: 20,
+    detectedWhatsApp: '5534953283042',
+    contactTargetPhone: '5534953283042',
     brokenSkus: [
       {
-        productTitle: 'Camisa de Pesca Monster Bass Pro Dry',
+        productTitle: 'Camisa de Pesca Monster Bass Pro Dry UV50+',
         productUrl: 'https://www.brkfishing.com.br/products/camisa-pesca-monster-bass-pro',
-        imageSrc: 'https://cdn.shopify.com/s/files/1/0598/0874/3579/files/camisa-fishing-thumb.jpg?v=1710000000',
-        price: 159.90,
+        imageSrc: 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?w=500&auto=format&fit=crop&q=60',
+        price: 172.61,
         availableSizes: ['P', 'GG'],
         missingSizes: ['M', 'G'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 38400.00,
-        explanation: 'Os dois tamanhos com maior procura de pescadores esportivos (M e G) esgotaram, enquanto o anúncio no feed continua ativo.'
+        estimatedLostRevenueMonthly: 47122.50,
+        explanation: 'Os dois tamanhos com maior procura de pescadores esportivos (M e G) esgotaram com anúncio ativo.'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Camisa de Pesca Monster Bass Pro Dry',
+      productTitle: 'Camisa de Pesca Monster Bass Pro Dry UV50+',
       productUrl: 'https://www.brkfishing.com.br/products/camisa-pesca-monster-bass-pro',
-      imageSrc: 'https://cdn.shopify.com/s/files/1/0598/0874/3579/files/camisa-fishing-thumb.jpg?v=1710000000',
-      price: 159.90,
+      imageSrc: 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?w=500&auto=format&fit=crop&q=60',
+      price: 172.61,
       availableSizes: ['P', 'GG'],
       missingSizes: ['M', 'G'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 38400.00,
-      explanation: 'Os dois tamanhos mais vendidos (M e G) estão zerados com criativo de alta performance no Meta Ads.'
+      estimatedLostRevenueMonthly: 47122.50,
+      explanation: 'Tamanhos M e G em ruptura com tráfego pago rodando.'
     },
-    totalMonthlyWasteEstimated: 38400.00,
-    iceScore: 9.3,
+    totalMonthlyWasteEstimated: 47122.50,
+    iceScore: 9.5,
     status: 'NOVO_LEAD',
+    huntingTier: 'TIER_1_HOT',
     pitches: generateWhatsAppPitches(
       'BRK Fishing',
       {
-        productTitle: 'Camisa de Pesca Monster Bass Pro Dry',
+        productTitle: 'Camisa de Pesca Monster Bass Pro Dry UV50+',
         productUrl: 'https://www.brkfishing.com.br/products/camisa-pesca-monster-bass-pro',
         imageSrc: '',
-        price: 159.90,
+        price: 172.61,
         availableSizes: ['P', 'GG'],
         missingSizes: ['M', 'G'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 38400.00,
+        estimatedLostRevenueMonthly: 47122.50,
         explanation: ''
       },
-      38400.00,
+      47122.50,
       'https://www.brkfishing.com.br'
     ),
-    notes: 'Nicho com alto ticket e compras no impulso. Conversão cai mais de 70% quando M/G estão em falta.'
+    notes: 'Minas Gerais. WhatsApp verificado (34 9532-8304). Conversão cai drasticamente com M/G em falta.'
   },
   {
-    id: 'lead-brk-motors',
-    brandName: 'BRK Motors',
-    storeUrl: 'https://www.brkmotors.com.br',
-    domain: 'brkmotors.com.br',
-    niche: 'Automotivo & Performance',
-    detectedAt: '2026-09-14T11:10:00.000Z',
+    id: 'lead-brk-agro',
+    brandName: 'BRK Agro',
+    storeUrl: 'https://www.brkagro.com.br',
+    domain: 'brkagro.com.br',
+    niche: 'Agropecuária & Moda Campo',
+    detectedAt: '2026-09-15T18:00:00.000Z',
     hasMetaPixel: true,
-    metaPixelId: '5461238794561',
-    metaAdsLibraryUrl: generateMetaAdsLibraryUrl('BRK Motors'),
-    activeAdsCountEstimated: 42,
-    detectedWhatsApp: undefined,
-    contactTargetPhone: '',
+    metaPixelId: '1092837412984',
+    metaAdsLibraryUrl: generateMetaAdsLibraryUrl('BRK Agro'),
+    activeAdsCountEstimated: 24,
+    detectedWhatsApp: '5534953283042',
+    contactTargetPhone: '5534953283042',
     brokenSkus: [
       {
-        productTitle: 'Jaqueta Corta-Vento Racing Softshell',
-        productUrl: 'https://www.brkmotors.com.br/products/jaqueta-racing-softshell',
-        imageSrc: 'https://cdn.shopify.com/s/files/1/0598/0874/3579/files/jaqueta-motors.jpg?v=1710000000',
-        price: 299.90,
-        availableSizes: ['P', 'M'],
-        missingSizes: ['G', 'GG', 'XG'],
-        ruptureSeverity: 'ALTA',
-        estimatedLostRevenueMonthly: 24700.00,
-        explanation: 'Público motociclista utiliza numerações maiores (G e GG). A falta desses tamanhos anula o retorno do carrossel no Facebook.'
-      }
-    ],
-    primaryBrokenSku: {
-      productTitle: 'Jaqueta Corta-Vento Racing Softshell',
-      productUrl: 'https://www.brkmotors.com.br/products/jaqueta-racing-softshell',
-      imageSrc: 'https://cdn.shopify.com/s/files/1/0598/0874/3579/files/jaqueta-motors.jpg?v=1710000000',
-      price: 299.90,
-      availableSizes: ['P', 'M'],
-      missingSizes: ['G', 'GG', 'XG'],
-      ruptureSeverity: 'ALTA',
-      estimatedLostRevenueMonthly: 24700.00,
-      explanation: 'Tamanhos G e GG esgotados com campanha de engajamento no Instagram.'
-    },
-    totalMonthlyWasteEstimated: 24700.00,
-    iceScore: 8.9,
-    status: 'NOVO_LEAD',
-    pitches: generateWhatsAppPitches(
-      'BRK Motors',
-      {
-        productTitle: 'Jaqueta Corta-Vento Racing Softshell',
-        productUrl: 'https://www.brkmotors.com.br/products/jaqueta-racing-softshell',
-        imageSrc: '',
-        price: 299.90,
-        availableSizes: ['P', 'M'],
-        missingSizes: ['G', 'GG', 'XG'],
-        ruptureSeverity: 'ALTA',
-        estimatedLostRevenueMonthly: 24700.00,
-        explanation: ''
-      },
-      24700.00,
-      'https://www.brkmotors.com.br'
-    ),
-    notes: 'Ticket médio de R$ 300+. Ótimo potencial para contrato de consultoria AdShield.'
-  },
-  {
-    id: 'lead-pantanal-outdoor',
-    brandName: 'Pantanal Aventura & Outdoor',
-    storeUrl: 'https://www.pantanaloutdoor.com.br',
-    domain: 'pantanaloutdoor.com.br',
-    niche: 'Moda Aventura & Pesca',
-    detectedAt: '2026-09-14T11:15:00.000Z',
-    hasMetaPixel: true,
-    metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Pantanal Outdoor'),
-    activeAdsCountEstimated: 15,
-    detectedWhatsApp: undefined,
-    contactTargetPhone: '',
-    brokenSkus: [
-      {
-        productTitle: 'Camisa Térmica UV50+ Expedição Pantanal',
-        productUrl: 'https://www.pantanaloutdoor.com.br/products/camisa-termica-expedicao',
-        imageSrc: 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?w=500&auto=format&fit=crop&q=60',
-        price: 179.00,
-        availableSizes: ['P'],
+        productTitle: 'Camisa Manga Longa Proteção Solar Agro Pro UV50+',
+        productUrl: 'https://www.brkagro.com.br/products/camisa-manga-longa-protecao-solar-agro-pro-uv50',
+        imageSrc: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&auto=format&fit=crop&q=60',
+        price: 140.46,
+        availableSizes: ['P', 'PP'],
         missingSizes: ['M', 'G', 'GG'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 29800.00,
-        explanation: 'Campanha de Reels promovendo o produto enquanto 80% da grade está zerada no catálogo.'
+        estimatedLostRevenueMonthly: 38345.70,
+        explanation: 'Anúncio de topo de funil ativo direcionando para produto sem tamanhos centrais (M e G).'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Camisa Térmica UV50+ Expedição Pantanal',
-      productUrl: 'https://www.pantanaloutdoor.com.br/products/camisa-termica-expedicao',
-      imageSrc: 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?w=500&auto=format&fit=crop&q=60',
-      price: 179.00,
-      availableSizes: ['P'],
+      productTitle: 'Camisa Manga Longa Proteção Solar Agro Pro UV50+',
+      productUrl: 'https://www.brkagro.com.br/products/camisa-manga-longa-protecao-solar-agro-pro-uv50',
+      imageSrc: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&auto=format&fit=crop&q=60',
+      price: 140.46,
+      availableSizes: ['P', 'PP'],
       missingSizes: ['M', 'G', 'GG'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 29800.00,
-      explanation: 'Campanha de Reels no ar com os 3 tamanhos mais vendidos totalmente fora de estoque.'
+      estimatedLostRevenueMonthly: 38345.70,
+      explanation: 'M e G esgotados no e-commerce com anúncio ativo.'
     },
-    totalMonthlyWasteEstimated: 29800.00,
-    iceScore: 9.1,
+    totalMonthlyWasteEstimated: 38345.70,
+    iceScore: 9.3,
     status: 'NOVO_LEAD',
+    huntingTier: 'TIER_1_HOT',
     pitches: generateWhatsAppPitches(
-      'Pantanal Aventura & Outdoor',
+      'BRK Agro',
       {
-        productTitle: 'Camisa Térmica UV50+ Expedição Pantanal',
-        productUrl: 'https://www.pantanaloutdoor.com.br/products/camisa-termica-expedicao',
+        productTitle: 'Camisa Manga Longa Proteção Solar Agro Pro UV50+',
+        productUrl: 'https://www.brkagro.com.br/products/camisa-manga-longa-protecao-solar-agro-pro-uv50',
         imageSrc: '',
-        price: 179.00,
-        availableSizes: ['P'],
+        price: 140.46,
+        availableSizes: ['P', 'PP'],
         missingSizes: ['M', 'G', 'GG'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 29800.00,
+        estimatedLostRevenueMonthly: 38345.70,
         explanation: ''
       },
-      29800.00,
-      'https://www.pantanaloutdoor.com.br'
+      38345.70,
+      'https://www.brkagro.com.br'
     ),
-    notes: 'Anúncios rodando com foco em frete grátis mas produto indisponível.'
+    notes: 'Campanha de tráfego ativa no Centro-Oeste e Sul do Brasil.'
   }
 ];
 
