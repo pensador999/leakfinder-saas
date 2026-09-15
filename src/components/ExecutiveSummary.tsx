@@ -285,25 +285,28 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
           </button>
         </div>
 
-        {/* Shopify Telemetry & Clarity Card */}
+        {/* Shopify Telemetry & Ad Waste Benchmark Card */}
         <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-rose-700 font-mono flex items-center gap-1.5">
-              <Activity className="w-3.5 h-3.5 text-rose-600" /> Risco & Perda Real
+              <Activity className="w-3.5 h-3.5 text-rose-600" /> Sangria Estimada
             </span>
-            <div className="p-1.5 bg-rose-50 text-rose-600 rounded-xl">
-              <TrendingDown className="w-4 h-4" />
-            </div>
+            <span className="px-2 py-0.5 text-[9px] font-mono font-bold bg-amber-50 text-amber-800 border border-amber-200 rounded-md">
+              Benchmark Nicho
+            </span>
           </div>
 
           <div>
             {finances.financialRisk.totalMonthlyLoss > 0 ? (
               <>
-                <span className="text-2xl font-black font-mono text-rose-600 tracking-tight">
-                  {finances.financialRisk.formattedMonthlyLoss} / mês
-                </span>
-                <p className="text-[11px] text-slate-500 mt-0.5">
-                  Risco em tráfego para {finances.brokenSkusCount} SKU(s) rompidos e fricção de checkout.
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-2xl font-black font-mono text-rose-600 tracking-tight">
+                    ~{finances.financialRisk.formattedMonthlyLoss}
+                  </span>
+                  <span className="text-xs text-slate-500 font-mono">/ mês</span>
+                </div>
+                <p className="text-[10px] text-slate-500 mt-1 leading-relaxed">
+                  Projeção estatística: ~65% dos cliques desperdiçados nos {finances.brokenSkusCount} SKU(s) sem grade central.
                 </p>
               </>
             ) : (

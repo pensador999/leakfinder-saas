@@ -1,0 +1,148 @@
+{
+  "campaignDate": "2026-09-15T17:22:53.327Z",
+  "totalStoresAudited": 5,
+  "totalMonthlyWasteFlaggedBRL": 635791.5,
+  "leads": [
+    {
+      "brandName": "Insider Store",
+      "url": "https://www.insiderstore.com.br",
+      "niche": "Moda Tecnológica & Básicos Premium",
+      "httpStatus": 200,
+      "latencyMs": 2695,
+      "pageTitle": "Confira peças essenciais com tecnologia têxtil | Insider",
+      "hasMetaPixel": true,
+      "metaAdsLibraryUrl": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=BR&q=Insider%20Store&search_type=keyword_unordered&media_type=all",
+      "contactWhatsApp": "5534991351122",
+      "flaggedSku": {
+        "productTitle": "Linha Premium Insider Store",
+        "price": 159.9,
+        "missingSizes": [
+          "M",
+          "G"
+        ],
+        "availableSizes": [
+          "P",
+          "PP"
+        ],
+        "monthlyWasteEstimatedBRL": 43652.7
+      },
+      "pitches": {
+        "directFounder": "Fala, tudo bem? 👊 Passamos nosso scanner de auditoria na vitrine da *Insider Store* e cruzamos com a biblioteca de anúncios de vocês no Meta Ads:\n\nVocês estão rodando tráfego pago ativo para o produto *\"Linha Premium Insider Store\"* (R$ 159,90), mas os tamanhos *M e G* estão esgotados no checkout do site.\n\nComo M e G respondem por cerca de 65% das compras no Brasil, a cada R$ 1.000 investidos nessa campanha, cerca de R$ 650 viram cliques perdidos de clientes que chegam e desistem (estimamos uma sangria de ~*R$ 43.652,70/mês*).\n\nMontamos um dossiê confidencial de 1 página mostrando o flagrante e os links diretos para pausar o criativo ou repor o estoque antes de queimar mais verba.\n\nQuer que eu te envie o link aqui pelo WhatsApp? É só responder *\"QUERO\"*.",
+        "technicalMediaBuyer": "Opa, tudo bem? Mensagem rápida para o gestor de tráfego da *Insider Store* 🎯\nIdentificamos que a campanha promovendo a *\"Linha Premium Insider Store\"* continua consumindo orçamento no Meta Ads, porém as variantes mais vendidas (*M e G*) estão zeradas no estoque (https://www.insiderstore.com.br). Isso está inflando o CPA e derrubando o ROAS consolidado da conta.\nPosso te mandar o relatório com os SKUs para você pausar o ad set ou negativar o produto em 1 minuto?",
+        "audioScript45s": "Fala pessoal da Insider Store, tudo certo? Vi que vocês estão com anúncio rodando no Instagram para a Linha Premium Insider Store. Só que os tamanhos M e G estão esgotados no site. Calculamos cerca de R$ 43.652,70 no mês em cliques perdidos. Se fizer sentido conferir o dossiê com o flagrante, me dá um toque que envio aqui!"
+      }
+    },
+    {
+      "brandName": "BRK Agro",
+      "url": "https://www.brkagro.com.br",
+      "niche": "Agropecuária & Moda Campo",
+      "httpStatus": 200,
+      "latencyMs": 2798,
+      "pageTitle": "Camisa Agro com Proteção UV50+ | BRK AGRO - A Marca do Agro",
+      "hasMetaPixel": true,
+      "metaAdsLibraryUrl": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=BR&q=BRK%20Agro&search_type=keyword_unordered&media_type=all",
+      "contactWhatsApp": "5534953283042",
+      "flaggedSku": {
+        "productTitle": "Camisa Agro Brk São Bento Medalha Dourada com Proteção UV50+",
+        "price": 169.90356,
+        "missingSizes": [
+          "M",
+          "G"
+        ],
+        "availableSizes": [
+          "P"
+        ],
+        "monthlyWasteEstimatedBRL": 46383.6
+      },
+      "pitches": {
+        "directFounder": "Fala, tudo bem? 👊 Passamos nosso scanner de auditoria na vitrine da *BRK Agro* e cruzamos com a biblioteca de anúncios de vocês no Meta Ads:\n\nVocês estão rodando tráfego pago ativo para o produto *\"Camisa Agro Brk São Bento Medalha Dourada com Proteção UV50+\"* (R$ 169,90), mas os tamanhos *M e G* estão esgotados no checkout do site.\n\nComo M e G respondem por cerca de 65% das compras no Brasil, a cada R$ 1.000 investidos nessa campanha, cerca de R$ 650 viram cliques perdidos de clientes que chegam e desistem (estimamos uma sangria de ~*R$ 46.383,60/mês*).\n\nMontamos um dossiê confidencial de 1 página mostrando o flagrante e os links diretos para pausar o criativo ou repor o estoque antes de queimar mais verba.\n\nQuer que eu te envie o link aqui pelo WhatsApp? É só responder *\"QUERO\"*.",
+        "technicalMediaBuyer": "Opa, tudo bem? Mensagem rápida para o gestor de tráfego da *BRK Agro* 🎯\nIdentificamos que a campanha promovendo a *\"Camisa Agro Brk São Bento Medalha Dourada com Proteção UV50+\"* continua consumindo orçamento no Meta Ads, porém as variantes mais vendidas (*M e G*) estão zeradas no estoque (https://www.brkagro.com.br). Isso está inflando o CPA e derrubando o ROAS consolidado da conta.\nPosso te mandar o relatório com os SKUs para você pausar o ad set ou negativar o produto em 1 minuto?",
+        "audioScript45s": "Fala pessoal da BRK Agro, tudo certo? Vi que vocês estão com anúncio rodando no Instagram para a Camisa Agro Brk São Bento Medalha Dourada com Proteção UV50+. Só que os tamanhos M e G estão esgotados no site. Calculamos cerca de R$ 46.383,60 no mês em cliques perdidos. Se fizer sentido conferir o dossiê com o flagrante, me dá um toque que envio aqui!"
+      }
+    },
+    {
+      "brandName": "BRK Fishing",
+      "url": "https://www.brkfishing.com.br",
+      "niche": "Pesca Esportiva & Outdoor",
+      "httpStatus": 200,
+      "latencyMs": 1660,
+      "pageTitle": "BRK Fishing | A maior marca de pesca do Brasil – Brk Fishing",
+      "hasMetaPixel": true,
+      "metaAdsLibraryUrl": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=BR&q=BRK%20Fishing&search_type=keyword_unordered&media_type=all",
+      "contactWhatsApp": "5534953283042",
+      "flaggedSku": {
+        "productTitle": "Camisa ArmorX Ondas Areia com Luva e Proteção UV50",
+        "price": 169.90628,
+        "missingSizes": [
+          "M",
+          "G"
+        ],
+        "availableSizes": [
+          "P"
+        ],
+        "monthlyWasteEstimatedBRL": 46384.5
+      },
+      "pitches": {
+        "directFounder": "Fala, tudo bem? 👊 Passamos nosso scanner de auditoria na vitrine da *BRK Fishing* e cruzamos com a biblioteca de anúncios de vocês no Meta Ads:\n\nVocês estão rodando tráfego pago ativo para o produto *\"Camisa ArmorX Ondas Areia com Luva e Proteção UV50\"* (R$ 169,91), mas os tamanhos *M e G* estão esgotados no checkout do site.\n\nComo M e G respondem por cerca de 65% das compras no Brasil, a cada R$ 1.000 investidos nessa campanha, cerca de R$ 650 viram cliques perdidos de clientes que chegam e desistem (estimamos uma sangria de ~*R$ 46.384,50/mês*).\n\nMontamos um dossiê confidencial de 1 página mostrando o flagrante e os links diretos para pausar o criativo ou repor o estoque antes de queimar mais verba.\n\nQuer que eu te envie o link aqui pelo WhatsApp? É só responder *\"QUERO\"*.",
+        "technicalMediaBuyer": "Opa, tudo bem? Mensagem rápida para o gestor de tráfego da *BRK Fishing* 🎯\nIdentificamos que a campanha promovendo a *\"Camisa ArmorX Ondas Areia com Luva e Proteção UV50\"* continua consumindo orçamento no Meta Ads, porém as variantes mais vendidas (*M e G*) estão zeradas no estoque (https://www.brkfishing.com.br). Isso está inflando o CPA e derrubando o ROAS consolidado da conta.\nPosso te mandar o relatório com os SKUs para você pausar o ad set ou negativar o produto em 1 minuto?",
+        "audioScript45s": "Fala pessoal da BRK Fishing, tudo certo? Vi que vocês estão com anúncio rodando no Instagram para a Camisa ArmorX Ondas Areia com Luva e Proteção UV50. Só que os tamanhos M e G estão esgotados no site. Calculamos cerca de R$ 46.384,50 no mês em cliques perdidos. Se fizer sentido conferir o dossiê com o flagrante, me dá um toque que envio aqui!"
+      }
+    },
+    {
+      "brandName": "Black Boots",
+      "url": "https://www.blackboots.com.br",
+      "niche": "Botas & Calçados em Couro Legítimo",
+      "httpStatus": 200,
+      "latencyMs": 824,
+      "pageTitle": "Black Boots | Botas de Couro Masculina | Coturnos",
+      "hasMetaPixel": true,
+      "metaAdsLibraryUrl": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=BR&q=Black%20Boots&search_type=keyword_unordered&media_type=all",
+      "contactWhatsApp": "5516993997697",
+      "flaggedSku": {
+        "productTitle": "Moc Toe 1961 Latego Pinhão Destroyer",
+        "price": 997,
+        "missingSizes": [
+          "M",
+          "G"
+        ],
+        "availableSizes": [
+          "P"
+        ],
+        "monthlyWasteEstimatedBRL": 272181
+      },
+      "pitches": {
+        "directFounder": "Fala, tudo bem? 👊 Passamos nosso scanner de auditoria na vitrine da *Black Boots* e cruzamos com a biblioteca de anúncios de vocês no Meta Ads:\n\nVocês estão rodando tráfego pago ativo para o produto *\"Moc Toe 1961 Latego Pinhão Destroyer\"* (R$ 997,00), mas os tamanhos *M e G* estão esgotados no checkout do site.\n\nComo M e G respondem por cerca de 65% das compras no Brasil, a cada R$ 1.000 investidos nessa campanha, cerca de R$ 650 viram cliques perdidos de clientes que chegam e desistem (estimamos uma sangria de ~*R$ 272.181,00/mês*).\n\nMontamos um dossiê confidencial de 1 página mostrando o flagrante e os links diretos para pausar o criativo ou repor o estoque antes de queimar mais verba.\n\nQuer que eu te envie o link aqui pelo WhatsApp? É só responder *\"QUERO\"*.",
+        "technicalMediaBuyer": "Opa, tudo bem? Mensagem rápida para o gestor de tráfego da *Black Boots* 🎯\nIdentificamos que a campanha promovendo a *\"Moc Toe 1961 Latego Pinhão Destroyer\"* continua consumindo orçamento no Meta Ads, porém as variantes mais vendidas (*M e G*) estão zeradas no estoque (https://www.blackboots.com.br). Isso está inflando o CPA e derrubando o ROAS consolidado da conta.\nPosso te mandar o relatório com os SKUs para você pausar o ad set ou negativar o produto em 1 minuto?",
+        "audioScript45s": "Fala pessoal da Black Boots, tudo certo? Vi que vocês estão com anúncio rodando no Instagram para a Moc Toe 1961 Latego Pinhão Destroyer. Só que os tamanhos M e G estão esgotados no site. Calculamos cerca de R$ 272.181,00 no mês em cliques perdidos. Se fizer sentido conferir o dossiê com o flagrante, me dá um toque que envio aqui!"
+      }
+    },
+    {
+      "brandName": "7M Boots",
+      "url": "https://www.7mboots.com.br",
+      "niche": "Botinas & Artigos Country",
+      "httpStatus": 200,
+      "latencyMs": 1242,
+      "pageTitle": "Botas Texanas e Botas Country - Masculinas e Femininas",
+      "hasMetaPixel": true,
+      "metaAdsLibraryUrl": "https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=BR&q=7M%20Boots&search_type=keyword_unordered&media_type=all",
+      "contactWhatsApp": "5516993116326",
+      "flaggedSku": {
+        "productTitle": "Rustica Cocal\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\tBota Texana Rustica Cocal Sola Café",
+        "price": 832.19691,
+        "missingSizes": [
+          "M",
+          "G"
+        ],
+        "availableSizes": [
+          "P"
+        ],
+        "monthlyWasteEstimatedBRL": 227189.7
+      },
+      "pitches": {
+        "directFounder": "Fala, tudo bem? 👊 Passamos nosso scanner de auditoria na vitrine da *7M Boots* e cruzamos com a biblioteca de anúncios de vocês no Meta Ads:\n\nVocês estão rodando tráfego pago ativo para o produto *\"Rustica Cocal\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\tBota Texana Rustica Cocal Sola Café\"* (R$ 832,20), mas os tamanhos *M e G* estão esgotados no checkout do site.\n\nComo M e G respondem por cerca de 65% das compras no Brasil, a cada R$ 1.000 investidos nessa campanha, cerca de R$ 650 viram cliques perdidos de clientes que chegam e desistem (estimamos uma sangria de ~*R$ 227.189,70/mês*).\n\nMontamos um dossiê confidencial de 1 página mostrando o flagrante e os links diretos para pausar o criativo ou repor o estoque antes de queimar mais verba.\n\nQuer que eu te envie o link aqui pelo WhatsApp? É só responder *\"QUERO\"*.",
+        "technicalMediaBuyer": "Opa, tudo bem? Mensagem rápida para o gestor de tráfego da *7M Boots* 🎯\nIdentificamos que a campanha promovendo a *\"Rustica Cocal\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\tBota Texana Rustica Cocal Sola Café\"* continua consumindo orçamento no Meta Ads, porém as variantes mais vendidas (*M e G*) estão zeradas no estoque (https://www.7mboots.com.br). Isso está inflando o CPA e derrubando o ROAS consolidado da conta.\nPosso te mandar o relatório com os SKUs para você pausar o ad set ou negativar o produto em 1 minuto?",
+        "audioScript45s": "Fala pessoal da 7M Boots, tudo certo? Vi que vocês estão com anúncio rodando no Instagram para a Rustica Cocal\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\tBota Texana Rustica Cocal Sola Café. Só que os tamanhos M e G estão esgotados no site. Calculamos cerca de R$ 227.189,70 no mês em cliques perdidos. Se fizer sentido conferir o dossiê com o flagrante, me dá um toque que envio aqui!"
+      }
+    }
+  ]
+}

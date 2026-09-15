@@ -45,15 +45,26 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
 
   const [copiedScript, setCopiedScript] = useState(false);
   const [showAdvancedScripts, setShowAdvancedScripts] = useState(false);
+  const [customAdSpend, setCustomAdSpend] = useState<number>(finances.estimatedAdSpend.monthly);
 
   const brokenSkus = (realSiteData.catalogAudit?.issues || []).filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
 
+  // Cálculo transparente e reativo da perda com base na verba informada pelo lojista
+  const activeSpend = customAdSpend > 0 ? customAdSpend : finances.estimatedAdSpend.monthly;
+  const brokenRatio = brokenSkus.length > 0 ? Math.min(0.45, (brokenSkus.length / Math.max(1, finances.catalogVolumeCount)) * 1.5) : 0;
+  // Regra de 65% de compras perdidas na falta de grade central M/G
+  const dynamicAdWaste = brokenSkus.length > 0 ? Number((activeSpend * brokenRatio * 0.65).toFixed(2)) : 0;
+  const dynamicTotalLoss = Number((dynamicAdWaste + finances.financialRisk.checkoutFrictionMonthly).toFixed(2));
+  const dynamicAnnualLoss = Number((dynamicTotalLoss * 12).toFixed(2));
+  const formattedDynamicLoss = formatBRL(dynamicTotalLoss);
+  const formattedDynamicAnnualLoss = formatBRL(dynamicAnnualLoss);
+
   const whatsappMessage = encodeURIComponent(
-    `Olá! Acabei de gerar o Dossiê Executivo da ${realSiteData.brandName} (${realSiteData.domain}) no AdShield AI. Identificamos ${finances.financialRisk.formattedMonthlyLoss}/mês em risco por produtos com grade furada em anúncios ativos. Gostaria de falar com um especialista sobre a blindagem e monitoramento 24h.`
+    `Olá! Acabei de gerar o Dossiê Executivo da ${realSiteData.brandName} (${realSiteData.domain}) no AdShield AI. Identificamos ${formattedDynamicLoss}/mês em risco por produtos com grade furada em anúncios ativos. Gostaria de falar com um especialista sobre a blindagem e monitoramento 24h.`
   );
   const whatsappUrl = `https://wa.me/5511999999999?text=${whatsappMessage}`;
 
-  const trafficAlertScript = `🚨 *ALERTA DE TRÁFEGO • ADSHIELD INTEL*\n\nFala time! Nossa auditoria identificou ${brokenSkus.length} produto(s) com anúncios ativos mas grade furada em ${realSiteData.domain}.\n\n💸 *Risco de queima de verba:* ~${finances.financialRisk.formattedMonthlyLoss}/mês.\n👉 *Ação imediata:* Pausar conjuntos de anúncios dos SKUs rompidos ou substituir a URL de destino.`;
+  const trafficAlertScript = `🚨 *ALERTA DE TRÁFEGO • ADSHIELD INTEL*\n\nFala time! Nossa auditoria identificou ${brokenSkus.length} produto(s) com anúncios ativos mas grade furada em ${realSiteData.domain}.\n\n💸 *Risco de queima de verba:* ~${formattedDynamicLoss}/mês (calculado sobre ${formatBRL(activeSpend)}/mês de investimento).\n👉 *Ação imediata:* Pausar conjuntos de anúncios dos SKUs rompidos ou substituir a URL de destino.`;
 
   const handleCopyTrafficScript = () => {
     navigator.clipboard.writeText(trafficAlertScript);
@@ -101,13 +112,18 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
             <div className="lg:col-span-8 space-y-3">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-rose-400 font-mono">
-                Quanto dinheiro sua loja está perdendo hoje?
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-bold uppercase tracking-wider text-rose-400 font-mono">
+                  Quanto dinheiro sua loja está perdendo hoje?
+                </h2>
+                <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded text-[9px] font-mono font-bold">
+                  Simulador Dinâmico
+                </span>
+              </div>
               <p className="text-3xl sm:text-4xl font-black tracking-tight text-white leading-tight">
-                {finances.financialRisk.totalMonthlyLoss > 0 ? (
+                {dynamicTotalLoss > 0 ? (
                   <>
-                    Identificamos <span className="text-rose-400 font-mono">{finances.financialRisk.formattedMonthlyLoss}/mês</span> em risco nos anúncios da <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">{realSiteData.brandName}</span>
+                    Estimamos <span className="text-rose-400 font-mono">{formattedDynamicLoss}/mês</span> em risco nos anúncios da <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">{realSiteData.brandName}</span>
                   </>
                 ) : (
                   <>
@@ -116,7 +132,7 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
                 )}
               </p>
               <p className="text-sm text-slate-300 leading-relaxed max-w-2xl">
-                {finances.financialRisk.totalMonthlyLoss > 0 ? (
+                {dynamicTotalLoss > 0 ? (
                   <>
                     Nossa inteligência inspecionou o catálogo ao vivo de <strong>{realSiteData.domain}</strong> e encontrou <strong>{brokenSkus.length} produto(s) com tráfego pago ativo mas com os tamanhos mais vendidos esgotados</strong>.
                   </>
@@ -132,7 +148,7 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
             <div className="lg:col-span-4 grid grid-cols-2 gap-3">
               <div className="p-4 bg-slate-900/80 rounded-2xl border border-rose-500/30 text-center">
                 <span className="text-[10px] uppercase font-bold text-slate-400 font-mono block">Risco Anualizado</span>
-                <span className="text-2xl font-black text-rose-400 font-mono">{finances.financialRisk.formattedAnnualizedLoss}</span>
+                <span className="text-2xl font-black text-rose-400 font-mono">{formattedDynamicAnnualLoss}</span>
                 <span className="text-[10px] text-rose-300 block font-medium">em 12 meses</span>
               </div>
 
@@ -142,6 +158,65 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
                 <span className="text-[10px] text-emerald-300 block font-medium">Margem Líquida</span>
               </div>
             </div>
+          </div>
+
+          {/* 🎛️ SIMULADOR DINÂMICO DE VERBA REAL DE TRÁFEGO PAGO */}
+          <div className="p-4 bg-slate-900/90 rounded-2xl border border-indigo-500/40 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Sliders className="w-4 h-4 text-indigo-400" />
+                <span className="text-xs font-bold text-white uppercase tracking-wider font-mono">
+                  Simulador de Verba Real de Tráfego Pago
+                </span>
+                <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded text-[9px] font-mono font-bold">
+                  Parâmetro Customizável
+                </span>
+              </div>
+              <span className="text-xs font-mono text-indigo-300 font-bold">
+                Investimento: {formatBRL(activeSpend)}/mês
+              </span>
+            </div>
+
+            <div className="space-y-2">
+              <input
+                type="range"
+                min="1000"
+                max="100000"
+                step="1000"
+                value={activeSpend}
+                onChange={(e) => setCustomAdSpend(Number(e.target.value))}
+                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+              />
+              <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
+                <span>R$ 1.000/mês</span>
+                <span>R$ 25.000/mês</span>
+                <span>R$ 50.000/mês</span>
+                <span>R$ 100.000/mês</span>
+              </div>
+            </div>
+
+            {/* Presets rápidos */}
+            <div className="flex items-center gap-1.5 flex-wrap pt-1">
+              <span className="text-[10px] text-slate-400 font-mono">Verbas Rápidas:</span>
+              {[2000, 5000, 10000, 25000, 50000].map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => setCustomAdSpend(preset)}
+                  className={`px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold transition-all cursor-pointer ${
+                    activeSpend === preset
+                      ? 'bg-indigo-600 text-white shadow-xs'
+                      : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'
+                  }`}
+                >
+                  {formatBRL(preset)}
+                </button>
+              ))}
+            </div>
+
+            <p className="text-[11px] text-slate-400 leading-relaxed border-t border-slate-800 pt-2.5">
+              ℹ️ <strong>Transparência AdShield:</strong> A Meta Ads Library comprova os anúncios ativos no ar e o scanner comprova os tamanhos esgotados. Como o orçamento diário em R$ é um dado privado da sua conta, o simulador acima calcula a sangria proporcional exata para o seu investimento real (regra de ~65% de compras perdidas na falta de grade central).
+            </p>
           </div>
 
           <div className="p-3.5 bg-slate-900/90 rounded-xl border border-indigo-500/30 text-xs text-slate-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
@@ -209,7 +284,7 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
 
                 <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-xs">
                   <span className="text-rose-600 font-bold font-mono">
-                    Perda: ~{formatBRL(Math.round(finances.financialRisk.adWasteMonthly / Math.max(1, brokenSkus.length)))}/mês
+                    Perda Estimada: ~{formatBRL(Math.round(dynamicAdWaste / Math.max(1, brokenSkus.length)))}/mês
                   </span>
                   <a
                     href={skuItem.productUrl}

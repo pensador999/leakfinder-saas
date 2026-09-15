@@ -485,14 +485,19 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                       </div>
 
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="px-2.5 py-1 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg text-xs font-mono font-bold">
-                          Sangria: R$ {lead.totalMonthlyWasteEstimated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês
+                        <span 
+                          className="px-2.5 py-1 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg text-xs font-mono font-bold flex items-center gap-1 shadow-2xs"
+                          title="Estimativa matemática calculada sobre a proporção de 65% dos cliques perdidos na falta dos tamanhos centrais"
+                        >
+                          <span className="text-[9px] uppercase font-bold text-amber-700 bg-amber-100/70 px-1 py-0.2 rounded border border-amber-200 font-sans">Simulação</span>
+                          <span>~R$ {lead.totalMonthlyWasteEstimated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês</span>
                         </span>
                         <a
                           href={lead.metaAdsLibraryUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors"
+                          className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors shadow-2xs"
+                          title="Abrir a Biblioteca Pública de Anúncios da Meta para ver os anúncios ativos desta marca ao vivo"
                         >
                           <span>Meta Ads Library</span>
                           <ExternalLink className="w-3 h-3" />

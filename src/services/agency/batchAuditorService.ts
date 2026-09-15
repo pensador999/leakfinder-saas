@@ -82,7 +82,7 @@ export async function runBatchProspectingAudit(
         dealPriority = brokenSkusCount === 0 ? 'GRADE_BLINDADA' : 'MODERADA';
       }
 
-      const pitchScript = `Olá time da ${brandName}! Tudo bem?\n\nAqui é da equipe de inteligência da ${agencyName}. Rodamos uma auditoria técnica no e-commerce de vocês (${domain}) e identificamos ${brokenSkusCount} produto(s) com tráfego pago ativo mas com tamanhos esgotados (M/G), gerando um desperdício estimado de ~${formatBRL(adWaste)}/mês em cliques perdidos.\n\nGeramos um Dossiê Técnico gratuito com o plano de ação de 48h para blindar a verba de anúncios. Posso enviar o PDF aqui?`;
+      const pitchScript = `Olá time da ${brandName}! Tudo bem?\n\nAqui é da equipe de inteligência da ${agencyName}. Rodamos uma auditoria técnica no e-commerce de vocês (${domain}) e cruzamos com a Meta Ads Library: identificamos ${brokenSkusCount} produto(s) com anúncios ativos mas com tamanhos centrais esgotados (M/G). Na média de mercado, a cada R$ 1.000 investidos nessa campanha cerca de R$ 650 viram cliques perdidos de quem não acha o tamanho (estimativa de ~${formatBRL(adWaste)}/mês sob o orçamento típico do segmento).\n\nGeramos um Dossiê Técnico gratuito com o link dos criativos e o plano de 48h para blindar a verba. Posso enviar o PDF aqui?`;
 
       const lead: BatchProspectingLead = {
         id: `lead-${i + 1}-${domain}`,

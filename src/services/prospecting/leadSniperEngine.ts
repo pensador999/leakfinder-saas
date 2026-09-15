@@ -164,9 +164,9 @@ export function generateWhatsAppPitches(
 
 Vocês estão rodando tráfego pago ativo para o produto *"${primarySku.productTitle}"* (R$ ${formattedPrice}), mas os tamanhos *${missingText}* estão esgotados no checkout do site.
 
-Como ${missingText} respondem por cerca de 65% das compras de vestuário no Brasil, a cada R$ 1.000 investidos nessa campanha, cerca de R$ 650 viram cliques perdidos de clientes que chegam e desistem (estimamos uma sangria de ~*R$ ${formattedWaste}/mês*).
+Como ${missingText} respondem por cerca de 65% das compras de vestuário no Brasil, a cada R$ 1.000 investidos nessa campanha, cerca de R$ 650 viram cliques perdidos de clientes que chegam e desistem (estimamos uma sangria de ~*R$ ${formattedWaste}/mês* no benchmark do seu segmento).
 
-Montamos um dossiê confidencial de 1 página mostrando o flagrante e os links diretos para pausar o criativo ou repor o estoque antes de queimar mais verba.
+Montamos um dossiê confidencial de 1 página mostrando o flagrante com links da Meta Ads Library e a simulação de impacto financeiro baseada na verba real de vocês.
 
 Quer que eu te envie o link aqui pelo WhatsApp? É só responder *"QUERO"*.`;
 
@@ -180,7 +180,7 @@ Isso está inflando artificialmente o CPA do conjunto de anúncios e derrubando 
 Tenho o relatório técnico com os SKUs e a taxa de fuga para você negativar o produto ou pausar o ad set em 1 minuto. Posso te mandar o resumo aqui?`;
 
   // 3. Roteiro para Gravação de Áudio no WhatsApp (45 segundos)
-  const audioScript45s = `Fala pessoal da ${brandName}, tudo certo? Tô passando rápido aqui porque vi que vocês estão com anúncio rodando forte no Instagram para a ${primarySku.productTitle}. Só que quando o cliente clica para comprar no site, os tamanhos ${missingText} estão esgotados. Como esse é o miolo da grade que mais vende, vocês estão pagando por clique de gente que quer comprar mas não consegue. Eu gerei um dossiê mostrando a sangria exata disso — calculamos cerca de R$ ${formattedWaste} no mês. Se fizer sentido dar uma olhada pra não queimar verba, me dá um toque que eu mando o link!`;
+  const audioScript45s = `Fala pessoal da ${brandName}, tudo certo? Tô passando rápido aqui porque vi que vocês estão com anúncio rodando forte no Instagram para a ${primarySku.productTitle}. Só que quando o cliente clica para comprar no site, os tamanhos ${missingText} estão esgotados. Como esse é o miolo da grade que mais vende, vocês estão pagando por clique de gente que quer comprar mas não consegue. Eu gerei um dossiê mostrando a estimativa dessa perda — a cada mil reais investidos, cerca de seiscentos e cinquenta viram cliques perdidos. No benchmark do segmento isso pode passar de R$ ${formattedWaste} no mês. Se fizer sentido dar uma olhada pra pausar o criativo ou repor a grade, me dá um toque que eu te mando o link!`;
 
   return {
     directFounder,
