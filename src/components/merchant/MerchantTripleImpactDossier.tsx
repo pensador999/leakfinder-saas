@@ -17,8 +17,20 @@ import {
   Cpu,
   Layers,
   Zap,
-  ShoppingBag
+  ShoppingBag,
+  Info
 } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faShieldHalved, 
+  faSliders, 
+  faCircleExclamation, 
+  faCheck, 
+  faChartLine, 
+  faBolt, 
+  faTriangleExclamation 
+} from '@fortawesome/free-solid-svg-icons';
+import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { AgentDiagnosticResult } from '../../types';
 import { calculateStoreFinancialGrounding, formatBRL } from '../../services/ai/storeFinancialGroundingEngine';
 import { auditSupplyChainDiscrepancy } from '../../services/supplyChain/erpHubDiscrepancyEngine';
@@ -64,7 +76,7 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
   );
   const whatsappUrl = `https://wa.me/5511999999999?text=${whatsappMessage}`;
 
-  const trafficAlertScript = `🚨 *ALERTA DE TRÁFEGO • ADSHIELD INTEL*\n\nFala time! Nossa auditoria identificou ${brokenSkus.length} produto(s) com anúncios ativos mas grade furada em ${realSiteData.domain}.\n\n💸 *Risco de queima de verba:* ~${formattedDynamicLoss}/mês (calculado sobre ${formatBRL(activeSpend)}/mês de investimento).\n👉 *Ação imediata:* Pausar conjuntos de anúncios dos SKUs rompidos ou substituir a URL de destino.`;
+  const trafficAlertScript = `*RELATÓRIO DE AUDITORIA: TRÁFEGO & ESTOQUE • ADSHIELD*\n\nTime, identificamos ${brokenSkus.length} produto(s) com anúncios ativos na Meta Ads Library, porém com as variantes centrais esgotadas na loja (${realSiteData.domain}).\n\n*Impacto Estimado:* ~${formattedDynamicLoss}/mês em cliques perdidos (baseado em ${formatBRL(activeSpend)}/mês de investimento).\n*Ação Recomendada:* Pausar os criativos dos SKUs rompidos ou substituir a URL de destino para coleções com grade completa.`;
 
   const handleCopyTrafficScript = () => {
     navigator.clipboard.writeText(trafficAlertScript);
@@ -101,9 +113,9 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
 
         <div className="relative z-10 space-y-6">
           <div className="flex items-center justify-between flex-wrap gap-2 border-b border-rose-800/40 pb-4">
-            <span className="px-3 py-1 bg-rose-500/20 text-rose-300 border border-rose-500/40 rounded-full text-xs font-mono font-bold flex items-center gap-1.5 animate-pulse">
-              <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
-              <span>1. Diagnóstico de Vazamento Financeiro</span>
+            <span className="px-3 py-1 bg-rose-500/20 text-rose-300 border border-rose-500/40 rounded-full text-xs font-mono font-bold flex items-center gap-1.5">
+              <FontAwesomeIcon icon={faShieldHalved} className="w-3.5 h-3.5 text-rose-400" />
+              <span>Diagnóstico de Risco Financeiro</span>
             </span>
             <span className="text-xs text-slate-400 font-mono">
               Porte Identificado: <strong className="text-white">{finances.tierLabel}</strong>
@@ -214,24 +226,25 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
               ))}
             </div>
 
-            <p className="text-[11px] text-slate-400 leading-relaxed border-t border-slate-800 pt-2.5">
-              ℹ️ <strong>Transparência AdShield:</strong> A Meta Ads Library comprova os anúncios ativos no ar e o scanner comprova os tamanhos esgotados. Como o orçamento diário em R$ é um dado privado da sua conta, o simulador acima calcula a sangria proporcional exata para o seu investimento real (regra de ~65% de compras perdidas na falta de grade central).
+            <p className="text-[11px] text-slate-400 leading-relaxed border-t border-slate-800 pt-2.5 flex items-start gap-1.5">
+              <FontAwesomeIcon icon={faShieldHalved} className="w-3 h-3 text-indigo-400 shrink-0 mt-0.5" />
+              <span><strong>Protocolo de Transparência AdShield:</strong> A Meta Ads Library comprova os anúncios ativos no ar e o scanner comprova os tamanhos esgotados. Como o orçamento diário em R$ é um dado privado da sua conta, o simulador acima calcula a sangria proporcional exata para o seu investimento real (regra de ~65% de compras perdidas na falta de grade central).</span>
             </p>
           </div>
 
           <div className="p-3.5 bg-slate-900/90 rounded-xl border border-indigo-500/30 text-xs text-slate-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <span className="text-indigo-400">🛡️</span>
+              <FontAwesomeIcon icon={faShieldHalved} className="w-3.5 h-3.5 text-indigo-400" />
               <span><strong>Origem Auditada do Cálculo:</strong> {finances.financialRisk.methodologyExplanation}</span>
             </div>
             <span className="px-2 py-0.5 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded text-[10px] font-mono font-bold shrink-0">
-              Zero Alucinação
+              Dado Auditado ao Vivo
             </span>
           </div>
         </div>
       </div>
 
-      {/* 📦 PERGUNTA 2: QUAIS PRODUTOS ESTÃO QUEIMANDO ANÚNCIOS AGORA? */}
+      {/* 2. INVENTÁRIO EM RISCO */}
       <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6">
         <div className="flex items-center justify-between border-b border-slate-100 pb-4 flex-wrap gap-2">
           <div>
@@ -271,7 +284,10 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
 
                   {/* Missing sizes badge */}
                   <div className="p-2.5 bg-rose-50 rounded-xl border border-rose-200 text-xs space-y-1">
-                    <span className="text-[10px] font-bold text-rose-800 uppercase font-mono block">🚨 Tamanhos Esgotados na Vitrine:</span>
+                    <span className="text-[10px] font-bold text-rose-800 uppercase font-mono flex items-center gap-1.5">
+                      <FontAwesomeIcon icon={faCircleExclamation} className="w-3 h-3 text-rose-600" />
+                      <span>Variantes Esgotadas na Vitrine:</span>
+                    </span>
                     <div className="flex flex-wrap gap-1">
                       {skuItem.missingSizes.map((sz, i) => (
                         <span key={i} className="px-1.5 py-0.5 bg-rose-200 text-rose-900 text-[10px] font-black rounded">
@@ -308,7 +324,7 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
         )}
       </div>
 
-      {/* ⚡ PERGUNTA 3: COMO ESTANCAR ESSA SANGRIA E RECUPERAR O LUCRO? (AÇÃO EM 1 CLIQUE) */}
+      {/* 3. PLANO DE AÇÃO IMEDIATA */}
       <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 text-white border border-slate-800 shadow-xl space-y-6">
         <div className="space-y-2 border-b border-slate-800 pb-4">
           <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 font-mono block">
@@ -331,11 +347,11 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
             className="p-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-between cursor-pointer group"
           >
             <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-slate-950/20 rounded-xl text-slate-950">
-                <MessageSquare className="w-5 h-5" />
+              <div className="p-2 bg-slate-950/20 rounded-xl text-slate-950 flex items-center justify-center">
+                <FontAwesomeIcon icon={faWhatsapp} className="w-5 h-5 text-slate-950" />
               </div>
               <div className="text-left">
-                <span className="text-[10px] text-slate-900 uppercase tracking-wider font-mono block font-extrabold">Recomendado</span>
+                <span className="text-[10px] text-slate-900 uppercase tracking-wider font-mono block font-extrabold">Canal Direto</span>
                 <span className="text-xs font-black text-slate-950">Falar no WhatsApp</span>
               </div>
             </div>

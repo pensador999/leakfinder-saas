@@ -97,7 +97,7 @@ export const MonitoredStoresManagerModal: React.FC<MonitoredStoresManagerModalPr
       }
     }
 
-    setFeedbackMsg(`🎉 Loja ${brandName} adicionada com sucesso ao radar 24h!`);
+    setFeedbackMsg(`Loja ${brandName} adicionada com sucesso ao radar 24h.`);
     setNewUrl('');
     setNewPhone('');
     setIsAdding(false);

@@ -21,6 +21,8 @@ import {
   Clock,
   UserCheck
 } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { askConciergeMasterBrain, getFreshNonRepetitiveQuickReplies } from '../services/agents/conciergeNeuralMasterBrain';
 import { buildWhatsAppClickToChatUrl } from '../services/prospecting/leadSniperEngine';
@@ -55,10 +57,10 @@ export const FloatingAiChatWidget: React.FC = () => {
     {
       id: 'm-1',
       sender: 'bot',
-      text: '👋 Olá! Sou o Concierge de IA do AdShield OS.\n\nEstou online 24h para responder dúvidas técnicas de catálogo, integração com Shopify/VTEX, métricas de sangria no Meta Ads ou valores de planos.\n\nComo posso acelerar seu resultado hoje?',
+      text: 'Olá! Sou o Concierge de IA do AdShield OS.\n\nEstou online 24h para responder dúvidas técnicas de catálogo, integração com Shopify/VTEX, métricas de sangria no Meta Ads ou valores de planos.\n\nComo posso acelerar seu resultado hoje?',
       timestamp: 'Agora',
       quickReplies: [
-        '⚡ Calcular meu ROI em 15s',
+        'Calcular meu ROI em 15s',
         'Como o AdShield detecta grade furada em tempo real?',
         'Como vocês calculam a perda no Meta Ads?',
         'Falar direto com Lucas no WhatsApp'
@@ -87,7 +89,7 @@ export const FloatingAiChatWidget: React.FC = () => {
       const userMsg: ChatMessage = {
         id: `u-${Date.now()}`,
         sender: 'user',
-        text: '⚡ Gostaria de calcular o ROI da minha loja no AdShield.',
+        text: 'Gostaria de calcular o ROI da minha loja no AdShield.',
         timestamp: 'Agora'
       };
       setMessages(prev => [...prev, userMsg]);
@@ -134,7 +136,7 @@ export const FloatingAiChatWidget: React.FC = () => {
         sender: 'bot',
         text: 'Estou pronto para ajudar! Você pode simular seu ROI agora, auditar sua loja no topo do site ou falar diretamente com o Lucas no WhatsApp (34 99135-1122).',
         timestamp: 'Agora',
-        quickReplies: ['⚡ Calcular meu ROI em 15s', 'Falar direto com Lucas no WhatsApp']
+        quickReplies: ['Calcular meu ROI em 15s', 'Falar direto com Lucas no WhatsApp']
       };
       setMessages(prev => [...prev, fallbackMsg]);
     } finally {
@@ -150,7 +152,7 @@ export const FloatingAiChatWidget: React.FC = () => {
     const roiBotMsg: ChatMessage = {
       id: `roi-${Date.now()}`,
       sender: 'bot',
-      text: `📊 **Simulação de ROI Concluída:**\n\nInvestindo **R$ ${spend.toLocaleString('pt-BR')}/mês** em tráfego pago:\n\n• **Desperdício em Rupturas Evitado:** ~R$ ${estimatedSaved.toLocaleString('pt-BR')}/mês\n• **Recuperação Anual Estimada:** R$ ${(estimatedSaved * 12).toLocaleString('pt-BR')}\n• **Plano Recomendado:** ${plan}\n\nO AdShield se paga já nos primeiros 3 a 5 dias de operação ao congelar anúncios que levam para variantes esgotadas!`,
+      text: `**Simulação de ROI Concluída:**\n\nInvestindo **R$ ${spend.toLocaleString('pt-BR')}/mês** em tráfego pago:\n\n• **Desperdício em Rupturas Evitado:** ~R$ ${estimatedSaved.toLocaleString('pt-BR')}/mês\n• **Recuperação Anual Estimada:** R$ ${(estimatedSaved * 12).toLocaleString('pt-BR')}\n• **Plano Recomendado:** ${plan}\n\nO AdShield se paga já nos primeiros 3 a 5 dias de operação ao congelar anúncios que levam para variantes esgotadas!`,
       timestamp: 'Agora',
       isRoiResult: true,
       roiData: {
@@ -210,7 +212,7 @@ export const FloatingAiChatWidget: React.FC = () => {
     }
 
     const nextReplies = getFreshNonRepetitiveQuickReplies([
-      '⚡ Calcular meu ROI em 15s',
+      'Calcular meu ROI em 15s',
       'Como funciona a garantia incondicional de 7 dias do CDC?',
       'Falar direto com Lucas no WhatsApp'
     ], messages.map(m => ({ sender: m.sender, text: m.text })));
@@ -221,7 +223,7 @@ export const FloatingAiChatWidget: React.FC = () => {
       {
         id: `b-captured-${Date.now()}`,
         sender: 'bot',
-        text: `🎉 Perfeito! Seu WhatsApp (${leadPhone}) foi registrado. Nossa equipe técnica já recebeu seu contato e pode te enviar o dossiê da sua loja.\n\nSe preferir agilizar, você também pode clicar no botão verde abaixo para abrir a conversa direta com o Lucas agora mesmo!`,
+        text: `Perfeito! Seu WhatsApp (${leadPhone}) foi registrado. Nossa equipe técnica já recebeu seu contato e pode te enviar o dossiê da sua loja.\n\nSe preferir agilizar, você também pode clicar no botão verde abaixo para abrir a conversa direta com o Lucas agora mesmo!`,
         timestamp: 'Agora',
         quickReplies: nextReplies
       }
@@ -394,9 +396,9 @@ export const FloatingAiChatWidget: React.FC = () => {
                       <span className="text-[10px] font-mono text-emerald-700 font-bold">Payback: &lt; 5 dias</span>
                       <button
                         onClick={() => handleOpenWhatsAppWithLucas(`Olá Lucas! Fiz a simulação de ROI no AdShield: invisto R$ ${msg.roiData?.spend.toLocaleString('pt-BR')} e vi que posso salvar ~R$ ${msg.roiData?.savedMonthly.toLocaleString('pt-BR')}/mês. Gostaria de ativar a proteção!`)}
-                        className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-lg transition-all flex items-center gap-1 cursor-pointer"
+                        className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer"
                       >
-                        <Phone className="w-3 h-3" />
+                        <FontAwesomeIcon icon={faWhatsapp} className="w-3 h-3 text-white" />
                         <span>Ativar no WhatsApp</span>
                       </button>
                     </div>

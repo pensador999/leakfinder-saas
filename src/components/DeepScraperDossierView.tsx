@@ -265,8 +265,9 @@ export const DeepScraperDossierView: React.FC<DeepScraperDossierViewProps> = ({ 
               <span className="text-xs font-bold text-indigo-900">Destaques Promocionais Detectados no Banner:</span>
               <div className="flex flex-wrap gap-2">
                 {squadDossier.sections.heroBanner.promoHighlightsDetected.map((promo, idx) => (
-                  <span key={idx} className="px-2.5 py-1 bg-white rounded-lg text-xs font-bold text-indigo-800 border border-indigo-200">
-                    ✨ {promo}
+                  <span key={idx} className="px-2.5 py-1 bg-white rounded-lg text-xs font-bold text-indigo-800 border border-indigo-200 inline-flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>{promo}</span>
                   </span>
                 ))}
               </div>

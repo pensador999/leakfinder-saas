@@ -16,7 +16,9 @@ import {
   Store,
   LayoutGrid,
   Link2,
-  ArrowRight
+  ArrowRight,
+  Check,
+  X
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { 
@@ -279,15 +281,17 @@ export const CollectionDeepAuditView: React.FC<CollectionDeepAuditViewProps> = (
                   
                   {/* Available Sizes */}
                   {product.availableSizes.map(size => (
-                    <span key={size} className="px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-md font-mono font-bold text-[10px]">
-                      {size} ✓
+                    <span key={size} className="px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-md font-mono font-bold text-[10px] inline-flex items-center gap-1">
+                      <Check className="w-2.5 h-2.5 text-emerald-600" />
+                      <span>{size}</span>
                     </span>
                   ))}
 
                   {/* Missing Sizes */}
                   {product.missingSizes.map(size => (
-                    <span key={size} className="px-2 py-0.5 bg-rose-50 text-rose-800 border border-rose-200 rounded-md font-mono font-bold text-[10px] line-through">
-                      {size} ✗
+                    <span key={size} className="px-2 py-0.5 bg-rose-50 text-rose-800 border border-rose-200 rounded-md font-mono font-bold text-[10px] inline-flex items-center gap-1 opacity-75">
+                      <X className="w-2.5 h-2.5 text-rose-600" />
+                      <span className="line-through">{size}</span>
                     </span>
                   ))}
                 </div>

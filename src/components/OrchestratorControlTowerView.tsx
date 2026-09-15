@@ -310,8 +310,9 @@ export const OrchestratorControlTowerView: React.FC<OrchestratorControlTowerView
                   <tr key={task.specialistId} className="hover:bg-slate-50/80 transition-colors">
                     <td className="p-3 font-sans font-bold text-slate-900">{task.specialistName}</td>
                     <td className="p-3">
-                      <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-md font-bold text-[10px]">
-                        ✓ {task.stage}
+                      <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-md font-bold text-[10px] inline-flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                        <span>{task.stage}</span>
                       </span>
                     </td>
                     <td className="p-3 text-slate-700">{task.executionTimeMs}ms</td>

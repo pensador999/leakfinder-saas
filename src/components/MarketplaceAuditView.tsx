@@ -58,10 +58,11 @@ export const MarketplaceAuditView: React.FC<MarketplaceAuditViewProps> = ({ diag
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-bold text-slate-900">Auditoria Especialista em Marketplace & Anúncios</h2>
-              <span className={`px-2.5 py-0.5 text-xs font-extrabold rounded-full ${
+              <span className={`px-2.5 py-0.5 text-xs font-extrabold rounded-full inline-flex items-center gap-1.5 ${
                 isMeli ? 'bg-amber-100 text-amber-900' : isShopee ? 'bg-orange-100 text-orange-900' : 'bg-blue-100 text-blue-900'
               }`}>
-                🏬 {audit.marketplaceName} Detectado
+                <Store className="w-3.5 h-3.5" />
+                <span>{audit.marketplaceName} Detectado</span>
               </span>
             </div>
             <p className="text-xs text-slate-600 mt-1 max-w-2xl">
@@ -183,8 +184,9 @@ export const MarketplaceAuditView: React.FC<MarketplaceAuditViewProps> = ({ diag
           <div className="space-y-3 text-xs">
             <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
               <span className="font-bold text-slate-700">Código de Barras (EAN / GTIN):</span>
-              <span className="font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">
-                ✅ {audit.technicalSheetAudit.gtinStatus}
+              <span className="font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md inline-flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                <span>{audit.technicalSheetAudit.gtinStatus}</span>
               </span>
             </div>
 
@@ -346,7 +348,10 @@ export const MarketplaceAuditView: React.FC<MarketplaceAuditViewProps> = ({ diag
                   </button>
                 </div>
                 
-                <p className="font-bold text-slate-900">❓ {qa.question}</p>
+                <p className="font-bold text-slate-900 flex items-center gap-1.5">
+                  <HelpCircle className="w-4 h-4 text-purple-600 shrink-0" />
+                  <span>{qa.question}</span>
+                </p>
                 <p className="text-slate-700 leading-relaxed bg-white p-2.5 rounded-lg border border-slate-200/80 italic">
                   "{qa.recommendedAnswer}"
                 </p>

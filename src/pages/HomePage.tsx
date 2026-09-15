@@ -209,26 +209,26 @@ export function HomePage() {
     }
   }, [activeTab]);
 
-  // 🏛️ AS 3 GRANDES PILARES DIDÁTICOS DE NAVEGAÇÃO + SUITE DO FUNDADOR
+  // PILARES DE NAVEGAÇÃO CORPORATIVA + SUITE DO FUNDADOR
   const pillarCategories = [
     {
       id: 'PROFIT_DIAGNOSTIC' as NavigationPillar,
-      label: '📊 Diagnóstico & Lucro',
+      label: 'Diagnóstico & Lucro',
       badge: 'Essencial',
       tabs: [
         { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
         { id: 'pricing', label: 'Simulador Pix & Margem', icon: Calculator, highlight: true },
-        { id: 'omnichannel_social', label: '📲 Redes Sociais & Venda Direta', icon: Share2, highlight: true },
+        { id: 'omnichannel_social', label: 'Redes Sociais & Venda Direta', icon: Share2, highlight: true },
         { id: 'collection_audit', label: 'Coleções & Hero Banner', icon: Target, highlight: true },
         { id: 'trust_badge', label: 'Selo de Confiança Legal', icon: ShieldCheck, highlight: true }
       ]
     },
     {
       id: 'CATALOG_STOCK' as NavigationPillar,
-      label: '🩺 Catálogo & Estoque',
+      label: 'Catálogo & Estoque',
       badge: totalCatalogAlerts > 0 ? `${totalCatalogAlerts} Alertas` : undefined,
       tabs: [
-        { id: 'supply_chain_discrepancy', label: '📦 Descompasso ERP & Hub (Sankhya/Magis5)', icon: Factory, highlight: true },
+        { id: 'supply_chain_discrepancy', label: 'Descompasso ERP & Hub (Sankhya/Magis5)', icon: Factory, highlight: true },
         { id: 'sku_crossing', label: 'Cruzamento SKUs & Abandonos', icon: GitCompare, highlight: true },
         { id: 'niche_recognition', label: 'Reconhecimento de Nicho', icon: Globe, highlight: true },
         { id: 'catalog', label: 'Catálogo & Grade PP-G2', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
@@ -237,21 +237,21 @@ export function HomePage() {
     },
     {
       id: 'MEDIA_INTELLIGENCE' as NavigationPillar,
-      label: '⚡ Mídia & Inteligência',
+      label: 'Mídia & Inteligência',
       badge: viewMode === 'war_room' ? 'War Room' : 'IA 24h',
       tabs: viewMode === 'merchant' ? [
-        { id: 'tree_of_thought', label: '🌲 Debate dos Agentes (ToT)', icon: GitFork, highlight: true },
-        { id: 'truth_auditor', label: '🛡️ Tribunal de Consenso (2 Agentes)', icon: Scale, highlight: true },
-        { id: 'vector_radar', label: '🗄️ Memória RAG & Radar', icon: Database, highlight: true },
+        { id: 'tree_of_thought', label: 'Debate dos Agentes (ToT)', icon: GitFork, highlight: true },
+        { id: 'truth_auditor', label: 'Tribunal de Consenso (2 Agentes)', icon: Scale, highlight: true },
+        { id: 'vector_radar', label: 'Memória RAG & Radar', icon: Database, highlight: true },
         { id: 'market_hunter', label: 'Caçador de Mercado & Leads', icon: Compass, highlight: true },
         { id: 'product_evolution', label: 'Auto-Evolução do Produto', icon: Wrench, highlight: true },
         { id: 'customer_success', label: 'Clientes & Precificação (VoC)', icon: BarChart3, highlight: true },
         { id: 'ceo_orchestrator', label: 'Orquestrador CEO', icon: Crown, highlight: true },
         ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : [])
       ] : [
-        { id: 'tree_of_thought', label: '🌲 Debate dos Agentes (ToT)', icon: GitFork, highlight: true },
-        { id: 'truth_auditor', label: '🛡️ Tribunal de Consenso (Zero Falso-Positivo)', icon: Scale, highlight: true },
-        { id: 'vector_radar', label: '🗄️ Memória RAG & Radar', icon: Database, highlight: true },
+        { id: 'tree_of_thought', label: 'Debate dos Agentes (ToT)', icon: GitFork, highlight: true },
+        { id: 'truth_auditor', label: 'Tribunal de Consenso (Zero Falso-Positivo)', icon: Scale, highlight: true },
+        { id: 'vector_radar', label: 'Memória RAG & Radar', icon: Database, highlight: true },
         { id: 'ceo_orchestrator', label: 'Orquestrador CEO', icon: Crown, highlight: true },
         { id: 'orchestrator', label: 'Torre do Maestro', icon: Cpu, highlight: true },
         { id: 'market_hunter', label: 'Caçador de Mercado & Leads', icon: Compass, highlight: true },
@@ -269,7 +269,7 @@ export function HomePage() {
     },
     ...(isFounderAuthenticated ? [{
       id: 'FOUNDER_SUITE' as NavigationPillar,
-      label: '👑 Gestão do Fundador',
+      label: 'Gestão do Fundador',
       badge: 'Sigiloso',
       tabs: [
         { id: 'founder_hq', label: 'Torre do Fundador (HQ)', icon: Crown, highlight: true },
@@ -434,7 +434,7 @@ export function HomePage() {
                       >
                         <Target className="w-4 h-4 text-blue-600 shrink-0" />
                         <div>
-                          <span className="block text-slate-900 font-bold">🎯 Lead Sniper (Prospecção)</span>
+                          <span className="block text-slate-900 font-bold">Lead Sniper (Prospecção)</span>
                           <span className="text-[10px] text-slate-400 font-normal">Buscar lojas no Meta Ads com estoque furado</span>
                         </div>
                       </button>
@@ -448,7 +448,7 @@ export function HomePage() {
                       >
                         <Zap className="w-4 h-4 text-rose-600 shrink-0" />
                         <div>
-                          <span className="block text-slate-900 font-bold">⚡ Kill-Switch Meta Ads</span>
+                          <span className="block text-slate-900 font-bold">Kill-Switch Meta Ads</span>
                           <span className="text-[10px] text-slate-400 font-normal">Pausar campanhas em &lt;60s ao esgotar</span>
                         </div>
                       </button>

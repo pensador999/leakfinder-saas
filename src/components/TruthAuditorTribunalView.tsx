@@ -11,7 +11,8 @@ import {
   Sparkles, 
   FileCheck, 
   Ruler, 
-  Flame 
+  Flame,
+  Sliders
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { TruthAuditorAgent, TruthVerdictReport } from '../services/orchestrator/truthAuditorAgent';
@@ -233,14 +234,27 @@ export const TruthAuditorTribunalView: React.FC<TruthAuditorTribunalViewProps> =
             >
               <div className="space-y-1 max-w-2xl">
                 <div className="flex items-center gap-2">
-                  <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold font-mono ${
+                  <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold font-mono inline-flex items-center gap-1 ${
                     claim.verdictStatus === 'APROVADO_FATO_REAL' ? 'bg-emerald-100 text-emerald-800' :
                     claim.verdictStatus === 'FALSO_POSITIVO_EXPURGADO' ? 'bg-indigo-100 text-indigo-800' :
                     'bg-amber-100 text-amber-800'
                   }`}>
-                    {claim.verdictStatus === 'APROVADO_FATO_REAL' ? '✓ FATO REAL VERIFICADO' :
-                     claim.verdictStatus === 'FALSO_POSITIVO_EXPURGADO' ? '🛡️ ISENÇÃO APLICADA (SEM PENALIDADE)' :
-                     '🎛️ ROTULADO COMO SIMULADOR'}
+                    {claim.verdictStatus === 'APROVADO_FATO_REAL' ? (
+                      <>
+                        <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                        <span>FATO REAL VERIFICADO</span>
+                      </>
+                    ) : claim.verdictStatus === 'FALSO_POSITIVO_EXPURGADO' ? (
+                      <>
+                        <ShieldCheck className="w-3 h-3 text-indigo-600" />
+                        <span>ISENÇÃO APLICADA (SEM PENALIDADE)</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sliders className="w-3 h-3 text-amber-600" />
+                        <span>ROTULADO COMO SIMULADOR</span>
+                      </>
+                    )}
                   </span>
                   <span className="text-[10px] text-slate-500 font-mono">Fonte: {claim.evidenceSource}</span>
                 </div>

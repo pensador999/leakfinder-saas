@@ -150,11 +150,11 @@ export const AuditFormModal: React.FC<AuditFormModalProps> = ({ isOpen, onClose,
                 onChange={(e) => setTargetRegion(e.target.value as TargetRegion)}
                 className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl text-sm text-white outline-none transition-all font-bold text-blue-400"
               >
-                <option value="Brasil">🇧🇷 Brasil (WhatsApp + Pix Focus)</option>
-                <option value="Ásia">🌏 Ásia (High Clutter + Social Proof)</option>
-                <option value="Europa">🇪🇺 Europa (GDPR Strict + Minimalismo)</option>
-                <option value="EUA">🇺🇸 Estados Unidos (Fast Checkout)</option>
-                <option value="Global">🌐 Global (Padrão Internacional)</option>
+                <option value="Brasil">Brasil (WhatsApp + Pix Focus)</option>
+                <option value="Ásia">Ásia (High Clutter + Social Proof)</option>
+                <option value="Europa">Europa (GDPR Strict + Minimalismo)</option>
+                <option value="EUA">Estados Unidos (Fast Checkout)</option>
+                <option value="Global">Global (Padrão Internacional)</option>
               </select>
             </div>
           </div>

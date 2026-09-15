@@ -17,6 +17,7 @@ import {
   ArrowRight,
   TrendingDown,
   ShieldCheck,
+  CheckCircle2,
   Zap,
   X
 } from 'lucide-react';
@@ -62,10 +63,11 @@ export const ShopifyTelemetryView: React.FC<ShopifyTelemetryViewProps> = ({ diag
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-bold text-slate-900">Telemetria & Comportamento (Shopify + Clarity)</h2>
-              <span className={`px-2.5 py-0.5 text-xs font-bold rounded-full ${
+              <span className={`px-2.5 py-0.5 text-xs font-bold rounded-full inline-flex items-center gap-1.5 ${
                 clarityDetected ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700'
               }`}>
-                {clarityDetected ? '✅ Microsoft Clarity Conectado' : 'Simulador Dinâmico'}
+                {clarityDetected && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
+                <span>{clarityDetected ? 'Microsoft Clarity Conectado' : 'Simulador Dinâmico'}</span>
               </span>
             </div>
             <p className="text-xs text-slate-600 mt-1 max-w-2xl">

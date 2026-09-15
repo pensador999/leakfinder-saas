@@ -12,6 +12,9 @@
     "test:extension": "node scripts/test_chrome_extension.mjs"
   },
   "dependencies": {
+    "@fortawesome/free-brands-svg-icons": "^7.3.1",
+    "@fortawesome/free-solid-svg-icons": "^7.3.1",
+    "@fortawesome/react-fontawesome": "^3.5.0",
     "@sparticuz/chromium": "^153.0.0",
     "@supabase/supabase-js": "^2.112.1",
     "@types/pg": "^8.23.1",

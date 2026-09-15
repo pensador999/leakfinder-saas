@@ -14,7 +14,8 @@ import {
   ArrowRight,
   TrendingUp,
   FileText,
-  BadgeCheck
+  BadgeCheck,
+  Search
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../../types';
 import { 
@@ -162,10 +163,20 @@ export const DualAgentConsensusTribunalView: React.FC<DualAgentConsensusTribunal
               {/* Header */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2.5 rounded-2xl font-bold font-mono text-xs ${
+                  <div className={`p-2.5 rounded-2xl font-bold font-mono text-xs flex items-center gap-1.5 ${
                     isApproved ? 'bg-emerald-50 text-emerald-700' : 'bg-purple-100 text-purple-800'
                   }`}>
-                    {isApproved ? '✅ 2/2 APROVADO' : '🛡️ FALSO-POSITIVO ELIMINADO'}
+                    {isApproved ? (
+                      <>
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>2/2 APROVADO</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+                        <span>FALSO-POSITIVO ELIMINADO</span>
+                      </>
+                    )}
                   </div>
                   <div>
                     <h3 className="font-bold text-slate-900 text-base">{item.findingTitle}</h3>
@@ -200,8 +211,9 @@ export const DualAgentConsensusTribunalView: React.FC<DualAgentConsensusTribunal
                     <span className="text-indigo-600 font-bold">{item.proposingAgent.confidencePct}% Certeza</span>
                   </div>
                   <strong className="text-slate-900 block font-sans text-xs">{item.proposingAgent.agentName}</strong>
-                  <p className="text-[11px] text-slate-600 font-sans leading-relaxed">
-                    🔍 <strong>Método:</strong> {item.proposingAgent.detectionMethod}
+                  <p className="text-[11px] text-slate-600 font-sans leading-relaxed flex items-start gap-1">
+                    <Search className="w-3.5 h-3.5 text-slate-500 shrink-0 mt-0.5" />
+                    <span><strong>Método:</strong> {item.proposingAgent.detectionMethod}</span>
                   </p>
                 </div>
 
@@ -215,13 +227,15 @@ export const DualAgentConsensusTribunalView: React.FC<DualAgentConsensusTribunal
                     }`}>
                       2º Agente (Revisor Independente):
                     </span>
-                    <span className={`font-bold ${isApproved ? 'text-emerald-800' : 'text-purple-800'}`}>
-                      {item.reviewingAgent.validationVote} ✓
+                    <span className={`font-bold inline-flex items-center gap-1 ${isApproved ? 'text-emerald-800' : 'text-purple-800'}`}>
+                      <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                      <span>{item.reviewingAgent.validationVote}</span>
                     </span>
                   </div>
                   <strong className="text-slate-900 block font-sans text-xs">{item.reviewingAgent.agentName}</strong>
-                  <p className="text-[11px] text-slate-700 font-sans leading-relaxed">
-                    🛡️ <strong>Checagem:</strong> {item.reviewingAgent.independentVerificationCheck}
+                  <p className="text-[11px] text-slate-700 font-sans leading-relaxed flex items-start gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span><strong>Checagem:</strong> {item.reviewingAgent.independentVerificationCheck}</span>
                   </p>
                 </div>
 
@@ -230,7 +244,10 @@ export const DualAgentConsensusTribunalView: React.FC<DualAgentConsensusTribunal
               {/* Raw Verified Evidence Tag */}
               <div className="p-3 bg-slate-900 text-slate-300 rounded-2xl text-[11px] font-mono flex items-center justify-between gap-3">
                 <span className="text-slate-400">Evidência Extraída do DOM: <strong className="text-emerald-400">{item.rawEvidenceVerified}</strong></span>
-                <span className="text-[10px] text-emerald-400 font-bold uppercase shrink-0">Auditado ao Vivo ✓</span>
+                <span className="text-[10px] text-emerald-400 font-bold uppercase shrink-0 inline-flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                  <span>Auditado ao Vivo</span>
+                </span>
               </div>
 
             </div>

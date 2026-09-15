@@ -23,7 +23,10 @@ import {
   ArrowRight,
   Sparkles,
   Server,
-  Activity
+  Activity,
+  Target,
+  History,
+  Settings
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../../types';
 import { 
@@ -81,7 +84,7 @@ export const MetaAdsAutoKillSwitchModal: React.FC<MetaAdsAutoKillSwitchModalProp
     const updated = { ...config, autoKillEnabled: !config.autoKillEnabled };
     setConfig(updated);
     saveMetaConfig(updated);
-    setFeedbackMsg(updated.autoKillEnabled ? '⚡ Auto-Kill Switch Ativado! Rupturas pausarão criativos em <60s.' : '⏸️ Auto-Kill Switch desativado.');
+    setFeedbackMsg(updated.autoKillEnabled ? 'Auto-Kill Switch Ativado! Rupturas pausarão criativos em <60s.' : 'Auto-Kill Switch desativado.');
     setTimeout(() => setFeedbackMsg(''), 3000);
   };
 
@@ -144,7 +147,7 @@ export const MetaAdsAutoKillSwitchModal: React.FC<MetaAdsAutoKillSwitchModalProp
     saveMetaConfig(config);
     setTimeout(() => {
       setIsSaving(false);
-      setFeedbackMsg('✅ Configurações e credenciais salvas com sucesso!');
+      setFeedbackMsg('Configurações e credenciais salvas com sucesso.');
       setTimeout(() => setFeedbackMsg(''), 3000);
     }, 600);
   };
@@ -153,28 +156,26 @@ export const MetaAdsAutoKillSwitchModal: React.FC<MetaAdsAutoKillSwitchModalProp
     <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[75] flex items-center justify-center p-4 overflow-y-auto font-sans">
       <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden my-8 relative flex flex-col max-h-[92vh] border border-slate-200 animate-fadeIn">
         
-        {/* Top Header */}
-        <div className="p-5 bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 border-b border-slate-800 flex items-center justify-between text-white shrink-0">
+        {/* Header */}
+        <div className="p-6 bg-slate-900 text-white flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-indigo-500/20 text-indigo-400 rounded-xl border border-indigo-500/30">
-              <Zap className="w-6 h-6 text-amber-400" />
+            <div className="p-3 bg-rose-500/20 text-rose-400 rounded-2xl border border-rose-500/30">
+              <Power className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-black text-sm tracking-tight text-white">Kill-Switch Autônomo em Tempo Real (&lt;60s)</h3>
-                <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full text-[10px] font-mono font-bold">
-                  Shopify Webhook + Meta Graph API v19.0
+                <h2 className="text-lg font-bold">Kill-Switch Autônomo Meta Ads</h2>
+                <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-md">
+                  Pausa &lt;60s
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">
-                Pausa automática no Meta Ads no milissegundo em que os tamanhos de alta saída (M/G/41) esgotarem no estoque da Shopify.
-              </p>
+              <p className="text-xs text-slate-400">Pausa criativos instantaneamente quando tamanhos-chave esgotam na vitrine.</p>
             </div>
           </div>
 
           <button 
             onClick={onClose}
-            className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-full transition-colors cursor-pointer"
+            className="p-2 hover:bg-slate-800 rounded-xl text-slate-400 hover:text-white transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -185,28 +186,31 @@ export const MetaAdsAutoKillSwitchModal: React.FC<MetaAdsAutoKillSwitchModalProp
           <div className="flex gap-2 flex-wrap">
             <button
               onClick={() => setActiveTab('MONITOR')}
-              className={`px-4 py-2 text-xs font-bold rounded-t-xl transition-all cursor-pointer ${activeTab === 'MONITOR' ? 'bg-white border-t-2 border-indigo-600 text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+              className={`px-4 py-2 text-xs font-bold rounded-t-xl transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === 'MONITOR' ? 'bg-white border-t-2 border-indigo-600 text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
             >
-              🎯 Anúncios Monitorados ({adsList.length})
+              <Target className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Anúncios Monitorados ({adsList.length})</span>
             </button>
             <button
               onClick={() => setActiveTab('SIMULATOR')}
               className={`px-4 py-2 text-xs font-bold rounded-t-xl transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === 'SIMULATOR' ? 'bg-white border-t-2 border-amber-500 text-amber-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
             >
               <Zap className="w-3.5 h-3.5 text-amber-500" />
-              <span>⚡ Simulador em Tempo Real (&lt;60s)</span>
+              <span>Simulador em Tempo Real (&lt;60s)</span>
             </button>
             <button
               onClick={() => setActiveTab('LOGS')}
-              className={`px-4 py-2 text-xs font-bold rounded-t-xl transition-all cursor-pointer ${activeTab === 'LOGS' ? 'bg-white border-t-2 border-indigo-600 text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+              className={`px-4 py-2 text-xs font-bold rounded-t-xl transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === 'LOGS' ? 'bg-white border-t-2 border-indigo-600 text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
             >
-              📜 Histórico de Pausas ({logs.length})
+              <History className="w-3.5 h-3.5 text-slate-600" />
+              <span>Histórico de Pausas ({logs.length})</span>
             </button>
             <button
               onClick={() => setActiveTab('SETTINGS')}
-              className={`px-4 py-2 text-xs font-bold rounded-t-xl transition-all cursor-pointer ${activeTab === 'SETTINGS' ? 'bg-white border-t-2 border-indigo-600 text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+              className={`px-4 py-2 text-xs font-bold rounded-t-xl transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === 'SETTINGS' ? 'bg-white border-t-2 border-indigo-600 text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
             >
-              ⚙️ Webhook Shopify & Credenciais
+              <Settings className="w-3.5 h-3.5 text-slate-600" />
+              <span>Webhook Shopify & Credenciais</span>
             </button>
           </div>
 

@@ -25,8 +25,19 @@ import {
   ArrowRight,
   TrendingDown,
   Terminal,
-  Zap
+  Zap,
+  Clock
 } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faFire, 
+  faBolt, 
+  faClock, 
+  faShieldHalved, 
+  faBullseye, 
+  faCircleExclamation 
+} from '@fortawesome/free-solid-svg-icons';
+import { faWhatsapp, faMeta } from '@fortawesome/free-brands-svg-icons';
 import { 
   startAutonomousHuntingSession, 
   stopAutonomousHuntingSession, 
@@ -186,12 +197,12 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                 disabled={isHunting}
                 className="w-full bg-slate-950 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               >
-                <option value="AGRO_MODA_CAMPO">🌾 Agro & Moda Campo / Outdoor</option>
-                <option value="MODA_MASCULINA_STREETWEAR">👔 Moda Masculina & Streetwear</option>
-                <option value="CALCADOS_COURO">👞 Calçados & Botas em Couro</option>
-                <option value="FITNESS_BEACHWEAR">🏋️ Moda Fitness & Beachwear</option>
-                <option value="COSMETICOS_BEAUTY">💄 Dermocosméticos & Beleza D2C</option>
-                <option value="CUSTOM_TARGETS">🎯 Alvo Específico / Customizado</option>
+                <option value="AGRO_MODA_CAMPO">Agropecuária & Moda Campo / Outdoor</option>
+                <option value="MODA_MASCULINA_STREETWEAR">Moda Masculina & Streetwear</option>
+                <option value="CALCADOS_COURO">Calçados, Tênis & Botas em Couro</option>
+                <option value="FITNESS_BEACHWEAR">Moda Fitness & Beachwear</option>
+                <option value="COSMETICOS_BEAUTY">Dermocosméticos & Beleza D2C</option>
+                <option value="CUSTOM_TARGETS">Alvo Específico / Customizado</option>
               </select>
             </div>
 
@@ -371,7 +382,7 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                   : 'bg-rose-950/40 border border-rose-800/60 text-rose-300 hover:bg-rose-900/50'
               }`}
             >
-              <Flame className="w-3.5 h-3.5" />
+              <FontAwesomeIcon icon={faFire} className="w-3 h-3" />
               <span>Tier 1: Atacar Hoje</span>
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${selectedTierFilter === 'TIER_1_HOT' ? 'bg-rose-800 text-white' : 'bg-rose-900 text-rose-300'}`}>
                 {leadsList.filter(l => l.huntingTier === 'TIER_1_HOT').length}
@@ -386,7 +397,7 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                   : 'bg-amber-950/40 border border-amber-800/60 text-amber-300 hover:bg-amber-900/50'
               }`}
             >
-              <Zap className="w-3.5 h-3.5" />
+              <FontAwesomeIcon icon={faBolt} className="w-3 h-3" />
               <span>Tier 2: Quase no Ponto</span>
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${selectedTierFilter === 'TIER_2_WARM' ? 'bg-amber-700 text-slate-950' : 'bg-amber-900 text-amber-300'}`}>
                 {leadsList.filter(l => l.huntingTier === 'TIER_2_WARM').length}
@@ -401,7 +412,8 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                   : 'bg-blue-950/40 border border-blue-800/60 text-blue-300 hover:bg-blue-900/50'
               }`}
             >
-              <span>🧊 Tier 3: Radar Futuro</span>
+              <FontAwesomeIcon icon={faClock} className="w-3 h-3" />
+              <span>Tier 3: Radar Futuro</span>
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${selectedTierFilter === 'TIER_3_COLD' ? 'bg-blue-800 text-white' : 'bg-blue-900 text-blue-300'}`}>
                 {leadsList.filter(l => l.huntingTier === 'TIER_3_COLD').length}
               </span>
@@ -463,19 +475,19 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                             {/* Tier Badge */}
                             {lead.huntingTier === 'TIER_1_HOT' && (
                               <span className="px-2.5 py-0.5 bg-rose-500/15 border border-rose-500/40 text-rose-700 text-[10px] font-black rounded-md uppercase tracking-wider flex items-center gap-1 shadow-2xs">
-                                <Flame className="w-3 h-3 text-rose-600 animate-pulse" />
+                                <FontAwesomeIcon icon={faFire} className="w-3 h-3 text-rose-600" />
                                 TIER 1 • ATACAR HOJE
                               </span>
                             )}
                             {lead.huntingTier === 'TIER_2_WARM' && (
                               <span className="px-2.5 py-0.5 bg-amber-500/15 border border-amber-500/40 text-amber-800 text-[10px] font-black rounded-md uppercase tracking-wider flex items-center gap-1 shadow-2xs">
-                                <Zap className="w-3 h-3 text-amber-600" />
+                                <FontAwesomeIcon icon={faBolt} className="w-3 h-3 text-amber-600" />
                                 TIER 2 • QUASE NO PONTO
                               </span>
                             )}
                             {lead.huntingTier === 'TIER_3_COLD' && (
                               <span className="px-2.5 py-0.5 bg-blue-500/15 border border-blue-500/40 text-blue-700 text-[10px] font-black rounded-md uppercase tracking-wider flex items-center gap-1 shadow-2xs">
-                                <ShieldAlert className="w-3 h-3 text-blue-600" />
+                                <FontAwesomeIcon icon={faClock} className="w-3 h-3 text-blue-600" />
                                 TIER 3 • RADAR FUTURO
                               </span>
                             )}
@@ -648,7 +660,7 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                           }`}
                           title={hasPhone ? 'Abrir conversa no WhatsApp oficial da loja' : 'WhatsApp não detectado. Clique para copiar roteiro e abordar via Instagram/SAC'}
                         >
-                          <MessageCircle className="w-4 h-4" />
+                          <FontAwesomeIcon icon={faWhatsapp} className="w-4 h-4" />
                           <span>{hasPhone ? 'Disparar WhatsApp (1-Clique)' : 'Copiar Pitch (WhatsApp Pendente)'}</span>
                         </button>
                       );

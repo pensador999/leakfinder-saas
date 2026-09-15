@@ -19,6 +19,8 @@ import {
   Layers,
   Radio
 } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faShopify, faWordpress } from '@fortawesome/free-brands-svg-icons';
 import { 
   getStoredIntegrations, 
   saveStoredIntegrations, 
@@ -70,7 +72,7 @@ export const EcommerceIntegrationsHubModal: React.FC<EcommerceIntegrationsHubMod
     try {
       const record = await connectPlatformOneClick(activePlatformModal, newStoreDomain, newStoreName);
       setFeedbackMsg({
-        text: `🎉 Loja ${record.storeName} conectada com sucesso via OAuth 2.0 oficial da ${activePlatformModal}!`,
+        text: `Loja ${record.storeName} conectada com sucesso via OAuth 2.0 oficial da ${activePlatformModal}.`,
         type: 'success'
       });
       loadIntegrations();
@@ -85,7 +87,7 @@ export const EcommerceIntegrationsHubModal: React.FC<EcommerceIntegrationsHubMod
     try {
       const res = await syncWarehouseStockLive(id);
       setFeedbackMsg({
-        text: `✅ Sincronização de estoque concluída em ${res.syncLatencyMs}ms! ${res.syncedProducts} produtos e ${res.syncedVariants} variantes verificadas. (${res.rupturesFound} rupturas de grade encontradas)`,
+        text: `Sincronização de estoque concluída em ${res.syncLatencyMs}ms. ${res.syncedProducts} produtos e ${res.syncedVariants} variantes verificadas (${res.rupturesFound} rupturas de grade encontradas).`,
         type: 'success'
       });
       loadIntegrations();
@@ -99,7 +101,7 @@ export const EcommerceIntegrationsHubModal: React.FC<EcommerceIntegrationsHubMod
     try {
       const res = await injectAppEmbedScriptTagViaApi(id);
       setFeedbackMsg({
-        text: `✨ ${res.message} (ScriptTag ID: ${res.scriptTagId})`,
+        text: `${res.message} (ScriptTag ID: ${res.scriptTagId})`,
         type: 'success'
       });
       loadIntegrations();
@@ -157,7 +159,7 @@ export const EcommerceIntegrationsHubModal: React.FC<EcommerceIntegrationsHubMod
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl font-bold font-mono text-xs flex items-center gap-1.5">
-                    <ShoppingBag className="w-4 h-4" />
+                    <FontAwesomeIcon icon={faShopify} className="w-4 h-4" />
                     <span>Shopify</span>
                   </div>
                   <span className="px-2 py-0.5 text-[9px] font-bold rounded-md bg-emerald-100 text-emerald-800">
@@ -176,9 +178,9 @@ export const EcommerceIntegrationsHubModal: React.FC<EcommerceIntegrationsHubMod
                   setNewStoreDomain('brk-agro.myshopify.com');
                   setNewStoreName('BRK Agro');
                 }}
-                className="w-full py-2 bg-slate-900 hover:bg-emerald-600 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-1 cursor-pointer shadow-xs"
+                className="w-full py-2 bg-slate-900 hover:bg-emerald-600 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
               >
-                <Plug className="w-3.5 h-3.5" />
+                <FontAwesomeIcon icon={faShopify} className="w-3.5 h-3.5" />
                 <span>Conectar Shopify</span>
               </button>
             </div>
@@ -219,7 +221,7 @@ export const EcommerceIntegrationsHubModal: React.FC<EcommerceIntegrationsHubMod
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="p-2 bg-purple-50 text-purple-600 rounded-xl font-bold font-mono text-xs flex items-center gap-1.5">
-                    <Code2 className="w-4 h-4" />
+                    <FontAwesomeIcon icon={faWordpress} className="w-4 h-4" />
                     <span>WooCommerce</span>
                   </div>
                   <span className="px-2 py-0.5 text-[9px] font-bold rounded-md bg-purple-100 text-purple-800">
@@ -238,9 +240,9 @@ export const EcommerceIntegrationsHubModal: React.FC<EcommerceIntegrationsHubMod
                   setNewStoreDomain('sua-loja-woocommerce.com.br');
                   setNewStoreName('Loja WooCommerce');
                 }}
-                className="w-full py-2 bg-slate-900 hover:bg-purple-600 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-1 cursor-pointer shadow-xs"
+                className="w-full py-2 bg-slate-900 hover:bg-purple-600 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
               >
-                <Plug className="w-3.5 h-3.5" />
+                <FontAwesomeIcon icon={faWordpress} className="w-3.5 h-3.5" />
                 <span>Conectar WooCommerce</span>
               </button>
             </div>

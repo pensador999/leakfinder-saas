@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Target, Video, Copy, Check, Layers, DollarSign, Calculator, Sparkles, TrendingUp, ShieldAlert, ArrowRight, ExternalLink } from 'lucide-react';
+import { Target, Video, Copy, Check, Layers, DollarSign, Calculator, Sparkles, TrendingUp, ShieldAlert, ArrowRight, ExternalLink, ShoppingBag, Factory } from 'lucide-react';
 import { AgentDiagnosticResult } from '../../types';
 
 interface AdsAgentViewProps {
@@ -134,13 +134,19 @@ export const AdsAgentView: React.FC<AdsAgentViewProps> = ({ diagnostic }) => {
           {/* Breakdown Pills */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             <div className="p-3 bg-white rounded-xl border border-rose-200 text-xs">
-              <span className="font-bold text-slate-800 block">🛍️ Linha de Revenda Externa ({brokenResale.length} itens)</span>
+              <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                <ShoppingBag className="w-3.5 h-3.5 text-amber-600" />
+                <span>Linha de Revenda Externa ({brokenResale.length} itens)</span>
+              </span>
               <p className="text-slate-600 text-[11px] mt-0.5">
                 <strong className="text-rose-700">Ação Preventiva:</strong> Conferir campanhas ativas no Meta Ads. Se estiverem anunciados, pausar ou redirecionar o tráfego para produtos com grade cheia.
               </p>
             </div>
             <div className="p-3 bg-white rounded-xl border border-rose-200 text-xs">
-              <span className="font-bold text-slate-800 block">🏭 Fabricação Própria ({brokenInHouse.length} itens)</span>
+              <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                <Factory className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Fabricação Própria ({brokenInHouse.length} itens)</span>
+              </span>
               <p className="text-slate-600 text-[11px] mt-0.5">
                 <strong className="text-blue-700">Ação no PCP:</strong> Programar reposição prioritária dos tamanhos centrais e priorizar criativos das estampas com grade 100% ativa.
               </p>
@@ -155,7 +161,7 @@ export const AdsAgentView: React.FC<AdsAgentViewProps> = ({ diagnostic }) => {
                 <div key={idx} className="p-2.5 bg-white/80 rounded-lg border border-rose-200 flex items-center justify-between text-xs">
                   <div className="truncate max-w-md">
                     <span className="font-bold text-slate-900">{item.productTitle}</span>
-                    <span className="text-[10px] text-slate-500 ml-2">({item.manufacturingType === 'REVENDA' ? '🛍️ Revenda' : '🏭 Própria'})</span>
+                    <span className="text-[10px] text-slate-500 ml-2">({item.manufacturingType === 'REVENDA' ? 'Revenda' : 'Própria'})</span>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <span className="px-1.5 py-0.5 bg-rose-100 text-rose-800 rounded font-mono font-bold text-[10px]">

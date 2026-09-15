@@ -15,11 +15,20 @@ import {
   Activity,
   Sparkles,
   Radio,
-  Fish,
-  Wheat,
-  Flame,
   ExternalLink
 } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faShieldHalved, 
+  faFish, 
+  faWheatAwn, 
+  faFire, 
+  faBolt, 
+  faSliders, 
+  faArrowsRotate,
+  faLayerGroup
+} from '@fortawesome/free-solid-svg-icons';
+import { faShopify } from '@fortawesome/free-brands-svg-icons';
 import gsap from 'gsap';
 import { AgentDiagnosticResult } from '../types';
 import { getWhiteLabelConfig, WhiteLabelConfig } from '../services/whiteLabelService';
@@ -75,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({
       brandName: 'BRK Fishing',
       niche: 'Pesca Esportiva & Vestuário',
       aov: 220,
-      icon: Fish,
+      icon: faFish,
       activeClass: 'bg-cyan-600 text-white shadow-xs shadow-cyan-600/30 border-cyan-700'
     },
     {
@@ -85,7 +94,7 @@ export const Header: React.FC<HeaderProps> = ({
       brandName: 'BRK Agro',
       niche: 'Agropecuária & Moda Campo',
       aov: 260,
-      icon: Wheat,
+      icon: faWheatAwn,
       activeClass: 'bg-emerald-600 text-white shadow-xs shadow-emerald-600/30 border-emerald-700'
     },
     {
@@ -95,7 +104,7 @@ export const Header: React.FC<HeaderProps> = ({
       brandName: 'BRK Motors',
       niche: 'Motociclismo & Off-Road',
       aov: 240,
-      icon: Flame,
+      icon: faFire,
       activeClass: 'bg-orange-600 text-white shadow-xs shadow-orange-600/30 border-orange-700'
     }
   ];
@@ -346,7 +355,6 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center gap-1.5 flex-wrap">
               {brandPresets.map((preset) => {
                 const isActive = currentDomain.toLowerCase().includes(preset.key);
-                const IconComponent = preset.icon;
                 return (
                   <button
                     key={preset.key}
@@ -358,7 +366,7 @@ export const Header: React.FC<HeaderProps> = ({
                     }`}
                     title={`Auditar catálogo oficial de ${preset.name} (${preset.niche})`}
                   >
-                    <IconComponent className="w-3.5 h-3.5" />
+                    <FontAwesomeIcon icon={preset.icon} className="w-3.5 h-3.5" />
                     <span>{preset.name}</span>
                     {isActive ? (
                       <span className="w-1.5 h-1.5 rounded-full bg-white inline-block ml-0.5 animate-pulse" />
@@ -381,7 +389,7 @@ export const Header: React.FC<HeaderProps> = ({
                 className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-mono text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
                 title={`Acessar painel administrativo da Shopify da loja ativa (${activeShopSlug})`}
               >
-                <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
+                <FontAwesomeIcon icon={faShopify} className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Shopify Admin ({activeShopSlug})</span>
               </a>
             </div>

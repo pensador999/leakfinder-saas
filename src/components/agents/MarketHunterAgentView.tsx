@@ -132,7 +132,7 @@ export const MarketHunterAgentView: React.FC<MarketHunterAgentViewProps> = ({ di
     
     const targetPhone = phoneToUse || lead.contactTargetPhone || lead.detectedWhatsApp || '';
     if (!targetPhone) {
-      alert(`⚠️ Nenhum WhatsApp público foi detectado para a vitrine "${lead.brandName}".\n\nVocê pode testar a abordagem usando o botão "Testar no Meu WhatsApp" ou copiar a mensagem para enviar via direct no Instagram.`);
+      alert(`Nenhum WhatsApp público foi detectado para a vitrine "${lead.brandName}".\n\nVocê pode testar a abordagem usando o botão "Testar no Meu WhatsApp" ou copiar a mensagem para enviar via direct no Instagram.`);
       return;
     }
     const url = buildWhatsAppClickToChatUrl(targetPhone, text);
@@ -246,7 +246,7 @@ export const MarketHunterAgentView: React.FC<MarketHunterAgentViewProps> = ({ di
           }`}
         >
           <Radar className={`w-4 h-4 ${activeSubTab === 'active_hunter' ? 'animate-spin text-white' : 'text-rose-600'}`} />
-          <span>🦅 Enxame Caçador Ativo & Outreach (Novo)</span>
+          <span>Enxame Caçador Ativo & Outreach (Novo)</span>
         </button>
 
         <button
@@ -258,7 +258,7 @@ export const MarketHunterAgentView: React.FC<MarketHunterAgentViewProps> = ({ di
           }`}
         >
           <Target className="w-4 h-4 text-blue-600" />
-          <span>🎯 Radar de Leads & CRM ({leadsList.length})</span>
+          <span>Radar de Leads & CRM ({leadsList.length})</span>
         </button>
 
         <button
@@ -270,7 +270,7 @@ export const MarketHunterAgentView: React.FC<MarketHunterAgentViewProps> = ({ di
           }`}
         >
           <Sword className="w-4 h-4 text-indigo-600" />
-          <span>🦅 Duelo de Preços SKU-a-SKU ({report.skuPriceCrossBenchmarks.length})</span>
+          <span>Duelo de Preços SKU-a-SKU ({report.skuPriceCrossBenchmarks.length})</span>
         </button>
 
         <button
@@ -282,7 +282,7 @@ export const MarketHunterAgentView: React.FC<MarketHunterAgentViewProps> = ({ di
           }`}
         >
           <Flame className="w-4 h-4 text-amber-500" />
-          <span>⚡ Tendências Globais de CRO ({report.topEmergingTrends.length})</span>
+          <span>Tendências Globais de CRO ({report.topEmergingTrends.length})</span>
         </button>
       </div>
 

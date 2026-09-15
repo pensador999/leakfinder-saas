@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, Bot, User, Sparkles } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Cpu, ShoppingCart, Search, Target, FileText, Layers } from 'lucide-react';
 import { AgentDiagnosticResult, ChatMessage } from '../../types';
 
 interface AgentChatViewProps {
@@ -81,25 +81,29 @@ export const AgentChatView: React.FC<AgentChatViewProps> = ({ diagnostic }) => {
       {/* Agent Selector Chips */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         {[
-          { id: 'Orquestrador', label: '🤖 Orquestrador LeakFinder' },
-          { id: 'CRO', label: '🛒 Agente CRO & Usabilidade' },
-          { id: 'SEO', label: '🔍 Agente SEO & Busca' },
-          { id: 'Ads', label: '🎯 Agente de Ads' },
-          { id: 'Copywriter', label: '💰 Agente Copywriter' },
-          { id: 'PM', label: '🧠 Agente Product Manager' }
-        ].map((agent) => (
-          <button
-            key={agent.id}
-            onClick={() => setSelectedAgent(agent.id as any)}
-            className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
-              selectedAgent === agent.id
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
-                : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
-            }`}
-          >
-            <span>{agent.label}</span>
-          </button>
-        ))}
+          { id: 'Orquestrador', label: 'Orquestrador LeakFinder', icon: Cpu },
+          { id: 'CRO', label: 'Agente CRO & Usabilidade', icon: ShoppingCart },
+          { id: 'SEO', label: 'Agente SEO & Busca', icon: Search },
+          { id: 'Ads', label: 'Agente de Ads', icon: Target },
+          { id: 'Copywriter', label: 'Agente Copywriter', icon: FileText },
+          { id: 'PM', label: 'Agente Product Manager', icon: Layers }
+        ].map((agent) => {
+          const IconComp = agent.icon;
+          return (
+            <button
+              key={agent.id}
+              onClick={() => setSelectedAgent(agent.id as any)}
+              className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
+                selectedAgent === agent.id
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
+                  : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              <IconComp className="w-3.5 h-3.5 shrink-0" />
+              <span>{agent.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Chat Container */}

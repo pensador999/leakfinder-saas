@@ -16,7 +16,8 @@ import {
   Zap,
   KeyRound,
   Sliders,
-  ExternalLink
+  ExternalLink,
+  X
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { analyzeStockRupture, StockRuptureAnalysisResult } from '../services/stockRuptureEngine';
@@ -216,13 +217,14 @@ export const StockRuptureMonitorView: React.FC<StockRuptureMonitorViewProps> = (
                     key={size}
                     type="button"
                     onClick={() => toggleSize(size)}
-                    className={`px-3 py-1 text-xs font-bold font-mono rounded-lg transition-all cursor-pointer ${
+                    className={`px-3 py-1 text-xs font-bold font-mono rounded-lg transition-all cursor-pointer inline-flex items-center gap-1 ${
                       isSelected
                         ? 'bg-rose-600 text-white shadow-xs scale-105'
                         : 'bg-white text-slate-700 border border-slate-200 hover:border-rose-400'
                     }`}
                   >
-                    {size} {isSelected ? '✕' : ''}
+                    <span>{size}</span>
+                    {isSelected && <X className="w-3 h-3" />}
                   </button>
                 );
               })}

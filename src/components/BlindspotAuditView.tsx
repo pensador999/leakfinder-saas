@@ -379,20 +379,22 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
 
               <button
                 onClick={() => { setSkuStatusFilter('RUPTURA'); setSkuCurrentPage(1); }}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
                   skuStatusFilter === 'RUPTURA' ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
                 }`}
               >
-                ⚠️ Ruptura ({allSkusFlat.filter(s => !s.available).length})
+                <AlertCircle className="w-3.5 h-3.5" />
+                <span>Ruptura ({allSkusFlat.filter(s => !s.available).length})</span>
               </button>
 
               <button
                 onClick={() => { setSkuStatusFilter('ESTOQUE'); setSkuCurrentPage(1); }}
-                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
                   skuStatusFilter === 'ESTOQUE' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
                 }`}
               >
-                ✅ Em Estoque ({allSkusFlat.filter(s => s.available).length})
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Em Estoque ({allSkusFlat.filter(s => s.available).length})</span>
               </button>
 
               <button
@@ -667,35 +669,39 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
         </button>
         <button
           onClick={() => setActiveFilter('GRADE_FURADA')}
-          className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
+          className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
             activeFilter === 'GRADE_FURADA' ? 'bg-rose-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
           }`}
         >
-          ⚠️ Grades Furadas ({catalogAudit?.productsWithBrokenGrid || 0})
+          <AlertTriangle className="w-3.5 h-3.5" />
+          <span>Grades Furadas ({catalogAudit?.productsWithBrokenGrid || 0})</span>
         </button>
         <button
           onClick={() => setActiveFilter('REVENDA')}
-          className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
+          className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
             activeFilter === 'REVENDA' ? 'bg-amber-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
           }`}
         >
-          📦 Revenda / Fornecedores ({resaleCount})
+          <ShoppingBag className="w-3.5 h-3.5" />
+          <span>Revenda / Fornecedores ({resaleCount})</span>
         </button>
         <button
           onClick={() => setActiveFilter('FABRICACAO_PROPRIA')}
-          className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
+          className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
             activeFilter === 'FABRICACAO_PROPRIA' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
           }`}
         >
-          🧵 Fabricação Própria PCP ({inHouseCount})
+          <Factory className="w-3.5 h-3.5" />
+          <span>Fabricação Própria PCP ({inHouseCount})</span>
         </button>
         <button
           onClick={() => setActiveFilter('ISENTOS_FULL')}
-          className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
+          className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
             activeFilter === 'ISENTOS_FULL' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
           }`}
         >
-          ✅ Isentos _FULL ({catalogAudit?.productsWithFullExemption || 0})
+          <CheckCircle2 className="w-3.5 h-3.5" />
+          <span>Isentos _FULL ({catalogAudit?.productsWithFullExemption || 0})</span>
         </button>
         <button
           onClick={() => setActiveFilter('SEM_FOTO')}
@@ -753,7 +759,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                       </span>
                     ) : (
                       <span className="px-2.5 py-0.5 bg-indigo-50 text-indigo-900 border border-indigo-200 font-extrabold text-[10px] uppercase rounded-lg flex items-center gap-1">
-                        🧵 Fabr. Própria (PCP Têxtil)
+                        <Factory className="w-3 h-3 text-indigo-600" /> Fabr. Própria (PCP Têxtil)
                       </span>
                     )}
 
@@ -980,8 +986,9 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                   </div>
 
                   {!issue.isFullPrintExempt && issue.missingSizes.length > 0 && (
-                    <p className="text-[11px] text-rose-700 font-semibold pt-1">
-                      ⚠️ Atenção: Clientes buscando tamanhos ({issue.missingSizes.join(', ')}) não conseguem comprar.
+                    <p className="text-[11px] text-rose-700 font-semibold pt-1 flex items-center gap-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                      <span>Atenção: Clientes buscando tamanhos ({issue.missingSizes.join(', ')}) não conseguem comprar.</span>
                     </p>
                   )}
                 </div>
@@ -999,14 +1006,34 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                         onClick={() => setShowSizeChartModal(true)}
                         className={`font-bold hover:underline cursor-pointer flex items-center gap-1 ${issue.hasSizeGuide ? 'text-emerald-600' : 'text-rose-600'}`}
                       >
-                        {issue.hasSizeGuide ? '✅ Configurada' : '❌ Ausente'}
+                        {issue.hasSizeGuide ? (
+                          <>
+                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                            <span>Configurada</span>
+                          </>
+                        ) : (
+                          <>
+                            <AlertCircle className="w-3 h-3 text-rose-600" />
+                            <span>Ausente</span>
+                          </>
+                        )}
                       </button>
                     </div>
 
                     <div className="flex items-center justify-between p-2 bg-white rounded-lg border border-slate-200">
                       <span className="text-slate-500">Foto Principal:</span>
-                      <span className={`font-bold ${issue.hasValidImage ? 'text-emerald-600' : 'text-rose-600'}`}>
-                        {issue.hasValidImage ? `${issue.imageResolutionStatus}` : '❌ Quebrada'}
+                      <span className={`font-bold flex items-center gap-1 ${issue.hasValidImage ? 'text-emerald-600' : 'text-rose-600'}`}>
+                        {issue.hasValidImage ? (
+                          <>
+                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                            <span>{issue.imageResolutionStatus}</span>
+                          </>
+                        ) : (
+                          <>
+                            <ImageOff className="w-3 h-3 text-rose-600" />
+                            <span>Quebrada</span>
+                          </>
+                        )}
                       </span>
                     </div>
 

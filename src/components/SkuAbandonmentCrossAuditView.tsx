@@ -14,7 +14,8 @@ import {
   TrendingDown,
   Sparkles,
   Link2,
-  Check
+  Check,
+  X
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { 
@@ -244,13 +245,15 @@ export const SkuAbandonmentCrossAuditView: React.FC<SkuAbandonmentCrossAuditView
                   <span className="text-[10px] text-slate-400 font-mono uppercase block font-bold">Grade de Estoque:</span>
                   <div className="flex flex-wrap gap-1">
                     {item.availableSizes.map(s => (
-                      <span key={s} className="px-1.5 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded text-[10px] font-mono font-bold">
-                        {s} ✓
+                      <span key={s} className="px-1.5 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded text-[10px] font-mono font-bold inline-flex items-center gap-1">
+                        <Check className="w-2.5 h-2.5 text-emerald-600" />
+                        <span>{s}</span>
                       </span>
                     ))}
                     {item.rupturedSizes.map(s => (
-                      <span key={s} className="px-1.5 py-0.5 bg-rose-50 text-rose-800 border border-rose-200 rounded text-[10px] font-mono font-bold line-through">
-                        {s} ✗
+                      <span key={s} className="px-1.5 py-0.5 bg-rose-50 text-rose-800 border border-rose-200 rounded text-[10px] font-mono font-bold inline-flex items-center gap-1 opacity-75">
+                        <X className="w-2.5 h-2.5 text-rose-600" />
+                        <span className="line-through">{s}</span>
                       </span>
                     ))}
                   </div>

@@ -234,7 +234,10 @@ export const TrustBadgeGeneratorView: React.FC<TrustBadgeGeneratorViewProps> = (
               </div>
               <div className="flex justify-between font-mono">
                 <span className="text-slate-500">Status da Auditoria:</span>
-                <span className="font-bold text-emerald-600">✓ APROVADO COM EXCELÊNCIA</span>
+                <span className="font-bold text-emerald-600 flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>APROVADO COM EXCELÊNCIA</span>
+                </span>
               </div>
             </div>
 

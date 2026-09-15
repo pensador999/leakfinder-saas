@@ -16,8 +16,12 @@ import {
   AlertTriangle,
   Building2,
   RefreshCw,
-  Search
+  Search,
+  TrendingDown,
+  Zap
 } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { 
   parseDomainListInput, 
   runBatchProspectingAudit, 
@@ -203,8 +207,9 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
                 <span className="font-mono text-slate-300">
                   Progresso: <strong>{progress.completed} de {progress.total} lojas</strong> auditadas
                 </span>
-                <span className="font-mono font-bold text-rose-400">
-                  💸 Desperdício Total Encontrado: {formatBRL(progress.totalMonthlyWasteIdentifiedBRL)}/mês
+                <span className="font-mono font-bold text-rose-400 inline-flex items-center gap-1.5">
+                  <TrendingDown className="w-3.5 h-3.5 text-rose-400" />
+                  <span>Desperdício Total Encontrado: {formatBRL(progress.totalMonthlyWasteIdentifiedBRL)}/mês</span>
                 </span>
               </div>
 
@@ -279,16 +284,19 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
 
                         <td className="p-3">
                           {lead.dealPriority === 'ALTÍSSIMA_OPORTUNIDADE' ? (
-                            <span className="px-2.5 py-1 bg-rose-600 text-white text-[10px] font-black uppercase rounded-full shadow-xs">
-                              🔥 Altíssima
+                            <span className="px-2.5 py-1 bg-rose-600 text-white text-[10px] font-bold uppercase rounded-full shadow-xs inline-flex items-center gap-1">
+                              <Flame className="w-3 h-3 text-white" />
+                              <span>Altíssima</span>
                             </span>
                           ) : lead.dealPriority === 'ALTA' ? (
-                            <span className="px-2 py-1 bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-bold rounded-full">
-                              ⚡ Alta
+                            <span className="px-2 py-1 bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-bold rounded-full inline-flex items-center gap-1">
+                              <Zap className="w-3 h-3 text-amber-600" />
+                              <span>Alta</span>
                             </span>
                           ) : (
-                            <span className="px-2 py-1 bg-emerald-100 text-emerald-900 text-[10px] font-bold rounded-full">
-                              ✅ Saudável
+                            <span className="px-2 py-1 bg-emerald-100 text-emerald-900 text-[10px] font-bold rounded-full inline-flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                              <span>Saudável</span>
                             </span>
                           )}
                         </td>
@@ -297,10 +305,10 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => handleCopyPitch(lead)}
-                              className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl font-bold text-[11px] transition-all flex items-center gap-1 cursor-pointer"
+                              className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl font-bold text-[11px] transition-all flex items-center gap-1.5 cursor-pointer"
                               title="Copiar Script WhatsApp pronto"
                             >
-                              {copiedLeadId === lead.id ? <Check className="w-3 h-3 text-emerald-600" /> : <MessageSquare className="w-3 h-3 text-emerald-600" />}
+                              {copiedLeadId === lead.id ? <Check className="w-3 h-3 text-emerald-600" /> : <FontAwesomeIcon icon={faWhatsapp} className="w-3 h-3 text-emerald-600" />}
                               <span>{copiedLeadId === lead.id ? 'Copiado!' : 'Script WhatsApp'}</span>
                             </button>
 

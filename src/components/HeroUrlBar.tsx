@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowRight, ShieldCheck, Globe, Sparkles, Fish, Wheat, Flame, Zap } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Globe, Sparkles, Zap } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFish, faWheatAwn, faFire, faGlobe, faArrowRight as faArrowRightSolid, faSliders } from '@fortawesome/free-solid-svg-icons';
 import gsap from 'gsap';
 import { AuditInput } from '../types';
 import { getWhiteLabelConfig, WhiteLabelConfig } from '../services/whiteLabelService';
@@ -38,7 +40,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
       niche: 'Pesca Esportiva, Vestuário & Aventura',
       aov: 220,
       instagram: 'brkfishing',
-      icon: Fish,
+      icon: faFish,
       accentColor: 'text-cyan-700 border-cyan-300 bg-cyan-50 hover:bg-cyan-100',
       badgeBg: 'bg-cyan-600'
     },
@@ -49,7 +51,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
       niche: 'Agropecuária, Proteção Solar & Campo',
       aov: 260,
       instagram: 'brkagro',
-      icon: Wheat,
+      icon: faWheatAwn,
       accentColor: 'text-emerald-700 border-emerald-300 bg-emerald-50 hover:bg-emerald-100',
       badgeBg: 'bg-emerald-600'
     },
@@ -60,7 +62,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
       niche: 'Motociclismo, Off-Road & Automotivo',
       aov: 240,
       instagram: 'brkmotors',
-      icon: Flame,
+      icon: faFire,
       accentColor: 'text-orange-700 border-orange-300 bg-orange-50 hover:bg-orange-100',
       badgeBg: 'bg-orange-600'
     }
@@ -192,7 +194,6 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-[11px] font-mono text-slate-400 uppercase font-semibold">Atalhos:</span>
             {presets.map((preset) => {
-              const Icon = preset.icon;
               const isCurrent = urlInput.includes(preset.url.replace('https://', ''));
 
               return (
@@ -208,7 +209,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
                   }`}
                   title={`Auditoria instantânea de ${preset.name}`}
                 >
-                  <Icon className="w-3 h-3" />
+                  <FontAwesomeIcon icon={preset.icon} className="w-3 h-3" />
                   <span>{preset.name}</span>
                 </button>
               );
@@ -218,9 +219,10 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
           <button
             type="button"
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className="text-[11px] font-semibold text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
+            className="text-[11px] font-semibold text-blue-600 hover:text-blue-800 transition-colors cursor-pointer flex items-center gap-1"
           >
-            {showAdvanced ? '− Ocultar parâmetros' : '+ Parâmetros de nicho'}
+            <FontAwesomeIcon icon={faSliders} className="w-2.5 h-2.5" />
+            <span>{showAdvanced ? 'Ocultar parâmetros' : 'Parâmetros de nicho'}</span>
           </button>
         </div>
 
