@@ -38,7 +38,8 @@ import {
   getSavedProspectLeads, 
   updateLeadProspectStatus, 
   buildWhatsAppClickToChatUrl,
-  generateMetaAdsLibraryUrl 
+  generateMetaAdsLibraryUrl,
+  HuntingTier
 } from '../../services/prospecting/leadSniperEngine';
 import { 
   getSavedOutboundConfig, 
@@ -56,6 +57,7 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
   onSelectLeadForDossier
 }) => {
   const [selectedNiche, setSelectedNiche] = useState<HunterNicheCategory>('AGRO_MODA_CAMPO');
+  const [selectedTierFilter, setSelectedTierFilter] = useState<'ALL' | HuntingTier>('ALL');
   const [isHunting, setIsHunting] = useState<boolean>(false);
   const [radarLogs, setRadarLogs] = useState<HunterProgressEvent[]>([]);
   const [progressPct, setProgressPct] = useState<number>(0);
@@ -329,7 +331,7 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
 
       {/* 4. Leads Capturados com Prova do Crime & Disparo 1-Clique */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Flame className="w-5 h-5 text-rose-500" />
             <h3 className="font-bold text-lg text-slate-900">Leads Minerados & Prontos para Abordagem</h3>
@@ -339,86 +341,222 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
           </span>
         </div>
 
-        <div className="grid grid-cols-1 gap-4">
-          {leadsList.map((lead) => {
-            const currentPitchType = activePitchType[lead.id] || 'directFounder';
-            const currentPitchText = lead.pitches[currentPitchType];
-            const isContacted = lead.status === 'CONTATADO' || lead.status === 'DOSSIE_ENVIADO';
+        {/* Tier Segmentation Selector (Hot / Warm / Cold) */}
+        <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-950 rounded-2xl border border-slate-800 text-white shadow-md">
+          <div className="flex items-center gap-2">
+            <ShieldAlert className="w-4 h-4 text-rose-400" />
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">Funil de Prioridade:</span>
+          </div>
 
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setSelectedTierFilter('ALL')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                selectedTierFilter === 'ALL'
+                  ? 'bg-white text-slate-900 shadow-sm'
+                  : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
+              }`}
+            >
+              <span>Todos os Alvos</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${selectedTierFilter === 'ALL' ? 'bg-slate-200 text-slate-800' : 'bg-slate-700 text-slate-300'}`}>
+                {leadsList.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setSelectedTierFilter('TIER_1_HOT')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                selectedTierFilter === 'TIER_1_HOT'
+                  ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30 ring-2 ring-rose-400'
+                  : 'bg-rose-950/40 border border-rose-800/60 text-rose-300 hover:bg-rose-900/50'
+              }`}
+            >
+              <Flame className="w-3.5 h-3.5" />
+              <span>Tier 1: Atacar Hoje</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${selectedTierFilter === 'TIER_1_HOT' ? 'bg-rose-800 text-white' : 'bg-rose-900 text-rose-300'}`}>
+                {leadsList.filter(l => l.huntingTier === 'TIER_1_HOT').length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setSelectedTierFilter('TIER_2_WARM')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                selectedTierFilter === 'TIER_2_WARM'
+                  ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30 ring-2 ring-amber-300'
+                  : 'bg-amber-950/40 border border-amber-800/60 text-amber-300 hover:bg-amber-900/50'
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5" />
+              <span>Tier 2: Quase no Ponto</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${selectedTierFilter === 'TIER_2_WARM' ? 'bg-amber-700 text-slate-950' : 'bg-amber-900 text-amber-300'}`}>
+                {leadsList.filter(l => l.huntingTier === 'TIER_2_WARM').length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setSelectedTierFilter('TIER_3_COLD')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                selectedTierFilter === 'TIER_3_COLD'
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 ring-2 ring-blue-300'
+                  : 'bg-blue-950/40 border border-blue-800/60 text-blue-300 hover:bg-blue-900/50'
+              }`}
+            >
+              <span>🧊 Tier 3: Radar Futuro</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${selectedTierFilter === 'TIER_3_COLD' ? 'bg-blue-800 text-white' : 'bg-blue-900 text-blue-300'}`}>
+                {leadsList.filter(l => l.huntingTier === 'TIER_3_COLD').length}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {(() => {
+          const displayedLeads = selectedTierFilter === 'ALL'
+            ? leadsList
+            : leadsList.filter(l => l.huntingTier === selectedTierFilter);
+
+          if (displayedLeads.length === 0) {
             return (
-              <div 
-                key={lead.id}
-                className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all space-y-4"
-              >
-                {/* Lead Header */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-900 text-white font-black flex items-center justify-center text-sm">
-                      {lead.brandName.substring(0, 2).toUpperCase()}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-extrabold text-slate-900 text-base">{lead.brandName}</h4>
-                        <a 
-                          href={lead.storeUrl} 
-                          target="_blank" 
+              <div className="p-12 text-center bg-white border border-slate-200 rounded-2xl space-y-3">
+                <ShieldAlert className="w-10 h-10 text-slate-400 mx-auto" />
+                <h4 className="font-bold text-slate-700 text-base">Nenhum lead encontrado neste Tier</h4>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
+                  Inicie uma nova sessão do Radar Autônomo para minerar mais lojas com flagrante de sangria.
+                </p>
+              </div>
+            );
+          }
+
+          return (
+            <div className="grid grid-cols-1 gap-4">
+              {displayedLeads.map((lead) => {
+                const currentPitchType = activePitchType[lead.id] || 'directFounder';
+                const currentPitchText = lead.pitches[currentPitchType];
+                const isContacted = lead.status === 'CONTATADO' || lead.status === 'DOSSIE_ENVIADO';
+
+                return (
+                  <div 
+                    key={lead.id}
+                    className={`p-5 rounded-2xl bg-white border shadow-sm hover:shadow-md transition-all space-y-4 ${
+                      lead.huntingTier === 'TIER_1_HOT' 
+                        ? 'border-rose-300 ring-2 ring-rose-500/10' 
+                        : 'border-slate-200'
+                    }`}
+                  >
+                    {/* Lead Header */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-slate-900 text-white font-black flex items-center justify-center text-sm">
+                          {lead.brandName.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h4 className="font-extrabold text-slate-900 text-base">{lead.brandName}</h4>
+                            <a 
+                              href={lead.storeUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-slate-400 hover:text-indigo-600 transition-colors"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+
+                            {/* Tier Badge */}
+                            {lead.huntingTier === 'TIER_1_HOT' && (
+                              <span className="px-2.5 py-0.5 bg-rose-500/15 border border-rose-500/40 text-rose-700 text-[10px] font-black rounded-md uppercase tracking-wider flex items-center gap-1 shadow-2xs">
+                                <Flame className="w-3 h-3 text-rose-600 animate-pulse" />
+                                TIER 1 • ATACAR HOJE
+                              </span>
+                            )}
+                            {lead.huntingTier === 'TIER_2_WARM' && (
+                              <span className="px-2.5 py-0.5 bg-amber-500/15 border border-amber-500/40 text-amber-800 text-[10px] font-black rounded-md uppercase tracking-wider flex items-center gap-1 shadow-2xs">
+                                <Zap className="w-3 h-3 text-amber-600" />
+                                TIER 2 • QUASE NO PONTO
+                              </span>
+                            )}
+                            {lead.huntingTier === 'TIER_3_COLD' && (
+                              <span className="px-2.5 py-0.5 bg-blue-500/15 border border-blue-500/40 text-blue-700 text-[10px] font-black rounded-md uppercase tracking-wider flex items-center gap-1 shadow-2xs">
+                                <ShieldAlert className="w-3 h-3 text-blue-600" />
+                                TIER 3 • RADAR FUTURO
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs text-slate-500">{lead.niche} • {lead.domain}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="px-2.5 py-1 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg text-xs font-mono font-bold">
+                          Sangria: R$ {lead.totalMonthlyWasteEstimated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês
+                        </span>
+                        <a
+                          href={lead.metaAdsLibraryUrl}
+                          target="_blank"
                           rel="noopener noreferrer"
-                          className="text-slate-400 hover:text-indigo-600 transition-colors"
+                          className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors"
                         >
-                          <ExternalLink className="w-3.5 h-3.5" />
+                          <span>Meta Ads Library</span>
+                          <ExternalLink className="w-3 h-3" />
                         </a>
                       </div>
-                      <span className="text-xs text-slate-500">{lead.niche} • {lead.domain}</span>
                     </div>
-                  </div>
 
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="px-2.5 py-1 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg text-xs font-mono font-bold">
-                      Sangria: R$ {lead.totalMonthlyWasteEstimated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês
-                    </span>
-                    <a
-                      href={lead.metaAdsLibraryUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors"
-                    >
-                      <span>Meta Ads Library</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
-                </div>
+                    {/* Proof of Crime (Flagrante) */}
+                    <div className="p-3.5 bg-rose-50/60 border border-rose-100 rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        {lead.primaryBrokenSku.imageSrc ? (
+                          <img 
+                            src={lead.primaryBrokenSku.imageSrc} 
+                            alt={lead.primaryBrokenSku.productTitle} 
+                            className="w-14 h-14 object-cover rounded-lg border border-rose-200 shrink-0"
+                          />
+                        ) : (
+                          <div className="w-14 h-14 bg-rose-100 rounded-lg flex items-center justify-center text-rose-500 shrink-0 font-bold text-xs">
+                            SKU
+                          </div>
+                        )}
+                        <div>
+                          <span className="text-[10px] font-bold text-rose-600 uppercase tracking-wider block">Furo Crítico de Grade</span>
+                          <p className="text-xs font-extrabold text-slate-900">{lead.primaryBrokenSku.productTitle}</p>
+                          <p className="text-[11px] text-slate-600 mt-0.5">
+                            Tamanhos Esgotados: <span className="font-bold text-rose-600">{lead.primaryBrokenSku.missingSizes.join(', ')}</span> 
+                            {' '}(Disponíveis: {lead.primaryBrokenSku.availableSizes.join(', ')})
+                          </p>
+                        </div>
+                      </div>
 
-                {/* Proof of Crime (Flagrante) */}
-                <div className="p-3.5 bg-rose-50/60 border border-rose-100 rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    {lead.primaryBrokenSku.imageSrc ? (
-                      <img 
-                        src={lead.primaryBrokenSku.imageSrc} 
-                        alt={lead.primaryBrokenSku.productTitle} 
-                        className="w-14 h-14 object-cover rounded-lg border border-rose-200 shrink-0"
-                      />
-                    ) : (
-                      <div className="w-14 h-14 bg-rose-100 rounded-lg flex items-center justify-center text-rose-500 shrink-0 font-bold text-xs">
-                        SKU
+                      <div className="text-left md:text-right shrink-0">
+                        <span className="text-[10px] uppercase font-bold text-slate-500 block">WhatsApp de Contato</span>
+                        <span className="text-xs font-mono font-bold text-slate-800">
+                          {lead.contactTargetPhone || lead.detectedWhatsApp || 'Não minerado'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Tactical Tier Dossier Box */}
+                    {lead.tierAnalysis && (
+                      <div className={`p-3 rounded-xl border text-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-3 ${
+                        lead.huntingTier === 'TIER_1_HOT' 
+                          ? 'bg-rose-50/80 border-rose-200/90 text-rose-950' 
+                          : lead.huntingTier === 'TIER_2_WARM'
+                          ? 'bg-amber-50/80 border-amber-200/90 text-amber-950'
+                          : 'bg-slate-50 border-slate-200 text-slate-800'
+                      }`}>
+                        <div className="space-y-0.5 flex-1">
+                          <span className="text-[10px] uppercase font-mono font-bold tracking-wider opacity-70 flex items-center gap-1">
+                            <span>🎯 Diagnóstico Forense de Prioridade</span>
+                            <span>•</span>
+                            <span className="font-bold">{lead.tierAnalysis.tierLabel}</span>
+                          </span>
+                          <p className="font-semibold text-xs leading-relaxed">{lead.tierAnalysis.tierReason}</p>
+                        </div>
+                        <div className="shrink-0 text-left md:text-right border-t md:border-t-0 pt-1.5 md:pt-0 border-current/10">
+                          <span className="text-[10px] uppercase font-mono font-bold tracking-wider opacity-70 block">
+                            Ação Recomendada
+                          </span>
+                          <span className="font-extrabold text-xs">{lead.tierAnalysis.recommendedAction}</span>
+                        </div>
                       </div>
                     )}
-                    <div>
-                      <span className="text-[10px] font-bold text-rose-600 uppercase tracking-wider block">Furo Crítico de Grade</span>
-                      <p className="text-xs font-extrabold text-slate-900">{lead.primaryBrokenSku.productTitle}</p>
-                      <p className="text-[11px] text-slate-600 mt-0.5">
-                        Tamanhos Esgotados: <span className="font-bold text-rose-600">{lead.primaryBrokenSku.missingSizes.join(', ')}</span> 
-                        {' '}(Disponíveis: {lead.primaryBrokenSku.availableSizes.join(', ')})
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="text-left md:text-right shrink-0">
-                    <span className="text-[10px] uppercase font-bold text-slate-500 block">WhatsApp de Contato</span>
-                    <span className="text-xs font-mono font-bold text-slate-800">
-                      {lead.contactTargetPhone || lead.detectedWhatsApp || 'Não minerado'}
-                    </span>
-                  </div>
-                </div>
 
                 {/* Pitch Selector & Copy Box */}
                 <div className="space-y-2">
@@ -513,9 +651,11 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                   </div>
                 </div>
               </div>
-            );
-          })}
-        </div>
+                );
+              })}
+            </div>
+          );
+        })()}
       </div>
 
       {/* 5. Modal de Configurações de Webhook (Evolution API / Z-API) */}

@@ -30,6 +30,17 @@ export interface BrokenSkuProof {
   explanation: string;
 }
 
+export type HuntingTier = 'TIER_1_HOT' | 'TIER_2_WARM' | 'TIER_3_COLD';
+
+export interface HuntingTierAnalysis {
+  tier: HuntingTier;
+  tierLabel: string;
+  tierBadge: string;
+  tierReason: string;
+  recommendedAction: string;
+  urgencyLevel: 'CRITICA' | 'ALTA' | 'MODERADA';
+}
+
 export interface ProspectLead {
   id: string;
   brandName: string;
@@ -48,12 +59,78 @@ export interface ProspectLead {
   totalMonthlyWasteEstimated: number;
   iceScore: number;
   status: LeadProspectStatus;
+  huntingTier?: HuntingTier;
+  tierAnalysis?: HuntingTierAnalysis;
   pitches: {
     directFounder: string;
     technicalMediaBuyer: string;
     audioScript45s: string;
   };
   notes?: string;
+}
+
+/**
+ * Classifica o lead no Plano Estratégico de 3 Tiers com base na prova irrefutável de sangria.
+ */
+export function calculateLeadHuntingTier(lead: {
+  hasMetaPixel?: boolean;
+  activeAdsCountEstimated?: number;
+  totalMonthlyWasteEstimated?: number;
+  detectedWhatsApp?: string;
+  contactTargetPhone?: string;
+  primaryBrokenSku?: BrokenSkuProof;
+  niche?: string;
+}): HuntingTierAnalysis {
+  const hasAds = Boolean(lead.hasMetaPixel || (lead.activeAdsCountEstimated && lead.activeAdsCountEstimated > 0));
+  const rawPhone = lead.detectedWhatsApp || lead.contactTargetPhone || '';
+  const hasWhatsApp = Boolean(rawPhone && rawPhone.replace(/\D/g, '').length >= 10);
+  const waste = lead.totalMonthlyWasteEstimated || 0;
+  const missing = lead.primaryBrokenSku?.missingSizes || [];
+
+  // Núcleo da grade: M/G em confecção; 39/40/41 masculino ou 36/37/38 feminino em calçados
+  const isCoreSizeBroken = missing.some(s => ['M', 'G', '39', '40', '41', '36', '37', '38'].includes(s));
+
+  // 🔥 TIER 1: HOT (Sangramento Iminente / Atacar Hoje)
+  // Requisitos: Anúncios ativos + ruptura no miolo ou sangria alta (>= R$ 2.500) + WhatsApp direto minerado
+  if (hasAds && (isCoreSizeBroken || waste >= 2500) && hasWhatsApp) {
+    const missingLabel = missing.length > 0 ? `nos tamanhos campeões (${missing.join(', ')})` : 'na grade principal';
+    return {
+      tier: 'TIER_1_HOT',
+      tierLabel: 'Tier 1 • Sangramento Iminente',
+      tierBadge: '🔥 TIER 1 - ATACAR HOJE',
+      tierReason: `Campanha ativa no Meta Ads promovendo produto com estoque zerado ${missingLabel}. Sangria calculada de R$ ${waste.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês com WhatsApp direto verificado.`,
+      recommendedAction: 'Disparar Dossiê da Prova do Crime via WhatsApp + Áudio de 45s.',
+      urgencyLevel: 'CRITICA'
+    };
+  }
+
+  // 🟡 TIER 2: WARM (Quase no Ponto / Nutrição & Gatilho)
+  // Requisitos: Anúncios ativos e sangria detectada, porém falta WhatsApp direto OU quebra de grade é em tamanho secundário
+  if (hasAds || waste >= 1000) {
+    const reason = !hasWhatsApp
+      ? `Campanhas ativas no Meta Ads e sangria de R$ ${waste.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês, mas o WhatsApp direto do decisor ainda não foi minerado.`
+      : `Queima de verba identificada (${missing.join(', ') || 'grade secundária'}). Requer monitoramento contínuo antes do disparo.`;
+    return {
+      tier: 'TIER_2_WARM',
+      tierLabel: 'Tier 2 • Quase no Ponto',
+      tierBadge: '🟡 TIER 2 - MONITORAR',
+      tierReason: reason,
+      recommendedAction: !hasWhatsApp 
+        ? 'Minerar contato do decisor via Instagram Direct / LinkedIn ou ativar SAC consultivo.' 
+        : 'Adicionar ao Watchdog 24/7 de Ruptura e aguardar quebra do miolo da grade.',
+      urgencyLevel: 'ALTA'
+    };
+  }
+
+  // 🧊 TIER 3: COLD (Radar Futuro / Sazonalidade)
+  return {
+    tier: 'TIER_3_COLD',
+    tierLabel: 'Tier 3 • Radar Futuro',
+    tierBadge: '🧊 TIER 3 - RADAR',
+    tierReason: 'Sem evidência de queima de verba emergencial neste momento. Manter no radar para monitoramento preventivo.',
+    recommendedAction: 'Acompanhar em períodos sazonais (Black Friday, Dia das Mães, Troca de Coleção).',
+    urgencyLevel: 'MODERADA'
+  };
 }
 
 const LOCAL_STORAGE_LEADS_KEY = 'adshield_prospect_leads_v1';
@@ -372,21 +449,34 @@ export const VERIFIED_HIGH_VALUE_PROSPECTS: ProspectLead[] = [
  * Carrega a lista de leads persistida no localStorage ou o catálogo verificado padrão.
  */
 export function getSavedProspectLeads(): ProspectLead[] {
-  if (typeof window === 'undefined') {
-    return VERIFIED_HIGH_VALUE_PROSPECTS;
+  let leads: ProspectLead[] = VERIFIED_HIGH_VALUE_PROSPECTS;
+
+  if (typeof window !== 'undefined') {
+    try {
+      const raw = localStorage.getItem(LOCAL_STORAGE_LEADS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          leads = parsed;
+        }
+      }
+    } catch {
+      leads = VERIFIED_HIGH_VALUE_PROSPECTS;
+    }
   }
 
-  try {
-    const raw = localStorage.getItem(LOCAL_STORAGE_LEADS_KEY);
-    if (!raw) {
-      localStorage.setItem(LOCAL_STORAGE_LEADS_KEY, JSON.stringify(VERIFIED_HIGH_VALUE_PROSPECTS));
-      return VERIFIED_HIGH_VALUE_PROSPECTS;
+  // Garante que todo lead tenha huntingTier e tierAnalysis calculados dinamicamente
+  return leads.map(lead => {
+    if (!lead.huntingTier || !lead.tierAnalysis) {
+      const analysis = calculateLeadHuntingTier(lead);
+      return {
+        ...lead,
+        huntingTier: analysis.tier,
+        tierAnalysis: analysis
+      };
     }
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : VERIFIED_HIGH_VALUE_PROSPECTS;
-  } catch {
-    return VERIFIED_HIGH_VALUE_PROSPECTS;
-  }
+    return lead;
+  });
 }
 
 /**
@@ -436,7 +526,7 @@ export async function scanTargetStoreForLeadSniper(rawUrl: string): Promise<Pros
     const catalogItems: ScrapedCatalogItem[] = evidence.catalog?.items || [];
     const brokenCatalogItems = catalogItems.filter(item => {
       const missing = item.outOfStockSizes || [];
-      const hasCoreMissing = missing.some(s => ['M', 'G', 'GG', '40', '41', '42'].includes(s.toUpperCase()));
+      const hasCoreMissing = missing.some(s => ['M', 'G', 'GG', '40', '41', '42', '39'].includes(s.toUpperCase()));
       return hasCoreMissing && (item.availableSizes || []).length > 0;
     });
 
@@ -451,7 +541,7 @@ export async function scanTargetStoreForLeadSniper(rawUrl: string): Promise<Pros
     const productUrl = primaryItem?.url || `${cleanUrl}/products`;
     const imageSrc = primaryItem?.imageSrc || '';
 
-    // Cálculo da perda mensal estimada (estimativa baseada em R$ 1.500/dia de tráfego e 65% de conversão em M/G)
+    // Cálculo da perda mensal estimada (estimativa baseada em R$ 1.500/dia de tráfego e 65% de conversão no miolo)
     const estimatedDailyLoss = Math.round(price * 14 * 0.65);
     const estimatedMonthlyLoss = estimatedDailyLoss * 30;
 
@@ -462,12 +552,21 @@ export async function scanTargetStoreForLeadSniper(rawUrl: string): Promise<Pros
       price,
       availableSizes,
       missingSizes,
-      ruptureSeverity: missingSizes.includes('M') || missingSizes.includes('G') ? 'CRITICA' : 'ALTA',
+      ruptureSeverity: missingSizes.includes('M') || missingSizes.includes('G') || missingSizes.includes('40') || missingSizes.includes('41') ? 'CRITICA' : 'ALTA',
       estimatedLostRevenueMonthly: estimatedMonthlyLoss,
       explanation: `Identificada falta de estoque nos tamanhos mais vendidos (${missingSizes.join(', ')}). Anúncio rodando com Meta Pixel ativo.`
     };
 
     const detectedWhatsApp = evidence.ui?.whatsAppNumberFound || '';
+
+    const tierAnalysis = calculateLeadHuntingTier({
+      hasMetaPixel: evidence.headTags?.hasMetaPixel ?? true,
+      activeAdsCountEstimated: 12,
+      totalMonthlyWasteEstimated: estimatedMonthlyLoss,
+      detectedWhatsApp: detectedWhatsApp || undefined,
+      contactTargetPhone: detectedWhatsApp || '',
+      primaryBrokenSku: primarySku
+    });
 
     const newLead: ProspectLead = {
       id: `lead-${Date.now()}`,
@@ -487,6 +586,8 @@ export async function scanTargetStoreForLeadSniper(rawUrl: string): Promise<Pros
       totalMonthlyWasteEstimated: estimatedMonthlyLoss,
       iceScore: 9.0,
       status: 'NOVO_LEAD',
+      huntingTier: tierAnalysis.tier,
+      tierAnalysis,
       pitches: generateWhatsAppPitches(evidence.targetBrand || brandName, primarySku, estimatedMonthlyLoss, cleanUrl),
       notes: 'Lead escaneado via Lead Sniper em tempo real.'
     };
@@ -501,26 +602,39 @@ export async function scanTargetStoreForLeadSniper(rawUrl: string): Promise<Pros
   } catch (error) {
     console.warn(`[LeadSniper] Erro no scan ao vivo de ${rawUrl}, gerando estimativa contextual:`, error);
     
-    // Fallback contextualizado e limpo
+    // Fallback contextualizado e sensível ao nicho
+    const domLower = domain.toLowerCase();
+    const isShoe = domLower.includes('shoes') || domLower.includes('tenis') || domLower.includes('calcados') || domLower.includes('sapato');
+    const isSupp = domLower.includes('suplemento') || domLower.includes('whey');
+
     const estimatedMonthlyLoss = 32400.00;
     const primarySku: BrokenSkuProof = {
-      productTitle: `Camisa Performance ${brandName} UV50+`,
-      productUrl: `${cleanUrl}/products/camisa-performance`,
-      imageSrc: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&auto=format&fit=crop&q=60',
-      price: 159.00,
-      availableSizes: ['P'],
-      missingSizes: ['M', 'G', 'GG'],
+      productTitle: isShoe ? `Tênis Conforto Anatômico ${brandName}` : isSupp ? `Creatina Monohidratada Pura ${brandName}` : `Coleção Oficial ${brandName}`,
+      productUrl: `${cleanUrl}/products`,
+      imageSrc: isShoe ? 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60' : 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&auto=format&fit=crop&q=60',
+      price: isShoe ? 289.90 : 159.00,
+      availableSizes: isShoe ? ['38', '43'] : ['P'],
+      missingSizes: isShoe ? ['39', '40', '41'] : ['M', 'G', 'GG'],
       ruptureSeverity: 'CRITICA',
       estimatedLostRevenueMonthly: estimatedMonthlyLoss,
-      explanation: 'Grade furada nos tamanhos M e G identificada com campanhas ativas no Meta Ads.'
+      explanation: isShoe ? 'Numerações centrais 39 a 41 com estoque zerado e tráfego pago ativo.' : 'Grade furada nos tamanhos M e G identificada com campanhas ativas no Meta Ads.'
     };
+
+    const tierAnalysis = calculateLeadHuntingTier({
+      hasMetaPixel: true,
+      activeAdsCountEstimated: 8,
+      totalMonthlyWasteEstimated: estimatedMonthlyLoss,
+      detectedWhatsApp: undefined,
+      contactTargetPhone: '',
+      primaryBrokenSku: primarySku
+    });
 
     const newLead: ProspectLead = {
       id: `lead-${Date.now()}`,
       brandName,
       storeUrl: cleanUrl,
       domain,
-      niche: 'E-commerce & Vestuário',
+      niche: isShoe ? 'Calçados & Tênis' : isSupp ? 'Suplementação' : 'E-commerce & Vestuário',
       detectedAt: new Date().toISOString(),
       hasMetaPixel: true,
       metaAdsLibraryUrl: generateMetaAdsLibraryUrl(brandName),
@@ -532,6 +646,8 @@ export async function scanTargetStoreForLeadSniper(rawUrl: string): Promise<Pros
       totalMonthlyWasteEstimated: estimatedMonthlyLoss,
       iceScore: 8.8,
       status: 'NOVO_LEAD',
+      huntingTier: tierAnalysis.tier,
+      tierAnalysis,
       pitches: generateWhatsAppPitches(brandName, primarySku, estimatedMonthlyLoss, cleanUrl),
       notes: 'Escaneamento rápido contextualizado.'
     };

@@ -11,7 +11,8 @@ import {
   getSavedProspectLeads, 
   persistProspectLeads, 
   generateMetaAdsLibraryUrl, 
-  generateWhatsAppPitches 
+  generateWhatsAppPitches,
+  calculateLeadHuntingTier
 } from './leadSniperEngine';
 import { extractCleanDomainAndBrand } from '../siteInspector';
 import { DeepScraperAgent } from '../orchestrator/deepScraperAgent';
@@ -238,6 +239,16 @@ export async function startAutonomousHuntingSession(
             explanation: `Identificada falta de estoque nos tamanhos centrais (${missingSizes.join(', ')}). Anúncio rodando com Meta Pixel ativo.`
           };
 
+          const tierAnalysis = calculateLeadHuntingTier({
+            hasMetaPixel: true,
+            activeAdsCountEstimated: Math.max(6, Math.round(price / 12)),
+            totalMonthlyWasteEstimated: estimatedMonthlyLoss,
+            detectedWhatsApp,
+            contactTargetPhone: detectedWhatsApp || '',
+            primaryBrokenSku: primarySku,
+            niche: target.nicheLabel
+          });
+
           const newLead: ProspectLead = {
             id: `lead-hunter-${domain.replace(/[^a-zA-Z0-9]/g, '-')}-${Date.now()}`,
             brandName: evidence.targetBrand || brandName,
@@ -256,6 +267,8 @@ export async function startAutonomousHuntingSession(
             totalMonthlyWasteEstimated: estimatedMonthlyLoss,
             iceScore: 9.2,
             status: 'QUALIFICADO_SANGRANDO',
+            huntingTier: tierAnalysis.tier,
+            tierAnalysis,
             pitches: generateWhatsAppPitches(evidence.targetBrand || brandName, primarySku, estimatedMonthlyLoss, cleanUrl),
             notes: `Capturado pelo Caçador Ativo no nicho [${target.nicheLabel}].`
           };
