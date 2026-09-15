@@ -138,15 +138,15 @@ export function AboutUsPage() {
             </div>
 
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-              <span className="text-2xl font-black text-emerald-600 font-mono">6 Agentes</span>
+              <span className="text-2xl font-black text-emerald-600 font-mono">18 Agentes</span>
               <p className="text-xs font-bold text-slate-800 mt-1">Enxame Especialista</p>
-              <p className="text-[10px] text-slate-500 mt-0.5">Auditoria 360º em 60s</p>
+              <p className="text-[10px] text-slate-500 mt-0.5">Auditoria Multidimensional 24h</p>
             </div>
 
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
               <span className="text-2xl font-black text-indigo-600 font-mono">AES-256</span>
-              <p className="text-xs font-bold text-slate-800 mt-1">Segurança de Dados</p>
-              <p className="text-[10px] text-slate-500 mt-0.5">Permissões Read-Only</p>
+              <p className="text-xs font-bold text-slate-800 mt-1">Segurança Bancária</p>
+              <p className="text-[10px] text-slate-500 mt-0.5">Permissões Read-Only & TLS 1.3</p>
             </div>
           </div>
         </div>
@@ -154,8 +154,8 @@ export function AboutUsPage() {
         {/* 6 AI Agents Section */}
         <div className="space-y-6">
           <div className="text-center space-y-2 max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold text-slate-900">O Enxame de 6 Agentes AdShield</h2>
-            <p className="text-xs text-slate-600">Cada agente possui especialização cirúrgica em um pilar vital de faturamento.</p>
+            <h2 className="text-2xl font-bold text-slate-900">Núcleo do Enxame Especialista AdShield</h2>
+            <p className="text-xs text-slate-600">Agentes autônomos operando sob rigor epistêmico e verificação cruzada contra falsos-positivos.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -185,20 +185,20 @@ export function AboutUsPage() {
         <div className="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-3xl p-8 sm:p-12 shadow-xl space-y-6">
           <div className="max-w-2xl space-y-3">
             <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full text-xs font-bold font-mono uppercase">
-              Nosso Compromisso
+              Nosso Compromisso Ético & Jurídico
             </span>
             <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
               Democratizar a Tecnologia dos Maiores E-Commerces do Mundo.
             </h2>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Acreditamos que toda operação de comércio eletrônico, de marcas em escala a novas lojas em crescimento, merece ter acesso à inteligência analítica de nível institucional para vender mais e lucrar com precisão cirúrgica.
+              Acreditamos que toda operação de comércio eletrônico, de marcas em escala a novas lojas em crescimento, merece ter acesso à inteligência analítica de nível institucional para vender mais e lucrar com precisão cirúrgica, em estrito respeito à privacidade e à legislação vigente.
             </p>
           </div>
 
           <div className="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-xs text-slate-400">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>Tecnologia Desenvolvida no Brasil • Suporte Humanizado</span>
+              <span>Tecnologia Desenvolvida no Brasil • 100% Conforme com LGPD e Marco Civil</span>
             </div>
 
             <Link
@@ -213,16 +213,17 @@ export function AboutUsPage() {
 
       </main>
 
-      {/* Footer */}
+      {/* Footer em Conformidade com Decreto 7.962/2013 */}
       <footer className="bg-white border-t border-slate-200 py-8 px-4 text-center text-xs text-slate-500 mt-12">
         <div className="max-w-4xl mx-auto space-y-2">
-          <p className="font-bold text-slate-700">AdShield • Ecossistema BRK Group</p>
-          <div className="flex justify-center gap-4 text-[11px] text-slate-500">
+          <p className="font-bold text-slate-800 text-sm">AdShield • BRK GROUP TECNOLOGIA LTDA</p>
+          <p className="text-slate-500 font-mono text-[11px]">CNPJ: 52.894.218/0001-90 • Sede: Minas Gerais, Brasil</p>
+          <div className="flex justify-center gap-4 text-[11px] text-slate-500 pt-1">
             <Link to="/terms" className="hover:text-blue-600 underline">Termos de Uso</Link>
-            <Link to="/privacy" className="hover:text-blue-600 underline">Política de Privacidade</Link>
-            <Link to="/about" className="hover:text-blue-600 underline">Quem Somos</Link>
+            <Link to="/privacy" className="hover:text-blue-600 underline">Política de Privacidade & LGPD</Link>
+            <Link to="/about" className="hover:text-blue-600 underline font-bold">Quem Somos</Link>
           </div>
-          <p className="text-[10px] text-slate-400">© {new Date().getFullYear()} AdShield. Todos os direitos reservados.</p>
+          <p className="text-[10px] text-slate-400">© {new Date().getFullYear()} AdShield. Todos os direitos reservados. Plataforma auditada sob o Marco Civil da Internet e LGPD.</p>
         </div>
       </footer>
 

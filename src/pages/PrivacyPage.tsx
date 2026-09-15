@@ -79,10 +79,13 @@ export function PrivacyPage() {
           {/* Section 1 */}
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <span className="text-blue-600 font-mono">1.</span> Compromisso com a Privacidade
+              <span className="text-blue-600 font-mono">1.</span> Compromisso Institucional & Controladora dos Dados
             </h2>
             <p>
-              O <strong>AdShield</strong> valoriza e respeita a privacidade de cada cliente e visitante. Esta Política de Privacidade explica de forma transparente como coletamos, utilizamos, armazenamos e protegemos as informações fornecidas por você e os dados públicos auditados em nossa plataforma.
+              O <strong>AdShield / LeakFinder</strong>, operado pela <strong>BRK GROUP TECNOLOGIA LTDA</strong> (CNPJ nº 52.894.218/0001-90), atua com compromisso inegociável em relação à transparência, segurança cibernética e privacidade.
+            </p>
+            <p>
+              Esta Política de Privacidade disciplina o tratamento de dados em nossa plataforma SaaS, em estrita conformidade com a <strong>Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018 — LGPD)</strong>, com o <strong>Marco Civil da Internet (Lei nº 12.965/2014)</strong> e com os enunciados orientativos da <strong>Autoridade Nacional de Proteção de Dados (ANPD)</strong>.
             </p>
           </section>
 
@@ -91,33 +94,33 @@ export function PrivacyPage() {
           {/* Section 2 */}
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <span className="text-blue-600 font-mono">2.</span> Quais Dados Coletamos e Como os Utilizamos
+              <span className="text-blue-600 font-mono">2.</span> Distinção Fundamental: Dados de Pessoas Jurídicas vs. Dados Pessoais
             </h2>
             <div className="space-y-3">
               <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-1">
                 <h4 className="font-bold text-slate-900 text-xs flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-600" /> 1. Dados Públicos do E-Commerce (Auditoria Não-Intrusiva)
+                  <span className="w-2 h-2 rounded-full bg-blue-600" /> 1. Dados Públicos Comerciais (Pessoas Jurídicas — Fora do Escopo da LGPD)
                 </h4>
                 <p className="text-xs text-slate-600">
-                  Coletamos apenas informações publicamente acessíveis na loja online: títulos de produtos, URLs, imagens públicas, disponibilidade de tamanhos no DOM e scripts instalados no cabeçalho HTML.
+                  Em conformidade com o <strong>Art. 5º, inciso I da LGPD</strong>, a legislação protege exclusivamente dados de <em>pessoas naturais</em>. Informações públicas de e-commerces (títulos de produtos, SKUs, preços, catálogo aberto, tags HTML públicas, CNPJ e Razão Social) são dados eminentemente comerciais de pessoas jurídicas e <strong>não constituem dados pessoais</strong>.
                 </p>
               </div>
 
               <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-1">
                 <h4 className="font-bold text-slate-900 text-xs flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-600" /> 2. Dados de Cadastro do Usuário
+                  <span className="w-2 h-2 rounded-full bg-emerald-600" /> 2. Dados de Contato Comercial Publicizados no Rodapé
                 </h4>
                 <p className="text-xs text-slate-600">
-                  Nome, e-mail corporativo e dados para emissão de relatórios white-label (marca e WhatsApp de contato). Estes dados são utilizados unicamente para personalizar seus relatórios e viabilizar o acesso à plataforma.
+                  Em lojas virtuais onde o e-mail ou WhatsApp corporativo corresponda ao contato direto do administrador (como MEIs), o tratamento desses dados para envio de notificações de auditoria técnica é amparado pelo <strong>Art. 7º, § 4º</strong> (dados manifestamente tornados públicos pelo próprio titular para fins de contato comercial) e pelo <strong>Art. 7º, inciso IX da LGPD (Legítimo Interesse)</strong>.
                 </p>
               </div>
 
               <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-1">
                 <h4 className="font-bold text-slate-900 text-xs flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-amber-600" /> 3. Integrações de APIs Oficiais (Read-Only)
+                  <span className="w-2 h-2 rounded-full bg-indigo-600" /> 3. Dados Cadastrais dos Usuários da Plataforma
                 </h4>
                 <p className="text-xs text-slate-600">
-                  Quando você decide conectar integrações como Shopify Admin ou Meta Ads, os tokens recebem permissão exclusiva de <strong>Somente Leitura (Read-Only)</strong>. O AdShield <strong>nunca altera preços, produtos ou estoque</strong>.
+                  Coletamos nome, e-mail corporativo e dados para emissão de nota fiscal (NFS-e) e personalização de relatórios white-label. Estes dados são tratados com a finalidade exclusiva de execução de contrato (Art. 7º, V da LGPD).
                 </p>
               </div>
             </div>
@@ -128,16 +131,20 @@ export function PrivacyPage() {
           {/* Section 3 */}
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <span className="text-blue-600 font-mono">3.</span> Segurança, Criptografia & Sigilo Absoluto
+              <span className="text-blue-600 font-mono">3.</span> Política de Opt-Out Imediato & Blacklist de Prospecção
             </h2>
             <p>
-              Adotamos os mais rigorosos padrões de segurança da informação do mercado:
+              O AdShield repudia veementemente práticas de spam e disparos abusivos. Caso sua loja tenha sido objeto de auditoria e você não deseje receber novas comunicações ou relatórios técnicos:
             </p>
-            <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
-              <li><strong>Criptografia em Trânsito e Repouso:</strong> Todas as comunicações utilizam protocolos TLS 1.3 e criptografia AES-256 no banco de dados.</li>
-              <li><strong>Não-Compartilhamento de Dados:</strong> O AdShield <strong>nunca vende, aluga ou transfere</strong> dados da sua operação para terceiros, concorrentes ou corretores de dados.</li>
-              <li><strong>Zero Treinamento Público com Dados Privados:</strong> Suas métricas confidenciais de faturamento jamais são utilizadas para treinar modelos públicos de IA.</li>
-            </ul>
+            <div className="p-4 bg-blue-50/70 border border-blue-200/80 rounded-2xl text-xs text-blue-900 space-y-2">
+              <p className="font-bold flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-blue-600" /> Como Solicitar a Exclusão Definitiva (Descadastramento em 1 Clique):
+              </p>
+              <ul className="list-disc pl-5 space-y-1 text-blue-800">
+                <li><strong>Via WhatsApp:</strong> Basta responder <strong>"PARAR"</strong> ou <strong>"SAIR"</strong> à mensagem recebida. Nosso sistema inclui automaticamente o número em nossa tabela de <em>Blacklist Permanente</em>.</li>
+                <li><strong>Via E-mail:</strong> Envie solicitação para <strong>dpo@adshield.ai</strong> com a URL da loja ou número de contato. O bloqueio é processado em até 24 horas úteis.</li>
+              </ul>
+            </div>
           </section>
 
           <hr className="border-slate-100" />
@@ -145,14 +152,14 @@ export function PrivacyPage() {
           {/* Section 4 */}
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <span className="text-blue-600 font-mono">4.</span> Direitos do Titular de Dados (Art. 18 da LGPD)
+              <span className="text-blue-600 font-mono">4.</span> Direitos dos Titulares de Dados (Art. 18 da LGPD)
             </h2>
-            <p>Você possui total controle sobre seus dados pessoais, podendo a qualquer momento solicitar:</p>
+            <p>Você pode, a qualquer momento e de forma gratuita, exercer seus direitos legalmente garantidos:</p>
             <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
-              <li>Confirmação da existência de tratamento e acesso aos dados.</li>
-              <li>Correção de dados incompletos ou inexatos.</li>
-              <li>Eliminação completa e irrevogável de seus dados de nossa base.</li>
-              <li>Revogação instantânea de consentimento e tokens de integração.</li>
+              <li><strong>Confirmação e Acesso:</strong> Obter a confirmação de que tratamos seus dados e solicitar cópia integral.</li>
+              <li><strong>Correção:</strong> Solicitar a atualização de dados incompletos, inexatos ou desatualizados.</li>
+              <li><strong>Anonimização, Bloqueio ou Eliminação:</strong> Solicitar a exclusão definitiva de seus dados cadastrais.</li>
+              <li><strong>Revogação do Consentimento:</strong> Revogar autorizações previamente concedidas para integrações de API.</li>
             </ul>
           </section>
 
@@ -161,16 +168,34 @@ export function PrivacyPage() {
           {/* Section 5 */}
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <span className="text-blue-600 font-mono">5.</span> Contato do Encarregado de Proteção de Dados (DPO)
+              <span className="text-blue-600 font-mono">5.</span> Segurança da Informação & Não-Compartilhamento
             </h2>
             <p>
-              Para exercer qualquer um de seus direitos ou esclarecer dúvidas sobre este documento, entre em contato diretamente com o nosso Encarregado de Proteção de Dados (DPO):
+              Adotamos medidas técnicas e administrativas aptas a proteger seus dados contra acessos não autorizados e situações acidentais ou ilícitas:
+            </p>
+            <ul className="list-disc pl-5 space-y-1.5 text-slate-600">
+              <li><strong>Criptografia em Repouso e em Trânsito:</strong> Criptografia de ponta a ponta com protocolos TLS 1.3 e banco de dados com AES-256.</li>
+              <li><strong>Vedação de Venda de Dados:</strong> O AdShield <strong>JAMAIS vende, aluga ou monetiza</strong> dados de clientes ou dados auditados para terceiros ou corretores de dados (data brokers).</li>
+              <li><strong>Isolamento de Tenants:</strong> Relatórios executivos e simulações internas são estritamente isolados por conta e não são utilizados para treinar modelos públicos de inteligência artificial.</li>
+            </ul>
+          </section>
+
+          <hr className="border-slate-100" />
+
+          {/* Section 6 */}
+          <section className="space-y-3">
+            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <span className="text-blue-600 font-mono">6.</span> Encarregado de Proteção de Dados (DPO)
+            </h2>
+            <p>
+              Em observância ao <strong>Art. 41 da LGPD</strong>, nomeamos nosso Encarregado pelo Tratamento de Dados Pessoais (Data Protection Officer - DPO), que atua como canal direto de comunicação entre os titulares de dados, a empresa e a Autoridade Nacional de Proteção de Dados (ANPD):
             </p>
             <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center gap-3 text-xs text-slate-700">
-              <Mail className="w-5 h-5 text-blue-600 shrink-0" />
+              <Mail className="w-6 h-6 text-blue-600 shrink-0" />
               <div>
-                <p className="font-bold text-slate-900">Encarregado de Proteção de Dados (DPO) - AdShield</p>
-                <p className="text-slate-500 font-mono">dpo@adshield.ai | privacidade@brkgroup.com.br</p>
+                <p className="font-bold text-slate-900">Encarregado pelo Tratamento de Dados Pessoais (DPO)</p>
+                <p className="text-slate-600 font-mono">dpo@adshield.ai • privacidade@brkgroup.com.br</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">Prazo regulamentar de resposta: até 48 horas úteis.</p>
               </div>
             </div>
           </section>
@@ -179,16 +204,17 @@ export function PrivacyPage() {
 
       </main>
 
-      {/* Footer */}
+      {/* Footer em Conformidade com Decreto 7.962/2013 */}
       <footer className="bg-white border-t border-slate-200 py-8 px-4 text-center text-xs text-slate-500 mt-12">
         <div className="max-w-4xl mx-auto space-y-2">
-          <p className="font-bold text-slate-700">AdShield • Ecossistema BRK Group</p>
-          <div className="flex justify-center gap-4 text-[11px] text-slate-500">
+          <p className="font-bold text-slate-800 text-sm">AdShield • BRK GROUP TECNOLOGIA LTDA</p>
+          <p className="text-slate-500 font-mono text-[11px]">CNPJ: 52.894.218/0001-90 • Sede: Minas Gerais, Brasil</p>
+          <div className="flex justify-center gap-4 text-[11px] text-slate-500 pt-1">
             <Link to="/terms" className="hover:text-blue-600 underline">Termos de Uso</Link>
-            <Link to="/privacy" className="hover:text-blue-600 underline">Política de Privacidade</Link>
+            <Link to="/privacy" className="hover:text-blue-600 underline font-bold">Política de Privacidade & LGPD</Link>
             <Link to="/about" className="hover:text-blue-600 underline">Quem Somos</Link>
           </div>
-          <p className="text-[10px] text-slate-400">© {new Date().getFullYear()} AdShield. Todos os direitos reservados.</p>
+          <p className="text-[10px] text-slate-400">© {new Date().getFullYear()} AdShield. Todos os direitos reservados. Conformidade estrita com a Lei 13.709/2018.</p>
         </div>
       </footer>
 

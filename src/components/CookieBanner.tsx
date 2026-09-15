@@ -1,36 +1,142 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { ShieldCheck, Cookie, Settings, Check, X } from 'lucide-react';
 
 export const CookieBanner: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+  const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
+  const [preferencesEnabled, setPreferencesEnabled] = useState(true);
 
   useEffect(() => {
-    const consent = localStorage.getItem('leakfinder_cookie_consent');
+    const consent = localStorage.getItem('adshield_cookie_consent');
     if (!consent) {
       setIsVisible(true);
     }
   }, []);
 
-  const acceptCookies = () => {
-    localStorage.setItem('leakfinder_cookie_consent', 'true');
+  const saveConsent = (type: 'ALL' | 'NECESSARY_ONLY' | 'CUSTOM') => {
+    const consentData = {
+      essential: true,
+      analytics: type === 'ALL' ? true : type === 'NECESSARY_ONLY' ? false : analyticsEnabled,
+      preferences: type === 'ALL' ? true : type === 'NECESSARY_ONLY' ? false : preferencesEnabled,
+      timestamp: new Date().toISOString()
+    };
+    localStorage.setItem('adshield_cookie_consent', JSON.stringify(consentData));
     setIsVisible(false);
   };
 
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-slate-900 text-white p-4 shadow-2xl z-50 animate-fade-in-up">
-      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
-        <p className="text-slate-300">
-          Nós utilizamos cookies para melhorar a sua experiência no LeakFinder, analisar tráfego e personalizar conteúdo. 
-          Ao continuar navegando, você concorda com a nossa política de privacidade.
+    <div className="fixed bottom-3 left-3 right-3 sm:left-6 sm:right-6 md:max-w-3xl md:mx-auto bg-slate-900/95 backdrop-blur-xl text-white p-5 rounded-3xl border border-slate-700/80 shadow-2xl z-50 animate-fade-in-up font-sans">
+      <div className="space-y-4">
+        
+        {/* Header */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 shrink-0">
+              <Cookie className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                <span>Privacidade & Gestão de Cookies</span>
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  LGPD Conforme
+                </span>
+              </h4>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Respeitamos sua privacidade e não comercializamos seus dados com terceiros.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Text */}
+        <p className="text-xs text-slate-300 leading-relaxed">
+          Utilizamos cookies essenciais para autenticação, segurança contra ataques de força bruta e integridade da sessão. Com o seu consentimento, também utilizamos cookies analíticos para medir a performance da aplicação e telemetria de velocidade. Saiba mais na nossa{' '}
+          <Link to="/privacy" className="text-blue-400 hover:text-blue-300 underline font-semibold">
+            Política de Privacidade & LGPD
+          </Link>{' '}
+          e nos{' '}
+          <Link to="/terms" className="text-blue-400 hover:text-blue-300 underline font-semibold">
+            Termos de Uso
+          </Link>.
         </p>
-        <button
-          onClick={acceptCookies}
-          className="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg transition-colors whitespace-nowrap"
-        >
-          Aceitar e Continuar
-        </button>
+
+        {/* Detailed Controls (Expandable) */}
+        {showDetails && (
+          <div className="p-3.5 bg-slate-800/80 border border-slate-700 rounded-2xl space-y-2 text-xs">
+            <div className="flex items-center justify-between py-1 border-b border-slate-700/50">
+              <div>
+                <span className="font-bold text-white block">1. Cookies Estritamente Necessários</span>
+                <span className="text-[11px] text-slate-400">Autenticação de sessão, segurança anti-CSRF e tokens de rate-limit.</span>
+              </div>
+              <span className="text-[10px] font-mono font-bold bg-slate-700 text-slate-300 px-2 py-0.5 rounded-md">Obrigatório</span>
+            </div>
+
+            <div className="flex items-center justify-between py-1 border-b border-slate-700/50">
+              <div>
+                <span className="font-bold text-white block">2. Cookies Analíticos & Performance</span>
+                <span className="text-[11px] text-slate-400">Métricas de latência de scraping e Core Web Vitals anônimos.</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAnalyticsEnabled(!analyticsEnabled)}
+                className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer ${analyticsEnabled ? 'bg-blue-600' : 'bg-slate-700'}`}
+              >
+                <span className={`w-3.5 h-3.5 bg-white rounded-full absolute top-0.75 transition-transform ${analyticsEnabled ? 'right-0.75' : 'left-0.75'}`} />
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between py-1">
+              <div>
+                <span className="font-bold text-white block">3. Preferências de Interface & White-Label</span>
+                <span className="text-[11px] text-slate-400">Salva paleta personalizada, preferências de visualização e filtros de loja.</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPreferencesEnabled(!preferencesEnabled)}
+                className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer ${preferencesEnabled ? 'bg-blue-600' : 'bg-slate-700'}`}
+              >
+                <span className={`w-3.5 h-3.5 bg-white rounded-full absolute top-0.75 transition-transform ${preferencesEnabled ? 'right-0.75' : 'left-0.75'}`} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Buttons */}
+        <div className="flex flex-wrap items-center justify-between gap-2.5 pt-1">
+          <button
+            type="button"
+            onClick={() => setShowDetails(!showDetails)}
+            className="text-xs font-semibold text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
+          >
+            <Settings className="w-3.5 h-3.5" />
+            <span>{showDetails ? 'Recolher Opções' : 'Configurar Preferências'}</span>
+          </button>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => saveConsent('NECESSARY_ONLY')}
+              className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold rounded-xl transition-all cursor-pointer border border-slate-700"
+            >
+              Apenas Necessários
+            </button>
+            <button
+              type="button"
+              onClick={() => saveConsent(showDetails ? 'CUSTOM' : 'ALL')}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-all cursor-pointer shadow-md shadow-blue-600/30 flex items-center gap-1.5"
+            >
+              <Check className="w-3.5 h-3.5" />
+              <span>{showDetails ? 'Salvar Escolhas' : 'Aceitar Todos'}</span>
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
   );
 };
+

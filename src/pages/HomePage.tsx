@@ -922,16 +922,16 @@ export function HomePage() {
       <FloatingAiChatWidget />
       </Suspense>
 
-      {/* Footer Legal & Institucional */}
+      {/* Footer Legal & Institucional em Conformidade com Decreto 7.962/2013 */}
       <footer className="max-w-7xl mx-auto py-8 px-4 border-t border-slate-200 mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
         <div>
-          <p className="font-bold text-slate-700">AdShield • Ecossistema BRK Group</p>
-          <p className="text-[11px] text-slate-400">Auditoria 360º de Conversão, Catálogo & Visão Computacional.</p>
+          <p className="font-bold text-slate-800">AdShield • BRK GROUP TECNOLOGIA LTDA</p>
+          <p className="text-[11px] text-slate-500 font-mono">CNPJ: 52.894.218/0001-90 • Auditoria 360º sob Marco Civil e LGPD.</p>
         </div>
         <div className="flex flex-wrap items-center gap-4 text-xs">
           <button onClick={() => navigate('/about')} className="hover:text-blue-600 font-bold transition-colors cursor-pointer">Quem Somos</button>
           <button onClick={() => navigate('/terms')} className="hover:text-blue-600 transition-colors cursor-pointer">Termos de Uso</button>
-          <button onClick={() => navigate('/privacy')} className="hover:text-blue-600 transition-colors cursor-pointer">Política de Privacidade & LGPD</button>
+          <button onClick={() => navigate('/privacy')} className="hover:text-blue-600 font-semibold transition-colors cursor-pointer">Política de Privacidade & LGPD</button>
         </div>
       </footer>
 
