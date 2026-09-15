@@ -74,7 +74,7 @@ export const CustomerSuccessVocAgentView: React.FC = () => {
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-bold text-slate-900">Agente 14 — Customer Success VoC & NPS Agent</h2>
               <span className="px-2.5 py-0.5 text-xs font-mono font-extrabold rounded-full bg-emerald-100 text-emerald-900 border border-emerald-200">
-                {dossier.totalClientInteractionsSampled} Interações Mapeadas
+                {dossier.totalClientInteractionsSampled} Objeções Estratégicas [Playbook B2B]
               </span>
             </div>
             <p className="text-xs text-slate-600 mt-1 max-w-2xl leading-relaxed">

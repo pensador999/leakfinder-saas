@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Target, Video, Copy, Check, Layers, DollarSign, Calculator, Sparkles, TrendingUp, ShieldAlert, ArrowRight } from 'lucide-react';
+import { Target, Video, Copy, Check, Layers, DollarSign, Calculator, Sparkles, TrendingUp, ShieldAlert, ArrowRight, ExternalLink } from 'lucide-react';
 import { AgentDiagnosticResult } from '../../types';
 
 interface AdsAgentViewProps {
@@ -10,8 +10,11 @@ export const AdsAgentView: React.FC<AdsAgentViewProps> = ({ diagnostic }) => {
   const { ads, input, realSiteData } = diagnostic;
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
-  // Dynamic Custom Budget State (defaults to simulated spend or allows custom manual entry)
-  const defaultBudget = ads.monthlyAdBudgetSuggested || 5000;
+  // Format helper with mandatory 2 decimal digits
+  const formatBRLValue = (val: number) => `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  // Dynamic Custom Budget State (defaults to simulated spend or realistic non-rounded default)
+  const defaultBudget = ads.monthlyAdBudgetSuggested || 5420.50;
   const [customBudget, setCustomBudget] = useState<number>(defaultBudget);
 
   const copyAdText = (text: string, index: number) => {
@@ -29,13 +32,15 @@ export const AdsAgentView: React.FC<AdsAgentViewProps> = ({ diagnostic }) => {
   const brokenItems = catalogIssues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
   const brokenInHouse = brokenItems.filter(i => i.manufacturingType !== 'REVENDA');
   const brokenResale = brokenItems.filter(i => i.manufacturingType === 'REVENDA');
-  const monthlyLoss = realSiteData.catalogAudit?.monthlyLossEstimateBRL || (brokenItems.length * 1359);
+  const monthlyLoss = realSiteData.catalogAudit?.monthlyLossEstimateBRL !== undefined
+    ? Number(realSiteData.catalogAudit.monthlyLossEstimateBRL.toFixed(2))
+    : Number((brokenItems.length * 1384.65).toFixed(2));
 
-  const coldSpend = Math.round(customBudget * 0.60);
-  const retargetSpend = Math.round(customBudget * 0.25);
-  const testSpend = Math.round(customBudget * 0.15);
+  const coldSpend = Number((customBudget * 0.60).toFixed(2));
+  const retargetSpend = Number((customBudget * 0.25).toFixed(2));
+  const testSpend = Number((customBudget * 0.15).toFixed(2));
 
-  const estimatedReturnRevenue = Math.round(customBudget * ads.targetRoas);
+  const estimatedReturnRevenue = Number((customBudget * ads.targetRoas).toFixed(2));
   const estimatedOrders = Math.round(estimatedReturnRevenue / (input.averageOrderValue || 220));
 
   return (
@@ -74,7 +79,7 @@ export const AdsAgentView: React.FC<AdsAgentViewProps> = ({ diagnostic }) => {
         </div>
       </div>
 
-      {/* 🚨 AD WASTE & RUPTURE RISK CARD */}
+      {/* 🚨 AD WASTE & RUPTURE RISK CARD (GROUNDED & TRANSPARENT) */}
       {brokenItems.length > 0 ? (
         <div className="p-6 rounded-2xl bg-rose-50 border border-rose-200 shadow-sm space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
@@ -83,45 +88,68 @@ export const AdsAgentView: React.FC<AdsAgentViewProps> = ({ diagnostic }) => {
                 <ShieldAlert className="w-6 h-6" />
               </div>
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-base font-bold text-rose-950">
-                    Alerta Crítico: Tráfego Pago em Risco de Queima de Verba
+                    Risco de Mídia Paga: SKUs com Grade Incompleta
                   </h3>
                   <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded-full bg-rose-200 text-rose-900">
-                    {brokenItems.length} SKUs com Grade Rompida
+                    {brokenItems.length} SKUs com Furo de Grade
+                  </span>
+                  <span className={`px-2 py-0.5 text-[10px] font-extrabold uppercase rounded-full border ${
+                    realSiteData.hasMetaPixel
+                      ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                      : 'bg-slate-100 text-slate-700 border-slate-300'
+                  }`}>
+                    {realSiteData.hasMetaPixel ? '✓ Meta Pixel Ativo (<head>)' : '⚪ Pixel Meta Não Detectado'}
                   </span>
                 </div>
-                <p className="text-xs text-rose-700 mt-0.5">
-                  Campanhas ativas no Meta Ads direcionando para páginas onde os tamanhos centrais (M, G, GG) estão esgotados.
+                <p className="text-xs text-rose-700 mt-1">
+                  <strong>Risco Condicional:</strong> SE houver anúncios no Meta Ads direcionando para estes SKUs, estima-se que ~60% dos cliques sejam perdidos pela falta dos tamanhos centrais (M, G, GG).
                 </p>
               </div>
             </div>
 
             <div className="px-4 py-2 bg-white rounded-xl border border-rose-300 text-right shrink-0">
-              <span className="text-[10px] uppercase font-bold text-slate-500 block">Sangria Estimada em Ads</span>
-              <span className="text-lg font-black font-mono text-rose-600">- R$ {monthlyLoss.toLocaleString('pt-BR')}/mês</span>
+              <span className="text-[10px] uppercase font-bold text-slate-500 block">[Simulação] Sangria em Tráfego</span>
+              <span className="text-lg font-black font-mono text-rose-600">- {formatBRLValue(monthlyLoss)}/mês</span>
             </div>
           </div>
 
+          {/* Official Verification Button */}
+          <div className="p-3 bg-white/90 rounded-xl border border-rose-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
+            <div className="text-slate-700">
+              <span className="font-bold text-slate-900">Transparência Técnica AdShield:</span> Verifique se sua marca está veiculando anúncios para estes SKUs na ferramenta pública e oficial da Meta.
+            </div>
+            <a
+              href={`https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=BR&q=${encodeURIComponent(realSiteData.brandName)}&search_type=keyword_unordered&media_type=all`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-xs shrink-0 transition-colors shadow-sm"
+            >
+              <span>Consultar Meta Ad Library Oficial</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
           {/* Breakdown Pills */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             <div className="p-3 bg-white rounded-xl border border-rose-200 text-xs">
               <span className="font-bold text-slate-800 block">🛍️ Linha de Revenda Externa ({brokenResale.length} itens)</span>
               <p className="text-slate-600 text-[11px] mt-0.5">
-                <strong className="text-rose-700">Ação Obrigatória:</strong> Pausar anúncios no Meta Ads imediatamente. Fornecedor externo tem lead time de reposição de 15 a 30 dias.
+                <strong className="text-rose-700">Ação Preventiva:</strong> Conferir campanhas ativas no Meta Ads. Se estiverem anunciados, pausar ou redirecionar o tráfego para produtos com grade cheia.
               </p>
             </div>
             <div className="p-3 bg-white rounded-xl border border-rose-200 text-xs">
-              <span className="font-bold text-slate-800 block">🏭 Fabricação Própria Sublimada ({brokenInHouse.length} itens)</span>
+              <span className="font-bold text-slate-800 block">🏭 Fabricação Própria ({brokenInHouse.length} itens)</span>
               <p className="text-slate-600 text-[11px] mt-0.5">
-                <strong className="text-blue-700">Ação no PCP:</strong> Abrir OP express no Sankhya (3 a 5 dias). Trocar criativos temporariamente para estampas com grade cheia.
+                <strong className="text-blue-700">Ação no PCP:</strong> Programar reposição prioritária dos tamanhos centrais e priorizar criativos das estampas com grade 100% ativa.
               </p>
             </div>
           </div>
 
           {/* Broken Items Table Preview */}
           <div className="space-y-1.5 pt-1">
-            <span className="text-[10px] font-bold uppercase text-rose-900 tracking-wider">Produtos com Anúncios em Risco:</span>
+            <span className="text-[10px] font-bold uppercase text-rose-900 tracking-wider">SKUs Inspecionados com Risco de Rejeição de Tráfego:</span>
             <div className="max-h-48 overflow-y-auto space-y-1.5 pr-1">
               {brokenItems.slice(0, 5).map((item, idx) => (
                 <div key={idx} className="p-2.5 bg-white/80 rounded-lg border border-rose-200 flex items-center justify-between text-xs">
@@ -221,7 +249,7 @@ export const AdsAgentView: React.FC<AdsAgentViewProps> = ({ diagnostic }) => {
             <div className="space-y-0.5">
               <p className="text-[10px] text-emerald-300 uppercase font-semibold">Faturamento Projetado (ROAS {ads.targetRoas}x)</p>
               <p className="text-xl font-black font-mono text-emerald-400">
-                R$ {estimatedReturnRevenue.toLocaleString('pt-BR')}
+                {formatBRLValue(estimatedReturnRevenue)}
               </p>
             </div>
             <div className="space-y-0.5 border-t sm:border-t-0 sm:border-l border-emerald-500/20 pt-2 sm:pt-0">
@@ -233,7 +261,7 @@ export const AdsAgentView: React.FC<AdsAgentViewProps> = ({ diagnostic }) => {
             <div className="space-y-0.5 border-t sm:border-t-0 sm:border-l border-emerald-500/20 pt-2 sm:pt-0">
               <p className="text-[10px] text-emerald-300 uppercase font-semibold">Ticket Médio Estimado</p>
               <p className="text-xl font-black font-mono text-white">
-                R$ {input.averageOrderValue || 220}
+                {formatBRLValue(input.averageOrderValue || 220)}
               </p>
             </div>
           </div>
@@ -269,7 +297,7 @@ export const AdsAgentView: React.FC<AdsAgentViewProps> = ({ diagnostic }) => {
             </p>
             <div className="pt-2 border-t border-slate-200 flex justify-between items-center text-xs">
               <span className="text-slate-500 text-[11px]">Orçamento:</span>
-              <span className="font-mono text-slate-900 font-bold">R$ {coldSpend.toLocaleString('pt-BR')}/mês (R$ {(coldSpend / 30).toFixed(0)}/dia)</span>
+              <span className="font-mono text-slate-900 font-bold">{formatBRLValue(coldSpend)}/mês ({formatBRLValue(coldSpend / 30)}/dia)</span>
             </div>
           </div>
 
@@ -285,7 +313,7 @@ export const AdsAgentView: React.FC<AdsAgentViewProps> = ({ diagnostic }) => {
             </p>
             <div className="pt-2 border-t border-slate-200 flex justify-between items-center text-xs">
               <span className="text-slate-500 text-[11px]">Orçamento:</span>
-              <span className="font-mono text-slate-900 font-bold">R$ {retargetSpend.toLocaleString('pt-BR')}/mês (R$ {(retargetSpend / 30).toFixed(0)}/dia)</span>
+              <span className="font-mono text-slate-900 font-bold">{formatBRLValue(retargetSpend)}/mês ({formatBRLValue(retargetSpend / 30)}/dia)</span>
             </div>
           </div>
 
@@ -301,7 +329,7 @@ export const AdsAgentView: React.FC<AdsAgentViewProps> = ({ diagnostic }) => {
             </p>
             <div className="pt-2 border-t border-slate-200 flex justify-between items-center text-xs">
               <span className="text-slate-500 text-[11px]">Orçamento:</span>
-              <span className="font-mono text-slate-900 font-bold">R$ {testSpend.toLocaleString('pt-BR')}/mês (R$ {(testSpend / 30).toFixed(0)}/dia)</span>
+              <span className="font-mono text-slate-900 font-bold">{formatBRLValue(testSpend)}/mês ({formatBRLValue(testSpend / 30)}/dia)</span>
             </div>
           </div>
 

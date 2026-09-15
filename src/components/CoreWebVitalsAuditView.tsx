@@ -30,8 +30,20 @@ export const CoreWebVitalsAuditView: React.FC<CoreWebVitalsAuditViewProps> = ({ 
   const vitals: CoreWebVitalsAuditResult = auditCoreWebVitals2026(
     realSiteData.domain,
     realSiteData.rawHtmlSnippet,
-    realSiteData.estimatedLoadTime
+    realSiteData.estimatedLoadTime,
+    realSiteData.lighthouseMetrics
   );
+
+  const sampleProduct = realSiteData.catalogAudit?.issues?.[0];
+  const serpTitle = sampleProduct?.productTitle 
+    ? `${sampleProduct.productTitle} • ${realSiteData.brandName}`
+    : (realSiteData.title || `${realSiteData.brandName} • Loja Oficial`);
+  const rawPrice = sampleProduct?.detailedSkus?.[0]?.price || diagnostic.input.averageOrderValue || 129.90;
+  const serpPrice = `R$ ${rawPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const serpUrl = sampleProduct?.productUrl || `https://${realSiteData.domain}/products`;
+  const serpDesc = sampleProduct?.hasDescription && sampleProduct.descriptionLength > 20
+    ? `Compre ${sampleProduct.productTitle} original na ${realSiteData.brandName}. Envio rápido e pagamento facilitado no Pix.`
+    : (realSiteData.metaDescription || `Conheça os produtos da ${realSiteData.brandName}. Compre com segurança, entrega rápida e facilidade de pagamento.`);
 
   const handleCopy = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
@@ -161,25 +173,34 @@ export const CoreWebVitalsAuditView: React.FC<CoreWebVitalsAuditViewProps> = ({ 
           </span>
         </div>
 
-        {/* Google SERP Card Preview */}
+        {/* Google SERP Card Preview (GROUNDED ON REAL AUDITED PRODUCT) */}
         <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2 max-w-xl font-sans">
           <div className="flex items-center gap-2 text-xs text-slate-600">
             <span className="font-bold text-slate-900">{realSiteData.brandName}</span>
             <span>›</span>
-            <span className="text-blue-700 font-mono text-[11px] truncate">{realSiteData.domain}/products/...</span>
+            <span className="text-blue-700 font-mono text-[11px] truncate max-w-xs">{serpUrl.replace(/^https?:\/\//, '')}</span>
           </div>
-          <h4 className="text-base font-semibold text-blue-800 hover:underline cursor-pointer">
-            {realSiteData.brandName} Camisa Proteção Solar UV50+ Dry Fit Oficial
-          </h4>
+          <a
+            href={serpUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-base font-semibold text-blue-800 hover:underline cursor-pointer block line-clamp-1"
+          >
+            {serpTitle}
+          </a>
           <div className="flex items-center gap-3 text-xs">
-            <span className="font-bold text-emerald-700 font-mono">R$ 159,90</span>
+            <span className="font-bold text-emerald-700 font-mono">{serpPrice}</span>
             <span className="text-slate-400">•</span>
-            <span className="text-emerald-700 font-bold bg-emerald-100 px-1.5 py-0.5 rounded text-[11px]">Em estoque</span>
+            <span className="text-emerald-700 font-bold bg-emerald-100 px-1.5 py-0.5 rounded text-[11px]">
+              {sampleProduct && sampleProduct.missingSizes.length === 0 ? 'Grade Completa' : 'Em estoque'}
+            </span>
             <span className="text-slate-400">•</span>
-            <span className="text-slate-600">Frete Rápido Brasil</span>
+            <span className="text-slate-600">
+              {realSiteData.detectedCheckoutTerms.hasFrete ? 'Frete com Regra Ativa' : 'Envio Nacional'}
+            </span>
           </div>
-          <p className="text-xs text-slate-600 leading-relaxed">
-            Camisa UV50+ oficial com secagem ultra rápida e conforto térmico. Grade completa do PP ao G2 com envio imediato.
+          <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">
+            {serpDesc}
           </p>
         </div>
       </div>

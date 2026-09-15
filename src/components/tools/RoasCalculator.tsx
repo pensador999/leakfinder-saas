@@ -8,15 +8,15 @@ export const RoasCalculator: React.FC = () => {
   const [aov, setAov] = useState(180);
   const [marginPercent, setMarginPercent] = useState(60);
 
-  // Dynamic calculations
+  // Dynamic calculations with exact cents precision
   const estimatedClicks = Math.round(adSpend / (cpc || 1));
   const estimatedOrders = Math.round(estimatedClicks * (conversionRate / 100));
-  const grossRevenue = Math.round(estimatedOrders * aov);
+  const grossRevenue = Number((estimatedOrders * aov).toFixed(2));
   const roas = adSpend > 0 ? (grossRevenue / adSpend).toFixed(2) : '0';
   const cogs = grossRevenue * (1 - marginPercent / 100);
-  const netProfit = Math.round(grossRevenue - adSpend - cogs);
+  const netProfit = Number((grossRevenue - adSpend - cogs).toFixed(2));
   const breakEvenRoas = (100 / marginPercent).toFixed(2);
-  const currentCac = estimatedOrders > 0 ? Math.round(adSpend / estimatedOrders) : 0;
+  const currentCac = estimatedOrders > 0 ? Number((adSpend / estimatedOrders).toFixed(2)) : 0;
 
   return (
     <div className="space-y-6">
@@ -44,7 +44,7 @@ export const RoasCalculator: React.FC = () => {
           <div>
             <div className="flex justify-between items-center text-xs mb-1.5">
               <span className="text-slate-600">Investimento em Ads/Mês:</span>
-              <span className="font-mono font-bold text-blue-600">R$ {adSpend.toLocaleString('pt-BR')}</span>
+              <span className="font-mono font-bold text-blue-600">R$ {adSpend.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
             <input
               type="range"
@@ -141,21 +141,21 @@ export const RoasCalculator: React.FC = () => {
 
             <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-xs">
               <span className="text-[10px] text-slate-500 uppercase font-semibold">Faturamento Bruto</span>
-              <p className="text-2xl font-bold font-mono text-blue-600">R$ {grossRevenue.toLocaleString('pt-BR')}</p>
+              <p className="text-2xl font-bold font-mono text-blue-600">R$ {grossRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
               <span className="text-[10px] text-slate-400 font-medium">{estimatedOrders} vendas</span>
             </div>
 
             <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-xs">
               <span className="text-[10px] text-slate-500 uppercase font-semibold">Lucro Líquido Est.</span>
               <p className={`text-2xl font-bold font-mono ${netProfit >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                R$ {netProfit.toLocaleString('pt-BR')}
+                R$ {netProfit.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
               <span className="text-[10px] text-slate-400 font-medium">Após Ads e Custos</span>
             </div>
 
             <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-xs">
               <span className="text-[10px] text-slate-500 uppercase font-semibold">CAC Médio</span>
-              <p className="text-2xl font-bold font-mono text-slate-900">R$ {currentCac}</p>
+              <p className="text-2xl font-bold font-mono text-slate-900">R$ {currentCac.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
               <span className="text-[10px] text-slate-400 font-medium">Custo por Cliente</span>
             </div>
 

@@ -55,7 +55,7 @@ export const SupplyChainDiscrepancyView: React.FC<SupplyChainDiscrepancyViewProp
                 <span>Agente 13 — ERP & Supply Chain Discrepancy Engine</span>
               </span>
               <span className="px-2.5 py-0.5 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-full text-xs font-mono font-bold">
-                Sankhya ERP ⟷ Magis5 ⟷ Loja ⟷ Ads
+                ERP / WMS ⟷ Hub Integrador ⟷ Loja ⟷ Ads [Simulador Operacional]
               </span>
             </div>
 
@@ -64,7 +64,7 @@ export const SupplyChainDiscrepancyView: React.FC<SupplyChainDiscrepancyViewProp
             </h2>
 
             <p className="text-sm text-slate-300 leading-relaxed">
-              O descompasso ocorre quando o tráfego pago envia clientes para produtos com grade esgotada na vitrine ou quando o estoque virtual vende sem peça física liberada no <strong>Sankhya ERP</strong> via <strong>Magis5</strong>.
+              O descompasso ocorre quando o tráfego pago envia clientes para produtos com grade esgotada na vitrine ou quando o estoque virtual vende sem peça física liberada no <strong>ERP (Sankhya / Bling / Tiny / SAP)</strong> via <strong>Hub (Magis5 / Anymarket / Plugg.to)</strong>.
             </p>
           </div>
 

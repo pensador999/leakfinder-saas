@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
+  Radar,
   Compass, 
   Target, 
   TrendingUp, 
@@ -32,6 +33,7 @@ import {
   X,
   Download
 } from 'lucide-react';
+import { AutonomousOutboundRadarView } from '../prospecting/AutonomousOutboundRadarView';
 import { SpreadsheetExporter } from '../../services/export/spreadsheetExporter';
 import { BatchLeadExportModal } from '../export/BatchLeadExportModal';
 import { 
@@ -56,7 +58,7 @@ interface MarketHunterAgentViewProps {
 export const MarketHunterAgentView: React.FC<MarketHunterAgentViewProps> = ({ diagnostic }) => {
   const [report, setReport] = useState<WeeklyMarketReport | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [activeSubTab, setActiveSubTab] = useState<'leads' | 'sku_radar' | 'trends'>('leads');
+  const [activeSubTab, setActiveSubTab] = useState<'active_hunter' | 'leads' | 'sku_radar' | 'trends'>('active_hunter');
   
   // Lead Sniper state
   const [leadsList, setLeadsList] = useState<ProspectLead[]>([]);
@@ -232,6 +234,18 @@ export const MarketHunterAgentView: React.FC<MarketHunterAgentViewProps> = ({ di
       {/* 🧭 Master Sub-Navigation Tabs */}
       <div className="flex items-center gap-2 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200 overflow-x-auto scrollbar-none text-xs font-bold font-mono">
         <button
+          onClick={() => setActiveSubTab('active_hunter')}
+          className={`px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer ${
+            activeSubTab === 'active_hunter'
+              ? 'bg-rose-600 text-white shadow-md shadow-rose-950/20'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Radar className={`w-4 h-4 ${activeSubTab === 'active_hunter' ? 'animate-spin text-white' : 'text-rose-600'}`} />
+          <span>🦅 Enxame Caçador Ativo & Outreach (Novo)</span>
+        </button>
+
+        <button
           onClick={() => setActiveSubTab('leads')}
           className={`px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer ${
             activeSubTab === 'leads'
@@ -240,7 +254,7 @@ export const MarketHunterAgentView: React.FC<MarketHunterAgentViewProps> = ({ di
           }`}
         >
           <Target className="w-4 h-4 text-blue-600" />
-          <span>🎯 Radar de Leads Quentes & WhatsApp Closer ({leadsList.length})</span>
+          <span>🎯 Radar de Leads & CRM ({leadsList.length})</span>
         </button>
 
         <button
@@ -267,6 +281,15 @@ export const MarketHunterAgentView: React.FC<MarketHunterAgentViewProps> = ({ di
           <span>⚡ Tendências Globais de CRO ({report.topEmergingTrends.length})</span>
         </button>
       </div>
+
+      {/* ========================================================================= */}
+      {/* 🦅 0. SUB-TAB: ENXAME CAÇADOR ATIVO & TELEMETRIA AO VIVO                 */}
+      {/* ========================================================================= */}
+      {activeSubTab === 'active_hunter' && (
+        <AutonomousOutboundRadarView 
+          onSelectLeadForDossier={(lead) => setActiveDossierLead(lead)} 
+        />
+      )}
 
       {/* ========================================================================= */}
       {/* 🎯 1. SUB-TAB: RADAR DE LEADS QUENTES (META ADS SNIPER & WHATSAPP CLOSER) */}

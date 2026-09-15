@@ -268,7 +268,7 @@ export function generatePrintablePdfDossierHtml(
       </div>
       <div class="kpi-card">
         <span class="kpi-label">Faturamento em Risco Estimado</span>
-        <span class="kpi-value red">R$ ${estimatedMonthlyLoss.toLocaleString('pt-BR')}/mês</span>
+        <span class="kpi-value red">${finances.financialRisk.formattedMonthlyLoss}/mês</span>
       </div>
     </div>
 

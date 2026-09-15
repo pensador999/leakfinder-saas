@@ -95,7 +95,7 @@ export const ComputerVisionInspectionView: React.FC<ComputerVisionInspectionView
           }`}
         >
           <Flame className="w-4 h-4 text-orange-500" />
-          <span>Eye-Tracking & Heatmap Visual</span>
+          <span>Eye-Tracking & Saliência Preditiva [MIT Model]</span>
         </button>
 
         <button
@@ -125,7 +125,7 @@ export const ComputerVisionInspectionView: React.FC<ComputerVisionInspectionView
           }`}
         >
           <ShieldCheck className="w-4 h-4 text-blue-500" />
-          <span>Badges de Confiança & OCR</span>
+          <span>Selos de Confiança & OCR</span>
         </button>
       </div>
 
@@ -134,6 +134,21 @@ export const ComputerVisionInspectionView: React.FC<ComputerVisionInspectionView
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Simulated Browser with Heatmap Overlay */}
           <div className="lg:col-span-8 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+            
+            {/* 🛡️ TRANSPARENCY & GROUNDING BADGE */}
+            <div className="p-3 bg-indigo-50/70 rounded-xl border border-indigo-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-indigo-200 text-indigo-900">
+                  Modelo Preditivo MIT
+                </span>
+                <span className="text-indigo-950 font-medium">
+                  Simulação matemática de saliência ocular baseada na hierarquia do DOM público.
+                </span>
+              </div>
+              <span className="text-[10px] text-slate-500 shrink-0">
+                Mapas de cliques reais requerem integração oficial Clarity/GA4
+              </span>
+            </div>
             
             {/* ⏱️ 2,500ms INTERACTIVE SALIENCY TIMELINE SCRUBBER */}
             <div className="p-3.5 bg-slate-900 text-white rounded-2xl border border-slate-800 space-y-3">

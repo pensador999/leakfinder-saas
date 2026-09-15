@@ -98,11 +98,22 @@ function classifyManufacturing(title: string, skuCode: string, tags: string[], p
 /**
  * 🔬 Audits a single product by dissecting each of its individual SKUs / variants
  */
-export function auditProductDeepSkus(product: any, storeDomain: string = '', dailyAdSpend: number = 250): AuditedProductWithSkus {
+export function auditProductDeepSkus(
+  product: any, 
+  storeDomainOrOptions: string | { storeDomain?: string; dailyAdSpend?: number } = '', 
+  dailyAdSpend: number = 250
+): AuditedProductWithSkus {
+  const storeDomain = typeof storeDomainOrOptions === 'string' 
+    ? storeDomainOrOptions 
+    : (storeDomainOrOptions?.storeDomain || '');
+  const effectiveAdSpend = typeof storeDomainOrOptions === 'object' && storeDomainOrOptions?.dailyAdSpend !== undefined
+    ? storeDomainOrOptions.dailyAdSpend
+    : dailyAdSpend;
+
   const title = product.title || 'Produto sem Título';
   const handle = product.handle || '';
-  const cleanDomain = storeDomain.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
-  const url = product.url || `https://${cleanDomain}/products/${handle}`;
+  const cleanDomain = String(storeDomain || '').replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  const url = product.url || (cleanDomain ? `https://${cleanDomain}/products/${handle}` : `/products/${handle}`);
   const rawVariants = Array.isArray(product.variants) ? product.variants : [];
   const tags: string[] = Array.isArray(product.tags) ? product.tags : [];
   const productType = product.product_type || product.productType || '';
@@ -143,9 +154,9 @@ export function auditProductDeepSkus(product: any, storeDomain: string = '', dai
       if (isSkuLevelFull) {
         operationalAction = 'Estoque Fulfillment: Saldo gerenciado no CD Mercado Livre/Shopee Full.';
       } else {
-        // Daily wasted ad spend proportioned by size importance
-        wastedAdSpendDay = Math.round((dailyAdSpend * (demandWeight / 100)) * 0.85);
-        productDailyBleed += wastedAdSpendDay;
+        // Daily wasted ad spend proportioned by size importance with 2-decimal precision
+        wastedAdSpendDay = Number(((effectiveAdSpend * (demandWeight / 100)) * 0.85).toFixed(2));
+        productDailyBleed = Number((productDailyBleed + wastedAdSpendDay).toFixed(2));
 
         if (manufacturingType === 'FABRICACAO_PROPRIA') {
           operationalAction = `Abrir Ordem de Produção (OP corte/sublimação) no Sankhya PCP para grade [${variantTitle}].`;
@@ -196,7 +207,7 @@ export function auditProductDeepSkus(product: any, storeDomain: string = '', dai
     rupturedSkusCount: rupturedSkus,
     skus: auditedSkus,
     criticalBleedBrlDay: productDailyBleed,
-    criticalBleedBrlMonth: productDailyBleed * 30,
+    criticalBleedBrlMonth: Number((productDailyBleed * 30).toFixed(2)),
     healthScore,
     manufacturingCategory: manufacturingType
   };
@@ -235,7 +246,7 @@ export function auditDeepCatalog(products: any[], options: { storeDomain?: strin
     totalRupturedSkus: totalRuptured,
     totalFullExemptSkus: totalFullExempt,
     globalCatalogHealthScore: Math.min(100, Math.max(30, globalHealthScore)),
-    totalMonthlyBleedBrl: totalMonthlyBleed,
+    totalMonthlyBleedBrl: Number(totalMonthlyBleed.toFixed(2)),
     criticalProducts,
     allProducts: auditedProducts
   };

@@ -25,7 +25,9 @@ export const SalesCopyAgentView: React.FC<SalesCopyAgentViewProps> = ({ diagnost
 
   const brokenItems = (realSiteData.catalogAudit?.issues || []).filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
   const sampleBrokenItem = brokenItems[0];
-  const monthlyLoss = realSiteData.catalogAudit?.monthlyLossEstimateBRL || (brokenItems.length * 1359);
+  const monthlyLoss = realSiteData.catalogAudit?.monthlyLossEstimateBRL !== undefined
+    ? Number(realSiteData.catalogAudit.monthlyLossEstimateBRL.toFixed(2))
+    : Number((brokenItems.length * 1384.65).toFixed(2));
   const brand = realSiteData.brandName || 'Sua Marca';
 
   const outboundPitches = [
@@ -33,7 +35,7 @@ export const SalesCopyAgentView: React.FC<SalesCopyAgentViewProps> = ({ diagnost
       title: '🚨 Pitch #1: Ruptura de Estoque em Ads (Abordagem Direta & Fria)',
       targetRole: 'Gestor de Tráfego / Head de Mídia',
       description: 'Aborda a dor imediata de dinheiro sendo jogado fora em anúncios com tamanho central esgotado.',
-      bodyText: sampleBrokenItem ? `Fala time da ${brand}! Estava analisando a loja de vocês e notei que a "${sampleBrokenItem.productTitle}" está sem os tamanhos centrais [${sampleBrokenItem.missingSizes.join(', ')}].\n\nSe vocês estão rodando anúncios para essa peça, cerca de 45% a 60% das pessoas que clicam desistem na hora de selecionar o tamanho. Estimamos um dreno de ~R$ ${(monthlyLoss / 30).toFixed(0)}/dia de verba de mídia.\n\nPreparamos um raio-x gratuito com os SKUs afetados. Quer que eu te envie por aqui?` : `Fala time da ${brand}! Fizemos uma varredura nas campanhas e catálogo de vocês e identificamos 3 alavancas de conversão que podem destravar +15% a +25% de margem no tráfego pago sem aumentar 1 real em anúncios.\n\nQuer que eu envie o relatório resumido por aqui?`
+      bodyText: sampleBrokenItem ? `Fala time da ${brand}! Estava analisando a loja de vocês e notei que a "${sampleBrokenItem.productTitle}" está sem os tamanhos centrais [${sampleBrokenItem.missingSizes.join(', ')}].\n\nSe vocês estão rodando anúncios para essa peça, cerca de 45% a 60% das pessoas que clicam desistem na hora de selecionar o tamanho. Estimamos um dreno de ~R$ ${(monthlyLoss / 30).toFixed(2)}/dia de verba de mídia.\n\nPreparamos um raio-x gratuito com os SKUs afetados. Quer que eu te envie por aqui?` : `Fala time da ${brand}! Fizemos uma varredura nas campanhas e catálogo de vocês e identificamos 3 alavancas de conversão que podem destravar +15% a +25% de margem no tráfego pago sem aumentar 1 real em anúncios.\n\nQuer que eu envie o relatório resumido por aqui?`
     },
     {
       title: '⚡ Pitch #2: Alavanca de Margem no Pix (Para o Gestor Financeiro)',
@@ -45,7 +47,7 @@ export const SalesCopyAgentView: React.FC<SalesCopyAgentViewProps> = ({ diagnost
       title: '👑 Pitch #3: Dossiê Executivo 360º (Para o Fundador/CEO)',
       targetRole: 'CEO / Fundador da Marca',
       description: 'Apresentação estratégica de alto nível com base na auditoria completa do enxame AdShield.',
-      bodyText: `Oi! Passando rápido para compartilhar que nossa IA de auditoria de e-commerce inspecionou a operação digital da ${brand} (catálogo, mobile UX, contraste WCAG e pixels de conversão).\n\nIdentificamos uma oportunidade de proteção de receita estimada em R$ ${monthlyLoss.toLocaleString('pt-BR')}/mês, pronta para ser implementada em menos de 48h pelo seu time de marketing.\n\nO relatório tem 3 páginas em PDF com zero achismos. Posso te encaminhar o arquivo aqui?`
+      bodyText: `Oi! Passando rápido para compartilhar que nossa IA de auditoria de e-commerce inspecionou a operação digital da ${brand} (catálogo, mobile UX, contraste WCAG e pixels de conversão).\n\nIdentificamos uma oportunidade de proteção de receita estimada em R$ ${monthlyLoss.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mês, pronta para ser implementada em menos de 48h pelo seu time de marketing.\n\nO relatório tem 3 páginas em PDF com zero achismos. Posso te encaminhar o arquivo aqui?`
     }
   ];
 
@@ -73,7 +75,7 @@ export const SalesCopyAgentView: React.FC<SalesCopyAgentViewProps> = ({ diagnost
 
         <div className="flex items-center gap-6 px-4 py-2 bg-slate-50 rounded-xl border border-slate-200">
           <div className="text-center">
-            <p className="text-[10px] text-slate-500 uppercase font-semibold">Elevador AOV</p>
+            <p className="text-[10px] text-slate-500 uppercase font-bold">[Benchmark] Elevador AOV</p>
             <p className="text-xl font-bold font-mono text-emerald-600">+14% a +38%</p>
           </div>
         </div>

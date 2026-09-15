@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
-import { Eye, Code, Zap, AlertCircle, ShieldCheck, ImageOff, Copy, Check, AlertTriangle, Layers, Ruler, FileText, Download, Sparkles, Filter, PackageCheck, ExternalLink, Link2, X, Power, ShieldAlert } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { 
+  Eye, Code, Zap, AlertCircle, ShieldCheck, ImageOff, Copy, Check, 
+  AlertTriangle, Layers, Ruler, FileText, Download, Sparkles, Filter, 
+  PackageCheck, ExternalLink, Link2, X, Power, ShieldAlert,
+  Search, Loader2, Barcode, DollarSign, Factory, ShoppingBag, 
+  ChevronLeft, ChevronRight, CheckCircle2, Flame, ArrowUpRight, RefreshCw
+} from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { SpreadsheetExporter } from '../services/export/spreadsheetExporter';
 import { OneClickActionModal, OneClickTargetProduct } from './actions/OneClickActionModal';
 import { OneClickMitigationService } from '../services/actions/oneClickMitigationService';
 import { ProductSkuDetailModal } from './catalog/ProductSkuDetailModal';
-import { auditProductDeepSkus, AuditedProductWithSkus } from '../services/catalog/deepSkuAuditEngine';
+import { auditProductDeepSkus, AuditedProductWithSkus, AuditedProductSkuItem } from '../services/catalog/deepSkuAuditEngine';
+import { sweepStoreFullCatalog, CatalogAuditSummary } from '../services/siteInspector';
 
 interface BlindspotAuditViewProps {
   diagnostic: AgentDiagnosticResult;
@@ -15,7 +22,15 @@ type CatalogFilter = 'TODOS' | 'GRADE_FURADA' | 'ISENTOS_FULL' | 'REVENDA' | 'FA
 
 export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnostic }) => {
   const { realSiteData, guardrailReport } = diagnostic;
-  const { catalogAudit } = realSiteData;
+  const [currentCatalogAudit, setCurrentCatalogAudit] = useState<CatalogAuditSummary | undefined>(realSiteData.catalogAudit);
+  const [isSweepingFull, setIsSweepingFull] = useState<boolean>(false);
+  const [viewMode, setViewMode] = useState<'PRODUTOS' | 'SKUS_EXAUSTIVO'>('PRODUTOS');
+  const [skuSearchQuery, setSkuSearchQuery] = useState<string>('');
+  const [skuStatusFilter, setSkuStatusFilter] = useState<'TODOS' | 'RUPTURA' | 'ESTOQUE' | 'ISENTOS_FULL' | 'PCP' | 'REVENDA'>('TODOS');
+  const [skuCurrentPage, setSkuCurrentPage] = useState<number>(1);
+  const skusPerPage = 20;
+
+  const catalogAudit = currentCatalogAudit || realSiteData.catalogAudit;
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<CatalogFilter>('TODOS');
   const [showSizeChartModal, setShowSizeChartModal] = useState<boolean>(false);
@@ -45,14 +60,96 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
   const resaleCount = (catalogAudit?.issues || []).filter(i => i.manufacturingType === 'REVENDA' || i.isResaleAccessory).length;
   const inHouseCount = (catalogAudit?.issues || []).filter(i => i.manufacturingType === 'FABRICACAO_PROPRIA' && !i.isResaleAccessory).length;
 
+  // Flattened SKUs across all products
+  const allSkusFlat = useMemo(() => {
+    if (catalogAudit?.deepSkuAudit?.allProducts?.length) {
+      return catalogAudit.deepSkuAudit.allProducts.flatMap(p => 
+        p.skus.map(s => ({
+          ...s,
+          productId: p.id,
+          productTitle: p.title,
+          productUrl: p.url,
+          productHandle: p.handle,
+          productImages: p.images,
+          productType: p.productType,
+          manufacturingCategory: p.manufacturingCategory
+        }))
+      );
+    }
+    return (catalogAudit?.issues || []).flatMap(issue => 
+      (issue.detailedSkus || []).map(s => ({
+        ...s,
+        productId: issue.id,
+        productTitle: issue.productTitle,
+        productUrl: issue.productUrl,
+        productHandle: issue.sku,
+        productImages: [issue.imageSrc],
+        productType: issue.categoryType || 'VESTUARIO',
+        manufacturingCategory: issue.manufacturingType || 'FABRICACAO_PROPRIA'
+      }))
+    );
+  }, [catalogAudit]);
+
+  // Filtered SKUs
+  const filteredSkus = useMemo(() => {
+    return allSkusFlat.filter(sku => {
+      if (skuStatusFilter === 'RUPTURA' && sku.available) return false;
+      if (skuStatusFilter === 'ESTOQUE' && !sku.available) return false;
+      if (skuStatusFilter === 'ISENTOS_FULL' && !sku.isFullExempt) return false;
+      if (skuStatusFilter === 'PCP' && sku.manufacturingType !== 'FABRICACAO_PROPRIA') return false;
+      if (skuStatusFilter === 'REVENDA' && sku.manufacturingType !== 'REVENDA') return false;
+
+      if (skuSearchQuery.trim()) {
+        const q = skuSearchQuery.toLowerCase().trim();
+        const matchSku = (sku.skuCode || '').toLowerCase().includes(q);
+        const matchTitle = (sku.productTitle || '').toLowerCase().includes(q);
+        const matchSize = (sku.variantTitle || '').toLowerCase().includes(q);
+        const matchBarcode = (sku.barcode || '').toLowerCase().includes(q);
+        return matchSku || matchTitle || matchSize || matchBarcode;
+      }
+      return true;
+    });
+  }, [allSkusFlat, skuStatusFilter, skuSearchQuery]);
+
+  const totalSkuPages = Math.max(1, Math.ceil(filteredSkus.length / skusPerPage));
+  const paginatedSkus = useMemo(() => {
+    const start = (skuCurrentPage - 1) * skusPerPage;
+    return filteredSkus.slice(start, start + skusPerPage);
+  }, [filteredSkus, skuCurrentPage, skusPerPage]);
+
+  const handleSweepFullCatalog = async () => {
+    setIsSweepingFull(true);
+    try {
+      const fullAudit = await sweepStoreFullCatalog(realSiteData.url, 10);
+      setCurrentCatalogAudit(fullAudit);
+      setViewMode('SKUS_EXAUSTIVO');
+      setActionSuccessMessage(`Varredura 100% Concluída: ${fullAudit.totalProductsScanned} produtos e ${fullAudit.totalSkusAudited} SKUs auditados!`);
+      setTimeout(() => setActionSuccessMessage(null), 6000);
+    } catch (err: any) {
+      console.error('Erro na varredura profunda:', err);
+    } finally {
+      setIsSweepingFull(false);
+    }
+  };
+
+  const exportCatalogCsv = () => {
+    SpreadsheetExporter.exportCatalogAudit({
+      ...realSiteData,
+      catalogAudit
+    });
+  };
+
+  const exportAllSkusCsv = () => {
+    SpreadsheetExporter.exportAllSkusCsv({
+      ...realSiteData,
+      catalogAudit
+    });
+  };
+
   const isAgro = realSiteData.domain.toLowerCase().includes('agro');
   const isMotors = realSiteData.domain.toLowerCase().includes('motors');
   const themeHeaderColor = isAgro ? '#3a9e35' : isMotors ? '#EA541B' : '#135ed1';
   const brandTitle = realSiteData.brandName || 'LOJA OFICIAL';
-
-  const exportCatalogCsv = () => {
-    SpreadsheetExporter.exportCatalogAudit(realSiteData);
-  };
 
   return (
     <div className="space-y-6 font-sans">
@@ -77,32 +174,51 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
         </div>
 
         {/* Global Catalog Health Score & Actions */}
-        <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
+        <div className="flex items-center gap-2.5 w-full lg:w-auto justify-between lg:justify-end flex-wrap">
+          <button
+            onClick={handleSweepFullCatalog}
+            disabled={isSweepingFull}
+            className="px-3.5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-blue-600/20 disabled:opacity-50"
+            title="Varre 100% dos produtos e variantes com paginação exaustiva na Shopify"
+          >
+            {isSweepingFull ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+            <span>{isSweepingFull ? 'Varrendo 100%...' : 'Varredura 100% SKUs'}</span>
+          </button>
+
+          <button
+            onClick={exportAllSkusCsv}
+            className="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-emerald-600/20"
+            title="Exportar planilha completa com 100% dos SKUs individuais"
+          >
+            <Download className="w-4 h-4" />
+            <span>Exportar SKUs (CSV)</span>
+          </button>
+
           <button
             onClick={() => setShowSizeChartModal(true)}
-            className="px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-xs"
+            className="px-3.5 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-xs"
           >
             <Ruler className="w-4 h-4 text-indigo-600" />
-            <span>Ver Guia de Medidas Oficial</span>
+            <span>Guia Medidas</span>
           </button>
 
           <button
             onClick={exportCatalogCsv}
-            className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-slate-900/10"
+            className="px-3.5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-slate-900/10"
           >
             <Download className="w-4 h-4" />
-            <span>Exportar Planilha com URLs</span>
+            <span>Exportar Planilha</span>
           </button>
 
-          <div className="p-4 bg-slate-900 text-white rounded-2xl flex items-center gap-4 text-right">
+          <div className="p-3 bg-slate-900 text-white rounded-2xl flex items-center gap-3 text-right">
             <div>
-              <p className="text-[10px] uppercase font-bold text-slate-400">Saúde do Catálogo</p>
-              <p className="text-2xl font-black text-emerald-400 leading-none mt-0.5">
+              <p className="text-[10px] uppercase font-bold text-slate-400">Saúde</p>
+              <p className="text-xl font-black text-emerald-400 leading-none mt-0.5">
                 {catalogAudit?.catalogHealthScore || 92}<span className="text-xs text-slate-400">/100</span>
               </p>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-emerald-400">
-              <Sparkles className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-emerald-400">
+              <Sparkles className="w-4 h-4" />
             </div>
           </div>
         </div>
@@ -122,7 +238,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
               </span>
             </div>
             <p className="text-slate-400 text-[11px] mt-0.5">
-              Estes {catalogAudit?.totalProductsScanned || 0} produtos, fotos, SKUs e tamanhos disponíveis foram extraídos diretamente do DOM público e do endpoint <code className="text-emerald-300">/products.json</code> da loja.
+              Estes {catalogAudit?.totalProductsScanned || 0} produtos e {catalogAudit?.totalSkusAudited || allSkusFlat.length} SKUs individuais foram extraídos diretamente do DOM público e da paginação do endpoint <code className="text-emerald-300">/products.json</code> da loja.
             </p>
           </div>
         </div>
@@ -138,39 +254,405 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
         <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
           <p className="text-[11px] font-bold text-slate-500 uppercase">Produtos Auditados</p>
           <p className="text-xl font-bold text-slate-900 mt-1">{catalogAudit?.totalProductsScanned || 0}</p>
+          <p className="text-[10px] text-slate-500 mt-0.5">Catálogo Geral</p>
+        </div>
+
+        <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 shadow-xs">
+          <p className="text-[11px] font-bold text-blue-700 uppercase">Total SKUs Mapeados</p>
+          <p className="text-xl font-bold text-blue-900 mt-1">{catalogAudit?.totalSkusAudited || allSkusFlat.length}</p>
+          <p className="text-[10px] text-blue-600 mt-0.5">100% Variantes Únicas</p>
         </div>
 
         <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 shadow-xs">
-          <p className="text-[11px] font-bold text-rose-700 uppercase">Grades Furadas</p>
-          <p className="text-xl font-bold text-rose-900 mt-1">{catalogAudit?.productsWithBrokenGrid || 0}</p>
-          <p className="text-[10px] text-rose-600 mt-0.5">Falta PP, G1 ou G2</p>
+          <p className="text-[11px] font-bold text-rose-700 uppercase">SKUs Rompidos</p>
+          <p className="text-xl font-bold text-rose-900 mt-1">
+            {catalogAudit?.totalSkusInStockout !== undefined 
+              ? catalogAudit.totalSkusInStockout 
+              : allSkusFlat.filter(s => !s.available).length}
+          </p>
+          <p className="text-[10px] text-rose-600 mt-0.5">Gerando Sangria</p>
         </div>
 
         <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 shadow-xs">
-          <p className="text-[11px] font-bold text-emerald-700 uppercase">Isentos Regra _FULL</p>
-          <p className="text-xl font-bold text-emerald-900 mt-1">{catalogAudit?.productsWithFullExemption || 0}</p>
-          <p className="text-[10px] text-emerald-600 mt-0.5">Estampas Especiais</p>
+          <p className="text-[11px] font-bold text-emerald-700 uppercase">SKUs em Estoque</p>
+          <p className="text-xl font-bold text-emerald-900 mt-1">
+            {catalogAudit?.totalSkusInStock !== undefined 
+              ? catalogAudit.totalSkusInStock 
+              : allSkusFlat.filter(s => s.available).length}
+          </p>
+          <p className="text-[10px] text-emerald-600 mt-0.5">Prontos p/ Venda</p>
         </div>
 
         <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 shadow-xs">
-          <p className="text-[11px] font-bold text-amber-700 uppercase">Sem Guia de Medidas</p>
-          <p className="text-xl font-bold text-amber-900 mt-1">{catalogAudit?.productsWithoutSizeGuide || 0}</p>
-          <p className="text-[10px] text-amber-600 mt-0.5">Risco de Trocas</p>
+          <p className="text-[11px] font-bold text-amber-700 uppercase">Grades Furadas</p>
+          <p className="text-xl font-bold text-amber-900 mt-1">{catalogAudit?.productsWithBrokenGrid || 0}</p>
+          <p className="text-[10px] text-amber-600 mt-0.5">Falta PP, G1 ou G2</p>
         </div>
 
         <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 shadow-xs">
-          <p className="text-[11px] font-bold text-slate-600 uppercase">Fotos Ausentes</p>
-          <p className="text-xl font-bold text-slate-900 mt-1">{catalogAudit?.productsWithMissingImages || 0}</p>
-        </div>
-
-        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 shadow-xs">
-          <p className="text-[11px] font-bold text-slate-600 uppercase">Imagens &gt; 350KB</p>
-          <p className="text-xl font-bold text-slate-900 mt-1">{catalogAudit?.heavyImagesCount || 0}</p>
-          <p className="text-[10px] text-slate-500 mt-0.5">Atrasam o Site</p>
+          <p className="text-[11px] font-bold text-slate-600 uppercase">Isentos _FULL</p>
+          <p className="text-xl font-bold text-slate-900 mt-1">{catalogAudit?.productsWithFullExemption || 0}</p>
+          <p className="text-[10px] text-slate-500 mt-0.5">Sem Ruptura PCP</p>
         </div>
       </div>
 
-      {/* Filter Chips */}
+      {/* 🗂️ MODO DE VISUALIZAÇÃO: VISÃO POR PRODUTO vs INVENTÁRIO SKU POR SKU */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-slate-200 pb-3 gap-3">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setViewMode('PRODUTOS')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+              viewMode === 'PRODUTOS'
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+            <span>Visão por Produto ({catalogAudit?.issues.length || 0})</span>
+          </button>
+
+          <button
+            onClick={() => setViewMode('SKUS_EXAUSTIVO')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+              viewMode === 'SKUS_EXAUSTIVO'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            <Barcode className="w-4 h-4" />
+            <span>Inventário SKU por SKU ({allSkusFlat.length})</span>
+            {catalogAudit?.paginationInfo && (
+              <span className="ml-1 px-1.5 py-0.5 bg-blue-500 text-white rounded text-[10px] font-mono">
+                {catalogAudit.paginationInfo.pagesCrawled} págs
+              </span>
+            )}
+          </button>
+        </div>
+
+        {viewMode === 'SKUS_EXAUSTIVO' && (
+          <div className="text-xs text-slate-500 font-medium">
+            Exibindo <strong>{filteredSkus.length}</strong> de <strong>{allSkusFlat.length}</strong> SKUs
+          </div>
+        )}
+      </div>
+
+      {viewMode === 'SKUS_EXAUSTIVO' ? (
+        <div className="space-y-4">
+          {/* Controls: Search & Status Filters */}
+          <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+            {/* Search Input */}
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Buscar por SKU, nome do produto, tamanho (ex: G, GG, 42) ou barcode..."
+                value={skuSearchQuery}
+                onChange={(e) => {
+                  setSkuSearchQuery(e.target.value);
+                  setSkuCurrentPage(1);
+                }}
+                className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              />
+              {skuSearchQuery && (
+                <button
+                  onClick={() => {
+                    setSkuSearchQuery('');
+                    setSkuCurrentPage(1);
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Quick Status Chips */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 text-xs shrink-0">
+              <button
+                onClick={() => { setSkuStatusFilter('TODOS'); setSkuCurrentPage(1); }}
+                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                  skuStatusFilter === 'TODOS' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                Todos ({allSkusFlat.length})
+              </button>
+
+              <button
+                onClick={() => { setSkuStatusFilter('RUPTURA'); setSkuCurrentPage(1); }}
+                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                  skuStatusFilter === 'RUPTURA' ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+                }`}
+              >
+                ⚠️ Ruptura ({allSkusFlat.filter(s => !s.available).length})
+              </button>
+
+              <button
+                onClick={() => { setSkuStatusFilter('ESTOQUE'); setSkuCurrentPage(1); }}
+                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                  skuStatusFilter === 'ESTOQUE' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                }`}
+              >
+                ✅ Em Estoque ({allSkusFlat.filter(s => s.available).length})
+              </button>
+
+              <button
+                onClick={() => { setSkuStatusFilter('ISENTOS_FULL'); setSkuCurrentPage(1); }}
+                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                  skuStatusFilter === 'ISENTOS_FULL' ? 'bg-indigo-600 text-white' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200'
+                }`}
+              >
+                Isentos _FULL ({allSkusFlat.filter(s => s.isFullExempt).length})
+              </button>
+
+              <button
+                onClick={() => { setSkuStatusFilter('PCP'); setSkuCurrentPage(1); }}
+                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                  skuStatusFilter === 'PCP' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                PCP Têxtil ({allSkusFlat.filter(s => s.manufacturingType === 'FABRICACAO_PROPRIA').length})
+              </button>
+
+              <button
+                onClick={() => { setSkuStatusFilter('REVENDA'); setSkuCurrentPage(1); }}
+                className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                  skuStatusFilter === 'REVENDA' ? 'bg-amber-600 text-white' : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200'
+                }`}
+              >
+                Revenda ({allSkusFlat.filter(s => s.manufacturingType === 'REVENDA').length})
+              </button>
+            </div>
+          </div>
+
+          {/* Table of SKUs */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-slate-900 text-white font-bold text-[11px] uppercase tracking-wider">
+                    <th className="p-3.5 border-b border-slate-800">Código SKU</th>
+                    <th className="p-3.5 border-b border-slate-800">Produto & Origem</th>
+                    <th className="p-3.5 border-b border-slate-800 text-center">Tamanho</th>
+                    <th className="p-3.5 border-b border-slate-800">Preço</th>
+                    <th className="p-3.5 border-b border-slate-800 text-center">Status Estoque</th>
+                    <th className="p-3.5 border-b border-slate-800 text-right">Sangria Est. (Mês)</th>
+                    <th className="p-3.5 border-b border-slate-800 text-center">Ações</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {paginatedSkus.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="p-8 text-center text-slate-400">
+                        Nenhum SKU encontrado para os filtros selecionados.
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedSkus.map((skuItem, idx) => {
+                      const skuProductUrl = skuItem.productUrl || `https://${realSiteData.domain}/products/${skuItem.productHandle || ''}`;
+                      return (
+                        <tr key={`${skuItem.skuId}-${idx}`} className="hover:bg-slate-50/80 transition-colors">
+                          {/* SKU Code */}
+                          <td className="p-3.5 font-mono font-bold text-slate-900 whitespace-nowrap">
+                            <div className="flex items-center gap-1.5">
+                              <span>{skuItem.skuCode || 'SEM-SKU'}</span>
+                              {skuItem.skuCode && (
+                                <button
+                                  onClick={() => handleCopyText(String(skuItem.skuId), skuItem.skuCode)}
+                                  className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                                  title="Copiar Código SKU"
+                                >
+                                  {copiedId === String(skuItem.skuId) ? (
+                                    <Check className="w-3 h-3 text-emerald-600" />
+                                  ) : (
+                                    <Copy className="w-3 h-3" />
+                                  )}
+                                </button>
+                              )}
+                            </div>
+                            {skuItem.barcode && (
+                              <span className="text-[10px] text-slate-400 font-normal block">
+                                EAN: {skuItem.barcode}
+                              </span>
+                            )}
+                          </td>
+
+                          {/* Product Info */}
+                          <td className="p-3.5 max-w-xs">
+                            <div className="flex items-center gap-2.5">
+                              {skuItem.productImages?.[0] ? (
+                                <img
+                                  src={skuItem.productImages[0]}
+                                  alt={skuItem.productTitle}
+                                  className="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0 bg-slate-100"
+                                  onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                                />
+                              ) : (
+                                <div className="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 shrink-0">
+                                  <ImageOff className="w-4 h-4" />
+                                </div>
+                              )}
+                              <div className="min-w-0">
+                                <p className="font-semibold text-slate-800 truncate text-xs" title={skuItem.productTitle}>
+                                  {skuItem.productTitle}
+                                </p>
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                  {skuItem.manufacturingType === 'REVENDA' ? (
+                                    <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">
+                                      Revenda
+                                    </span>
+                                  ) : (
+                                    <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.2 rounded border border-indigo-200">
+                                      PCP Têxtil
+                                    </span>
+                                  )}
+                                  {skuItem.isFullExempt && (
+                                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                                      _FULL
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Size / Variant */}
+                          <td className="p-3.5 text-center whitespace-nowrap">
+                            <span className="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-800 font-bold rounded-lg text-xs">
+                              {skuItem.variantTitle || 'Único'}
+                            </span>
+                          </td>
+
+                          {/* Price */}
+                          <td className="p-3.5 font-bold text-slate-800 whitespace-nowrap">
+                            R$ {skuItem.price.toFixed(2).replace('.', ',')}
+                          </td>
+
+                          {/* Stock Status */}
+                          <td className="p-3.5 text-center whitespace-nowrap">
+                            {skuItem.available ? (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold rounded-full text-[11px]">
+                                <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Em Estoque
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 border border-rose-200 text-rose-800 font-bold rounded-full text-[11px]">
+                                <AlertTriangle className="w-3 h-3 text-rose-600" /> Ruptura / Esgotado
+                              </span>
+                            )}
+                          </td>
+
+                          {/* Estimated Loss */}
+                          <td className="p-3.5 text-right font-mono font-bold whitespace-nowrap">
+                            {!skuItem.available ? (
+                              <span className="text-rose-600 flex items-center justify-end gap-1">
+                                <Flame className="w-3 h-3 text-rose-500" />
+                                R$ {((skuItem.estimatedWastedAdSpendDay * 30) || (skuItem.price * 15)).toFixed(2).replace('.', ',')}
+                              </span>
+                            ) : (
+                              <span className="text-slate-400 text-[11px]">R$ 0,00</span>
+                            )}
+                          </td>
+
+                          {/* Direct Actions */}
+                          <td className="p-3.5 text-center whitespace-nowrap">
+                            <div className="flex items-center justify-center gap-2">
+                              <a
+                                href={skuProductUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors inline-flex items-center gap-1 text-[11px] font-semibold"
+                                title="Abrir Produto na Loja (Zero 404)"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5" />
+                                <span className="hidden xl:inline">Abrir</span>
+                              </a>
+
+                              {!skuItem.available && (
+                                <button
+                                  onClick={() => {
+                                    setSelectedOneClickProduct({
+                                      id: skuItem.productId,
+                                      title: skuItem.productTitle,
+                                      sku: skuItem.skuCode,
+                                      barcode: skuItem.barcode,
+                                      price: skuItem.price,
+                                      url: skuProductUrl,
+                                      imageSrc: skuItem.productImages?.[0] || '',
+                                      hasValidImage: !!skuItem.productImages?.[0],
+                                      missingSizes: [skuItem.variantTitle],
+                                      reason: 'BROKEN_SIZES'
+                                    });
+                                  }}
+                                  className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg transition-colors inline-flex items-center gap-1 text-[11px] font-bold cursor-pointer"
+                                  title="Mitigar Sangria (Kill-Switch ou Rascunho)"
+                                >
+                                  <Power className="w-3.5 h-3.5 text-rose-600" />
+                                  <span className="hidden xl:inline">Mitigar</span>
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination Controls */}
+            {totalSkuPages > 1 && (
+              <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                <p className="text-slate-600">
+                  Página <strong className="text-slate-900">{skuCurrentPage}</strong> de{' '}
+                  <strong className="text-slate-900">{totalSkuPages}</strong> ({filteredSkus.length} SKUs no total)
+                </p>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setSkuCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={skuCurrentPage === 1}
+                    className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
+                  >
+                    <ChevronLeft className="w-4 h-4" /> Anterior
+                  </button>
+
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(5, totalSkuPages) }, (_, i) => {
+                      let pageNum = i + 1;
+                      if (totalSkuPages > 5 && skuCurrentPage > 3) {
+                        pageNum = Math.min(totalSkuPages - 4 + i, skuCurrentPage - 2 + i);
+                      }
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setSkuCurrentPage(pageNum)}
+                          className={`w-7 h-7 rounded-lg font-bold text-xs flex items-center justify-center cursor-pointer transition-colors ${
+                            skuCurrentPage === pageNum
+                              ? 'bg-blue-600 text-white shadow-xs'
+                              : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <button
+                    onClick={() => setSkuCurrentPage(p => Math.min(totalSkuPages, p + 1))}
+                    disabled={skuCurrentPage === totalSkuPages}
+                    className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
+                  >
+                    Próxima <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Filter Chips */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
         <span className="text-slate-400 font-bold flex items-center gap-1 shrink-0 mr-1">
           <Filter className="w-3.5 h-3.5" /> Filtrar:
@@ -557,6 +1039,8 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
           );
         })}
       </div>
+    </>
+  )}
 
       {/* 📐 INTERACTIVE SIZE CHART MODAL (BRK OFFICIAL THEME ADDON) */}
       {showSizeChartModal && (

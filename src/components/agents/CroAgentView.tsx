@@ -14,6 +14,16 @@ export const CroAgentView: React.FC<CroAgentViewProps> = ({ diagnostic }) => {
 
   const brokenCentralGridCount = realSiteData.catalogAudit?.productsWithBrokenGrid || 0;
 
+  const thumbZone = diagnostic.visionAnalysis?.thumbZone;
+  const isThumbZoneEasy = thumbZone ? thumbZone.ctaZoneLocation === 'EASY' : true;
+  const thumbZoneText = thumbZone
+    ? (thumbZone.ctaZoneLocation === 'EASY'
+        ? 'Zona Natural de Alcance'
+        : thumbZone.ctaZoneLocation === 'STRETCH'
+        ? 'Zona de Estiramento'
+        : 'Fora da Área do Polegar')
+    : 'Área Central Acessível';
+
   return (
     <div className="space-y-6">
       
@@ -70,7 +80,9 @@ export const CroAgentView: React.FC<CroAgentViewProps> = ({ diagnostic }) => {
           </div>
           <div>
             <span className="text-xs text-slate-500 font-medium">Thumb Zone (Polegar):</span>
-            <p className="text-xs font-bold text-emerald-600">Área Central Acessível</p>
+            <p className={`text-xs font-bold ${isThumbZoneEasy ? 'text-emerald-600' : 'text-amber-600'}`}>
+              {thumbZoneText}
+            </p>
           </div>
         </div>
 
@@ -178,10 +190,16 @@ export const CroAgentView: React.FC<CroAgentViewProps> = ({ diagnostic }) => {
           <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-900">1. Thumb Zone Ergonomics</span>
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">Aprovado</span>
+              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                isThumbZoneEasy ? 'text-emerald-700 bg-emerald-100' : 'text-amber-700 bg-amber-100'
+              }`}>
+                {isThumbZoneEasy ? 'Aprovado' : 'Atenção Mobile'}
+              </span>
             </div>
             <p className="text-[11px] text-slate-600">
-              Botão CTA Add-to-Cart na zona natural do polegar mobile (&ge; 48px de altura mínima).
+              {isThumbZoneEasy
+                ? 'Botão CTA Add-to-Cart na zona natural do polegar mobile (≥ 48px de altura mínima).'
+                : 'Botão de compra posicionado em área que exige estiramento do polegar ou rolagem excessiva no celular.'}
             </p>
           </div>
 

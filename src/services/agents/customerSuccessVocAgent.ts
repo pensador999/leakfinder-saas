@@ -138,9 +138,9 @@ export async function runCustomerSuccessVocAudit(): Promise<CustomerSuccessVocDo
 
   return {
     auditedAt: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }),
-    totalClientInteractionsSampled: 284,
+    totalClientInteractionsSampled: 4,
     topObjections,
     pricingPlans,
-    vocKeyTakeaway: 'O lojista brasileiro valoriza acima de tudo a facilidade de implementação sem código e a clareza de ROI. O plano Pro de R$ 497 tem a melhor relação LTV/CAC para operações acima de R$ 50k/mês.'
+    vocKeyTakeaway: 'Playbook estratégico calibrado com 4 objeções centrais de lojistas brasileiros. O lojista valoriza acima de tudo a facilidade de implementação sem código e a clareza de ROI. O plano Pro de R$ 497 tem a melhor relação LTV/CAC para operações acima de R$ 50k/mês.'
   };
 }

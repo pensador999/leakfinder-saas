@@ -65,52 +65,60 @@ export function computeCompetitorRadarBenchmark(
   const dimensions: CompetitorBenchmarkDimension[] = [
     {
       dimensionName: '1. Profundidade de Grade & Ruptura',
-      yourStoreValue: `${issuesCount} produtos com tamanhos esgotados`,
-      competitorStoreValue: '96% da grade ativa com reposição diária',
-      yourStoreScore: Math.max(45, 90 - issuesCount * 15),
-      competitorScore: 94,
-      status: 'DESVANTAGEM',
-      gapAnalysis: 'O concorrente utiliza sistema de pré-encomenda e aviso de reposição para não perder a venda quando um tamanho acaba.',
-      revenueImpactMonthly: Math.round(estimatedRevenueLiftMin * 220)
+      yourStoreValue: issuesCount > 0 ? `${issuesCount} SKUs com tamanhos centrais esgotados` : 'Grade 100% ativa sem rupturas críticas',
+      competitorStoreValue: 'Padrão Setorial: Grade contínua sem ruptura de tamanhos centrais',
+      yourStoreScore: Math.max(45, 95 - issuesCount * 12),
+      competitorScore: 92,
+      status: issuesCount === 0 ? 'VANTAGEM' : 'DESVANTAGEM',
+      gapAnalysis: issuesCount > 0 
+        ? 'Rupturas em tamanhos centrais (M, G, 40-42) provocam fuga de até 60% dos compradores que chegam por anúncios pagos.'
+        : 'Sua grade de produtos está saudável, retendo o tráfego sem perdas por falta de numeração.',
+      revenueImpactMonthly: Math.round(estimatedRevenueLiftMin * (issuesCount > 0 ? 220 : 0))
     },
     {
       dimensionName: '2. Política de Frete Grátis & CEP',
-      yourStoreValue: 'Frete Grátis acima de R$ 299',
-      competitorStoreValue: 'Frete Grátis acima de R$ 199 + Frete Fixo R$ 9,90',
-      yourStoreScore: 68,
-      status: 'DESVANTAGEM',
-      competitorScore: 92,
-      gapAnalysis: 'O concorrente atinge ticket médio mais fácil reduzindo a barreira de frete em 33% para novos clientes.',
-      revenueImpactMonthly: Math.round(estimatedRevenueLiftMin * 140)
+      yourStoreValue: realSiteData.detectedCheckoutTerms?.hasFrete ? 'Política de frete detectada no checkout' : 'Sem política explícita de frete na vitrine',
+      competitorStoreValue: 'Benchmark: Frete Grátis acima de valor-alvo ou Frete Fixo Reduzido',
+      yourStoreScore: realSiteData.detectedCheckoutTerms?.hasFrete ? 88 : 55,
+      status: realSiteData.detectedCheckoutTerms?.hasFrete ? 'EMPATE' : 'DESVANTAGEM',
+      competitorScore: 88,
+      gapAnalysis: realSiteData.detectedCheckoutTerms?.hasFrete
+        ? 'A loja comunica benefícios de frete, reduzindo a fricção no carrinho.'
+        : 'Sem destaque claro de frete na página do produto, o abandono de checkout aumenta em até 30%.',
+      revenueImpactMonthly: Math.round(estimatedRevenueLiftMin * (realSiteData.detectedCheckoutTerms?.hasFrete ? 0 : 140))
     },
     {
       dimensionName: '3. Desconto Transparente no Pix',
-      yourStoreValue: hasPixDiscount ? '5% no Pix (destaque moderado)' : 'Sem cálculo automático de Pix na vitrine',
-      competitorStoreValue: '7% OFF no Pix com economia explícita em R$',
-      yourStoreScore: hasPixDiscount ? 72 : 48,
-      competitorScore: 92,
-      status: hasPixDiscount ? 'EMPATE' : 'DESVANTAGEM',
-      gapAnalysis: 'Exibir a frase "Economize R$ 18,90 no Pix" converte 22% mais do que apenas mostrar o percentual.',
-      revenueImpactMonthly: Math.round(estimatedRevenueLiftMin * 110)
+      yourStoreValue: hasPixDiscount ? 'Desconto Pix detectado na vitrine/checkout' : 'Sem cálculo automático de Pix visível',
+      competitorStoreValue: 'Benchmark de Mercado: 5% a 10% OFF com economia explícita em R$',
+      yourStoreScore: hasPixDiscount ? 85 : 45,
+      competitorScore: 85,
+      status: hasPixDiscount ? 'VANTAGEM' : 'DESVANTAGEM',
+      gapAnalysis: hasPixDiscount
+        ? 'Incentivo Pix identificado. Garante liquidez imediata e menor custo com adiantamento de cartão.'
+        : 'Exibir a frase "Economize R$ X no Pix" eleva as conversões à vista em até 22% segundo dados de mercado.',
+      revenueImpactMonthly: Math.round(estimatedRevenueLiftMin * (hasPixDiscount ? 0 : 110))
     },
     {
       dimensionName: '4. Velocidade Mobile no 4G (LCP)',
-      yourStoreValue: '2.8s no celular (Imagens pesadas)',
-      competitorStoreValue: '1.6s no celular (Formato WebP otimizado)',
-      yourStoreScore: 64,
-      competitorScore: 90,
-      status: 'DESVANTAGEM',
-      gapAnalysis: 'Carregamento 1.2s mais lento drena 16% dos compradores que entram pelo feed do Instagram.',
-      revenueImpactMonthly: Math.round(estimatedRevenueLiftMin * 95)
+      yourStoreValue: `${(realSiteData.estimatedLoadTime || 2.1).toFixed(1)}s no celular (medido ao vivo)`,
+      competitorStoreValue: 'Meta Google Core Web Vitals: LCP < 2.5s',
+      yourStoreScore: (realSiteData.estimatedLoadTime || 2.1) <= 2.5 ? 90 : 58,
+      competitorScore: 85,
+      status: (realSiteData.estimatedLoadTime || 2.1) <= 2.5 ? 'VANTAGEM' : 'DESVANTAGEM',
+      gapAnalysis: (realSiteData.estimatedLoadTime || 2.1) <= 2.5
+        ? 'Velocidade mobile dentro dos padrões recomendados pelo Google para evitar abandono de página.'
+        : 'Carregamento acima de 2.5s drena visitantes mobile antes mesmo da renderização do primeiro conteúdo útil.',
+      revenueImpactMonthly: Math.round(estimatedRevenueLiftMin * ((realSiteData.estimatedLoadTime || 2.1) <= 2.5 ? 0 : 95))
     },
     {
       dimensionName: '5. Autoridade & Prova Social',
-      yourStoreValue: 'CNPJ e SSL verificados',
-      competitorStoreValue: 'Avaliações com fotos de clientes no rodapé',
-      yourStoreScore: 82,
-      competitorScore: 88,
-      status: 'EMPATE',
-      gapAnalysis: 'Sua loja possui conformidade jurídica brasileira sólida. Adicionar fotos reais de clientes elevará o ticket.',
+      yourStoreValue: realSiteData.isHttps ? 'HTTPS seguro ativo com conformidade de dados' : 'Certificado SSL pendente',
+      competitorStoreValue: 'Padrão Setorial: SSL obrigatório + Prova Social e CNPJ no rodapé',
+      yourStoreScore: realSiteData.isHttps ? 85 : 40,
+      competitorScore: 85,
+      status: realSiteData.isHttps ? 'EMPATE' : 'DESVANTAGEM',
+      gapAnalysis: 'A presença de certificados de segurança e conformidade jurídica brasileira (CDC/LGPD) é indispensável para confiança de novos clientes.',
       revenueImpactMonthly: 0
     }
   ];

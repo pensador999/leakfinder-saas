@@ -1,275 +1,268 @@
-# 🏛️ LEAKFINDER SAAS — ARQUITETURA TÉCNICA GLOBAL & C4 MODEL
+# 🏛️ ADSHIELD / LEAKFINDER SAAS — ESPECIFICAÇÃO ARQUITETURAL GLOBAL & MODELO C4 (V4.0)
 
-> **Documento Oficial de Engenharia, Arquitetura de Software e Modelo de Negócio**  
-> **Versão:** 2.4.0 (Enterprise Ready)  
-> **Status:** Ativo & Grounded  
-> **Repositório:** [https://github.com/pensador999/leakfinder-saas](https://github.com/pensador999/leakfinder-saas)
+> **Documento Oficial de Engenharia, Arquitetura de Software e Governança Multi-Agente**  
+> **Versão:** 4.0.0 (Enterprise Swarm Ready) • **Topologia:** Enxame Híbrido Bimodal (Passivo + Caçador Ativo)  
+> **Grounding:** 100% Live Real-Time Data (Protocolo `AGENTS.md`)  
+> **Repositório:** `https://github.com/pensador999/leakfinder-saas`
 
 ---
 
 ## 📑 Sumário Executivo
-1. [🎯 1. O Que o LeakFinder Resolve (Problema & Proposta de Valor)](#-1-o-que-o-leakfinder-resolve)
+1. [🎯 1. Visão Geral do Sistema & Proposta de Valor](#-1-visão-geral-do-sistema--proposta-de-valor)
 2. [📐 2. Modelo C4 de Arquitetura](#-2-modelo-c4-de-arquitetura)
-   - [Nível 1: Diagrama de Contexto do Sistema (System Context)](#nível-1-diagrama-de-contexto-do-sistema-system-context)
-   - [Nível 2: Diagrama de Contêineres (Containers Architecture)](#nível-2-diagrama-de-contêineres-containers-architecture)
-   - [Nível 3: Diagrama de Componentes & Os 8 Agentes Autônomos](#nível-3-diagrama-de-componentes--os-8-agentes-autônomos)
-   - [Nível 4: Diagrama de Fluxo de Dados & Execução (Code & Data Flow)](#nível-4-diagrama-de-fluxo-de-dados--execução-code--data-flow)
+   - [C4 Nível 1: Diagrama de Contexto do Sistema (System Context)](#c4-nível-1-diagrama-de-contexto-do-sistema-system-context)
+   - [C4 Nível 2: Diagrama de Contêineres (Containers Architecture)](#c4-nível-2-diagrama-de-contêineres-containers-architecture)
+   - [C4 Nível 3: Diagrama de Componentes (Os 18 Agentes & Orquestração Dual)](#c4-nível-3-diagrama-de-componentes-os-18-agentes--orquestração-dual)
+   - [C4 Nível 4: Diagrama de Execução & Fluxo de Código (Code & Sequence)](#c4-nível-4-diagrama-de-execução--fluxo-de-código-code--sequence)
 3. [🛡️ 3. Protocolo de Integridade de Dados & Grounding (3 Camadas)](#-3-protocolo-de-integridade-de-dados--grounding)
-4. [🌐 4. Inteligência Multi-Plataforma & Escala Enterprise](#-4-inteligência-multi-plataforma--escala-enterprise)
-5. [💻 5. Motor de Remediação Automática (.liquid & CSS)](#-5-motor-de-remediação-automática-liquid--css)
-6. [🛠️ 6. Stack Tecnológica & Infraestrutura](#-6-stack-tecnológica--infraestrutura)
+4. [🐳 4. Infraestrutura MCP (Model Context Protocol) em Nuvem (Docker & SSE)](#-4-infraestrutura-mcp-model-context-protocol-em-nuvem-docker--sse)
+5. [🦅 5. Arquitetura do Enxame Caçador Ativo (Outbound Sniper & Outreach)](#-5-arquitetura-do-enxame-caçador-ativo-outbound-sniper--outreach)
+6. [🛠️ 6. Stack Tecnológica, Banco de Dados & Resiliência](#-6-stack-tecnológica-banco-de-dados--resiliência)
 
 ---
 
-## 🎯 1. O Que o LeakFinder Resolve
+## 🎯 1. Visão Geral do Sistema & Proposta de Valor
 
-### 🚨 O Problema no E-Commerce Global
-Lojas virtuais investem milhões de reais em tráfego pago (Meta Ads, Google Ads, TikTok Ads), mas perdem entre **15% a 40% do seu faturamento diário** devido a "vazamentos invisíveis" na experiência de compra e no catálogo:
+O **AdShield / LeakFinder** é uma plataforma SaaS de alta tecnologia voltada para proteção de orçamento de mídia, diagnóstico de conversão (CRO) e prospecção autônoma para e-commerces.
 
-* **Grade Furada Silenciosa:** Produtos ativos em anúncios com tamanhos cruciais esgotados (ex: falta de M, G ou G1), gerando abandono imediato de carrinho.
-* **Ergonomia Mobile Falha (Lei de Fitts):** Botões de compra fora da área de alcance do polegar (*thumb zone*) e seletores de tamanho menores que 48x48px que causam cliques errados (*rage clicks*).
-* **Falta de Incentivo à Vista:** Preço do Pix camuflado sem cálculo explícito do desconto imediato de 10%.
-* **Vulnerabilidades de Navegação:** Links externos abrindo em `target="_blank"` sem `rel="noopener noreferrer"` (vulnerabilidade de *Reverse Tabnabbing*).
-* **Ausência de Ferramentas de Ação:** A maioria dos scanners apenas aponta erros teóricos, sem fornecer o código exato para consertar o problema no tema.
-
-### 💡 A Solução LeakFinder
-O **LeakFinder** é uma plataforma SaaS de auditoria profunda, telemetria comportamental e remediação instantânea para e-commerces. Com um único clique, ele:
-1. Inspeciona o código-fonte real, DOM e catálogo público da loja;
-2. Detecta gargalos de conversão, estoque, segurança jurídica (CNPJ/CDC) e ergonomia visual;
-3. Cruza dados com o **Microsoft Clarity** e calcula a perda financeira estimada em R$;
-4. **Entrega o código pronto (.liquid e CSS)** para colar diretamente no tema e resolver o problema em minutos.
+### O Modelo Bimodal Híbrido:
+* **Modo Passivo (Profundidade & Retenção):** O lojista ou auditor insere a URL da loja e recebe um diagnóstico profundo em 18 dimensões com mapa de calor de atenção visual (WCAG 2.1 AAA), teste de Core Web Vitals, verificação de ERP/Hub e geração de código `.liquid` de remediação imediata.
+* **Modo Caçador Ativo (Throughput & Prospecção Outbound):** O enxame autônomo navega de forma headless pela web em nichos pré-selecionados, identifica lojas investindo em tráfego (Meta Pixel ativo), flagra produtos com furos graves de estoque (M/G esgotados), extrai o WhatsApp oficial e gera pitches de 3 passos para envio com 1 clique ou via webhook automatizado.
 
 ---
 
 ## 📐 2. Modelo C4 de Arquitetura
 
-O LeakFinder adota a metodologia **C4 Model** (Context, Containers, Components, Code) para representar sua arquitetura em diferentes níveis de abstração.
-
-```
-┌────────────────────────────────────────────────────────┐
-│                      LEAKFINDER                        │
-│                 ARQUITETURA C4 MODEL                   │
-└────────────────────────────────────────────────────────┘
-  Nível 1: Contexto Global (Usuário & Ecossistema)
-  Nível 2: Contêineres (SPA, Web Workers, Supabase, APIs)
-  Nível 3: Componentes (8 Agentes Autônomos & Motores)
-  Nível 4: Código & Fluxo de Telemetria e Remediação
-```
+Adotamos o framework **C4 Model** estruturado em 4 níveis progressivos de abstração:
 
 ---
 
-### Nível 1: Diagrama de Contexto do Sistema (System Context)
+### C4 Nível 1: Diagrama de Contexto do Sistema (System Context)
 
-Mostra como o LeakFinder se posiciona em relação aos usuários e serviços externos.
+Posiciona o AdShield em relação aos atores humanos e todos os serviços externos conectados.
 
 ```mermaid
 graph TD
-    User["👤 Usuário / Gestor de E-commerce<br/>(Lojista, CMO, Agência, Auditor)"]
-    
-    subgraph SystemBoundary["🏛️ Limite do Sistema: LEAKFINDER SAAS"]
-        LeakFinder["⚡ LeakFinder Platform<br/>(Diagnóstico, Telemetria & Remediação)"]
+    UserLojista["👤 Lojista / CMO<br/>(Visualiza Diagnóstico, Corrige Temas & Salva Verba)"]
+    UserAgencia["🏢 Gestor de Agência / Closer<br/>(Usa o Caçador Ativo para Prospecção B2B)"]
+
+    subgraph SystemBoundary["🏛️ Limite do Sistema: ADSHIELD / LEAKFINDER ECOSYSTEM"]
+        AdShieldCore["⚡ AdShield SaaS & Swarm Engine<br/>(Orquestração Bimodal de 18 Agentes Autônomos)"]
     end
 
-    TargetStore["🏬 Loja Alvo (E-Commerce)<br/>(Shopify / VTEX / Nuvemshop / Headless)"]
-    PSI["⚡ Google PageSpeed Insights API<br/>(Core Web Vitals & Screenshots)"]
-    Clarity["🎥 Microsoft Clarity<br/>(Gravações de Tela, Rage Clicks, Heatmaps)"]
-    Jina["📄 Jina AI Reader API<br/>(Extração Semântica de Markdown)"]
-    Supabase["🗄️ Supabase Cloud<br/>(PostgreSQL, Auth, Leads & Diagnósticos)"]
+    TargetStores["🏬 Lojas Virtuais Alvo (Web Pública)<br/>(Shopify, VTEX, Nuvemshop, WooCommerce, Headless)"]
+    MetaAds["📢 Meta Ads Library<br/>(Validação de Anúncios Ativos no Facebook/Instagram)"]
+    Clarity["🎥 Microsoft Clarity<br/>(Gravações de Sessões, Rage Clicks e Mapas de Calor)"]
+    SupabaseDB["🗄️ Supabase Cloud<br/>(PostgreSQL, Auth, Fila de Leads & Snapshots)"]
+    WhatsAppGW["💬 Evolution API / Z-API<br/>(Gateway de Mensageria com Proteção Anti-Ban)"]
+    MCPWorker["🐳 Cloud MCP Headless Worker<br/>(Container Docker com Chromium & SSE)"]
 
-    User -->|"1. Insere URL da loja e solicita auditoria"| LeakFinder
-    User -->|"2. Analisa métricas e copia scripts de correção"| LeakFinder
-    
-    LeakFinder -->|"Inspeciona HTML, DOM, /products.json e scripts"| TargetStore
-    LeakFinder -->|"Consulta Core Web Vitals (LCP, CLS, FID)"| PSI
-    LeakFinder -->|"Gera deep links para gravações de comportamento"| Clarity
-    LeakFinder -->|"Extrai conteúdo semântico limpo"| Jina
-    LeakFinder -->|"Persiste leads, configurações e relatórios"| Supabase
+    UserLojista -->|"Solicita auditoria profunda e copia scripts .liquid"| AdShieldCore
+    UserAgencia -->|"Aciona o Radar Caçador Ativo e dispara abordagens"| AdShieldCore
+
+    AdShieldCore -->|"Navega de forma silenciosa ou visual"| MCPWorker
+    MCPWorker -->|"Extrai DOM hidratado, tags e fotos de produtos"| TargetStores
+    AdShieldCore -->|"Gera links canônicos de verificação de criativos"| MetaAds
+    AdShieldCore -->|"Cruza dados com o projeto configurado"| Clarity
+    AdShieldCore -->|"Persiste histórico diário, CRM e configurações"| SupabaseDB
+    AdShieldCore -->|"Dispara mensagens com delays humanos (15s a 45s)"| WhatsAppGW
 ```
 
 ---
 
-### Nível 2: Diagrama de Contêineres (Containers Architecture)
+### C4 Nível 2: Diagrama de Contêineres (Containers Architecture)
 
-Representa os blocos de alto nível executáveis e o armazenamento de dados.
+Demonstra a distribuição física dos contêineres de execução, armazenamento e comunicação.
 
 ```mermaid
 graph TD
-    subgraph ClientBrowser["💻 Navegador do Cliente (Client-Side)"]
-        SPA["🌐 Single Page Application (SPA)<br/>(React 19 + TypeScript + Vite + Tailwind CSS)"]
-        WebWorker["⚡ Web Worker Multi-Thread<br/>(siteInspectorWorker.ts)"]
-        MemoryCache["🧠 In-Memory Inspection Cache<br/>(TTL: 10 Minutos)"]
-        DOMParserEngine["🔍 Client-side DOM & RegEx Parser"]
+    subgraph ClientBrowser["💻 Navegador do Usuário / Frontend SPA"]
+        SPA["🌐 Single Page Application (SPA)<br/>React 19 + TypeScript + Vite + Tailwind CSS<br/>(Porta 3000)"]
+        LocalClient["📡 Remote MCP Client Bridge<br/>(src/services/mcp/remoteMcpClient.ts)"]
+        SPA --> LocalClient
     end
 
-    subgraph BackendServices["☁️ Backend as a Service & APIs"]
-        SupaDB[("🗄️ Supabase PostgreSQL<br/>- Tabela audits<br/>- Tabela leads<br/>- Row Level Security (RLS)")]
-        SupaAuth["🔐 Supabase Authentication"]
+    subgraph DockerHost["🐳 Docker Container Environment (Railway / Fly.io / Compose)"]
+        MCPContainer["📦 adshield-mcp-headless-worker<br/>Node.js 20 Bookworm Slim + Chromium Linux<br/>(Porta 3001)"]
+        ExpressServer["⚡ Express HTTP Server (/health, /api/audit)"]
+        SSETransport["📡 SSEServerTransport (/sse, /messages)"]
+        BrowserPool["🏊 BrowserPool Manager (Semáforo de Concorrência)"]
+        LinuxChromium["🌐 Linux Chromium Headless (dumb-init)"]
+
+        MCPContainer --> ExpressServer
+        MCPContainer --> SSETransport
+        ExpressServer --> BrowserPool
+        SSETransport --> BrowserPool
+        BrowserPool --> LinuxChromium
     end
 
-    subgraph ExternalAPIs["🌐 Serviços Externos"]
-        ExtPSI["Google PageSpeed API"]
-        ExtJina["Jina Reader Engine"]
-        ExtClarity["Microsoft Clarity Dashboard"]
+    subgraph CloudStorage["☁️ Backend as a Service (BaaS)"]
+        SupaPostgres[("🗄️ Supabase PostgreSQL<br/>- store_daily_snapshots<br/>- swarm_prospect_leads<br/>- swarm_outreach_queue")]
+        SupaAuth["🔐 Supabase Auth (JWT & RLS)"]
     end
 
-    SPA -->|"Delega análise pesada de rede/HTML"| WebWorker
-    WebWorker -->|"Consulta / Armazena resultados temporários"| MemoryCache
-    WebWorker -->|"Executa parsing seguro do DOM"| DOMParserEngine
-    
-    SPA -->|"Salva leads capturados e consultas"| SupaDB
-    SPA -->|"Autentica usuários administrativos"| SupaAuth
+    subgraph MessagingExternal["📱 Mensageria & Gateways"]
+        EvoAPI["💬 Evolution API / Z-API Server<br/>(Webhooks de WhatsApp)"]
+    end
 
-    WebWorker -->|"Requisições CORS com fallback em proxy race"| ExternalAPIs
-    SPA -->|"Deep links com projectId extraído ao vivo"| ExtClarity
+    LocalClient -->|"Stream SSE / HTTP POST (Porta 3001)"| ExpressServer
+    LocalClient -->|"Fallback local de scraping (se worker offline)"| SPA
+    SPA -->|"Gravação de telemetria e leads"| SupaPostgres
+    SPA -->|"Autenticação do operador"| SupaAuth
+    SPA -->|"Fila anti-ban de disparos"| EvoAPI
 ```
 
 ---
 
-### Nível 3: Diagrama de Componentes & Os 8 Agentes Autônomos
+### C4 Nível 3: Diagrama de Componentes (Os 18 Agentes & Orquestração Dual)
 
-Descreve os módulos internos e o esquadrão de inteligência do LeakFinder.
+Representa a estrutura de governança do enxame de 18 agentes divididos em 5 camadas funcionais com Orquestração Bimodal:
 
 ```mermaid
 graph TD
-    subgraph UIComponents["🖥️ Camada de Interface & Visualização"]
-        HomeView["HomePage & Navigation Tabs"]
-        ExecSummary["Visão Executiva (Growth Score Factual)"]
-        BlindspotView["Catálogo Doctor & Guia de Medidas"]
-        TelemetryView["Telemetria Shopify & Microsoft Clarity"]
-        ScriptView["Gerador de Scripts (.liquid / CSS)"]
-        VisionView["Visão Computacional & Saliency Heatmap"]
-        KanbanView["Plano de Ação Interativo (Kanban)"]
+    subgraph DUAL_ORCHESTRATOR ["00. Torre de Controle & Orquestração Bimodal"]
+        OrchPassive["👑 01. Chief Executive Orchestrator<br/>(Modo Passivo: Análise Profunda & ICE Score)"]
+        OrchActive["🦅 Novo: Autonomous Outbound Hunter<br/>(Modo Ativo: Triagem Rápida Fail-Fast)"]
     end
 
-    subgraph AgentSquad["🤖 Esquadrão dos 8 Agentes Especialistas"]
-        AgCatalog["1. Doctor de Catálogo & SKUs<br/>(Grade PP->G2, Regra _FULL, Fotos)"]
-        AgVision["2. Engenheiro de Visão & UX<br/>(Eye-Tracking, WCAG 2.1 AAA, Thumb Zone)"]
-        AgTele["3. Analista de Telemetria<br/>(Cruzamento de Abandonos x Perda em R$)"]
-        AgSec["4. Auditor de Segurança & Legal<br/>(CNPJ, CDC Art. 49, LGPD, Tabnabbing)"]
-        AgCro["5. Arquiteto de CRO & Ofertas<br/>(Funnels, Fitts Law, Micro-conversões)"]
-        AgAds["6. Estrategista de Mídia Paga<br/>(Split 60/25/15, Simulador de Budget)"]
-        AgCopy["7. Engenheiro de Copywriting<br/>(Gatilhos, Urgência, NLP)"]
-        AgSpy["8. Espião de Concorrentes<br/>(Benchmark de Preços e Velocidade)"]
+    subgraph CAMADA_1 ["1. Governança, Consenso & Grounding"]
+        A02["02. Universal Niche Recognition<br/>(Regras de Isenção de Grade)"]
+        A03["03. Truth Auditor Engine<br/>(Guardrail das 3 Camadas de Dados)"]
+        A04["04. Dual-Agent Consensus Tribunal<br/>(Dialética: Acusação vs Defesa)"]
     end
 
-    subgraph RemediationEngine["🛠️ Motor de Remediação Automática"]
-        LiquidGen["Gerador Liquid (Sticky Buy Button, Pix Box)"]
-        CssGen["Gerador CSS (Seletores 48px Lei de Fitts)"]
-        JsGen["Gerador JS (Defesa contra Reverse Tabnabbing)"]
+    subgraph CAMADA_2 ["2. Inteligência de Aquisição & Mídia"]
+        A05["05. Media Buyer & Ads Risk<br/>(Meta Pixel & Cálculo de Desperdício)"]
+        A06["06. Market Hunter Agent<br/>(Varredura de Sementes & Tendências)"]
+        A07["07. Competitor Radar Agent<br/>(Benchmarking Técnico Factual)"]
+        A08["08. High-Conversion Sales Copywriter<br/>(Pitches em 3 Passos para WhatsApp)"]
     end
 
-    HomeView --> ExecSummary
-    HomeView --> BlindspotView
-    HomeView --> TelemetryView
-    HomeView --> ScriptView
-    HomeView --> VisionView
-    HomeView --> KanbanView
+    subgraph CAMADA_3 ["3. Catálogo, CRO & Engenharia Visual"]
+        A09["09. Universal Catalog Doctor<br/>(Grade PP ao G2, Regra _FULL)"]
+        A10["10. Conversion Rate Architect<br/>(Heurísticas de Nielsen, Thumb Zone)"]
+        A11["11. Computer Vision & Saliency<br/>(WCAG 2.1 AAA, Mapa de Atenção 2.500ms)"]
+        A12["12. Technical SEO & Core Web Vitals<br/>(LCP, INP, CLS & Google Shopping)"]
+    end
 
-    BlindspotView --> AgCatalog
-    VisionView --> AgVision
-    TelemetryView --> AgTele
-    ScriptView --> LiquidGen
-    ScriptView --> CssGen
-    ScriptView --> JsGen
+    subgraph CAMADA_4 ["4. Cadeia de Suprimentos & Voz do Cliente"]
+        A13["13. ERP/Hub Discrepancy Engine<br/>(Sankhya, Bling, Tiny, Magis5)"]
+        A14["14. Customer Success VoC Agent<br/>(Mineração de Objeções B2B)"]
+        A15["15. SaaS Product Evolution Engineer<br/>(Auto-auditoria do Bundle & Índices)"]
+    end
+
+    subgraph CAMADA_5 ["5. Resiliência, Infra & Mensageria"]
+        A16["16. DevOps Sentinel & Circuit Breaker<br/>(Telemetria de Erros & Fail-Safe)"]
+        A17["17. Autonomous Code Patch Engineer<br/>(Auto-Remediação de Scripts)"]
+        A18["18. WhatsApp Watchdog & Outreach<br/>(Fila Anti-Ban de 15s a 45s)"]
+    end
+
+    OrchPassive --> A02 --> A09 --> A10 --> A11 --> A12 --> A13 --> A04 --> A03
+    OrchActive --> A02 --> A09 --> A05 --> A08 --> A03 --> A18
 ```
 
 ---
 
-### Nível 4: Diagrama de Fluxo de Dados & Execução (Code & Data Flow)
+### C4 Nível 4: Diagrama de Execução & Fluxo de Código (Code & Sequence)
 
-Demonstra a sequência precisa desde a digitação da URL até a entrega dos diagnósticos e scripts.
+#### Fluxo 4.1: O Caçador Ativo em Ação (Outbound Sniper)
+Demonstra o caminho de dados ultra-rápido quando o enxame varre a internet procurando novos clientes:
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor User as Usuário
-    participant UI as Interface (React SPA)
-    participant Worker as Inspector Worker
-    participant ExtStore as Loja Alvo (E-Commerce)
-    participant Clarity as Microsoft Clarity
-    participant Guardrail as Agent Guardrail Engine
-    participant Engine as Remediation Engine
+    actor Operator as Operador / Cron 24h
+    participant RadarUI as Terminal do Radar Live
+    participant Hunter as autonomousLeadHunterEngine
+    participant MCP as Docker MCP Worker
+    participant Target as Loja Virtual Alvo
+    participant Truth as Truth Auditor Agent
+    participant Closer as Copywriter Outbound
+    participant Queue as Fila WhatsApp Anti-Ban
 
-    User->>UI: Digita URL (ex: brkfishing.com.br ou nike.com.br)
-    UI->>Worker: Inicia runAgentDiagnosticAsync(url)
+    Operator->>RadarUI: Inicia Varredura (ex: Nicho Moda Campo)
+    RadarUI->>Hunter: startAutonomousHuntingSession()
+    Hunter->>RadarUI: Evento RADAR_STARTED (5%)
     
-    par Inspeção de Catálogo & DOM
-        Worker->>ExtStore: GET /products.json?limit=15 (API Pública)
-        Worker->>ExtStore: GET / (HTML público da vitrine)
-    and Identificação MarTech
-        Worker->>Worker: Extrai scripts do <head> (Meta Pixel, Clarity, GTM)
+    loop Para cada Loja Semente no Nicho
+        Hunter->>MCP: POST /api/audit (URL)
+        MCP->>Target: Inspeciona DOM hidratado & Scripts
+        Target-->>MCP: Retorna HTML, Meta Pixel, CTAs e WhatsApp
+        
+        alt Loja Não Possui Meta Pixel ou Sem Furos
+            MCP-->>Hunter: Descarte Imediato (Fail-Fast em ~1.2s)
+            Hunter->>RadarUI: Evento STORE_SKIPPED
+        else Meta Pixel Ativo + Furo de Grade M/G Identificado
+            MCP-->>Hunter: Retorna SKU, foto, preço e WhatsApp minerado
+            Hunter->>Truth: Valida Fatos Reais (Zero Alucinação)
+            Truth-->>Hunter: Aprovado (Camada 1: Dado Factual)
+            Hunter->>Closer: Gera Pitches em 3 Passos (Dono / Gestor / Áudio)
+            Closer-->>Hunter: Pitches formatados
+            Hunter->>Queue: Enfileira Lead com delay humano (15s a 45s)
+            Hunter->>RadarUI: Eventos STOCK_RUPTURE_FOUND e LEAD_QUALIFIED (100%)
+        end
     end
-
-    ExtStore-->>Worker: Retorna produtos reais, fotos, SKUs e HTML
-    Worker->>Worker: Detecta Plataforma (Shopify / VTEX / Enterprise)
-    Worker->>Guardrail: Validação do Protocolo AGENTS.md (Zero Hallucination)
-    Guardrail-->>Worker: Dados auditados e classificados nas 3 camadas
     
-    Worker->>Engine: Gera Scripts Customizados com a paleta da marca
-    Worker-->>UI: Retorna AgentDiagnosticResult completo
-    
-    UI->>User: Exibe Growth Score, SKUs furados, Deep Links do Clarity e Código Liquid
+    Operator->>RadarUI: Clica em "Disparar WhatsApp (1-Clique)" ou aciona Webhook
 ```
 
 ---
 
 ## 🛡️ 3. Protocolo de Integridade de Dados & Grounding
 
-O LeakFinder implementa uma política inquebrável documentada em [`AGENTS.md`](file:///c:/Users/lucas/OneDrive/Documentos/WORKER/AGENTS.md), classificando todas as informações em **3 camadas de transparência**:
-
-```mermaid
-graph TD
-    A[Informação no LeakFinder] --> B[🟢 CAMADA 1: Fatos Reais & Verificados]
-    A --> C[🟡 CAMADA 2: Simulações & Benchmarks]
-    A --> D[🔴 CAMADA 3: Métricas Privadas / Requer Acesso]
-
-    B --> B1[• URLs reais sem 404<br/>• SKUs e estoque ativo da API<br/>• Presença de CNPJ e tags no DOM]
-    C --> C1[• Rotulado como [Simulador Dinâmico]<br/>• Cálculo de split de mídia 60/25/15<br/>• Lift projetado de receita]
-    D --> D1[• Informa honestamente que requer API da Shopify Admin<br/>• Links para gravações no Clarity]
-```
-
----
-
-## 🌐 4. Inteligência Multi-Plataforma & Escala Enterprise
-
-O LeakFinder adapta dinamicamente sua avaliação conforme o porte e a tecnologia da loja analisada:
-
-| Tipo de Loja | Tecnologias Detectadas | Comportamento do Catálogo Doctor | Calibração de Score |
-| :--- | :--- | :--- | :--- |
-| **Linha Própria / DTC** | Shopify, Nuvemshop, Tray | Avalia grade completa `PP ao G2`, regra `_FULL` e fotos de produto. | Pontuação padrão (50 a 85/100). |
-| **Médio / Grande Porte** | VTEX, Magento, WooCommerce | Valida APIs REST públicas, frete, CDC e velocidade mobile. | Ponderação factual multi-fator. |
-| **Enterprise Global** | Headless SPA, Next.js, Akamai, Cloudflare (ex: **Nike**, **Adidas**, **Amazon**) | Não penaliza calçados por falta de PP/G2; avalia numeração `34 ao 45` e foco em CRO corporativo. | Baseline factual de **92 a 98/100**. |
-
----
-
-## 💻 5. Motor de Remediação Automática (.liquid & CSS)
-
-Ao contrário de consultorias tradicionais, o LeakFinder fecha o ciclo de auditoria gerando o **código pronto para implantação**:
+O sistema obedece rigorosamente às diretrizes documentadas em [`AGENTS.md`](file:///c:/Users/lucas/OneDrive/Documentos/WORKER/AGENTS.md). Cada informação gerada na tela pertence obrigatoriamente a uma das 3 camadas:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│                  CATÁLOGO DE SCRIPTS DE REMEDIAÇÃO                     │
-├──────────────────────────┬──────────────────────┬──────────────────────┤
-│ Nome do Script           │ Arquivo Alvo Shopify │ Impacto Estimado     │
-├──────────────────────────┼──────────────────────┼──────────────────────┤
-│ Sticky Buy Button Mobile │ main-product.liquid  │ +18% a +24% Conversão│
-│ Botões de Tamanho 48px   │ assets/custom.css    │ -35% Rage Clicks     │
-│ Caixa de Desconto Pix 10%│ snippets/price.liquid│ +14% Vendas no Pix   │
-│ Defesa Tabnabbing        │ layout/theme.liquid  │ 100% Segurança Web   │
-└──────────────────────────┴──────────────────────┴──────────────────────┘
+│             AS 3 CAMADAS DE INTEGRIDADE DE DADOS DO ADSHIELD           │
+├──────────────────────┬──────────────────────────┬──────────────────────┤
+│ Camada               │ Critério de Verdade      │ Exibição na Interface│
+├──────────────────────┼──────────────────────────┼──────────────────────┤
+│ 🟢 CAMADA 1: Fatos   │ Dados observáveis no     │ Selo de Dado         │
+│ Reais & Auditados    │ DOM/API (SKU, links vivos│ Verificado ao Vivo   │
+│                      │ sem 404, Meta Pixel).    │ (Zero Alucinação).   │
+├──────────────────────┼──────────────────────────┼──────────────────────┤
+│ 🟡 CAMADA 2:         │ Cálculos matemáticos de  │ Rótulo Obrigatório:  │
+│ Simulações & Cenários│ simulação baseados em    │ [Simulador Dinâmico] │
+│                      │ benchmarks de mercado.   │ ou [Benchmark].      │
+├──────────────────────┼──────────────────────────┼──────────────────────┤
+│ 🔴 CAMADA 3:         │ Dados internos confiden- │ Declaração honesta de│
+│ Métricas Privadas    │ ciais (saldo, lucro real)│ necessidade de API   │
+│                      │ sem acesso externo.      │ da Shopify/Clarity.  │
+└──────────────────────┴──────────────────────────┴──────────────────────┘
 ```
 
 ---
 
-## 🛠️ 6. Stack Tecnológica & Infraestrutura
+## 🐳 4. Infraestrutura MCP (Model Context Protocol) em Nuvem
 
-* **Frontend:** React 19, TypeScript, Tailwind CSS, Lucide React, Canvas Confetti.
-* **Build System:** Vite 8.2 (Compilação e bundle em sub-segundo).
-* **Paralelismo:** Web Workers nativos (`siteInspectorWorker.ts`).
-* **Banco de Dados & Auth:** Supabase PostgreSQL com Row Level Security (RLS).
-* **Inspeção de Rede:** DOMParser, Fetch API com timeout controllers e race proxy fallback.
-* **Governança & Regras:** Antigravity Custom Skills (`.agents/skills/`) e Grounding Protocol (`AGENTS.md`).
+* **Container Docker:** [`docker/mcp-headless-worker/`](file:///c:/Users/lucas/OneDrive/Documentos/WORKER/docker/mcp-headless-worker)
+* **Transporte SSE Oficial:** Rotas `/sse` e `/messages` para conexão bidirecional em streaming.
+* **Segurança Criptográfica:** Autenticação via `MCP_API_KEY` gerada com chave de alta entropia de 256 bits (`d2c4b969b83b3fdfe6ccf6371971bca5ea6382b717ce68cd87e9fafb44cdead2`).
+* **Proteção de Recursos:** Reciclagem automática do Chromium a cada 100 auditorias e bloqueio de downloads desnecessários de fontes e mídias.
 
 ---
 
-> 🔒 *Documento mantido e auditado pelo time de engenharia do LeakFinder SaaS.*
+## 🦅 5. Arquitetura do Enxame Caçador Ativo
+
+* **Motor Autônomo:** [`src/services/prospecting/autonomousLeadHunterEngine.ts`](file:///c:/Users/lucas/OneDrive/Documentos/WORKER/src/services/prospecting/autonomousLeadHunterEngine.ts)
+* **Disparador Anti-Ban:** [`src/services/prospecting/outboundWebhookDispatcher.ts`](file:///c:/Users/lucas/OneDrive/Documentos/WORKER/src/services/prospecting/outboundWebhookDispatcher.ts)
+* **Interface do Radar:** [`src/components/prospecting/AutonomousOutboundRadarView.tsx`](file:///c:/Users/lucas/OneDrive/Documentos/WORKER/src/components/prospecting/AutonomousOutboundRadarView.tsx)
+* **Fórmula do Gancho em 3 Passos (WhatsApp Closer):**
+  1. *Gancho do Flagrante:* *"Vimos que vocês anunciam no Meta Ads para o produto X, mas os tamanhos M e G estão esgotados no site."*
+  2. *Custo da Inação:* *"Como M e G representam ~65% das vendas, a cada R$ 1.000 investidos, cerca de R$ 650 viram cliques perdidos (sangria de ~R$ X.XXX,XX/mês)."*
+  3. *CTA Sem Fricção:* *"Tenho o dossiê confidencial de 1 página pronto com os links para pausar o anúncio ou repor o estoque. Posso te enviar aqui pelo WhatsApp? É só responder 'QUERO'."*
+
+---
+
+## 🛠️ 6. Stack Tecnológica, Banco de Dados & Resiliência
+
+* **Frontend:** React 19, TypeScript, Tailwind CSS, Lucide Icons, Vite 8.2.
+* **Worker Headless:** Node.js 20 Bookworm Slim, Chromium Linux Nativo, Puppeteer-Core, Dumb-Init.
+* **Protocolo de Agentes:** Model Context Protocol (MCP SDK 1.6.1) com Server-Sent Events (SSE).
+* **Banco de Dados & Auth:** Supabase PostgreSQL com Row Level Security (RLS) e índices compostos.
+* **Compilação e Tipagem:** TypeScript 5.7 em modo estrito (`tsc -b`), zero erros em build de produção.
+
+---
+
+> 🔒 *Documento oficial de engenharia atualizado e mantido na raiz do projeto em [`ARCHITECTURE.md`](file:///c:/Users/lucas/OneDrive/Documentos/WORKER/ARCHITECTURE.md).*

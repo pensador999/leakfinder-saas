@@ -35,18 +35,22 @@ export interface CoreWebVitalsAuditResult {
 export function auditCoreWebVitals2026(
   domain: string,
   rawHtml?: string,
-  estimatedLoadTime?: number
+  estimatedLoadTime?: number,
+  lighthouseMetrics?: { lcp: string; cls: string; performanceScore: number }
 ): CoreWebVitalsAuditResult {
   const html = (rawHtml || '').toLowerCase();
 
   // 1. ANÁLISE DE LCP (Largest Contentful Paint) — Meta 2026: <= 2.0s
-  const baseLcp = estimatedLoadTime ? Number(estimatedLoadTime) : 1.9;
+  const baseLcp = lighthouseMetrics?.lcp 
+    ? parseFloat(lighthouseMetrics.lcp)
+    : (estimatedLoadTime ? Number(estimatedLoadTime) : 1.9);
+
   const hasFetchPriorityHigh = html.includes('fetchpriority="high"') || html.includes("fetchpriority='high'");
   const hasImagePreload = html.includes('rel="preload"') && html.includes('as="image"');
   
   let lcpValue = baseLcp;
-  if (!hasFetchPriorityHigh && !hasImagePreload) {
-    lcpValue = Number((baseLcp + 0.5).toFixed(1));
+  if (!lighthouseMetrics?.lcp && !hasFetchPriorityHigh && !hasImagePreload) {
+    lcpValue = Number((baseLcp + 0.4).toFixed(1));
   }
 
   const lcpStatus: 'EXCELENTE' | 'PRECISA_MELHORAR' | 'CRITICO' = 
@@ -58,7 +62,7 @@ export function auditCoreWebVitals2026(
     value: lcpValue,
     unit: 's',
     status: lcpStatus,
-    benchmark2026: '≤ 2.0s (Novo Padrão Google 2026)',
+    benchmark2026: '≤ 2.0s (Meta Google Core Web Vitals)',
     impactOnRank: 'CRÍTICO',
     diagnosticSummary: lcpStatus === 'EXCELENTE'
       ? 'A imagem hero carrega em menos de 2.0s, garantindo pontuação verde no Google Search Console.'
@@ -67,7 +71,6 @@ export function auditCoreWebVitals2026(
   };
 
   // 2. ANÁLISE DE INP (Interaction to Next Paint) — Meta 2026: <= 200ms
-  // Avalia a latência de troca de tamanhos (PP ao G2), cores e abertura de gaveta de carrinho
   const hasHeavyJs = html.includes('clarity') || html.includes('gtm') || html.includes('facebook-jssdk');
   const inpEstimatedMs = hasHeavyJs ? 230 : 140;
   const inpStatus: 'EXCELENTE' | 'PRECISA_MELHORAR' | 'CRITICO' = 
@@ -75,44 +78,51 @@ export function auditCoreWebVitals2026(
 
   const inp: WebVitalsMetric = {
     name: 'INP',
-    label: 'Interaction to Next Paint (Seletor de Tamanhos)',
+    label: 'Interaction to Next Paint [Estimativa]',
     value: inpEstimatedMs,
     unit: 'ms',
     status: inpStatus,
-    benchmark2026: '≤ 200ms (Substituiu o antigo FID)',
+    benchmark2026: '≤ 200ms (Padrão Google)',
     impactOnRank: 'CRÍTICO',
     diagnosticSummary: inpStatus === 'EXCELENTE'
       ? 'Respostas a toques no celular (selecionar tamanhos PP-G2) acontecem de forma fluida em < 200ms.'
-      : 'O clique no seletor de tamanho trava a thread principal do navegador por mais de 200ms devido a listeners pesados.',
+      : 'O clique no seletor de tamanho trava a thread principal do navegador por mais de 200ms devido a listeners de scripts pesados.',
     actionableFix: 'Implementar debounce nos seletores de variante e adiar scripts analíticos não essenciais para requestIdleCallback.'
   };
 
   // 3. ANÁLISE DE CLS (Cumulative Layout Shift) — Meta: <= 0.1
-  const clsValue = 0.04;
+  const clsValue = lighthouseMetrics?.cls 
+    ? parseFloat(lighthouseMetrics.cls) 
+    : (html.includes('width=') && html.includes('height=') ? 0.03 : 0.08);
+
   const cls: WebVitalsMetric = {
     name: 'CLS',
-    label: 'Cumulative Layout Shift (Estabilidade Visual)',
+    label: 'Cumulative Layout Shift (Estabilidade)',
     value: clsValue,
     unit: '',
-    status: 'EXCELENTE',
+    status: clsValue <= 0.10 ? 'EXCELENTE' : 'PRECISA_MELHORAR',
     benchmark2026: '≤ 0.10',
     impactOnRank: 'ALTO',
-    diagnosticSummary: 'O layout não sofre saltos bruscos durante a rolagem mobile e renderização de banners.',
+    diagnosticSummary: clsValue <= 0.10
+      ? 'O layout não sofre saltos bruscos durante a rolagem mobile e renderização de banners.'
+      : 'Tags de imagem sem dimensões width/height explícitas podem provocar saltos bruscos durante o carregamento.',
     actionableFix: 'Manter width e height explícitos em todas as tags <img> e <video>.'
   };
 
   // 4. ANÁLISE DE TTFB (Time to First Byte) — Meta: <= 800ms
-  const ttfbValue = 380;
+  const ttfbValue = estimatedLoadTime ? Math.round(Math.min(850, estimatedLoadTime * 220)) : 380;
   const ttfb: WebVitalsMetric = {
     name: 'TTFB',
-    label: 'Time to First Byte (Resposta do Servidor)',
+    label: 'Time to First Byte (Servidor/CDN)',
     value: ttfbValue,
     unit: 'ms',
-    status: 'EXCELENTE',
+    status: ttfbValue <= 800 ? 'EXCELENTE' : 'PRECISA_MELHORAR',
     benchmark2026: '≤ 800ms',
     impactOnRank: 'MÉDIO',
-    diagnosticSummary: 'Tempo de resposta inicial de servidor CDN com cache de borda ativo.',
-    actionableFix: 'Ativar Edge Caching no Cloudflare / Akamai.'
+    diagnosticSummary: ttfbValue <= 800
+      ? 'Tempo de resposta inicial de servidor CDN com cache de borda ativo.'
+      : 'Latência do primeiro byte elevada. Considere CDN com cache de página completa.',
+    actionableFix: 'Ativar Edge Caching no Cloudflare / CDN da plataforma.'
   };
 
   // 5. VALIDAÇÃO DE SCHEMA.ORG (Google Shopping Orgânico / Rich Snippets)

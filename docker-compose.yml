@@ -9,3 +9,20 @@ services:
     restart: always
     environment:
       - NODE_ENV=production
+      - VITE_REMOTE_MCP_WORKER_URL=http://mcp-headless-worker:3001
+    depends_on:
+      - mcp-headless-worker
+
+  mcp-headless-worker:
+    build: ./docker/mcp-headless-worker
+    container_name: adshield_mcp_headless_worker
+    ports:
+      - "3001:3001"
+    restart: always
+    env_file:
+      - ./docker/mcp-headless-worker/.env
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - MAX_CONCURRENT_PAGES=4
+      - MCP_API_KEY=${MCP_API_KEY:-d2c4b969b83b3fdfe6ccf6371971bca5ea6382b717ce68cd87e9fafb44cdead2}

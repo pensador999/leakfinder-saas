@@ -223,27 +223,33 @@ export function auditSupplyChainDiscrepancy(
   }
 
   // 4. Process PRODUTOS DE REVENDA (Fornecedores Externos vs Fabricação Própria)
-  if (brandName.toLowerCase().includes('fishing') || brandName.toLowerCase().includes('brk')) {
+  const realResaleItems = brokenSkus.filter(i => i.manufacturingType === 'REVENDA');
+  if (realResaleItems.length > 0) {
+    const resaleItem = realResaleItems[0];
+    const resaleLoss = Math.round(finances.groundedAverageTicket * 12);
+    totalAdWaste += Math.round(resaleLoss * 0.7);
+    totalCancellationRisk += Math.round(resaleLoss * 0.3);
+
     discrepancyAlerts.push({
-      id: `disc-resale-fornecedor`,
-      sku: 'SKU-REVENDA-CMB',
-      productTitle: `Linha Adventure / Camisas de Botão (${brandName} Fornecedor Parceiro)`,
-      productUrl: `https://${domain}`,
-      imageSrc: '',
-      price: 289.90,
+      id: `disc-resale-${resaleItem.id || '1'}`,
+      sku: resaleItem.sku || 'SKU-REVENDA',
+      productTitle: `${resaleItem.productTitle} (Revenda Externa / Fornecedor Parceiro)`,
+      productUrl: resaleItem.productUrl || `https://${domain}`,
+      imageSrc: resaleItem.imageSrc || '',
+      price: finances.groundedAverageTicket,
       severity: 'GRAU_2_VENDA_FANTASMA',
-      severityLabel: '🛍️ Revenda Externa: Ruptura de Lote com Fornecedor de Confecção',
+      severityLabel: '🛍️ Revenda Externa: Ruptura de Lote com Fornecedor Parceiro',
       badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
-      symptom: 'Peça de revenda (Camisa de Botão/Workwear) com tamanhos centrais esgotados. Não produzida internamente no corte/sublimação.',
-      operationalCause: 'Reposição depende de lead time de confecção externa ou pedido mínimo (MOQ) de distribuidor parceiro.',
-      adWasteEstimatedMonthly: 4638,
-      cancellationRiskEstimatedMonthly: 1200,
-      totalFinancialRiskMonthly: 5838,
+      symptom: `Produto de revenda externa com tamanhos centrais [${resaleItem.missingSizes.join(', ')}] esgotados. Reposição não depende de confecção interna.`,
+      operationalCause: 'Reposição vinculada a pedido de compra (PO), pedido mínimo (MOQ) e lead time de distribuidor externo.',
+      adWasteEstimatedMonthly: Math.round(resaleLoss * 0.7),
+      cancellationRiskEstimatedMonthly: Math.round(resaleLoss * 0.3),
+      totalFinancialRiskMonthly: resaleLoss,
       recommendedAction: 'Pausar imediatamente criativos de mídia paga direcionados a itens de revenda sem grade e emitir pedido de compras ao fornecedor.',
       playbookScript: {
-        trafficManagerWhatsApp: `🚨 *PAUSA MANDATÓRIA DE ADS (REVENDA):* As camisas de botão Adventure são revenda externa e estão sem tamanho G. Pausar anúncios para estancar o desperdício.`,
-        magis5OperatorAction: `🔄 *AÇÃO DE HUB:* Pausar anúncio correspondente no Mercado Livre/Shopee se o saldo de tamanho G estiver zerado no ERP.`,
-        sankhyaPcpProductionNote: `📦 *SETOR DE COMPRAS • SANKHYA ERP:*\nItem: Camisa de Botão Adventure (Revenda Externa).\nAção Compras: Emitir Pedido de Compra (PO) de novo lote ao fornecedor parceiro. Chão de fábrica interno (PCP) isento desta reposição.`
+        trafficManagerWhatsApp: `🚨 *PAUSA DE ADS (REVENDA):* O produto "${resaleItem.productTitle}" é revenda externa e está sem [${resaleItem.missingSizes.join(', ')}]. Pausar anúncios para estancar o desperdício de verba.`,
+        magis5OperatorAction: `🔄 *AÇÃO DE HUB:* Pausar anúncio correspondente nos canais integrados se o saldo estiver zerado no ERP.`,
+        sankhyaPcpProductionNote: `📦 *SETOR DE COMPRAS • ERP:*\nItem: ${resaleItem.productTitle} (Revenda Externa).\nAção Compras: Emitir Pedido de Compra (PO) ao fornecedor parceiro. Fábrica interna isenta desta reposição.`
       }
     });
   }

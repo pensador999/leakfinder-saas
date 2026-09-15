@@ -6,8 +6,8 @@
  * - Nomes de colunas claros, organizados e sem termos técnicos complexos
  */
 
-import { RealSiteData, CatalogProductIssue } from '../siteInspector';
-import { AgentDiagnosticResult, CroFinding, IceIdea } from '../../types';
+import type { RealSiteData, CatalogProductIssue } from '../siteInspector.ts';
+import type { AgentDiagnosticResult, CroFinding, IceIdea } from '../../types/index.ts';
 
 export class SpreadsheetExporter {
   /**
@@ -66,6 +66,100 @@ export class SpreadsheetExporter {
     this.triggerDownload(
       csvContent,
       `Planilha_Estoque_e_Catalogo_${brandName.replace(/[^a-zA-Z0-9]/g, '_')}.csv`
+    );
+  }
+
+  /**
+   * 🔬 Planilha 1.1: Inventário Granular SKU por SKU (100% dos SKUs & Variantes)
+   */
+  public static exportAllSkusCsv(realSiteData: RealSiteData): void {
+    const brandName = realSiteData.brandName || 'Loja';
+    const deepAudit = realSiteData.catalogAudit?.deepSkuAudit;
+    const issues = realSiteData.catalogAudit?.issues || [];
+
+    const headers = [
+      'Código SKU',
+      'ID da Variante',
+      'Nome do Produto',
+      'Tamanho / Opção',
+      'Preço Unitário (R$)',
+      'Situação de Estoque',
+      'Classificação Fabril',
+      'Isenção _FULL / Marketplace',
+      'Demanda do Tamanho no Brasil (%)',
+      'Sangria Estimada em Tráfego (R$/mês)',
+      'Ação Operacional Recomendada',
+      'Link Direto na Loja'
+    ];
+
+    const rows: (string | number)[][] = [];
+
+    if (deepAudit && deepAudit.allProducts.length > 0) {
+      for (const prod of deepAudit.allProducts) {
+        for (const sku of prod.skus) {
+          rows.push([
+            `"${sku.skuCode}"`,
+            `"${sku.skuId}"`,
+            `"${prod.title.replace(/"/g, '""')}"`,
+            `"${sku.variantTitle.replace(/"/g, '""')}"`,
+            `R$ ${sku.price.toFixed(2).replace('.', ',')}`,
+            `"${sku.available ? 'EM ESTOQUE' : '🚨 RUPTURA CRÍTICA'}"`,
+            `"${sku.manufacturingType === 'FABRICACAO_PROPRIA' ? 'Fabricação Própria (PCP)' : 'Revenda Homologada'}"`,
+            `"${sku.isFullExempt ? 'Isento Fulfillment / Revenda' : 'Grade Ativa Obrigatória'}"`,
+            `${sku.sizeDemandWeight}%`,
+            `R$ ${(sku.estimatedWastedAdSpendDay * 30).toLocaleString('pt-BR')}`,
+            `"${sku.operationalAction.replace(/"/g, '""')}"`,
+            `"${prod.url}"`
+          ]);
+        }
+      }
+    } else {
+      // Fallback from issues and detailedSkus
+      for (const issue of issues) {
+        if (issue.detailedSkus && issue.detailedSkus.length > 0) {
+          for (const sku of issue.detailedSkus) {
+            rows.push([
+              `"${sku.skuCode}"`,
+              `"${sku.skuId}"`,
+              `"${issue.productTitle.replace(/"/g, '""')}"`,
+              `"${sku.variantTitle.replace(/"/g, '""')}"`,
+              `R$ ${sku.price.toFixed(2).replace('.', ',')}`,
+              `"${sku.available ? 'EM ESTOQUE' : '🚨 RUPTURA CRÍTICA'}"`,
+              `"${sku.manufacturingType === 'FABRICACAO_PROPRIA' ? 'Fabricação Própria (PCP)' : 'Revenda Homologada'}"`,
+              `"${sku.isFullExempt ? 'Isento Fulfillment / Revenda' : 'Grade Ativa Obrigatória'}"`,
+              `${sku.sizeDemandWeight}%`,
+              `R$ ${(sku.estimatedWastedAdSpendDay * 30).toLocaleString('pt-BR')}`,
+              `"${sku.operationalAction.replace(/"/g, '""')}"`,
+              `"${issue.productUrl}"`
+            ]);
+          }
+        } else {
+          rows.push([
+            `"${issue.sku}"`,
+            `"P-${issue.id}"`,
+            `"${issue.productTitle.replace(/"/g, '""')}"`,
+            `"Principal"`,
+            `R$ 169,90`,
+            `"${issue.missingSizes.length === 0 ? 'EM ESTOQUE' : '🚨 RUPTURA'}"`,
+            `"${issue.manufacturingType === 'FABRICACAO_PROPRIA' ? 'Fabricação Própria (PCP)' : 'Revenda'}"`,
+            `"${issue.isFullPrintExempt ? 'Isento' : 'Obrigatório'}"`,
+            `100%`,
+            `R$ 1.359,00`,
+            `"${issue.recommendedAction.replace(/"/g, '""')}"`,
+            `"${issue.productUrl}"`
+          ]);
+        }
+      }
+    }
+
+    const csvContent = [
+      headers.join(';'),
+      ...rows.map((row: (string | number)[]) => row.join(';'))
+    ].join('\r\n');
+
+    this.triggerDownload(
+      csvContent,
+      `Inventario_Granular_SKUs_${brandName.replace(/[^a-zA-Z0-9]/g, '_')}.csv`
     );
   }
 

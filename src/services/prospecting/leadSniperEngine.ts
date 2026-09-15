@@ -10,8 +10,10 @@ import { DeepScraperAgent, ScrapedCatalogItem } from '../orchestrator/deepScrape
 
 export type LeadProspectStatus = 
   | 'NOVO_LEAD' 
+  | 'QUALIFICADO_SANGRANDO'
   | 'CONTATADO' 
   | 'DOSSIE_ENVIADO' 
+  | 'RESPONDIDO'
   | 'REUNIAO_AGENDADA' 
   | 'FECHADO' 
   | 'DESCARTADO';

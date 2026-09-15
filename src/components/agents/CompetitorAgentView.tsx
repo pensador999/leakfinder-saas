@@ -50,35 +50,36 @@ export const CompetitorAgentView: React.FC<CompetitorAgentViewProps> = ({ diagno
   };
 
   const hasBrokenGrid = (realSiteData.catalogAudit?.productsWithBrokenGrid || 0) > 0;
+  const loadTime = Number((realSiteData.estimatedLoadTime || 1.8).toFixed(1));
   const dynamicComparisons = [
     {
       metric: 'Velocidade Mobile (LCP)',
-      you: `${realSiteData.estimatedLoadTime || 1.8}s`,
-      competitor: `${(Number(realSiteData.estimatedLoadTime || 1.8) + 0.9).toFixed(1)}s`,
-      status: (Number(realSiteData.estimatedLoadTime || 1.8) <= 2.5) ? 'VANTAGEM' : 'DESVANTAGEM'
+      you: `${loadTime}s (medido ao vivo)`,
+      competitor: 'Meta Google CWV: < 2.5s',
+      status: loadTime <= 2.5 ? 'VANTAGEM' : 'DESVANTAGEM'
     },
     {
-      metric: 'Grade Completa (PP ao G2)',
-      you: !hasBrokenGrid ? '100% Grade Ativa' : `${realSiteData.catalogAudit?.productsWithBrokenGrid} Peças com Grade Rompida`,
-      competitor: 'Apenas P, M, G',
+      metric: 'Grade Completa de Tamanhos',
+      you: !hasBrokenGrid ? '100% Grade Ativa' : `${realSiteData.catalogAudit?.productsWithBrokenGrid} SKUs com Furo`,
+      competitor: 'Padrão D2C: Grade sem Ruptura',
       status: !hasBrokenGrid ? 'VANTAGEM' : 'DESVANTAGEM'
     },
     {
       metric: 'Desconto à Vista no Pix',
-      you: realSiteData.detectedCheckoutTerms?.hasPix ? '10% de Desconto' : 'Não Destacado na Vitrine',
-      competitor: 'Sem desconto Pix',
+      you: realSiteData.detectedCheckoutTerms?.hasPix ? 'Identificado no Site' : 'Não Destacado na Vitrine',
+      competitor: 'Benchmark: 5% a 10% OFF com Economia em R$',
       status: realSiteData.detectedCheckoutTerms?.hasPix ? 'VANTAGEM' : 'DESVANTAGEM'
     },
     {
       metric: 'Frete Grátis & Entrega',
       you: realSiteData.detectedCheckoutTerms?.hasFrete ? 'Regra por Região Ativa' : 'Calculadora Genérica',
-      competitor: 'Frete Fixo Alto',
+      competitor: 'Benchmark: Faixa Grátis ou Frete Fixo Baixo',
       status: realSiteData.detectedCheckoutTerms?.hasFrete ? 'VANTAGEM' : 'EMPATE'
     },
     {
       metric: 'Contraste WCAG do Botão',
-      you: `${diagnostic.visionAnalysis?.contrastAudit?.contrastRatio || 4.8}:1`,
-      competitor: '3.4:1 (Abaixo do Padrão)',
+      you: `${Number((diagnostic.visionAnalysis?.contrastAudit?.contrastRatio || 4.8).toFixed(1))}:1`,
+      competitor: 'Requisito Mínimo WCAG AA: 4.5:1',
       status: (diagnostic.visionAnalysis?.contrastAudit?.wcagPassed ?? true) ? 'VANTAGEM' : 'DESVANTAGEM'
     }
   ];
@@ -137,7 +138,7 @@ export const CompetitorAgentView: React.FC<CompetitorAgentViewProps> = ({ diagno
               <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
                 <th className="p-3">Métrica Analisada</th>
                 <th className="p-3 text-blue-700 bg-blue-50/40">Sua Loja ({realSiteData.brandName})</th>
-                <th className="p-3 text-rose-700 bg-rose-50/40">Rival ({activeCompetitor})</th>
+                <th className="p-3 text-rose-700 bg-rose-50/40">Padrão / Benchmark ({activeCompetitor})</th>
                 <th className="p-3 text-center">Status Tático</th>
               </tr>
             </thead>
@@ -148,9 +149,21 @@ export const CompetitorAgentView: React.FC<CompetitorAgentViewProps> = ({ diagno
                   <td className="p-3 font-mono font-bold text-blue-900 bg-blue-50/20">{comp.you}</td>
                   <td className="p-3 font-mono text-slate-600 bg-rose-50/20">{comp.competitor}</td>
                   <td className="p-3 text-center">
-                    <span className="px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-200 inline-flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3 text-emerald-600" /> VANTAGEM
-                    </span>
+                    {comp.status === 'VANTAGEM' && (
+                      <span className="px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-200 inline-flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-600" /> VANTAGEM
+                      </span>
+                    )}
+                    {comp.status === 'DESVANTAGEM' && (
+                      <span className="px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wide bg-rose-100 text-rose-800 border border-rose-200 inline-flex items-center gap-1">
+                        <AlertTriangle className="w-3 h-3 text-rose-600" /> DESVANTAGEM
+                      </span>
+                    )}
+                    {comp.status === 'EMPATE' && (
+                      <span className="px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wide bg-amber-100 text-amber-800 border border-amber-200 inline-flex items-center gap-1">
+                        EMPATE
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))}
