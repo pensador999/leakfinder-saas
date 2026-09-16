@@ -16,7 +16,10 @@
     "test:phase1": "node scripts/test_phase1_suite.mjs",
     "test:phase2": "node scripts/test_phase2_suite.mjs",
     "test:phase3": "node scripts/test_phase3_suite.mjs",
-    "test:phase4": "node scripts/test_phase4_suite.mjs"
+    "test:phase4": "node scripts/test_phase4_suite.mjs",
+    "test:founder": "node scripts/test_founder_experience_suite.mjs",
+    "test:outbound": "node scripts/test_outbound_campaign_suite.mjs",
+    "test:all": "node scripts/test_phase1_suite.mjs && node scripts/test_phase2_suite.mjs && node scripts/test_phase3_suite.mjs && node scripts/test_phase4_suite.mjs && node scripts/test_founder_experience_suite.mjs && node scripts/test_outbound_campaign_suite.mjs"
   },
   "dependencies": {
     "@fortawesome/free-brands-svg-icons": "^7.3.1",
