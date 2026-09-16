@@ -117,17 +117,26 @@ export function getVerifiedOutboundPilotLeads(): OutboundTargetLead[] {
 }
 
 /**
- * Applies Spintax variations to dynamic copy to prevent WhatsApp fingerprinting
+ * Applies Spintax variations to dynamic copy to prevent WhatsApp fingerprinting.
+ * Supports nested curly braces recursively (up to 10 passes).
  */
 export function applySpintax(template: string): string {
-  return template.replace(/\{([^{}]+)\}/g, (_, choices) => {
-    const options = choices.split('|');
-    return options[Math.floor(Math.random() * options.length)];
-  });
+  if (!template) return '';
+  let result = template;
+  let maxPasses = 10;
+  while (/\{([^{}]+)\}/.test(result) && maxPasses > 0) {
+    result = result.replace(/\{([^{}]+)\}/g, (_, choices) => {
+      const options = choices.split('|');
+      return options[Math.floor(Math.random() * options.length)];
+    });
+    maxPasses--;
+  }
+  return result;
 }
 
 /**
- * Generates an anti-ban scheduling queue with human-like jitter delays
+ * Generates an anti-ban scheduling queue with human-like jitter delays,
+ * enforcing business hours (09:00 - 18:00) and rolling over to D+1 upon reaching dailyLimit.
  */
 export function generateAntiBanSchedule(
   leads: OutboundTargetLead[],
@@ -141,13 +150,34 @@ export function generateAntiBanSchedule(
   channel: 'WHATSAPP_GOLDEN_TRIO' | 'SMS_FALLBACK' | 'EMAIL_DOSSIER';
 }> {
   const queue = [];
-  let accumulatedSeconds = 0;
+  let dayOffset = 0;
+  let itemsInCurrentDay = 0;
+  // Start base simulation at 09:15 of Day 1
+  let secondsFromStartOfDay = 15 * 60; // 09:15:00
+  const maxDaySeconds = (config.allowedHoursEnd - config.allowedHoursStart) * 3600; // 9 hours = 32400s
 
   for (let i = 0; i < leads.length; i++) {
     const lead = leads[i];
-    // Dynamic random jitter between min and max delay
     const jitter = Math.floor(Math.random() * (config.maxDelaySeconds - config.minDelaySeconds + 1)) + config.minDelaySeconds;
-    accumulatedSeconds += jitter;
+
+    // Check if daily limit reached or if time exceeds business hours
+    if (itemsInCurrentDay >= config.dailyLimit || (secondsFromStartOfDay + jitter) > maxDaySeconds) {
+      dayOffset++;
+      itemsInCurrentDay = 0;
+      secondsFromStartOfDay = 15 * 60; // Reset to 09:15:00 on the next day
+    }
+
+    secondsFromStartOfDay += jitter;
+    itemsInCurrentDay++;
+
+    // Compute hour, minute, second relative to allowedHoursStart
+    const totalSec = config.allowedHoursStart * 3600 + secondsFromStartOfDay;
+    const hour = Math.floor(totalSec / 3600);
+    const minute = Math.floor((totalSec % 3600) / 60);
+    const second = totalSec % 60;
+
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const timeStr = `${pad(hour)}:${pad(minute)}:${pad(second)}`;
 
     // Determine channel (Tier 1 gets WhatsApp Golden Trio; cold fallbacks receive SMS/Email)
     let channel: 'WHATSAPP_GOLDEN_TRIO' | 'SMS_FALLBACK' | 'EMAIL_DOSSIER' = 'WHATSAPP_GOLDEN_TRIO';
@@ -155,13 +185,11 @@ export function generateAntiBanSchedule(
       channel = i % 2 === 0 ? 'EMAIL_DOSSIER' : 'SMS_FALLBACK';
     }
 
-    const scheduledDate = new Date(Date.now() + accumulatedSeconds * 1000);
-
     queue.push({
       leadId: lead.id,
       brand: lead.brandName,
       phone: lead.whatsapp,
-      scheduledSlot: scheduledDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+      scheduledSlot: dayOffset === 0 ? timeStr : `${timeStr} (D+${dayOffset})`,
       jitterSeconds: jitter,
       channel
     });

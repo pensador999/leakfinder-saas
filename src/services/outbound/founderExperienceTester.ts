@@ -60,14 +60,38 @@ export const DEFAULT_FOUNDER_CONFIG: FounderTestConfig = {
 };
 
 /**
+ * Robust normalizer for Brazilian phone numbers:
+ * - Strips non-digits
+ * - Handles leading zeros in DDD: e.g. "034" -> "34", "55034" -> "5534"
+ * - Prepends 55 country code if missing
+ */
+export function normalizeBrazilianPhone(rawPhone: string): string {
+  let digits = rawPhone.replace(/\D/g, '');
+  
+  if (digits.startsWith('0')) {
+    digits = digits.replace(/^0+/, '');
+  }
+
+  if (digits.startsWith('55')) {
+    const afterCountry = digits.substring(2);
+    if (afterCountry.startsWith('0')) {
+      digits = '55' + afterCountry.replace(/^0+/, '');
+    }
+  } else {
+    digits = `55${digits}`;
+  }
+
+  return digits;
+}
+
+/**
  * Prepares the complete real-world Founder WhatsApp inspection package
  */
 export function buildFounderExperienceTest(
   config: Partial<FounderTestConfig> = {}
 ): FounderWhatsAppDispatchPayload {
   const merged: FounderTestConfig = { ...DEFAULT_FOUNDER_CONFIG, ...config };
-  const digitsOnly = merged.founderPhone.replace(/\D/g, '');
-  const canonicalPhone = digitsOnly.startsWith('55') ? digitsOnly : `55${digitsOnly}`;
+  const canonicalPhone = normalizeBrazilianPhone(merged.founderPhone);
   const testId = `test_fnd_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
   // 1. Build the full Golden Trio multimedia package
