@@ -1,5 +1,5 @@
 import { EdgeProxyService } from './network/edgeProxyService.ts';
-import { recordStoreInspection } from './memory/storeContextMemory.ts';
+import { recordStoreInspection, extractProductHandle } from './memory/storeContextMemory.ts';
 import { 
   auditDeepCatalog, 
   auditProductDeepSkus
@@ -895,6 +895,31 @@ async function fetchHeadlessServerlessAudit(cleanUrl: string): Promise<any | nul
 }
 
 /**
+ * 🧠 Sincroniza os produtos inspecionados com a memória episódica (Mem0 Pattern)
+ * Usa o extractProductHandle estável para rastrear reposições sem falsos-positivos.
+ */
+function syncInspectionToEpisodicMemory(result: RealSiteData): void {
+  try {
+    const productsToRecord = (result.catalogAudit?.issues || []).map(issue => ({
+      handle: extractProductHandle(issue.productUrl, issue.sku, issue.id),
+      title: issue.productTitle,
+      url: issue.productUrl,
+      brokenSizes: issue.missingSizes,
+      availableSizes: issue.availableSizes
+    }));
+
+    if (productsToRecord.length > 0) {
+      recordStoreInspection(result.domain, {
+        brandName: result.brandName,
+        products: productsToRecord
+      });
+    }
+  } catch (memErr) {
+    console.warn('[siteInspector] storeContextMemory recording failed gracefully:', memErr);
+  }
+}
+
+/**
  * Core Real Website Inspector Engine (Universally Adaptive)
  */
 export async function inspectRealWebsite(targetUrl: string): Promise<RealSiteData> {
@@ -1054,6 +1079,9 @@ export async function inspectRealWebsite(targetUrl: string): Promise<RealSiteDat
       detectedWhatsapp: contact.detectedWhatsApp,
       screenshotUrl: headlessData.screenshotBase64
     };
+
+    // 🧠 Sincroniza catálogo com a memória episódica Mem0
+    syncInspectionToEpisodicMemory(result);
 
     inspectionCache.set(cacheKey, { data: result, timestamp: Date.now() });
     return result;
@@ -1295,25 +1323,8 @@ export async function inspectRealWebsite(targetUrl: string): Promise<RealSiteDat
     if (scrapedMarkdown) result.scrapedMarkdown = scrapedMarkdown;
   }
 
-  // 🧠 Gravação de Memória Episódica (Mem0 Pattern) para Rastreamento de Reposição
-  try {
-    const productsToRecord = (result.catalogAudit?.issues || []).map(issue => ({
-      handle: issue.sku || issue.id,
-      title: issue.productTitle,
-      url: issue.productUrl,
-      brokenSizes: issue.missingSizes,
-      availableSizes: issue.availableSizes
-    }));
-
-    if (productsToRecord.length > 0) {
-      recordStoreInspection(result.domain, {
-        brandName: result.brandName,
-        products: productsToRecord
-      });
-    }
-  } catch (memErr) {
-    console.warn('[siteInspector] storeContextMemory recording failed gracefully:', memErr);
-  }
+  // 🧠 Sincroniza catálogo com a memória episódica Mem0
+  syncInspectionToEpisodicMemory(result);
 
   inspectionCache.set(cacheKey, { data: result, timestamp: Date.now() });
   return result;

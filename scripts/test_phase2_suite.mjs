@@ -1,14 +1,11 @@
-// ==============================================================================
-// 🧪 SUÍTE DE TESTES AUTOMATIZADOS • FASE 2 (MEM0 CONTEXT & FIRECRAWL FALLBACK)
-// Validação de memória episódica, detecção de reposição e bypass Cloudflare.
-// ==============================================================================
-
 import { 
   getStoreMemory,
   recordStoreInspection,
   detectRestockEvents,
   formatRestockCelebrationMessage,
-  normalizeDomain
+  normalizeDomain,
+  extractCanonicalSize,
+  extractProductHandle
 } from '../src/services/memory/storeContextMemory.ts';
 
 import { 
@@ -34,11 +31,18 @@ function assertTest(condition, testName, errorMsg) {
   }
 }
 
-// 1. Testes de Normalização e Perfil Inicial de Memória
-console.log('🔍 [1/4] Testando Inicialização de Memória da Loja (Mem0)...');
+// 1. Testes de Normalização, Canonização e Handles Estáveis
+console.log('🔍 [1/5] Testando Normalização, Canonização & Handles Estáveis...');
 const domain = 'https://lojadeteste.com.br/produtos';
 const clean = normalizeDomain(domain);
 assertTest(clean === 'lojadeteste.com.br', 'Domínio normalizado corretamente');
+
+assertTest(extractCanonicalSize('Azul / M') === 'M', 'Tamanho composto "Azul / M" canonizado para "M"');
+assertTest(extractCanonicalSize('Preto - GG') === 'GG', 'Tamanho composto "Preto - GG" canonizado para "GG"');
+assertTest(extractCanonicalSize('Tam: 41') === '41', 'Calçado numérico "Tam: 41" canonizado para "41"');
+
+const handleFromUrl = extractProductHandle('https://lojadeteste.com.br/products/camisa-polo-linho?variant=123', 'SKU-001');
+assertTest(handleFromUrl === 'camisa-polo-linho', 'Handle estável extraído diretamente da URL do produto');
 
 const initialProfile = getStoreMemory(clean);
 assertTest(initialProfile.domain === 'lojadeteste.com.br', 'Perfil recuperado com domínio correto');
@@ -46,7 +50,7 @@ assertTest(initialProfile.auditCount === 0, 'Contagem inicial de auditorias zera
 assertTest(initialProfile.dailyAdBudget === 150, 'Orçamento padrão inicial definido (R$ 150/dia)');
 
 // 2. Teste de Registro da Inspeção T0 (Ruptura em M e G)
-console.log('\n🔍 [2/4] Testando Registro de Inspeção Inicial (T0: Ruptura)...');
+console.log('\n🔍 [2/5] Testando Registro de Inspeção Inicial (T0: Ruptura)...');
 const t0Result = recordStoreInspection('lojadeteste.com.br', {
   brandName: 'Loja de Teste',
   merchantName: 'Gustavo',
@@ -67,7 +71,7 @@ assertTest(t0Result.profile.knownSkus['camisa-polo-linho'].brokenSizes.includes(
 assertTest(t0Result.restockEvents.length === 0, 'Nenhum restock disparado na primeira inspeção');
 
 // 3. Teste de Inspeção T1 com Detecção de Reposição (Restock Detection)
-console.log('\n🔍 [3/4] Testando Inspeção Subsequente (T1: Reposição de Estoque)...');
+console.log('\n🔍 [3/5] Testando Inspeção Subsequente (T1: Reposição de Estoque)...');
 const t1Result = recordStoreInspection('lojadeteste.com.br', {
   products: [
     {
@@ -94,8 +98,20 @@ assertTest(celebrationMsg.includes('Camisa Polo Puro Linho'), 'Nome do produto n
 assertTest(celebrationMsg.includes('*[M]* voltaram ao estoque'), 'Identificação dos tamanhos repostos');
 assertTest(celebrationMsg.includes('reativá-las com segurança máxima'), 'Instrução positiva para o gestor');
 
-// 4. Testes do Roteador de Scraping Firecrawl Fallback
-console.log('\n🔍 [4/4] Testando Detector de Cloudflare & Contingência Firecrawl...');
+// 4. Teste de Imunidade a Falsos-Positivos de Reposição
+console.log('\n🔍 [4/5] Testando Imunidade a Falsos-Positivos de Reposição...');
+const falsePositiveCheck = detectRestockEvents('lojadeteste.com.br', [
+  {
+    handle: 'camisa-polo-linho',
+    title: 'Camisa Polo Puro Linho',
+    brokenSizes: ['G'], // G continua quebrado!
+    availableSizes: ['P', 'G'] // Suposta anomalia de catálogo onde G aparece em ambos
+  }
+]);
+assertTest(falsePositiveCheck.length === 0, 'G não é falso-positivo de restock pois continua na lista de quebrados');
+
+// 5. Testes do Roteador de Scraping Firecrawl Fallback
+console.log('\n🔍 [5/5] Testando Detector de Cloudflare & Contingência Firecrawl...');
 const isBlock403 = isCloudflareChallenge('Access Denied', 403);
 assertTest(isBlock403 === true, 'Status 403 reconhecido como bloqueio de segurança');
 

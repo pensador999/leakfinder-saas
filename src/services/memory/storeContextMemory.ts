@@ -100,12 +100,52 @@ export function getStoreMemory(rawDomain: string): StoreMemoryProfile {
 }
 
 /**
- * Saves store memory profile to runtime cache and persistent storage
+ * Extracts a canonical size token from compound labels (e.g. "Azul / M" -> "M")
+ */
+export function extractCanonicalSize(rawSize: string): string {
+  const trimmed = rawSize.trim().toUpperCase();
+  const standardTokens = ['PP', 'P', 'M', 'G', 'GG', 'XG', 'XGG', 'G1', 'G2', 'G3', 'G4', 'ÚNICO', 'UNICO'];
+  
+  // If it contains separators like slash or hyphen
+  const parts = trimmed.split(/[/|\-:]/).map(p => p.trim());
+  for (const part of parts) {
+    if (standardTokens.includes(part) || /^\d{2}$/.test(part)) {
+      return part;
+    }
+  }
+  return trimmed;
+}
+
+/**
+ * Extracts a reliable, stable product handle from URL or SKU
+ */
+export function extractProductHandle(productUrl?: string, sku?: string, fallbackId?: string): string {
+  if (productUrl) {
+    const match = productUrl.match(/\/products\/([^/?#]+)/i);
+    if (match && match[1]) {
+      return match[1].toLowerCase().trim();
+    }
+  }
+  if (sku && sku.trim()) {
+    return sku.toLowerCase().trim();
+  }
+  return (fallbackId || 'product-unknown').toLowerCase().trim();
+}
+
+/**
+ * Saves store memory profile to runtime cache and persistent storage with quota protection
  */
 export function saveStoreMemory(profile: StoreMemoryProfile): void {
   const domain = normalizeDomain(profile.domain);
   profile.domain = domain;
   profile.lastAuditedAt = new Date().toISOString();
+
+  // 🛡️ Quota Protection: Limit knownSkus to the 200 most recently inspected items
+  const skuEntries = Object.entries(profile.knownSkus);
+  if (skuEntries.length > 200) {
+    skuEntries.sort((a, b) => new Date(b[1].lastInspectedAt).getTime() - new Date(a[1].lastInspectedAt).getTime());
+    profile.knownSkus = Object.fromEntries(skuEntries.slice(0, 200));
+  }
 
   // 1. Save to in-memory map
   memoryRuntimeCache.set(domain, profile);
@@ -115,13 +155,21 @@ export function saveStoreMemory(profile: StoreMemoryProfile): void {
     try {
       window.localStorage.setItem(`${MEMORY_STORAGE_KEY_PREFIX}${domain}`, JSON.stringify(profile));
     } catch (e) {
-      console.warn('[storeContextMemory] Failed to write to localStorage:', e);
+      console.warn('[storeContextMemory] Quota exceeded or write error in localStorage:', e);
+      // Fallback: prune older history and retry
+      try {
+        profile.recentRestocks = profile.recentRestocks.slice(0, 5);
+        window.localStorage.setItem(`${MEMORY_STORAGE_KEY_PREFIX}${domain}`, JSON.stringify(profile));
+      } catch {
+        // Safe to ignore if storage is completely full
+      }
     }
   }
 }
 
 /**
  * Compares current audit against previous SKU snapshot to detect restocked variants
+ * Eliminates false-positives by ensuring the size is NOT in the current broken list.
  */
 export function detectRestockEvents(
   rawDomain: string,
@@ -138,29 +186,50 @@ export function detectRestockEvents(
   const now = new Date().toISOString();
 
   for (const prod of currentProducts) {
-    const handle = prod.handle.toLowerCase().trim();
+    const handle = extractProductHandle(prod.url, prod.handle);
     const prevSnapshot = memory.knownSkus[handle];
 
     if (prevSnapshot && prevSnapshot.brokenSizes.length > 0) {
-      // Find sizes that WERE broken previously, but are NOW available
-      const nowAvailableSet = new Set(prod.availableSizes.map(s => s.toUpperCase().trim()));
+      // Build sets for current available and currently broken sizes (both canonical and raw)
+      const nowAvailableSet = new Set(
+        prod.availableSizes.flatMap(s => [s.toUpperCase().trim(), extractCanonicalSize(s)])
+      );
+      const currentBrokenSet = new Set(
+        prod.brokenSizes.flatMap(s => [s.toUpperCase().trim(), extractCanonicalSize(s)])
+      );
+
+      // A size is truly restocked ONLY IF:
+      // 1. It was previously broken
+      // 2. It is now present in available sizes
+      // 3. It is NOT present in currently broken sizes (avoids false-positives)
       const restocked = prevSnapshot.brokenSizes
         .map(s => s.toUpperCase().trim())
-        .filter(brokenSize => nowAvailableSet.has(brokenSize));
+        .filter(brokenSize => {
+          const canonical = extractCanonicalSize(brokenSize);
+          const isNowAvailable = nowAvailableSet.has(brokenSize) || nowAvailableSet.has(canonical);
+          const isStillBroken = currentBrokenSet.has(brokenSize) || currentBrokenSet.has(canonical);
+          return isNowAvailable && !isStillBroken;
+        });
 
       if (restocked.length > 0) {
         restockEvents.push({
           productHandle: handle,
           productTitle: prod.title || prevSnapshot.productTitle,
           productUrl: prod.url || prevSnapshot.productUrl,
-          restockedSizes: restocked,
+          restockedSizes: Array.from(new Set(restocked.map(extractCanonicalSize))),
           detectedAt: now
         });
       }
     }
   }
 
-  return restockEvents;
+  // Deduplicate events by handle
+  const seenHandles = new Set<string>();
+  return restockEvents.filter(ev => {
+    if (seenHandles.has(ev.productHandle)) return false;
+    seenHandles.add(ev.productHandle);
+    return true;
+  });
 }
 
 /**
@@ -202,7 +271,7 @@ export function recordStoreInspection(
 
   // 3. Update known SKUs snapshots
   for (const prod of auditData.products) {
-    const handle = prod.handle.toLowerCase().trim();
+    const handle = extractProductHandle(prod.url, prod.handle);
     memory.knownSkus[handle] = {
       productHandle: handle,
       productTitle: prod.title,

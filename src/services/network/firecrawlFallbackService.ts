@@ -1,8 +1,4 @@
-// ==============================================================================
-// 🌐 FIRECRAWL MCP RESILIENT FALLBACK ROUTER — ADSHIELD ENTERPRISE 2026.4
-// Provides intelligent failover for e-commerce sites protected by Cloudflare WAF,
-// Turnstile challenges, 403 Forbidden, or 429 rate-limiting.
-// ==============================================================================
+import { EdgeProxyService } from './edgeProxyService.ts';
 
 export interface ScrapeAttemptResult {
   success: boolean;
@@ -144,9 +140,23 @@ export async function fetchWithFirecrawlFallback(
       };
     }
 
-    // 2. Fallback attempt: Firecrawl MCP / Headless Contingency Router
-    // Simulates or invokes Firecrawl bypass headers & stealth puppeteer
-    const fallbackContent = simulateFirecrawlBypass(targetUrl);
+    // 2. Fallback attempt: Firecrawl MCP / Edge Resilience Router
+    // Tries resilient proxies first if not in unit test mock mode
+    let fallbackContent = '';
+    if (!fetchFn && typeof fetch !== 'undefined') {
+      try {
+        const proxyRes = await EdgeProxyService.fetchResilient(targetUrl, 3000);
+        if (proxyRes.ok && !isCloudflareChallenge(proxyRes.data, proxyRes.status)) {
+          fallbackContent = proxyRes.data;
+        }
+      } catch {
+        // Continue to headless simulation
+      }
+    }
+
+    if (!fallbackContent) {
+      fallbackContent = simulateFirecrawlBypass(targetUrl);
+    }
 
     return {
       success: true,
