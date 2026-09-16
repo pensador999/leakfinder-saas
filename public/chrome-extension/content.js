@@ -1,15 +1,25 @@
 // ==============================================================================
-// 🛡️ ADSHIELD SENTINEL • CONTENT SCRIPT 3.0
-// Live DOM audit, stock rupture detector, legal compliance check,
-// and in-page floating HUD (Sentinel Floating Guard)
+// 🛡️ ADSHIELD SENTINEL • CONTENT SCRIPT 3.1 (ZERO-FALSE-POSITIVE ENGINE)
+// Live DOM & Native Payload Variant Extractor across Shopify, Nuvemshop,
+// VTEX, Yampi and Custom e-commerce platforms.
 // ==============================================================================
 
 (function () {
   let auditResult = null;
 
+  // Single-size accessory terms that must NOT trigger false alerts for P/M/G
+  const SINGLE_SIZE_TERMS = [
+    'BONÉ', 'BONE', 'MEIA', 'CINTO', 'BANDANA', 'MANGUITO', 'GARRAFA', 
+    'COPO', 'ÓCULOS', 'OCULOS', 'CARTEIRA', 'ADESIVO', 'CHAVEIRO', 
+    'WHEY', 'CREATINA', 'SUPLEMENTO', 'MOCHILA', 'BOLSA', 'CAPA', 
+    'PULSEIRA', 'COLAR', 'BRINCO', 'LENÇO', 'LENCO', 'MÁSCARA', 'MASCARA'
+  ];
+
   function runAudit() {
     const html = document.documentElement.outerHTML || '';
     const bodyText = document.body ? document.body.innerText || '' : '';
+    const pageTitle = (document.querySelector('h1')?.innerText || document.title || '').trim();
+    const titleUpper = pageTitle.toUpperCase();
 
     // 1. Detect E-Commerce Platform
     let platform = 'E-commerce';
@@ -29,60 +39,111 @@
       platform = 'Yampi';
     }
 
-    // 2. Detect Meta Pixel, GTM, GA4
+    // 2. Check Exemption Rules (Zero False-Positive Guard)
+    const isFullTag = html.includes('_FULL') || html.includes('_full') || titleUpper.includes('_FULL');
+    const isAccessory = SINGLE_SIZE_TERMS.some((term) => titleUpper.includes(term));
+    const isOneSizeText = bodyText.includes('Tamanho Único') || bodyText.includes('Tamanho Unico') || bodyText.includes('One Size');
+
+    const isExempt = isFullTag || isAccessory || isOneSizeText;
+    const exemptionReason = isFullTag 
+      ? 'Isento (Regra _FULL Fulfillment)' 
+      : (isAccessory ? 'Isento (Acessório / Tamanho Único)' : (isOneSizeText ? 'Isento (Tamanho Único)' : ''));
+
+    // 3. Detect Stock Rupture in Sizes with Multiplatform Selectors
+    let ruptureDetected = false;
+    let ruptureDetails = 'Grade Completa';
+    let estimatedWasteMonthly = 0;
+    const rupturedSizes = [];
+
+    if (!isExempt) {
+      // Platform-specific selectors
+      let soldOutSelector = '';
+
+      if (platform === 'Shopify') {
+        soldOutSelector = [
+          'fieldset.product-form__input input[type="radio"]:disabled + label',
+          '.product-form__input option:disabled',
+          '.variant-input--unavailable label',
+          '.swatch-element.soldout label',
+          'variant-radios input:disabled + label',
+          '[data-available="false"]'
+        ].join(',');
+      } else if (platform === 'Nuvemshop') {
+        soldOutSelector = [
+          '.product-variants-item.out-of-stock',
+          '.product-variants-item.js-outofstock',
+          '.js-variant-select option:disabled',
+          'input[name*="variation"]:disabled + label'
+        ].join(',');
+      } else if (platform === 'VTEX') {
+        soldOutSelector = [
+          '.vtex-sku-selector-1-x-unavailable',
+          '.vtex-sku-selector-1-x-skuSelectorItem--unavailable',
+          '.item_unavailable',
+          '.item_unavaliable',
+          '.skuselector .unavailable'
+        ].join(',');
+      } else if (platform === 'Yampi') {
+        soldOutSelector = [
+          '.yampi-variation-item.is-disabled',
+          '.swatch-option.disabled',
+          '[data-variation-id].out-of-stock'
+        ].join(',');
+      } else {
+        // Fallback for custom e-commerces
+        soldOutSelector = [
+          '.sold-out',
+          '.sold_out',
+          '.is-sold-out',
+          '.disabled[data-value]',
+          'button[disabled][data-variant-id]',
+          '[data-available="false"]'
+        ].join(',');
+      }
+
+      const unavailableElements = document.querySelectorAll(soldOutSelector);
+      
+      unavailableElements.forEach((el) => {
+        const txt = (el.textContent || el.innerText || el.getAttribute('data-value') || '').trim().toUpperCase();
+        if (txt && !rupturedSizes.includes(txt) && txt.length <= 6) {
+          rupturedSizes.push(txt);
+        }
+      });
+
+      if (rupturedSizes.length > 0) {
+        ruptureDetected = true;
+        ruptureDetails = `${rupturedSizes.join(', ')} esgotado(s)`;
+        estimatedWasteMonthly = Math.round(rupturedSizes.length * 1250);
+      } else if (unavailableElements.length > 0) {
+        ruptureDetected = true;
+        ruptureDetails = `${unavailableElements.length} tamanho(s) esgotado(s)`;
+        estimatedWasteMonthly = Math.round(unavailableElements.length * 1250);
+      }
+    } else {
+      ruptureDetails = exemptionReason;
+    }
+
+    // 4. Detect Meta Pixel, GTM, GA4
     const hasMetaPixel = html.includes('fbevents.js') || html.includes('fbq(') || html.includes('connect.facebook.net');
     const hasGtm = html.includes('googletagmanager.com/gtm.js');
     const hasGa4 = html.includes('gtag/js') || html.includes('GoogleAnalyticsObject');
 
-    // 3. Detect Stock Rupture in Sizes
-    let ruptureDetected = false;
-    let ruptureDetails = 'Grade Completa';
-    let estimatedWasteMonthly = 0;
-
-    const soldOutSelectors = [
-      '[data-available="false"]',
-      '.sold-out',
-      '.sold_out',
-      '.is-sold-out',
-      '.disabled[data-value]',
-      '.unavailable',
-      'button[disabled][data-variant-id]',
-      '.variant-input--unavailable',
-      '.swatch-element.soldout',
-      '.product-form__input input:disabled + label'
-    ];
-
-    const unavailableElements = document.querySelectorAll(soldOutSelectors.join(','));
-    const pageHasSoldOutText = bodyText.includes('Esgotado') || bodyText.includes('Avise-me quando chegar') || bodyText.includes('Sem estoque');
-
-    // Check exemption rule _FULL or One Size
-    const isFullExempted = html.includes('_FULL') || html.includes('_full') || bodyText.includes('Tamanho Único');
-
-    if ((unavailableElements.length > 0 || pageHasSoldOutText) && !isFullExempted) {
-      ruptureDetected = true;
-      const count = Math.max(1, unavailableElements.length || 2);
-      ruptureDetails = `${count} tamanho(s) esgotado(s)`;
-      estimatedWasteMonthly = Math.round(count * 1250);
-    } else if (isFullExempted) {
-      ruptureDetails = 'Isento (Regra _FULL / Único)';
-    }
-
-    // 4. Detect Size Chart Widget
+    // 5. Detect Size Chart Widget
     const hasSizeChart = 
       Boolean(document.querySelector('product-addons[data-custom-class*="size_chart"]')) ||
       Boolean(document.querySelector('.tabela-medidas, .tabela_medidas, .size-chart, .guia-tamanhos, #tabela-medidas, a[href*="tabela-de-medidas"]')) ||
       bodyText.includes('Tabela de Medidas') ||
       bodyText.includes('Guia de Tamanhos');
 
-    // 5. Detect Brazilian Legal Compliance (CNPJ)
+    // 6. Detect Brazilian Legal Compliance (CNPJ)
     const cnpjRegex = /\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/;
     const hasCnpj = cnpjRegex.test(bodyText) || cnpjRegex.test(html);
 
-    // 6. Calculate Integrity Score (0 to 100)
+    // 7. Calculate Integrity Score (0 to 100)
     let integrityScore = 100;
     if (ruptureDetected) integrityScore -= 30;
     if (!hasMetaPixel) integrityScore -= 20;
-    if (!hasSizeChart) integrityScore -= 15;
+    if (!hasSizeChart && !isExempt) integrityScore -= 15;
     if (!hasCnpj) integrityScore -= 10;
     integrityScore = Math.max(35, Math.min(100, integrityScore));
 
@@ -94,6 +155,8 @@
       hasGa4,
       ruptureDetected,
       ruptureDetails,
+      isExempt,
+      exemptionReason,
       estimatedWasteMonthly,
       hasSizeChart,
       hasCnpj,
@@ -112,10 +175,10 @@
         });
       }
     } catch (e) {
-      // Background worker might be sleeping or disconnected
+      // Worker sleeping
     }
 
-    // Mount In-Page Floating HUD if this looks like a product page or store
+    // Mount In-Page Floating HUD if this is a product page or rupture detected
     injectFloatingHUD(auditResult);
 
     return auditResult;
@@ -125,7 +188,6 @@
   function injectFloatingHUD(result) {
     if (document.getElementById('adshield-sentinel-hud-container')) return;
 
-    // Only inject on product pages or if rupture was detected
     const isPdp = window.location.pathname.includes('/products/') ||
                   window.location.pathname.includes('/produto/') ||
                   window.location.pathname.includes('/p/') ||
@@ -143,11 +205,14 @@
 
     const shadow = host.attachShadow({ mode: 'closed' });
 
-    const badgeBg = result.ruptureDetected ? 'rgba(239, 68, 68, 0.95)' : 'rgba(16, 185, 129, 0.95)';
-    const badgeBorder = result.ruptureDetected ? '#dc2626' : '#059669';
-    const statusText = result.ruptureDetected
-      ? `🚨 AdShield Alerta: ${result.ruptureDetails} (Perda est. R$ ${result.estimatedWasteMonthly.toLocaleString('pt-BR')}/mês)`
-      : `🛡️ AdShield: Grade 100% Íntegra • Score ${result.integrityScore}`;
+    let statusText = '';
+    if (result.ruptureDetected) {
+      statusText = `🚨 AdShield Alerta: ${result.ruptureDetails} (Risco est. R$ ${result.estimatedWasteMonthly.toLocaleString('pt-BR')}/mês)`;
+    } else if (result.isExempt) {
+      statusText = `🛡️ AdShield: ${result.exemptionReason} • Score ${result.integrityScore}`;
+    } else {
+      statusText = `🛡️ AdShield: Grade 100% Íntegra • Score ${result.integrityScore}`;
+    }
 
     shadow.innerHTML = `
       <style>
@@ -222,7 +287,6 @@
     const pill = shadow.getElementById('hudPill');
     if (pill) {
       pill.addEventListener('click', () => {
-        // Trigger extension popup instructions or alert
         if (result.ruptureDetected) {
           alert(`[AdShield Sentinel]\n\n⚠️ Atenção: Detectamos ruptura neste produto!\n• ${result.ruptureDetails}\n• Risco financeiro estimado: R$ ${result.estimatedWasteMonthly.toLocaleString('pt-BR')}/mês em anúncios.\n\nAbra o ícone do AdShield no Chrome para ativar o monitoramento contínuo 24/7.`);
         }

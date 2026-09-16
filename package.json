@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "audit:system": "python scripts/audit_suite.py",
     "package:extension": "node scripts/package_chrome_extension.mjs",
-    "test:extension": "node scripts/test_chrome_extension.mjs"
+    "test:extension": "node scripts/test_chrome_extension.mjs",
+    "test:variants": "node scripts/test_variant_precision_suite.mjs"
   },
   "dependencies": {
     "@fortawesome/free-brands-svg-icons": "^7.3.1",
