@@ -1,4 +1,5 @@
 import { EdgeProxyService } from './network/edgeProxyService.ts';
+import { recordStoreInspection } from './memory/storeContextMemory.ts';
 import { 
   auditDeepCatalog, 
   auditProductDeepSkus
@@ -1292,6 +1293,26 @@ export async function inspectRealWebsite(targetUrl: string): Promise<RealSiteDat
 
     const scrapedMarkdown = await jinaMarkdownPromise;
     if (scrapedMarkdown) result.scrapedMarkdown = scrapedMarkdown;
+  }
+
+  // 🧠 Gravação de Memória Episódica (Mem0 Pattern) para Rastreamento de Reposição
+  try {
+    const productsToRecord = (result.catalogAudit?.issues || []).map(issue => ({
+      handle: issue.sku || issue.id,
+      title: issue.productTitle,
+      url: issue.productUrl,
+      brokenSizes: issue.missingSizes,
+      availableSizes: issue.availableSizes
+    }));
+
+    if (productsToRecord.length > 0) {
+      recordStoreInspection(result.domain, {
+        brandName: result.brandName,
+        products: productsToRecord
+      });
+    }
+  } catch (memErr) {
+    console.warn('[siteInspector] storeContextMemory recording failed gracefully:', memErr);
   }
 
   inspectionCache.set(cacheKey, { data: result, timestamp: Date.now() });
