@@ -287,14 +287,26 @@
     <span class="score-badge" id="scoreBadge">Score: --/100</span>
   </div>
 
-  <!-- Loss Card -->
+  <!-- Loss Card with Interactive Dynamic Simulator -->
   <div class="loss-card">
     <div class="loss-label">
-      <span>Vazamento Financeiro Estimado</span>
-      <span style="color: #fb7185;">🚨 Risco em Ads</span>
+      <span>Vazamento Projetado</span>
+      <span style="background: rgba(251, 113, 133, 0.2); color: #fb7185; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800; font-family: monospace;">[Simulador Dinâmico]</span>
     </div>
-    <div class="loss-amount" id="adWasteValue">R$ 2.500 /mês</div>
-    <div class="loss-sub" id="lossSubText">Calculado com base em tamanhos rompidos no tráfego pago</div>
+    <div class="loss-amount" id="adWasteValue">R$ 2.025 /mês</div>
+    
+    <!-- User Interactive Slider -->
+    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">
+      <div style="display: flex; justify-content: space-between; font-size: 10px; color: #cbd5e1; font-family: monospace;">
+        <span>Sua verba estimada em Ads:</span>
+        <span id="spendLabel" style="font-weight: 800; color: #38bdf8;">R$ 150/dia</span>
+      </div>
+      <input type="range" id="adSpendSlider" min="30" max="1000" step="10" value="150" style="width: 100%; margin-top: 5px; accent-color: #6366f1; cursor: pointer;">
+    </div>
+
+    <div class="loss-sub" id="lossSubText" style="font-size: 9px; color: #94a3b8; margin-top: 6px; line-height: 1.3;">
+      Fórmula transparente: [R$ 150/dia] × [45% demanda M/G] × 30 dias. Ajuste a barra para seu valor real.
+    </div>
   </div>
 
   <!-- Checklist Card -->

@@ -113,14 +113,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       }
 
-      // Update Loss Estimate
-      if (response.estimatedWasteMonthly && response.estimatedWasteMonthly > 0) {
-        estimatedLoss = response.estimatedWasteMonthly;
+      // Update Loss Estimate with dynamic calculation
+      let currentDailySpend = 150;
+      const ruptureRatio = response.ruptureDetected ? 0.45 : 0;
+      
+      const updateCalculatedLoss = (dailySpend) => {
+        currentDailySpend = dailySpend;
+        if (response.ruptureDetected) {
+          estimatedLoss = Math.round(dailySpend * 30 * ruptureRatio);
+        } else {
+          estimatedLoss = 0;
+        }
+
+        const lossEl = document.getElementById('adWasteValue');
+        if (lossEl) {
+          lossEl.textContent = response.ruptureDetected 
+            ? `R$ ${estimatedLoss.toLocaleString('pt-BR')} /mês`
+            : `R$ 0 /mês (Grade Íntegra)`;
+        }
+
+        const subEl = document.getElementById('lossSubText');
+        if (subEl) {
+          subEl.textContent = response.ruptureDetected
+            ? `Fórmula: [R$ ${dailySpend}/dia] × [45% busca M/G] × 30 dias. Ajuste a barra para sua verba real.`
+            : `Parabéns! Todos os tamanhos principais estão disponíveis nesta página.`;
+        }
+      };
+
+      // Listen to slider movements
+      const sliderEl = document.getElementById('adSpendSlider');
+      const spendLabelEl = document.getElementById('spendLabel');
+      if (sliderEl) {
+        sliderEl.addEventListener('input', (e) => {
+          const val = Number(e.target.value);
+          if (spendLabelEl) spendLabelEl.textContent = `R$ ${val}/dia`;
+          updateCalculatedLoss(val);
+        });
       }
-      const lossEl = document.getElementById('adWasteValue');
-      if (lossEl) {
-        lossEl.textContent = `R$ ${estimatedLoss.toLocaleString('pt-BR')} /mês`;
-      }
+
+      updateCalculatedLoss(150);
     });
 
     // 24/7 Sentinel Activation Button
@@ -149,9 +180,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnCopyAlert = document.getElementById('btnCopyAlert');
     if (btnCopyAlert) {
       btnCopyAlert.addEventListener('click', () => {
+        const sliderEl = document.getElementById('adSpendSlider');
+        const chosenSpend = sliderEl ? sliderEl.value : '150';
+
         const text = `🚨 *DIAGNÓSTICO ADSHIELD • SINAL DE RISCO EM ANÚNCIOS*\n\n` +
           `Olá! Inspecionamos a loja *${currentDomain}* (${currentPlatform}) e identificamos que há produtos ativos em campanhas sofrendo com *${ruptureInfo}*.\n\n` +
-          `💸 *Desperdício Estimado em Cliques:* ~R$ ${estimatedLoss.toLocaleString('pt-BR')}/mês\n` +
+          `💸 *Vazamento Projetado no Simulador:* ~R$ ${estimatedLoss.toLocaleString('pt-BR')}/mês (considerando verba de R$ ${chosenSpend}/dia e demanda de 45% nos tamanhos centrais).\n` +
           `🎯 *Recomendação Imediata:* Pausar anúncios desses SKUs ou substituir pelas URLs com grade disponível.\n\n` +
           `👉 Veja o laudo técnico completo e auditado: https://leakfinder-green.vercel.app/?url=${encodeURIComponent(currentDomain)}`;
 
