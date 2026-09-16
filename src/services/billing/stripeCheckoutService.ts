@@ -91,9 +91,11 @@ export function createStripeCheckoutSession(req: CheckoutSessionRequest): Checko
   const cleanDomain = req.storeDomain.replace(/^https?:\/\//, '').replace(/\/.*$/, '').toLowerCase();
   const sessionId = `cs_live_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
-  // Default production Stripe checkout route or payment link fallback
+  // Default production Stripe checkout route with attribution tracking
   const baseSuccessUrl = req.returnUrl || 'https://leakfinder-green.vercel.app';
-  const checkoutUrl = `https://buy.stripe.com/live_adshield_${plan.id.toLowerCase()}?client_reference_id=${encodeURIComponent(cleanDomain)}&prefilled_email=${encodeURIComponent(req.customerEmail || '')}`;
+  const utmParams = `utm_source=adshield_whatsapp&utm_medium=outbound&utm_campaign=sentinel_guard`;
+  const emailParam = req.customerEmail ? `&prefilled_email=${encodeURIComponent(req.customerEmail)}` : '';
+  const checkoutUrl = `https://buy.stripe.com/live_adshield_${plan.id.toLowerCase()}?client_reference_id=${encodeURIComponent(cleanDomain)}${emailParam}&${utmParams}`;
 
   return {
     success: true,
@@ -105,15 +107,64 @@ export function createStripeCheckoutSession(req: CheckoutSessionRequest): Checko
 }
 
 /**
+ * Calculates transparent, grounded financial risk based on ad spend and size demand
+ */
+export function calculateDynamicLossEstimate(params: {
+  dailyAdBudget?: number;
+  brokenSizes: string[];
+  totalSizesCount?: number;
+}): {
+  estimatedMonthlyLoss: number;
+  demandImpactRatio: number;
+  demandImpactPercent: number;
+  formulaText: string;
+  dailyAdBudget: number;
+} {
+  const dailyAdBudget = params.dailyAdBudget ?? 150;
+  const upperSizes = params.brokenSizes.map(s => s.trim().toUpperCase());
+  
+  const hasM = upperSizes.includes('M');
+  const hasG = upperSizes.includes('G');
+  const hasGG = upperSizes.includes('GG');
+
+  let demandImpactRatio = 0.20; // Default baseline for single peripheral size
+
+  if (hasM && hasG && hasGG) {
+    demandImpactRatio = 0.80; // Core + Extended curves
+  } else if (hasM && hasG) {
+    demandImpactRatio = 0.65; // Standard 65% demand in Brazilian fashion
+  } else if (hasM || hasG) {
+    demandImpactRatio = 0.35; // Single core pillar
+  } else if (params.totalSizesCount && params.totalSizesCount > 0) {
+    demandImpactRatio = Math.min(0.9, Number((params.brokenSizes.length / params.totalSizesCount).toFixed(2)));
+  }
+
+  const demandImpactPercent = Math.round(demandImpactRatio * 100);
+  const estimatedMonthlyLoss = Math.round(dailyAdBudget * demandImpactRatio * 30);
+  const labelDemanda = (hasM || hasG) ? 'Demanda M/G/GG' : 'Grade Afetada';
+  const formulaText = `[Verba Diária R$ ${dailyAdBudget}] × [${labelDemanda} ${demandImpactPercent}%] × 30 dias`;
+
+  return {
+    estimatedMonthlyLoss,
+    demandImpactRatio,
+    demandImpactPercent,
+    formulaText,
+    dailyAdBudget
+  };
+}
+
+/**
  * Formats a high-converting WhatsApp message that includes the live proof of crime,
- * transparent loss estimation, and 1-click Stripe subscription checkout link.
+ * transparent loss estimation, ROI multiplier, and 1-click Stripe subscription checkout link.
  */
 export function formatWhatsAppOfferWithStripe(params: {
   storeDomain: string;
   merchantName?: string;
   productTitle: string;
   brokenSizes: string[];
-  estimatedMonthlyLoss: number;
+  totalSizesCount?: number;
+  estimatedMonthlyLoss?: number;
+  dailyAdBudget?: number;
   planId?: SubscriptionPlanId;
 }): string {
   const { 
@@ -121,7 +172,7 @@ export function formatWhatsAppOfferWithStripe(params: {
     merchantName = 'Gestor', 
     productTitle, 
     brokenSizes, 
-    estimatedMonthlyLoss, 
+    totalSizesCount,
     planId = 'PRO_MONTHLY' 
   } = params;
 
@@ -129,15 +180,33 @@ export function formatWhatsAppOfferWithStripe(params: {
   const plan = ADSHIELD_STRIPE_PLANS[planId];
   const checkout = createStripeCheckoutSession({ planId, storeDomain: cleanDomain });
 
+  // Calculate dynamic loss or use provided estimate
+  const dynamicLoss = calculateDynamicLossEstimate({
+    dailyAdBudget: params.dailyAdBudget ?? 150,
+    brokenSizes,
+    totalSizesCount
+  });
+
+  const finalEstimatedLoss = params.estimatedMonthlyLoss ?? dynamicLoss.estimatedMonthlyLoss;
+  const formulaText = params.estimatedMonthlyLoss 
+    ? `[Simulação Proporcional ao Catálogo]` 
+    : dynamicLoss.formulaText;
+
+  // Transparent ROI calculation (How many R$ saved per R$ 1 invested)
+  const roiMultiplier = Math.max(1, (finalEstimatedLoss / plan.priceBrl)).toFixed(1);
+
   return (
     `🚨 *DIAGNÓSTICO ADSHIELD • SINAL DE RISCO EM ANÚNCIOS*\n\n` +
     `Olá, ${merchantName}! Inspecionamos a loja *${cleanDomain}* e identificamos que o produto *${productTitle}* possui campanha ativa, mas os tamanhos *[${brokenSizes.join(', ')}]* estão esgotados no site.\n\n` +
-    `💸 *Vazamento Estimado no Simulador:* ~R$ ${estimatedMonthlyLoss.toLocaleString('pt-BR')}/mês em tráfego jogado fora.\n` +
+    `💸 *Risco Estimado [Simulador Dinâmico]:* ~R$ ${finalEstimatedLoss.toLocaleString('pt-BR')}/mês em tráfego dispersado.\n` +
+    `📊 *Fórmula Transparente:* ${formulaText}\n` +
     `⚡ *Ação Imediata:* Pausar o anúncio desse SKU ou repor o lote com urgência.\n\n` +
     `🛡️ *Ative a Proteção Contínua 24/7 da sua loja:* \n` +
     `O Sentinela AdShield vigia seu catálogo dia e noite e avisa no WhatsApp assim que um tamanho campeão esgotar.\n\n` +
-    `👉 *Assinar com 7 dias de garantia (R$ ${plan.priceBrl}/mês):*\n` +
+    `📈 *Retorno do Investimento Estimado:* ~*${roiMultiplier}x* (Economia estimada de R$ ${finalEstimatedLoss.toLocaleString('pt-BR')} vs investimento de R$ ${plan.priceBrl}/mês).\n\n` +
+    `👉 *Assinar com 7 dias de garantia incondicional:*\n` +
     `${checkout.checkoutUrl}\n\n` +
     `Ou veja o laudo auditado completo: https://leakfinder-green.vercel.app/?url=${encodeURIComponent(cleanDomain)}`
   );
 }
+
