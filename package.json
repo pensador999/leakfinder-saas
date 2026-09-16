@@ -15,7 +15,8 @@
     "test:variants": "node scripts/test_variant_precision_suite.mjs",
     "test:phase1": "node scripts/test_phase1_suite.mjs",
     "test:phase2": "node scripts/test_phase2_suite.mjs",
-    "test:phase3": "node scripts/test_phase3_suite.mjs"
+    "test:phase3": "node scripts/test_phase3_suite.mjs",
+    "test:phase4": "node scripts/test_phase4_suite.mjs"
   },
   "dependencies": {
     "@fortawesome/free-brands-svg-icons": "^7.3.1",
