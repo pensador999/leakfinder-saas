@@ -18,3 +18,10 @@ description: >-
 - Ensure Pix discount banner (5% to 10% OFF) is visible before the fold.
 - Validate Fitts's Law on mobile touch targets (minimum 48x48px for size pickers and CTA buttons).
 - Recommend Sticky Buy Buttons for long product descriptions.
+
+## 3. Anti-Ghost Inventory & Ad Traffic Mismatch Protocol (Yellowstone Rule)
+- **Beware of `available: true` / Backorders:** Shopify stores routinely configure `inventory_policy: continue` to allow overselling even when physical warehouse stock is 0. An "Adicionar à Sacola" button does NOT mean the product is physically in stock.
+- **One-Size / Accessory Campaign Traps:** Single-size items (e.g. Boné Trucker Yellowstone Dutton Ranch) promoted in Meta Ads campaigns that run out of physical inventory will continue charging for clicks unless paused via API.
+- **Creative vs Reality Discrepancy:** Verify if the exact model promoted in the ad creative (e.g. Yellowstone Dutton Ranch Montana with 'Y' logo) matches what is being delivered or if the store blended photos to mask the stockout of the hero model.
+- **Stock-Shield Autopause Trigger:** When `inventory_quantity <= 0` or fulfillment delay contradicts "Envio Imediato", flag the product for automatic ad pause.
+

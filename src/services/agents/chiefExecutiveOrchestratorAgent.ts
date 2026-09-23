@@ -50,10 +50,34 @@ export async function runCeoOrchestratorEvaluation(diagnostic?: AgentDiagnosticR
   if (diagnostic?.realSiteData) {
     const { realSiteData } = diagnostic;
     const issues = realSiteData.catalogAudit?.issues || [];
-    const brokenItems = issues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
+    const brokenItems = issues.filter(i => 
+      (!i.isFullPrintExempt && i.missingSizes.length > 0) || 
+      i.missingSizes.includes('ESGOTADO') ||
+      i.missingSizes.includes('ESTOQUE_FANTASMA_SUSPEITO') ||
+      Boolean(i.isGhostInventorySuspect)
+    );
     const brokenInHouse = brokenItems.filter(i => i.manufacturingType !== 'REVENDA');
     const brokenResale = brokenItems.filter(i => i.manufacturingType === 'REVENDA');
+    const ghostSuspects = issues.filter(i => i.isGhostInventorySuspect || i.missingSizes.includes('ESTOQUE_FANTASMA_SUSPEITO'));
     const monthlyLoss = realSiteData.catalogAudit?.monthlyLossEstimateBRL || 0;
+
+    if (ghostSuspects.length > 0) {
+      decisions.push({
+        id: 'ceo-dec-ghost-inventory-pause',
+        sourceAgent: 'MEDIA_BUYER',
+        sourceAgentName: '05. Media Buyer & Risco em Ads (Protocolo Yellowstone)',
+        proposalTitle: `Intervenção Imediata: Pausar Anúncios de ${ghostSuspects.length} Produto(s) com Risco de Estoque Fantasma`,
+        category: 'GESTAO_DE_MIDIA',
+        impactScore: 10.0,
+        confidenceScore: 10.0,
+        easeScore: 9.9,
+        iceScore: 10.0,
+        decision: 'APROVADO_PARA_EXECUCAO',
+        ceoVerdictRationale: `Veto executivo imediato. Os produtos ostentam selos de pronta entrega/envio imediato enquanto operam com estoque desvinculado ou em backorder oculto. Risco agudo de infração ao CDC Art. 35 e queima de ROAS.`,
+        allocatedSprint: 'SPRINT_48H_QUICK_WIN',
+        estimatedMrrImpact: `Blindagem imediata contra chargebacks e devoluções`
+      });
+    }
 
     if (brokenResale.length > 0) {
       decisions.push({

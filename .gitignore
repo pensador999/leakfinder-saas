@@ -53,4 +53,7 @@ serviceAccountKey.json
 *_preview.html
 debate_agentes_preview.html
 relatorio_executivo_adshield_swarm.html
+scratch/
+data/audit_results/
+data/outbound/
 

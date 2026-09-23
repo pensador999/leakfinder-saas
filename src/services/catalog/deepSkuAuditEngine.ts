@@ -4,6 +4,8 @@
 // Zero generalization: Each product SKU is treated as a unique inventory entity.
 // ==============================================================================
 
+import { assessGhostInventoryRisk, type GhostInventoryRiskAssessment } from './ghostInventoryShieldEngine.ts';
+
 export interface AuditedProductSkuItem {
   skuId: string;
   skuCode: string;
@@ -35,6 +37,7 @@ export interface AuditedProductWithSkus {
   criticalBleedBrlMonth: number;
   healthScore: number;
   manufacturingCategory: 'FABRICACAO_PROPRIA' | 'REVENDA';
+  ghostInventoryRisk?: GhostInventoryRiskAssessment;
 }
 
 export interface DeepCatalogAuditSummary {
@@ -82,12 +85,26 @@ function classifyManufacturing(title: string, skuCode: string, tags: string[], p
     upper.includes('BOTAO') ||
     upper.includes('SOCIAL') ||
     upper.includes('BOTINA') ||
+    upper.includes('BOTA') ||
     upper.includes('CALÇADO') ||
+    upper.includes('CALCADO') ||
+    upper.includes('BONÉ') ||
+    upper.includes('BONE') ||
+    upper.includes('BANDANA') ||
+    upper.includes('MANGUITO') ||
     upper.includes('ÓCULOS') ||
+    upper.includes('OCULOS') ||
     upper.includes('REVENDA') ||
     upper.includes('WORK') ||
     upper.includes('SAFARI') ||
+    upper.includes('ALGODÃO') ||
+    upper.includes('ALGODAO') ||
+    upper.includes('CASUAL') ||
+    upper.includes('ENVIO IMEDIATO') ||
+    upper.includes('PRONTA ENTREGA') ||
+    skuCode.startsWith('APC') ||
     skuCode.startsWith('CMB') ||
+    skuCode.startsWith('CBT') ||
     skuCode.startsWith('BT') ||
     skuCode.startsWith('OC') ||
     /^\d{13}$/.test(skuCode);
@@ -100,7 +117,7 @@ function classifyManufacturing(title: string, skuCode: string, tags: string[], p
  */
 export function auditProductDeepSkus(
   product: any, 
-  storeDomainOrOptions: string | { storeDomain?: string; dailyAdSpend?: number } = '', 
+  storeDomainOrOptions: string | { storeDomain?: string; dailyAdSpend?: number; isAdRunning?: boolean; operationMode?: string } = '', 
   dailyAdSpend: number = 250
 ): AuditedProductWithSkus {
   const storeDomain = typeof storeDomainOrOptions === 'string' 
@@ -109,6 +126,10 @@ export function auditProductDeepSkus(
   const effectiveAdSpend = typeof storeDomainOrOptions === 'object' && storeDomainOrOptions?.dailyAdSpend !== undefined
     ? storeDomainOrOptions.dailyAdSpend
     : dailyAdSpend;
+  const isAdConfirmedRunning = typeof storeDomainOrOptions === 'object' && storeDomainOrOptions?.isAdRunning !== undefined
+    ? storeDomainOrOptions.isAdRunning
+    : false; // NUNCA presumir true sem comprovação fática
+  const operationMode = typeof storeDomainOrOptions === 'object' ? storeDomainOrOptions.operationMode : undefined;
 
   const title = product.title || 'Produto sem Título';
   const handle = product.handle || '';
@@ -154,8 +175,10 @@ export function auditProductDeepSkus(
       if (isSkuLevelFull) {
         operationalAction = 'Estoque Fulfillment: Saldo gerenciado no CD Mercado Livre/Shopee Full.';
       } else {
-        // Daily wasted ad spend proportioned by size importance with 2-decimal precision
-        wastedAdSpendDay = Number(((effectiveAdSpend * (demandWeight / 100)) * 0.85).toFixed(2));
+        // Daily wasted ad spend proportioned by size importance with 2-decimal precision (se anúncio confirmado)
+        wastedAdSpendDay = isAdConfirmedRunning 
+          ? Number(((effectiveAdSpend * (demandWeight / 100)) * 0.85).toFixed(2))
+          : 0;
         productDailyBleed = Number((productDailyBleed + wastedAdSpendDay).toFixed(2));
 
         if (manufacturingType === 'FABRICACAO_PROPRIA') {
@@ -194,6 +217,15 @@ export function auditProductDeepSkus(
     }
   }
 
+  const ghostInventoryRisk = assessGhostInventoryRisk({
+    product,
+    operationMode,
+    activeAdData: {
+      isAdRunning: isAdConfirmedRunning,
+      dailySpend: effectiveAdSpend
+    }
+  });
+
   return {
     id: String(product.id),
     title,
@@ -209,15 +241,19 @@ export function auditProductDeepSkus(
     criticalBleedBrlDay: productDailyBleed,
     criticalBleedBrlMonth: Number((productDailyBleed * 30).toFixed(2)),
     healthScore,
-    manufacturingCategory: manufacturingType
+    manufacturingCategory: manufacturingType,
+    ghostInventoryRisk
   };
 }
 
 /**
  * 📦 Deep audit of the full catalog: Iterates exhaustively through every single product and SKU
  */
-export function auditDeepCatalog(products: any[], options: { storeDomain?: string; dailyAdSpend?: number } = {}): DeepCatalogAuditSummary {
-  const { storeDomain = 'loja.com.br', dailyAdSpend = 250 } = options;
+export function auditDeepCatalog(
+  products: any[], 
+  options: { storeDomain?: string; dailyAdSpend?: number; isAdRunning?: boolean; operationMode?: string } = {}
+): DeepCatalogAuditSummary {
+  const { storeDomain = 'loja.com.br', dailyAdSpend = 250, isAdRunning = false, operationMode } = options;
 
   let totalSkus = 0;
   let totalInStock = 0;
@@ -226,7 +262,7 @@ export function auditDeepCatalog(products: any[], options: { storeDomain?: strin
   let totalMonthlyBleed = 0;
 
   const auditedProducts: AuditedProductWithSkus[] = products.map(p => {
-    const audited = auditProductDeepSkus(p, storeDomain, dailyAdSpend);
+    const audited = auditProductDeepSkus(p, options, dailyAdSpend);
     totalSkus += audited.totalSkusCount;
     totalInStock += audited.activeSkusCount;
     totalRuptured += audited.rupturedSkusCount;

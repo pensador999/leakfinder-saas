@@ -243,6 +243,7 @@ export function HomePage() {
       label: 'Mídia & Inteligência',
       badge: viewMode === 'war_room' ? 'War Room' : 'IA 24h',
       tabs: viewMode === 'merchant' ? [
+        { id: 'agent_flowchart', label: 'Enxame 18 Agentes (Autônomo)', icon: Zap, highlight: true },
         { id: 'tree_of_thought', label: 'Debate dos Agentes (ToT)', icon: GitFork, highlight: true },
         { id: 'truth_auditor', label: 'Tribunal de Consenso (2 Agentes)', icon: Scale, highlight: true },
         { id: 'vector_radar', label: 'Memória RAG & Radar', icon: Database, highlight: true },
@@ -252,6 +253,7 @@ export function HomePage() {
         { id: 'ceo_orchestrator', label: 'Orquestrador CEO', icon: Crown, highlight: true },
         ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : [])
       ] : [
+        { id: 'agent_flowchart', label: 'Enxame 18 Agentes (Autônomo)', icon: Zap, highlight: true },
         { id: 'tree_of_thought', label: 'Debate dos Agentes (ToT)', icon: GitFork, highlight: true },
         { id: 'truth_auditor', label: 'Tribunal de Consenso (Zero Falso-Positivo)', icon: Scale, highlight: true },
         { id: 'vector_radar', label: 'Memória RAG & Radar', icon: Database, highlight: true },
@@ -285,7 +287,7 @@ export function HomePage() {
   const activePillarTabs = currentPillar.tabs;
 
   return (
-    <div className="min-h-screen bg-slate-50 bg-mesh-pattern text-slate-800 font-sans antialiased pb-24">
+    <div className="min-h-screen bg-[#0E100F] obsidian-grid-pattern text-[#F0EFE6] font-sans antialiased pb-24">
       
       {/* Sticky Header */}
       <Header 
@@ -339,10 +341,10 @@ export function HomePage() {
             />
 
             {/* 🎛️ EXECUTIVE CONTROL & MODE CENTER (PROGRESSIVE DISCLOSURE) */}
-            <div className="p-2.5 bg-white/90 backdrop-blur-xl rounded-2xl border border-slate-200/80 shadow-premium flex flex-wrap items-center justify-between gap-3 relative z-30">
+            <div className="p-2.5 bg-[#141716] rounded-2xl border border-white/10 shadow-2xl flex flex-wrap items-center justify-between gap-3 relative z-30">
               
               {/* Left: Modern Segmented Mode Switcher */}
-              <div className="flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/60 text-xs font-bold">
+              <div className="flex items-center bg-[#101211] p-1 rounded-xl border border-white/10 text-xs font-bold font-mono">
                 <button
                   onClick={() => {
                     setViewMode('merchant');
@@ -352,11 +354,11 @@ export function HomePage() {
                   }}
                   className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
                     viewMode === 'merchant'
-                      ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80'
-                      : 'text-slate-500 hover:text-slate-900'
+                      ? 'bg-[#0AE448]/20 text-[#0AE448] border border-[#0AE448]/40 shadow-sm'
+                      : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  <ShoppingCart className="w-3.5 h-3.5 text-emerald-600" />
+                  <ShoppingCart className="w-3.5 h-3.5 text-[#0AE448]" />
                   <span>Visão Lojista (Lucro)</span>
                 </button>
 
@@ -364,11 +366,11 @@ export function HomePage() {
                   onClick={() => setViewMode('war_room')}
                   className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
                     viewMode === 'war_room'
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'text-slate-500 hover:text-slate-900'
+                      ? 'bg-white/15 text-[#FFFCE1] border border-white/25 shadow-sm'
+                      : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  <Cpu className="w-3.5 h-3.5 text-cyan-400" />
+                  <Cpu className="w-3.5 h-3.5 text-[#00BAE2]" />
                   <span>War Room Técnico</span>
                 </button>
               </div>
@@ -382,30 +384,30 @@ export function HomePage() {
                     setActivePillar('MEDIA_INTELLIGENCE');
                     setActiveTab('market_hunter');
                   }}
-                  className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-2xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl bg-[#101211] hover:bg-[#141716] text-[#00BAE2] border border-[#00BAE2]/30 hover:border-[#00BAE2]/60 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                   title="Abrir Motor de Prospecção Outbound B2B e Lead Sniper"
                 >
-                  <Target className="w-3.5 h-3.5 text-blue-600" />
+                  <Target className="w-3.5 h-3.5 text-[#00BAE2]" />
                   <span>Lead Sniper B2B</span>
                 </button>
 
                 {/* 📲 Vigia WhatsApp 24/7 (High Priority Status Button) */}
                 <button
                   onClick={() => setIsWhatsAppWatchdogOpen(true)}
-                  className="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold flex items-center gap-2 transition-all shadow-2xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl bg-[#101211] hover:bg-[#141716] text-[#0AE448] border border-[#0AE448]/30 hover:border-[#0AE448]/60 text-xs font-bold flex items-center gap-2 transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                   title="Configurar entrega diária dos relatórios executivos no WhatsApp"
                 >
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse inline-block" />
+                  <span className="w-2 h-2 rounded-full bg-[#0AE448] animate-pulse inline-block shadow-[0_0_8px_#0AE448]" />
                   <span>Vigia WhatsApp (07:00)</span>
                 </button>
 
                 {/* 🔌 Conectar Loja (1-Click) */}
                 <button
                   onClick={() => setIsIntegrationsModalOpen(true)}
-                  className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-xl bg-[#101211] hover:bg-[#191C1B] text-[#FFFCE1] border border-white/10 hover:border-white/20 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                   title="Conectar Shopify, Mercado Livre ou VTEX"
                 >
-                  <Plug className="w-3.5 h-3.5 text-emerald-400" />
+                  <Plug className="w-3.5 h-3.5 text-[#0AE448]" />
                   <span>Conectar Loja</span>
                 </button>
 
@@ -413,32 +415,32 @@ export function HomePage() {
                 <div className="relative">
                   <button
                     onClick={() => setIsToolsMenuOpen(!isToolsMenuOpen)}
-                    className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs ${
+                    className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs ${
                       isToolsMenuOpen 
-                        ? 'bg-slate-100 border-slate-400 text-slate-900' 
-                        : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
+                        ? 'bg-[#191C1B] border-[#0AE448]/50 text-[#0AE448]' 
+                        : 'bg-[#101211] hover:bg-[#141716] border-white/10 text-[#BBBAA6] hover:text-[#FFFCE1]'
                     }`}
                   >
-                    <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                    <Layers className="w-3.5 h-3.5 text-[#00BAE2]" />
                     <span>Ferramentas & Dossiês</span>
-                    <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-3.5 h-3.5 text-[#7C7C6F] transition-transform ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {/* Popover Menu */}
                   {isToolsMenuOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl border border-slate-200 shadow-2xl p-1.5 z-50 animate-fadeIn space-y-0.5 font-sans">
+                    <div className="absolute right-0 top-full mt-2 w-64 bg-[#141716] rounded-2xl border border-white/10 shadow-2xl p-1.5 z-50 animate-fadeIn space-y-0.5 font-sans backdrop-blur-md">
                       <button
                         onClick={() => { 
                           setActivePillar('MEDIA_INTELLIGENCE');
                           setActiveTab('market_hunter'); 
                           setIsToolsMenuOpen(false); 
                         }}
-                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-blue-50 text-xs font-semibold text-blue-900 flex items-center gap-2.5 transition-colors cursor-pointer"
+                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-white/5 text-xs font-semibold text-[#00BAE2] flex items-center gap-2.5 transition-colors cursor-pointer"
                       >
-                        <Target className="w-4 h-4 text-blue-600 shrink-0" />
+                        <Target className="w-4 h-4 text-[#00BAE2] shrink-0" />
                         <div>
-                          <span className="block text-slate-900 font-bold">Lead Sniper (Prospecção)</span>
-                          <span className="text-[10px] text-slate-400 font-normal">Buscar lojas no Meta Ads com estoque furado</span>
+                          <span className="block text-[#FFFCE1] font-bold">Lead Sniper (Prospecção)</span>
+                          <span className="text-[10px] text-[#7C7C6F] font-normal">Buscar lojas no Meta Ads com estoque furado</span>
                         </div>
                       </button>
 
@@ -447,93 +449,93 @@ export function HomePage() {
                           setIsMetaAutoKillModalOpen(true); 
                           setIsToolsMenuOpen(false); 
                         }}
-                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-rose-50 text-xs font-semibold text-rose-900 flex items-center gap-2.5 transition-colors cursor-pointer"
+                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-white/5 text-xs font-semibold text-rose-400 flex items-center gap-2.5 transition-colors cursor-pointer"
                       >
-                        <Zap className="w-4 h-4 text-rose-600 shrink-0" />
+                        <Zap className="w-4 h-4 text-rose-400 shrink-0" />
                         <div>
-                          <span className="block text-slate-900 font-bold">Kill-Switch Meta Ads</span>
-                          <span className="text-[10px] text-slate-400 font-normal">Pausar campanhas em &lt;60s ao esgotar</span>
+                          <span className="block text-[#FFFCE1] font-bold">Kill-Switch Meta Ads</span>
+                          <span className="text-[10px] text-[#7C7C6F] font-normal">Pausar campanhas em &lt;60s ao esgotar</span>
                         </div>
                       </button>
 
                       <button
                         onClick={() => { setIsStoresManagerOpen(true); setIsToolsMenuOpen(false); }}
-                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 flex items-center gap-2.5 transition-colors cursor-pointer"
+                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-white/5 text-xs font-semibold text-[#BBBAA6] flex items-center gap-2.5 transition-colors cursor-pointer"
                       >
-                        <Store className="w-4 h-4 text-blue-600 shrink-0" />
+                        <Store className="w-4 h-4 text-blue-400 shrink-0" />
                         <div>
-                          <span className="block text-slate-900 font-bold">Lojas no Radar</span>
-                          <span className="text-[10px] text-slate-400 font-normal">Monitoramento de múltiplos domínios</span>
+                          <span className="block text-[#FFFCE1] font-bold">Lojas no Radar</span>
+                          <span className="text-[10px] text-[#7C7C6F] font-normal">Monitoramento de múltiplos domínios</span>
                         </div>
                       </button>
 
                       <button
                         onClick={() => { setIsBatchAuditorOpen(true); setIsToolsMenuOpen(false); }}
-                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 flex items-center gap-2.5 transition-colors cursor-pointer"
+                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-white/5 text-xs font-semibold text-[#BBBAA6] flex items-center gap-2.5 transition-colors cursor-pointer"
                       >
-                        <Layers className="w-4 h-4 text-indigo-600 shrink-0" />
+                        <Layers className="w-4 h-4 text-indigo-400 shrink-0" />
                         <div>
-                          <span className="block text-slate-900 font-bold">Scanner em Lote</span>
-                          <span className="text-[10px] text-slate-400 font-normal">Auditar 20 lojas de clientes em lote</span>
+                          <span className="block text-[#FFFCE1] font-bold">Scanner em Lote</span>
+                          <span className="text-[10px] text-[#7C7C6F] font-normal">Auditar 20 lojas de clientes em lote</span>
                         </div>
                       </button>
 
                       <button
                         onClick={() => { setIsChromeExtensionOpen(true); setIsToolsMenuOpen(false); }}
-                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 flex items-center gap-2.5 transition-colors cursor-pointer"
+                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-white/5 text-xs font-semibold text-[#BBBAA6] flex items-center gap-2.5 transition-colors cursor-pointer"
                       >
-                        <Globe className="w-4 h-4 text-amber-600 shrink-0" />
+                        <Globe className="w-4 h-4 text-[#FF8709] shrink-0" />
                         <div>
-                          <span className="block text-slate-900 font-bold">Extensão Chrome</span>
-                          <span className="text-[10px] text-slate-400 font-normal">Auditar com 1 clique no navegador</span>
+                          <span className="block text-[#FFFCE1] font-bold">Extensão Chrome</span>
+                          <span className="text-[10px] text-[#7C7C6F] font-normal">Auditar com 1 clique no navegador</span>
                         </div>
                       </button>
 
                       <button
                         onClick={() => { setIsExportModalOpen(true); setIsToolsMenuOpen(false); }}
-                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 flex items-center gap-2.5 transition-colors cursor-pointer"
+                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-white/5 text-xs font-semibold text-[#BBBAA6] flex items-center gap-2.5 transition-colors cursor-pointer"
                       >
-                        <FileText className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <FileText className="w-4 h-4 text-[#0AE448] shrink-0" />
                         <div>
-                          <span className="block text-slate-900 font-bold">Exportar Dossiê PDF</span>
-                          <span className="text-[10px] text-slate-400 font-normal">Relatório executivo para reuniões</span>
+                          <span className="block text-[#FFFCE1] font-bold">Exportar Dossiê PDF</span>
+                          <span className="text-[10px] text-[#7C7C6F] font-normal">Relatório executivo para reuniões</span>
                         </div>
                       </button>
 
                       <button
                         onClick={() => { setIsWhiteLabelModalOpen(true); setIsToolsMenuOpen(false); }}
-                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 flex items-center gap-2.5 transition-colors cursor-pointer"
+                        className="w-full px-3 py-2 text-left rounded-xl hover:bg-white/5 text-xs font-semibold text-[#BBBAA6] flex items-center gap-2.5 transition-colors cursor-pointer"
                       >
-                        <Sparkles className="w-4 h-4 text-purple-600 shrink-0" />
+                        <Sparkles className="w-4 h-4 text-purple-400 shrink-0" />
                         <div>
-                          <span className="block text-slate-900 font-bold">Personalização White-Label</span>
-                          <span className="text-[10px] text-slate-400 font-normal">Logo e paleta da sua agência</span>
+                          <span className="block text-[#FFFCE1] font-bold">Personalização White-Label</span>
+                          <span className="text-[10px] text-[#7C7C6F] font-normal">Logo e paleta da sua agência</span>
                         </div>
                       </button>
 
-                      <div className="h-px bg-slate-100 my-1" />
+                      <div className="h-px bg-white/10 my-1" />
 
                       {/* Founder Access Section */}
                       {!isFounderAuthenticated ? (
                         <button
                           onClick={() => { setIsFounderModalOpen(true); setIsToolsMenuOpen(false); }}
-                          className="w-full px-3 py-2 text-left rounded-xl hover:bg-amber-50 text-xs font-semibold text-amber-900 flex items-center gap-2.5 transition-colors cursor-pointer"
+                          className="w-full px-3 py-2 text-left rounded-xl hover:bg-amber-500/10 text-xs font-semibold text-amber-400 flex items-center gap-2.5 transition-colors cursor-pointer"
                         >
-                          <Lock className="w-4 h-4 text-amber-600 shrink-0" />
+                          <Lock className="w-4 h-4 text-amber-400 shrink-0" />
                           <div>
-                            <span className="block text-amber-950 font-bold">Acesso do Fundador</span>
-                            <span className="text-[10px] text-amber-700/80 font-normal">Painel confidencial HQ</span>
+                            <span className="block text-[#FFFCE1] font-bold">Acesso do Fundador</span>
+                            <span className="text-[10px] text-amber-400/80 font-normal">Painel confidencial HQ</span>
                           </div>
                         </button>
                       ) : (
                         <button
                           onClick={() => { setActiveTab('founder_hq'); setIsToolsMenuOpen(false); }}
-                          className="w-full px-3 py-2 text-left rounded-xl bg-amber-50 hover:bg-amber-100 text-xs font-bold text-amber-950 flex items-center gap-2.5 transition-colors cursor-pointer"
+                          className="w-full px-3 py-2 text-left rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-xs font-bold text-amber-400 flex items-center gap-2.5 transition-colors cursor-pointer border border-amber-500/20"
                         >
-                          <Crown className="w-4 h-4 text-amber-600 shrink-0" />
+                          <Crown className="w-4 h-4 text-amber-400 shrink-0" />
                           <div>
                             <span className="block font-bold">Painel Fundador Ativo</span>
-                            <span className="text-[10px] text-amber-700 font-normal">Abrir Torre do Fundador (HQ)</span>
+                            <span className="text-[10px] text-amber-400/80 font-normal">Abrir Torre do Fundador (HQ)</span>
                           </div>
                         </button>
                       )}
@@ -548,7 +550,7 @@ export function HomePage() {
             <div className="space-y-2">
               
               {/* Top Segmented Pillar Selector (4 Pillars Max) */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 bg-slate-100/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/80 shadow-inner">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 bg-[#101211] backdrop-blur-md p-1.5 rounded-2xl border border-white/10 shadow-inner">
                 {pillarCategories.map((pillar) => {
                   const isPillarActive = activePillar === pillar.id;
                   return (
@@ -563,17 +565,17 @@ export function HomePage() {
                       className={`px-3.5 py-2.5 rounded-xl transition-all duration-200 cursor-pointer flex items-center justify-between gap-2 text-left font-bold text-xs ${
                         isPillarActive
                           ? pillar.id === 'FOUNDER_SUITE'
-                            ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                            : 'bg-white text-slate-900 shadow-sm border border-slate-200/90'
-                          : 'text-slate-500 hover:text-slate-900 hover:bg-white/60'
+                            ? 'bg-[#FF8709] text-[#0E100F] shadow-md shadow-[#FF8709]/20 font-black'
+                            : 'bg-[#191C1B] text-[#0AE448] shadow-sm border border-[#0AE448]/30'
+                          : 'text-[#BBBAA6] hover:text-[#FFFCE1] hover:bg-white/5'
                       }`}
                     >
                       <span className="truncate">{pillar.label}</span>
                       {pillar.badge && (
                         <span className={`px-2 py-0.5 rounded-md text-[10px] font-mono shrink-0 ${
                           isPillarActive 
-                            ? pillar.id === 'FOUNDER_SUITE' ? 'bg-amber-600/30 text-slate-950 font-black' : 'bg-slate-100 text-slate-700'
-                            : 'bg-slate-200/80 text-slate-600'
+                            ? pillar.id === 'FOUNDER_SUITE' ? 'bg-[#0E100F]/30 text-[#0E100F] font-black' : 'bg-[#0AE448]/20 text-[#0AE448]'
+                            : 'bg-white/5 text-[#7C7C6F]'
                         }`}>
                           {pillar.badge}
                         </span>
@@ -584,7 +586,7 @@ export function HomePage() {
               </div>
 
               {/* Focused Sub-Tabs Row (Linear / Raycast Style) */}
-              <div className="flex flex-wrap items-center gap-1.5 bg-white/90 backdrop-blur-xl p-2 rounded-2xl border border-slate-200/80 shadow-premium">
+              <div className="flex flex-wrap items-center gap-1.5 bg-[#141716] backdrop-blur-xl p-2 rounded-2xl border border-white/10 shadow-2xl">
                 {activePillarTabs.map((tab) => {
                   const TabIcon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -596,16 +598,16 @@ export function HomePage() {
                       className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shrink-0 cursor-pointer border ${
                         isActive
                           ? activePillar === 'FOUNDER_SUITE'
-                            ? 'bg-amber-500 text-slate-950 border-amber-600 shadow-md shadow-amber-500/20'
-                            : 'bg-slate-900 text-white border-slate-900 shadow-md shadow-slate-900/15'
-                          : 'bg-slate-50/80 text-slate-600 border-slate-200/90 hover:border-slate-300 hover:text-slate-900 hover:bg-white'
+                            ? 'bg-[#FF8709] text-[#0E100F] border-[#FF8709] shadow-md shadow-[#FF8709]/20'
+                            : 'bg-[#0AE448] text-[#0E100F] border-[#0AE448] shadow-md shadow-[#0AE448]/20'
+                          : 'bg-[#101211] text-[#BBBAA6] border-white/10 hover:border-white/20 hover:text-[#FFFCE1] hover:bg-[#191C1B]'
                       }`}
                     >
-                      <TabIcon className={`w-3.5 h-3.5 ${isActive ? (activePillar === 'FOUNDER_SUITE' ? 'text-slate-950' : 'text-white') : 'text-slate-400'}`} />
+                      <TabIcon className={`w-3.5 h-3.5 ${isActive ? 'text-[#0E100F]' : 'text-[#7C7C6F]'}`} />
                       <span>{tab.label}</span>
                       {tab.badge !== undefined && (
                         <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold ${
-                          isActive ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'
+                          isActive ? 'bg-black/20 text-[#0E100F]' : 'bg-white/5 text-[#7C7C6F]'
                         }`}>
                           {tab.badge}
                         </span>
@@ -923,15 +925,15 @@ export function HomePage() {
       </Suspense>
 
       {/* Footer Legal & Institucional em Conformidade com Decreto 7.962/2013 */}
-      <footer className="max-w-7xl mx-auto py-8 px-4 border-t border-slate-200 mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+      <footer className="max-w-7xl mx-auto py-8 px-4 border-t border-white/10 mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-[#7C7C6F] gap-4">
         <div>
-          <p className="font-bold text-slate-800">AdShield • BRK GROUP TECNOLOGIA LTDA</p>
-          <p className="text-[11px] text-slate-500 font-mono">CNPJ: 52.894.218/0001-90 • Auditoria 360º sob Marco Civil e LGPD.</p>
+          <p className="font-bold text-[#FFFCE1]">AdShield • BRK GROUP TECNOLOGIA LTDA</p>
+          <p className="text-[11px] text-[#7C7C6F] font-mono">CNPJ: 52.894.218/0001-90 • Auditoria 360º sob Marco Civil e LGPD.</p>
         </div>
         <div className="flex flex-wrap items-center gap-4 text-xs">
-          <button onClick={() => navigate('/about')} className="hover:text-blue-600 font-bold transition-colors cursor-pointer">Quem Somos</button>
-          <button onClick={() => navigate('/terms')} className="hover:text-blue-600 transition-colors cursor-pointer">Termos de Uso</button>
-          <button onClick={() => navigate('/privacy')} className="hover:text-blue-600 font-semibold transition-colors cursor-pointer">Política de Privacidade & LGPD</button>
+          <button onClick={() => navigate('/about')} className="hover:text-[#0AE448] font-bold transition-colors cursor-pointer">Quem Somos</button>
+          <button onClick={() => navigate('/terms')} className="hover:text-[#0AE448] transition-colors cursor-pointer">Termos de Uso</button>
+          <button onClick={() => navigate('/privacy')} className="hover:text-[#0AE448] font-semibold transition-colors cursor-pointer">Política de Privacidade & LGPD</button>
         </div>
       </footer>
 

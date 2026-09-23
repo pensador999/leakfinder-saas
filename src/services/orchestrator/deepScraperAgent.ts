@@ -1,5 +1,5 @@
-import { extractCleanDomainAndBrand } from '../siteInspector';
-import { EdgeProxyService } from '../network/edgeProxyService';
+import { extractCleanDomainAndBrand } from '../siteInspector.ts';
+import { EdgeProxyService } from '../network/edgeProxyService.ts';
 
 export interface ScrapedCatalogItem {
   id: string;
@@ -64,6 +64,7 @@ export interface CollectedEvidenceDossier {
   isVtexPlatform: boolean;
   isNuvemshopPlatform: boolean;
   isWooCommercePlatform: boolean;
+  isTrayPlatform?: boolean;
   catalog: {
     totalProductsFound: number;
     items: ScrapedCatalogItem[];
@@ -132,6 +133,11 @@ export class DeepScraperAgent {
                    htmlLower.includes('usereserva');
     const isNuvemshop = htmlLower.includes('nuvemshop') || htmlLower.includes('tiendanube');
     const isWooCommerce = htmlLower.includes('wp-content') || htmlLower.includes('woocommerce');
+    const isTray = htmlLower.includes('tcdn.com.br') || 
+                   htmlLower.includes('tray.com.br') || 
+                   htmlLower.includes('traycdn') || 
+                   htmlLower.includes('data-tray-tst') ||
+                   htmlLower.includes('loadnextvariantdropdown');
 
     // 2. Rota de Head Scripts e Pixels
     const headTags = this.extractHeadScripts(activeHtml, htmlLower);
@@ -165,6 +171,7 @@ export class DeepScraperAgent {
       isVtexPlatform: isVtex,
       isNuvemshopPlatform: isNuvemshop,
       isWooCommercePlatform: isWooCommerce,
+      isTrayPlatform: isTray,
       catalog,
       headTags,
       legal,

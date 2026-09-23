@@ -357,22 +357,15 @@ export function generatePrintablePdfDossierHtml(
         ${catalogIssues.slice(0, 4).map(issue => `
           <tr>
             <td><strong>${issue.productTitle}</strong></td>
-            <td><span class="badge-red">${issue.missingSizes.join(', ') || 'G, GG'}</span></td>
+            <td><span class="badge-red">${issue.missingSizes.join(', ') || 'ESGOTADO'}</span></td>
             <td>${issue.hasSizeGuide ? '<span class="badge-green">INSTALADA</span>' : '<span class="badge-red">NÃO DETECTADA</span>'}</td>
             <td>Pausar anúncio ou repor estoque</td>
           </tr>
         `).join('') || `
           <tr>
-            <td>Camisa Work Manga Longa Agro Khaki</td>
-            <td><span class="badge-red">G, GG</span></td>
-            <td><span class="badge-green">INSTALADA</span></td>
-            <td>Pausar anúncio ou repor estoque</td>
-          </tr>
-          <tr>
-            <td>Calça Jeans Reta Tradicional Agroflex</td>
-            <td><span class="badge-red">44</span></td>
-            <td><span class="badge-green">INSTALADA</span></td>
-            <td>Repor numeração mais vendida</td>
+            <td colspan="4" style="text-align: center; color: #16a34a; font-weight: 700; padding: 16px;">
+              ✓ Nenhuma ruptura crítica de grade detectada nos produtos auditados da vitrine.
+            </td>
           </tr>
         `}
       </tbody>

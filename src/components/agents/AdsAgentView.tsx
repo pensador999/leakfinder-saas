@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Target, Video, Copy, Check, Layers, DollarSign, Calculator, Sparkles, TrendingUp, ShieldAlert, ArrowRight, ExternalLink, ShoppingBag, Factory } from 'lucide-react';
-import { AgentDiagnosticResult } from '../../types';
+import type { AgentDiagnosticResult } from '../../types/index.ts';
+import { isCatalogProductBroken } from '../../services/siteInspector.ts';
 
 interface AdsAgentViewProps {
   diagnostic: AgentDiagnosticResult;
@@ -29,7 +30,7 @@ export const AdsAgentView: React.FC<AdsAgentViewProps> = ({ diagnostic }) => {
   const isMotors = domain.includes('motors');
 
   const catalogIssues = realSiteData.catalogAudit?.issues || [];
-  const brokenItems = catalogIssues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
+  const brokenItems = catalogIssues.filter(isCatalogProductBroken);
   const brokenInHouse = brokenItems.filter(i => i.manufacturingType !== 'REVENDA');
   const brokenResale = brokenItems.filter(i => i.manufacturingType === 'REVENDA');
   const monthlyLoss = realSiteData.catalogAudit?.monthlyLossEstimateBRL !== undefined

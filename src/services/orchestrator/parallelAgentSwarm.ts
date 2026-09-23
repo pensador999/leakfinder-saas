@@ -1,13 +1,13 @@
-import { AuditInput, AgentDiagnosticResult } from '../../types';
-import { DeepScraperAgent, CollectedEvidenceDossier } from './deepScraperAgent';
-import { ChiefOrchestratorAgent } from './chiefOrchestratorEngine';
-import { TruthAuditorAgent, TruthVerdictReport } from './truthAuditorAgent';
-import { inspectRealWebsite, RealSiteData } from '../siteInspector';
-import { auditSiteSecurity, SecurityAuditResult } from '../securityInspector';
-import { analyzeComputerVision, VisionAnalysisResult } from '../visionCoreEngine';
-import { calculatePricingElasticity, PricingElasticityResult } from '../pricingElasticityEngine';
-import { analyzeStockRupture, StockRuptureAnalysisResult } from '../stockRuptureEngine';
-import { calculateStoreFinancialGrounding } from '../ai/storeFinancialGroundingEngine';
+import type { AuditInput, AgentDiagnosticResult } from '../../types/index.ts';
+import { DeepScraperAgent, type CollectedEvidenceDossier } from './deepScraperAgent.ts';
+import { ChiefOrchestratorAgent } from './chiefOrchestratorEngine.ts';
+import { TruthAuditorAgent, type TruthVerdictReport } from './truthAuditorAgent.ts';
+import { inspectRealWebsite, type RealSiteData } from '../siteInspector.ts';
+import { auditSiteSecurity, type SecurityAuditResult } from '../securityInspector.ts';
+import { analyzeComputerVision, type VisionAnalysisResult } from '../visionCoreEngine.ts';
+import { calculatePricingElasticity, type PricingElasticityResult } from '../pricingElasticityEngine.ts';
+import { analyzeStockRupture, type StockRuptureAnalysisResult } from '../stockRuptureEngine.ts';
+import { calculateStoreFinancialGrounding } from '../ai/storeFinancialGroundingEngine.ts';
 
 export interface SwarmWorkerExecutionResult {
   workerId: string;

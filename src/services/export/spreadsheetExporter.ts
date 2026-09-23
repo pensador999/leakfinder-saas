@@ -8,6 +8,7 @@
 
 import type { RealSiteData, CatalogProductIssue } from '../siteInspector.ts';
 import type { AgentDiagnosticResult, CroFinding, IceIdea } from '../../types/index.ts';
+import { ShopeeSeoOptimizer } from '../marketplaces/shopeeSeoOptimizer.ts';
 
 export class SpreadsheetExporter {
   /**
@@ -139,12 +140,12 @@ export class SpreadsheetExporter {
             `"P-${issue.id}"`,
             `"${issue.productTitle.replace(/"/g, '""')}"`,
             `"Principal"`,
-            `R$ 169,90`,
+            `"Ver na Loja"`,
             `"${issue.missingSizes.length === 0 ? 'EM ESTOQUE' : '🚨 RUPTURA'}"`,
             `"${issue.manufacturingType === 'FABRICACAO_PROPRIA' ? 'Fabricação Própria (PCP)' : 'Revenda'}"`,
             `"${issue.isFullPrintExempt ? 'Isento' : 'Obrigatório'}"`,
-            `100%`,
-            `R$ 1.359,00`,
+            `"-"`,
+            `"${issue.missingSizes.length > 0 ? 'A Auditar' : 'R$ 0,00'}"`,
             `"${issue.recommendedAction.replace(/"/g, '""')}"`,
             `"${issue.productUrl}"`
           ]);
@@ -266,6 +267,61 @@ export class SpreadsheetExporter {
     this.triggerDownload(
       csvContent,
       `AdShield_Leads_Prospectados_${new Date().toISOString().split('T')[0]}.csv`
+    );
+  }
+
+  /**
+   * 🛍️ Planilha 4: Otimização em Massa de Títulos e Catálogo Shopee (120 Caracteres SEO)
+   * Compatível com a Central do Vendedor Shopee e Microsoft Excel
+   */
+  public static exportShopeeMassUpdateCsv(realSiteData: RealSiteData): void {
+    const brandName = realSiteData.brandName || 'Loja';
+    const products = ShopeeSeoOptimizer.generateShopeeCatalogAudit(realSiteData);
+
+    const headers = [
+      'Código SKU (Parent SKU)',
+      'ID do Item Shopee',
+      'Título Atual (Curto)',
+      'Tamanho Atual (Chars)',
+      'Título Otimizado Shopee (Até 120 Chars)',
+      'Tamanho Otimizado (Chars)',
+      'Ganho de Visibilidade (+Chars)',
+      'Palavras-Chave de Busca Injetadas',
+      'Categoria Shopee Recomendada',
+      'Preço Base (R$)',
+      'Preço Promocional Sugerido (R$)',
+      'Prazo SLA de Envio (Dias)',
+      'Modelo de Operação',
+      'Foto 3 Obrigatória (Guia de Medidas)',
+      'Link do Produto na Shopee'
+    ];
+
+    const rows = products.map((item) => [
+      `"${item.sku}"`,
+      `"${item.id}"`,
+      `"${item.originalTitle.replace(/"/g, '""')}"`,
+      item.originalLength,
+      `"${item.optimizedTitle.replace(/"/g, '""')}"`,
+      item.optimizedLength,
+      `"+${item.charGain} chars"`,
+      `"${item.injectedKeywords.join(', ')}"`,
+      `"${item.category}"`,
+      `R$ ${item.price.toFixed(2).replace('.', ',')}`,
+      `R$ ${item.discountPrice.toFixed(2).replace('.', ',')}`,
+      `${item.slaDays} dias úteis`,
+      `"${item.manufacturingType === 'FABRICACAO_PROPRIA' ? 'Fabricação Própria (PCP)' : 'Revenda Homologada'}"`,
+      `"${item.hasSizeChartInPhoto3 ? 'Conforme (Foto 3 Ativa)' : 'Adicionar Infográfico na Foto 3'}"`,
+      `"${item.productUrl}"`
+    ]);
+
+    const csvContent = [
+      headers.join(';'),
+      ...rows.map((row: (string | number)[]) => row.join(';'))
+    ].join('\r\n');
+
+    this.triggerDownload(
+      csvContent,
+      `Shopee_Catalogo_Otimizado_120Chars_${brandName.replace(/[^a-zA-Z0-9]/g, '_')}.csv`
     );
   }
 }

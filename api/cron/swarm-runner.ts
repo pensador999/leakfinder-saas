@@ -66,15 +66,15 @@ export default async function handler(request: any, response: any) {
     });
   }
 
-  // 4. Validate Supabase Database Credentials (Fail-Closed, Zero Hardcoded Fallback)
+  // 4. Validate Supabase Database Credentials (Fail-Safe Fallback to Anon Key if Service Key is not set)
   const supabaseUrl = process.env.VITE_SUPABASE_URL;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseServiceKey) {
     console.error('🚨 [Security Alert] Missing Supabase credentials in serverless environment.');
     return sendJsonResponse(response, 500, {
       error: 'Server Configuration Error',
-      message: 'Required database credentials are missing in host environment variables.'
+      message: 'Required database credentials (VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY / VITE_SUPABASE_ANON_KEY) are missing in host environment variables.'
     });
   }
 

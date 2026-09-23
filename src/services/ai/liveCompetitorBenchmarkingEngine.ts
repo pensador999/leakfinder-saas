@@ -5,7 +5,8 @@
 // Mobile 4G Speed, and Trust & Pix Triggers!
 // ==============================================================================
 
-import { AgentDiagnosticResult } from '../../types';
+import type { AgentDiagnosticResult } from '../../types/index.ts';
+import { isCatalogProductBroken } from '../siteInspector.ts';
 
 export interface CompetitorBenchmarkDimension {
   dimensionName: string;
@@ -59,7 +60,9 @@ export function computeCompetitorRadarBenchmark(
     competitorBrand = 'Insider Store';
   }
 
-  const issuesCount = realSiteData.catalogAudit?.issues?.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0).length || 2;
+  const issuesCount = realSiteData.catalogAudit?.issues
+    ? realSiteData.catalogAudit.issues.filter(isCatalogProductBroken).length
+    : 0;
   const hasPixDiscount = realSiteData.rawHtmlSnippet?.toLowerCase().includes('pix') || false;
 
   const dimensions: CompetitorBenchmarkDimension[] = [

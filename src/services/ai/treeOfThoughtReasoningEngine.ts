@@ -4,8 +4,9 @@
 // inter-agent assistance, and computes mathematical consensus scores for zero false-positives!
 // ==============================================================================
 
-import { AgentDiagnosticResult } from '../../types';
-import { CatalogProductIssue } from '../siteInspector';
+import type { AgentDiagnosticResult } from '../../types/index.ts';
+import type { CatalogProductIssue } from '../siteInspector.ts';
+import { isCatalogProductBroken } from '../siteInspector.ts';
 
 export interface ReasoningHypothesisBranch {
   id: string;
@@ -159,7 +160,7 @@ export function executeTreeOfThoughtReasoning(
 
   // Dynamic Average Ticket and daily ad spend
   const baseTicket = diagnostic.input.averageOrderValue || (isMotorsOrAuto ? 385 : isAgro ? 220 : isEnterprise ? 520 : 165);
-  const realBrokenIssues = issues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
+  const realBrokenIssues = issues.filter(isCatalogProductBroken);
   const activeBrokenCount = realBrokenIssues.length;
   const dailyAdSpend = isEnterprise ? 2500 : isMotorsOrAuto ? 680 : isAgro ? 450 : 250;
   

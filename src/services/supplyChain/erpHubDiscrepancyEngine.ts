@@ -1,6 +1,7 @@
-import { RealSiteData } from '../siteInspector';
-import { AuditInput } from '../../types';
-import { calculateStoreFinancialGrounding, formatBRL, formatBRLDecimals } from '../ai/storeFinancialGroundingEngine';
+import type { RealSiteData } from '../siteInspector.ts';
+import { isCatalogProductBroken } from '../siteInspector.ts';
+import type { AuditInput } from '../../types/index.ts';
+import { calculateStoreFinancialGrounding, formatBRL, formatBRLDecimals } from '../ai/storeFinancialGroundingEngine.ts';
 
 export type DiscrepancySeverity = 'GRAU_1_ANUNCIO_FANTASMA' | 'GRAU_2_VENDA_FANTASMA' | 'GRAU_3_DIVERGENCIA_ASSETS' | 'GRAU_4_RUNWAY_CRITICO';
 
@@ -80,7 +81,7 @@ export function auditSupplyChainDiscrepancy(
   const finances = calculateStoreFinancialGrounding(realSiteData, input);
 
   const catalogIssues = realSiteData.catalogAudit?.issues || [];
-  const brokenSkus = catalogIssues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
+  const brokenSkus = catalogIssues.filter(isCatalogProductBroken);
 
   const discrepancyAlerts: SkuDiscrepancyAlert[] = [];
   let totalAdWaste = 0;

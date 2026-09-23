@@ -2,6 +2,7 @@ import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { AgentDiagnosticResult } from '../../types';
 import { MonitoredStore, StoreSnapshotDelta, SwarmJobResult } from '../swarm/autonomousSwarmEngine';
 import { WhatsAppAlertPayload } from '../workers/whatsappAlertWorker';
+import { isCatalogProductBroken } from '../siteInspector';
 
 const LOCAL_SNAPSHOTS_KEY = 'adshield_local_store_snapshots';
 const LOCAL_MONITORED_STORES_KEY = 'adshield_local_monitored_stores';
@@ -150,7 +151,7 @@ export async function saveStoreSnapshot(
   delta?: StoreSnapshotDelta
 ): Promise<boolean> {
   const catalogIssues = diagnostic.realSiteData.catalogAudit?.issues || [];
-  const brokenCount = catalogIssues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0).length;
+  const brokenCount = catalogIssues.filter(isCatalogProductBroken).length;
 
   const snapshotRecord = {
     store_id: storeId,

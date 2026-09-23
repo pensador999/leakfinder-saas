@@ -25,6 +25,7 @@ import {
 import { AgentDiagnosticResult } from '../types';
 import { SpreadsheetExporter } from '../services/export/spreadsheetExporter';
 import { OfficialIntegrationConnectModal } from './OfficialIntegrationConnectModal';
+import { PdfExportService } from '../services/export/pdfExportService';
 
 interface ExecutivePdfExportModalProps {
   isOpen: boolean;
@@ -112,8 +113,22 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
 
           <div className="flex items-center gap-3">
             <button
+              onClick={() => PdfExportService.downloadExecutivePdf(diagnostic, {
+                agencyName,
+                consultantName,
+                consultantPhone,
+                accentColor
+              })}
+              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-105 active:scale-95"
+              title="Baixar arquivo PDF consolidado com 1 clique"
+            >
+              <Download className="w-4 h-4 text-emerald-400" />
+              <span>Baixar Arquivo PDF (1 Clique)</span>
+            </button>
+
+            <button
               onClick={handlePrint}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer"
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-105 active:scale-95"
             >
               <Printer className="w-4 h-4" />
               <span>Imprimir / Salvar em PDF</span>
@@ -252,6 +267,15 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
                   <TrendingUp className="w-3.5 h-3.5 text-emerald-600" /> Plano de Ação & Lucro
                 </span>
                 <Download className="w-3.5 h-3.5 text-slate-400" />
+              </button>
+              <button
+                onClick={() => SpreadsheetExporter.exportShopeeMassUpdateCsv(realSiteData)}
+                className="w-full py-2 px-3 bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-900 font-bold text-[11px] rounded-xl transition-all flex items-center justify-between shadow-2xs cursor-pointer"
+              >
+                <span className="flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-orange-600" /> Planilha Shopee (120 Chars SEO)
+                </span>
+                <Download className="w-3.5 h-3.5 text-orange-500" />
               </button>
             </div>
 

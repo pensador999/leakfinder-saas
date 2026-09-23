@@ -1,0 +1,57 @@
+# ==============================================================================
+# 🤖 HEADLESS CRAWLER & BACKGROUND WORKER DAEMON (LINUX LINUX 24/7)
+# ==============================================================================
+FROM node:20-bookworm-slim
+
+# Install dumb-init for proper signal handling and zombie reaping
+# Install Chromium and all Linux X11/headless rendering dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    dumb-init \
+    chromium \
+    fonts-ipafont-gothic \
+    fonts-wqy-zenhei \
+    fonts-thai-tlwg \
+    fonts-kacst \
+    fonts-freefont-ttf \
+    libnss3 \
+    libatk-bridge2.0-0 \
+    libx11-xcb1 \
+    libcups2 \
+    libdrm2 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libgbm1 \
+    libasound2 \
+    ca-certificates \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Environment variables for Chromium execution
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium \
+    CHROME_BIN=/usr/bin/chromium \
+    DOCKER_ENV=true \
+    NODE_ENV=production
+
+# Install dependencies
+COPY package*.json ./
+RUN npm ci --silent --only=production
+
+# Copy application source
+COPY . .
+
+# Create unprivileged app user for security
+RUN groupadd -r adshield && useradd -r -g adshield -G audio,video adshield \
+    && mkdir -p /home/adshield/Downloads \
+    && chown -R adshield:adshield /home/adshield \
+    && chown -R adshield:adshield /app
+
+USER adshield
+
+EXPOSE 3001
+
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD ["node", "scripts/vps_background_daemon.mjs"]

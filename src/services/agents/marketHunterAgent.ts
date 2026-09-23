@@ -4,10 +4,10 @@
 // price matching against niche competitors to prevent tab-switching checkout dropoffs!
 // ==============================================================================
 
-import { AgentDiagnosticResult } from '../../types';
-import { ProspectLead, getSavedProspectLeads } from '../prospecting/leadSniperEngine';
+import type { AgentDiagnosticResult } from '../../types/index.ts';
+import { type ProspectLead, getSavedProspectLeads } from '../prospecting/leadSniperEngine.ts';
 
-export * from '../prospecting/leadSniperEngine';
+export * from '../prospecting/leadSniperEngine.ts';
 
 export interface DiscoveredLeadOpportunity {
   id: string;

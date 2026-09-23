@@ -202,8 +202,26 @@ export async function analyzeComputerVision(domain: string, htmlSnippet: string 
   const hasSsl = htmlLower.includes('https') || htmlLower.includes('ssl') || htmlLower.includes('segur');
   const hasCnpj = htmlLower.includes('cnpj') || /\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/.test(htmlSnippet);
   const hasFreeShipping = htmlLower.includes('frete grátis') || htmlLower.includes('frete gratis') || htmlLower.includes('envio gratis');
-  const hasPixDiscount = htmlLower.includes('pix') && (htmlLower.includes('off') || htmlLower.includes('desconto') || htmlLower.includes('%'));
-  const hasSizeGuide = htmlLower.includes('tabela de medidas') || htmlLower.includes('guia de tamanhos') || htmlLower.includes('size_chart');
+  // Detecção robusta de desconto real no Pix (evita falso positivo de mero ícone de pagamento)
+  const hasPixDiscount = 
+    /(\d+%\s*(?:off|de\s*desconto).*pix|pix.*(?:\d+%\s*(?:off|de\s*desconto)|com\s+desconto))/i.test(htmlSnippet) ||
+    /desconto\s+no\s+pix|economize\s+no\s+pix|à\s*vista\s+no\s+pix/i.test(htmlSnippet);
+
+  // Detecção de Tabela de Medidas (incluindo widget nativo Shopify, KiwiSizing, Sizebay, Provador Virtual)
+  const hasSizeGuide = 
+    /tabela\s+de\s+medidas/i.test(htmlSnippet) ||
+    /guia\s+de\s+tamanhos/i.test(htmlSnippet) ||
+    /provador\s+virtual/i.test(htmlSnippet) ||
+    /product-addons.*size_chart/i.test(htmlSnippet) ||
+    /kiwisizing/i.test(htmlSnippet) ||
+    /sizebay/i.test(htmlSnippet) ||
+    /size-guide|size-chart/i.test(htmlSnippet);
+
+  // Detecção de Sticky Buy Button (elimina falso alerta de ausência de botão móvel no rodapé)
+  const hasStickyBuyButton = 
+    /sticky[-_]?(?:cart|bar|buy|add|cta|button)/i.test(htmlSnippet) ||
+    /product-form__buttons--sticky/i.test(htmlSnippet) ||
+    /fixed-bottom|floating-cta/i.test(htmlSnippet);
 
   // 3. Paleta de Cores e Contraste
   const hasCustomBlue = htmlLower.includes('#0284c7') || htmlLower.includes('#0066') || htmlLower.includes('blue');
@@ -323,12 +341,14 @@ export async function analyzeComputerVision(domain: string, htmlSnippet: string 
   }
 
   const thumbZone: ThumbZoneAnalysis = {
-    easyZoneCoverage: 74,
-    stretchZoneCoverage: 18,
-    hardZoneCoverage: 8,
+    easyZoneCoverage: hasStickyBuyButton ? 88 : 74,
+    stretchZoneCoverage: hasStickyBuyButton ? 10 : 18,
+    hardZoneCoverage: hasStickyBuyButton ? 2 : 8,
     ctaZoneLocation: 'EASY',
-    fittsLawScore: 82,
-    recommendation: 'Garanta que o botão principal de compra permaneça fixo no rodapé (Sticky Buy Button) na rolagem mobile.'
+    fittsLawScore: hasStickyBuyButton ? 92 : 82,
+    recommendation: hasStickyBuyButton
+      ? 'Botão de compra fixo no rodapé (Sticky Buy Button) já detectado com sucesso, assegurando excelente retenção na Thumb Zone natural de 1 mão.'
+      : 'Recomendamos implementar botão de compra fixo no rodapé (Sticky Buy Button) para manter o CTA na Thumb Zone natural durante toda a rolagem mobile.'
   };
 
   const contrastAudit: ContrastAudit = {

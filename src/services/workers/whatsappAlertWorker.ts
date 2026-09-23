@@ -1,7 +1,8 @@
-import { MonitoredStore, StoreSnapshotDelta } from '../swarm/autonomousSwarmEngine';
-import { AgentDiagnosticResult } from '../../types';
-import { calculateStoreFinancialGrounding } from '../ai/storeFinancialGroundingEngine';
-import { SupabaseClient } from '@supabase/supabase-js';
+import type { MonitoredStore, StoreSnapshotDelta } from '../swarm/autonomousSwarmEngine.ts';
+import type { AgentDiagnosticResult } from '../../types/index.ts';
+import { calculateStoreFinancialGrounding } from '../ai/storeFinancialGroundingEngine.ts';
+import { isCatalogProductBroken } from '../siteInspector.ts';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 export interface WhatsAppAlertPayload {
   to: string;
@@ -62,7 +63,7 @@ export function formatDailyWhatsAppExecutiveSummary(
 ): string {
   const score = diagnostic.growthScore;
   const catalogIssues = diagnostic.realSiteData.catalogAudit?.issues || [];
-  const brokenSkus = catalogIssues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
+  const brokenSkus = catalogIssues.filter(isCatalogProductBroken);
   const finances = calculateStoreFinancialGrounding(diagnostic.realSiteData, diagnostic.input, diagnostic.social);
 
   let message = `🛡️ *ADSHIELD INTEL • RELATÓRIO EXECUTIVO DIÁRIO*\n`;
@@ -85,6 +86,14 @@ export function formatDailyWhatsAppExecutiveSummary(
     message += `👉 *Recomendação:* Repor tamanhos ou pausar criativo no Meta Ads.\n\n`;
   } else {
     message += `✅ *Catálogo Blindado:* Nenhuma ruptura crítica detectada nas grades principais.\n\n`;
+  }
+
+  if (diagnostic.realSiteData.googleShoppingShield && diagnostic.realSiteData.googleShoppingShield.discrepantProductsCount > 0) {
+    message += `🛍️ *Google Shopping Shield:* ${diagnostic.realSiteData.googleShoppingShield.discrepantProductsCount} produto(s) com Schema OutOfStock afetando lances de PMax.\n\n`;
+  }
+
+  if (diagnostic.realSiteData.legalCompliance && !diagnostic.realSiteData.legalCompliance.isFullyCompliant) {
+    message += `⚖️ *Alerta Legal (Decreto 7.962/13):* ${diagnostic.realSiteData.legalCompliance.violations[0]?.description || 'Ajustes no rodapé necessários'}\n\n`;
   }
 
   message += `🔗 *Painel Completo:* https://adshield.ai/dashboard?store=${encodeURIComponent(store.storeUrl)}`;

@@ -91,4 +91,17 @@ Em consonância com a regra permanente definida em `.agents/rules/critical-intel
 3. **Falsificação de Hipóteses (Popper / Munger):** Antes de aceitar qualquer premissa, testar ativamente como ela quebra e quantificar o risco de falha.
 4. **Hierarquia de Certeza:** Fatos auditados > Inferências lógicas > Hipóteses a testar > Especulação.
 
+---
+
+## 🛑 7. Protocolo Anti-Estoque Fantasma & Auditoria de Tráfego Pago (O Princípio "Yellowstone Dutton Ranch")
+Em decorrência do caso auditado na loja **BRK Agro**, onde o **Boné Trucker Yellowstone Dutton Ranch** sofria com anúncios ativos no Meta Ads mesmo com ruptura física no galpão, fica formalmente estabelecida a regra:
+
+1. **A Falácia do Botão Ativo:** Um botão exibindo `"Adicionar à Sacola"` ou uma API pública retornando `available: true` **NÃO PROVA** que a loja possui estoque físico para pronta entrega. Lojas Shopify frequentemente configuram `inventory_policy: continue` (backorder) ou deixam o estoque desvinculado do checkout.
+2. **Auditoria em 4 Camadas Obrigatórias:**
+   - **Camada A (Inventário Físico via Admin API / ERP):** O AdShield deve auditar a quantidade real em depósito (`inventory_quantity`). Se `<= 0`, o produto é marcado como *Ruptura de Estoque*.
+   - **Camada B (Fidelidade Criativo vs Produto):** Cruzar a imagem e o modelo do criativo ativo no Meta Ads com a variante enviada (ex: modelo preto com logo "Y" e flechas vs modelo denim com crânio longhorn).
+   - **Camada C (Conformidade com Promessa de Entrega):** Verificar se o produto ostenta selos de *"Envio Imediato"* sem capacidade real de expedição em 24h (risco de PROCON/CDC).
+   - **Camada D (Ação Automática de Stock-Shield):** Ao identificar tráfego pago ativo para SKU em ruptura operacional, disparar comando de pausa automática de anúncio via Meta Graph API / Google Ads API.
+
+
 

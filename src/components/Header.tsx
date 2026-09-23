@@ -85,7 +85,7 @@ export const Header: React.FC<HeaderProps> = ({
       niche: 'Pesca Esportiva & Vestuário',
       aov: 220,
       icon: faFish,
-      activeClass: 'bg-cyan-600 text-white shadow-xs shadow-cyan-600/30 border-cyan-700'
+      activeClass: 'bg-[#00BAE2] text-[#0E100F] shadow-sm border border-[#00BAE2] font-black'
     },
     {
       key: 'agro',
@@ -95,7 +95,7 @@ export const Header: React.FC<HeaderProps> = ({
       niche: 'Agropecuária & Moda Campo',
       aov: 260,
       icon: faWheatAwn,
-      activeClass: 'bg-emerald-600 text-white shadow-xs shadow-emerald-600/30 border-emerald-700'
+      activeClass: 'bg-[#0AE448] text-[#0E100F] shadow-sm border border-[#0AE448] font-black'
     },
     {
       key: 'motors',
@@ -105,7 +105,7 @@ export const Header: React.FC<HeaderProps> = ({
       niche: 'Motociclismo & Off-Road',
       aov: 240,
       icon: faFire,
-      activeClass: 'bg-orange-600 text-white shadow-xs shadow-orange-600/30 border-orange-700'
+      activeClass: 'bg-[#FF8709] text-[#0E100F] shadow-sm border border-[#FF8709] font-black'
     }
   ];
 
@@ -169,12 +169,12 @@ export const Header: React.FC<HeaderProps> = ({
   }, [diagnostic]);
 
   const score = diagnostic?.growthScore || 0;
-  const scoreBadgeColor = score >= 75 ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 
-                          score >= 55 ? 'text-blue-700 bg-blue-50 border-blue-200' : 
-                          'text-amber-700 bg-amber-50 border-amber-200';
+  const scoreBadgeColor = score >= 75 ? 'text-[#0AE448] bg-[#0AE448]/10 border-[#0AE448]/30 shadow-sm' : 
+                          score >= 55 ? 'text-[#00BAE2] bg-[#00BAE2]/10 border-[#00BAE2]/30 shadow-sm' : 
+                          'text-[#FF8709] bg-[#FF8709]/10 border-[#FF8709]/30 shadow-sm';
 
   return (
-    <header ref={headerRef} className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs transition-all">
+    <header ref={headerRef} className="sticky top-0 z-40 bg-[#0E100F]/95 backdrop-blur-md border-b border-white/10 shadow-lg transition-all text-[#F0EFE6]">
       
       {/* Mini Ticker Superior Inteligente (Edge Telemetry Bar) */}
       <div className="bg-slate-900 text-slate-300 text-[10px] font-mono py-1 px-4 lg:px-8 border-b border-slate-800 flex items-center justify-between overflow-hidden select-none">
@@ -230,18 +230,18 @@ export const Header: React.FC<HeaderProps> = ({
             )}
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-xl tracking-tight text-slate-900 font-mono uppercase">
+                <span className="font-extrabold text-xl tracking-tight text-[#FFFCE1] font-mono uppercase">
                   {whiteLabel.agencyName}
                 </span>
                 <span 
-                  className="px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase border rounded-md shadow-2xs"
-                  style={{ color: whiteLabel.primaryColor, backgroundColor: `${whiteLabel.primaryColor}15`, borderColor: `${whiteLabel.primaryColor}30` }}
+                  className="px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase border rounded-md shadow-2xs font-mono"
+                  style={{ color: '#0AE448', backgroundColor: 'rgba(10, 228, 72, 0.1)', borderColor: 'rgba(10, 228, 72, 0.3)' }}
                 >
                   AUTONOMOUS GROWTH OS
                 </span>
               </div>
-              <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5 font-medium">
-                <ShieldCheck className="w-3.5 h-3.5" style={{ color: whiteLabel.primaryColor }} />
+              <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5 font-medium">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#0AE448]" />
                 <span>Auditoria Neural de Conversão & Faturamento em Risco</span>
               </p>
             </div>
@@ -258,19 +258,19 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Center Active Domain Pill with Live Pulse */}
         {diagnostic && (
-          <div className="gsap-header-item hidden lg:flex items-center gap-4 px-4 py-2 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/90 text-xs shadow-2xs transition-all">
+          <div className="gsap-header-item hidden lg:flex items-center gap-4 px-4 py-2 rounded-full bg-[#141716] hover:bg-[#1a1e1c] border border-white/10 text-xs shadow-sm transition-all">
             <div className="flex items-center gap-2">
-              <span className="text-slate-400 font-medium">Site Auditado:</span>
-              <span className="font-bold text-slate-900 font-mono flex items-center gap-1.5">
-                <Search className="w-3.5 h-3.5 text-blue-600" />
+              <span className="text-slate-500 font-medium">Site Auditado:</span>
+              <span className="font-bold text-[#FFFCE1] font-mono flex items-center gap-1.5">
+                <Search className="w-3.5 h-3.5 text-[#0AE448]" />
                 {diagnostic.input.siteUrl.replace(/^https?:\/\//, '')}
               </span>
             </div>
-            <div className="h-4 w-px bg-slate-200" />
+            <div className="h-4 w-px bg-white/10" />
             <div className="flex items-center gap-1.5">
-              <span className="text-slate-400 font-medium">Status:</span>
-              <span className="font-bold text-emerald-600 flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> 100% Inspecionado
+              <span className="text-slate-500 font-medium">Status:</span>
+              <span className="font-bold text-[#0AE448] flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#0AE448]" /> 100% Inspecionado
               </span>
             </div>
           </div>
@@ -283,14 +283,14 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={onOpenPricing}
-            className="hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-xl border border-amber-300/80 bg-amber-50/80 text-amber-800 font-bold text-xs hover:bg-amber-100 transition-all shadow-2xs cursor-pointer hover:scale-105 active:scale-95"
+            className="hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 font-bold text-xs hover:bg-amber-500/20 transition-all shadow-sm cursor-pointer hover:scale-105 active:scale-95"
           >
-            <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
             <span>Fazer Upgrade</span>
           </button>
 
           {diagnostic && (
-            <div ref={scoreBadgeRef} className={`hidden md:flex px-3.5 py-2 rounded-xl border font-bold text-xs items-center gap-1.5 shadow-2xs ${scoreBadgeColor}`}>
+            <div ref={scoreBadgeRef} className={`hidden md:flex px-3.5 py-2 rounded-full border font-bold text-xs items-center gap-1.5 shadow-sm ${scoreBadgeColor}`}>
               <TrendingUp className="w-4 h-4" />
               <span>Score: {score}/100</span>
             </div>
@@ -298,7 +298,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={onOpenAuditModal}
-            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all shadow-md shadow-blue-600/25 hover:shadow-blue-600/40 hover:scale-105 active:scale-95 cursor-pointer"
+            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold text-[#0E100F] bg-[#0AE448] hover:bg-[#09c93f] rounded-full transition-all shadow-md shadow-[#0AE448]/20 hover:scale-105 active:scale-95 cursor-pointer font-mono tracking-tight"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             <span>{diagnostic ? 'Novo Site' : 'Auditar Loja'}</span>
@@ -307,7 +307,7 @@ export const Header: React.FC<HeaderProps> = ({
           {diagnostic && onOpenWhatsAppLeadModal && (
             <button
               onClick={onOpenWhatsAppLeadModal}
-              className="flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl transition-all shadow-md shadow-emerald-600/25 hover:scale-105 active:scale-95 cursor-pointer"
+              className="flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-bold text-[#0AE448] bg-[#141716] hover:bg-[#1a1f1c] border border-[#0AE448]/30 rounded-full transition-all shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
               title="Receber Raio-X no WhatsApp"
             >
               <MessageCircle className="w-3.5 h-3.5" />
@@ -318,17 +318,17 @@ export const Header: React.FC<HeaderProps> = ({
           {diagnostic && (
             <button
               onClick={onExportReport}
-              className="flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl transition-all hover:text-slate-950 shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
+              className="flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-[#FFFCE1] bg-[#191C1B] hover:bg-[#222724] border border-white/15 rounded-full transition-all shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
               title="Exportar Relatório Estratégico Completo em PDF"
             >
-              <Download className="w-3.5 h-3.5 text-blue-600" />
+              <Download className="w-3.5 h-3.5 text-[#0AE448]" />
               <span className="hidden sm:inline">PDF</span>
             </button>
           )}
 
           <button
             onClick={onOpenAdmin}
-            className="flex items-center justify-center p-2 text-slate-500 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl transition-all hover:text-blue-600 shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
+            className="flex items-center justify-center p-2 text-slate-400 bg-[#191C1B] hover:bg-[#222724] border border-white/10 rounded-full transition-all hover:text-[#0AE448] shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
             title="CRM (Painel de Leads)"
           >
             <Users className="w-4 h-4" />
@@ -346,11 +346,11 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* 🚀 STORE BRAND QUICK-SWITCHER BAR */}
-      <div className="bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-4 lg:px-8 py-2">
+      <div className="bg-[#101211]/95 backdrop-blur-md border-t border-white/10 px-4 lg:px-8 py-2">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 font-mono flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 text-blue-600" /> Marcas Monitoradas:
+            <span className="text-[10px] uppercase font-bold tracking-wider text-[#7C7C6F] font-mono flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 text-[#0AE448]" /> Marcas Monitoradas:
             </span>
             <div className="flex items-center gap-1.5 flex-wrap">
               {brandPresets.map((preset) => {
@@ -362,7 +362,7 @@ export const Header: React.FC<HeaderProps> = ({
                     className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all duration-200 cursor-pointer border ${
                       isActive 
                         ? preset.activeClass 
-                        : 'bg-slate-50 text-slate-600 hover:text-slate-900 border-slate-200/80 hover:border-slate-300 hover:bg-white shadow-2xs hover:scale-[1.02]'
+                        : 'bg-[#141716] text-[#BBBAA6] hover:text-[#FFFCE1] border-white/10 hover:border-white/20 hover:bg-[#191C1B] shadow-xs hover:scale-[1.02]'
                     }`}
                     title={`Auditar catálogo oficial de ${preset.name} (${preset.niche})`}
                   >
@@ -371,7 +371,7 @@ export const Header: React.FC<HeaderProps> = ({
                     {isActive ? (
                       <span className="w-1.5 h-1.5 rounded-full bg-white inline-block ml-0.5 animate-pulse" />
                     ) : (
-                      <span className="text-[10px] text-slate-400 font-mono font-normal">({preset.slug})</span>
+                      <span className="text-[10px] text-[#7C7C6F] font-mono font-normal">({preset.slug})</span>
                     )}
                   </button>
                 );
@@ -386,10 +386,10 @@ export const Header: React.FC<HeaderProps> = ({
                 href={`https://admin.shopify.com/store/${activeShopSlug}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-mono text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
+                className="px-3 py-1.5 bg-[#191C1B] hover:bg-white/10 text-[#FFFCE1] border border-white/10 rounded-xl font-mono text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-xs hover:scale-105 active:scale-95 cursor-pointer"
                 title={`Acessar painel administrativo da Shopify da loja ativa (${activeShopSlug})`}
               >
-                <FontAwesomeIcon icon={faShopify} className="w-3.5 h-3.5 text-emerald-400" />
+                <FontAwesomeIcon icon={faShopify} className="w-3.5 h-3.5 text-[#0AE448]" />
                 <span>Shopify Admin ({activeShopSlug})</span>
               </a>
             </div>

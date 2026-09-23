@@ -1,9 +1,9 @@
-import { RealSiteData } from '../services/siteInspector';
-import { SecurityAuditResult } from '../services/securityInspector';
-import { SocialAuditResult } from '../services/socialInspector';
-import { GuardrailValidationReport } from '../services/agentGuardrail';
-import { VisionAnalysisResult } from '../services/visionCoreEngine';
-import { OsintAnalysisResult } from '../services/osintEngine';
+import type { RealSiteData } from '../services/siteInspector.ts';
+import type { SecurityAuditResult } from '../services/securityInspector.ts';
+import type { SocialAuditResult } from '../services/socialInspector.ts';
+import type { GuardrailValidationReport } from '../services/agentGuardrail.ts';
+import type { VisionAnalysisResult } from '../services/visionCoreEngine.ts';
+import type { OsintAnalysisResult } from '../services/osintEngine.ts';
 
 export type BusinessType = 'ecommerce' | 'saas' | 'infoproduct' | 'leadgen' | 'landing_page';
 
@@ -16,6 +16,12 @@ export type MainChallenge =
   | 'pricing_friction';
 
 export type TargetRegion = 'Brasil' | 'Ásia' | 'Europa' | 'EUA' | 'Global';
+
+export type StoreOperationMode = 
+  | 'AUTO_DETECT'                 // Detecção Automática via IA / Heurísticas
+  | 'OWN_MANUFACTURING_ON_DEMAND' // Fabricação Própria / Sob Demanda (Sublimação, Confecção Ágil)
+  | 'PHYSICAL_WAREHOUSE_STOCK'    // Estoque Físico em Galpão / Pronta Entrega Rígida
+  | 'RESALE_MULTIBRAND';          // Revenda Multimarcas / Importação / Dropshipping
 
 export interface AuditInput {
   siteUrl: string;
@@ -32,6 +38,7 @@ export interface AuditInput {
   targetRegion: TargetRegion;
   grossMargin: number;
   manualCnpj?: string;
+  operationMode?: StoreOperationMode;
 }
 
 export interface CroFinding {
@@ -184,5 +191,5 @@ export interface ChatMessage {
   timestamp: string;
 }
 
-export * from './swarmAgentContract';
+export * from './swarmAgentContract.ts';
 

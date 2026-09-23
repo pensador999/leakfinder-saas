@@ -4,7 +4,7 @@
 // synthesizing structured incident reports for the AI Code Patch Engineer.
 // ==============================================================================
 
-import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase.ts';
 
 export type IncidentSeverity = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
 
@@ -64,6 +64,8 @@ export const INITIAL_BUG_INCIDENTS: BugIncidentReport[] = [
   }
 ];
 
+let memoryIncidents: BugIncidentReport[] = [...INITIAL_BUG_INCIDENTS];
+
 /**
  * Captures real-time client errors and logs them into incident tracking
  */
@@ -87,12 +89,16 @@ export function recordDevOpsIncident(
     autoHealed: false
   };
 
-  // Persist incident in localStorage
+  memoryIncidents = [newIncident, ...memoryIncidents].slice(0, 30);
+
+  // Persist incident in localStorage when available
   try {
-    const existing = localStorage.getItem('adshield_devops_incidents');
-    const list: BugIncidentReport[] = existing ? JSON.parse(existing) : INITIAL_BUG_INCIDENTS;
-    const updated = [newIncident, ...list];
-    localStorage.setItem('adshield_devops_incidents', JSON.stringify(updated.slice(0, 30)));
+    if (typeof localStorage !== 'undefined') {
+      const existing = localStorage.getItem('adshield_devops_incidents');
+      const list: BugIncidentReport[] = existing ? JSON.parse(existing) : INITIAL_BUG_INCIDENTS;
+      const updated = [newIncident, ...list];
+      localStorage.setItem('adshield_devops_incidents', JSON.stringify(updated.slice(0, 30)));
+    }
   } catch {}
 
   return newIncident;
@@ -103,11 +109,13 @@ export function recordDevOpsIncident(
  */
 export async function fetchDevOpsIncidents(): Promise<BugIncidentReport[]> {
   try {
-    const local = localStorage.getItem('adshield_devops_incidents');
-    if (local) {
-      return JSON.parse(local);
+    if (typeof localStorage !== 'undefined') {
+      const local = localStorage.getItem('adshield_devops_incidents');
+      if (local) {
+        return JSON.parse(local);
+      }
     }
   } catch {}
 
-  return INITIAL_BUG_INCIDENTS;
+  return memoryIncidents;
 }

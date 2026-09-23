@@ -68,9 +68,30 @@ O LeakFinder opera sob o protocolo rigoroso estabelecido em **[`AGENTS.md`](./AG
 
 ## 🚀 Como Executar o Projeto
 
+### Modo 1: Desenvolvimento Local (Windows / Mac / Linux)
+```bash
+# Instala dependências
+npm install
+
+# Inicia servidor Vite local (Porta 3005)
+npm run dev
+```
+
+### Modo 2: Produção 24/7 na VPS Linux (Ubuntu 24.04 LTS via Docker)
+```bash
+# No terminal da sua VPS (Hetzner, AWS, DigitalOcean):
+git clone https://github.com/pensador999/leakfinder-saas.git /opt/adshield
+cd /opt/adshield
+chmod +x scripts/deploy/setup_vps_ubuntu.sh
+./scripts/deploy/setup_vps_ubuntu.sh
+```
+
+---
+
 ## 📚 Documentação Central & Governança
 
 * 🏛️ **[Arquitetura Global & C4 Model (ARCHITECTURE.md)](./ARCHITECTURE.md)**
+* 🛰️ **[Manual de Infraestrutura & Operações VPS 24/7 (docs/INFRASTRUCTURE_AND_OPERATIONS.md)](./docs/INFRASTRUCTURE_AND_OPERATIONS.md)**
 * 🤖 **[Dossiê Completo dos 18 Agentes (docs/AGENTS_ECOSYSTEM.md)](./docs/AGENTS_ECOSYSTEM.md)**
 * 🧭 **[Fluxo de Projeto & Workflow dos Agentes (docs/PROJECT_WORKFLOW_AND_GOVERNANCE.md)](./docs/PROJECT_WORKFLOW_AND_GOVERNANCE.md)**
 * 💼 **[Plano de Negócios & Pricing SaaS (docs/BUSINESS_PLAN_LEAKFINDER_SAAS.md)](./docs/BUSINESS_PLAN_LEAKFINDER_SAAS.md)**
@@ -83,14 +104,17 @@ O LeakFinder opera sob o protocolo rigoroso estabelecido em **[`AGENTS.md`](./AG
 ## 🛠️ Comandos de Engenharia & Qualidade
 
 ```bash
-# Executa servidor de desenvolvimento local (Porta 3000)
-npm run dev
-
 # Validação estrita de lint e tipagem TypeScript
 npm run check
 
-# Bateria completa de 50 testes de segurança, SSRF e integridade
-npm run audit:system
+# Bateria 1: Teste de Resiliência de Rede, AutoPopupBuster & Multi-CMS
+node scripts/test_resilience_and_crawling_suite.mjs
+
+# Bateria 2: Teste do Zero-Second Kill-Switch & Webhooks Shopify
+node scripts/test_webhook_kill_switch.mjs
+
+# Bateria 3: Teste de Proxies Residenciais & Máquina de Vendas Outbound B2B
+node scripts/test_proxy_and_outbound_suite.mjs
 
 # Compilação e empacotamento de produção (Vite + Rollup)
 npm run build
@@ -102,13 +126,14 @@ npm run build
 
 * **Frontend:** React 19, TypeScript, Tailwind CSS, Lucide Icons, FontAwesome, Canvas Confetti.
 * **Build Tool:** Vite 8.2 & Rollup.
-* **Linter & Qualidade:** Oxlint + TypeScript Compiler (`tsc`).
-* **Database & Auth:** Supabase PostgreSQL.
-* **Multi-threading & Scraping:** Web Workers (`siteInspectorWorker.ts`) + Chromium Headless em contêiner Docker.
-
+* **Production Web Server:** Nginx Alpine com Gzip e proxy reverso.
+* **Worker & Daemons:** Node.js 20 Bookworm Slim + Chromium Headless Linux nativo + `dumb-init`.
+* **Database & Auth:** Supabase PostgreSQL com Row-Level Security (RLS).
+* **Fila de Mensageria:** Redis 7 Alpine.
+* **Rede & Resiliência:** Residential Proxy Manager com rotação de ASN (Vivo, Claro, TIM) e AutoPopupBuster.
 
 ---
 
 <p align="center">
-  Desenvolvido com foco em alta performance e integridade técnica.
+  AdShield OS — Autonomous Growth & Meta Ads Guardrail Engine.
 </p>

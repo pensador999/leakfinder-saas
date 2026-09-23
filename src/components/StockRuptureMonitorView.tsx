@@ -27,6 +27,7 @@ import { MetaAdsAutoKillSwitchModal } from './ads/MetaAdsAutoKillSwitchModal';
 import { OneClickActionModal, OneClickTargetProduct } from './actions/OneClickActionModal';
 import { OneClickMitigationService } from '../services/actions/oneClickMitigationService';
 import { calculateStoreFinancialGrounding } from '../services/ai/storeFinancialGroundingEngine';
+import { isCatalogProductBroken } from '../services/siteInspector';
 
 interface StockRuptureMonitorViewProps {
   diagnostic: AgentDiagnosticResult;
@@ -41,7 +42,7 @@ export const StockRuptureMonitorView: React.FC<StockRuptureMonitorViewProps> = (
   const realBrokenSizesFromCatalog = Array.from(
     new Set(
       (realSiteData.catalogAudit?.issues || [])
-        .filter(i => !i.isFullPrintExempt)
+        .filter(isCatalogProductBroken)
         .flatMap(i => i.missingSizes || [])
     )
   );
@@ -59,9 +60,7 @@ export const StockRuptureMonitorView: React.FC<StockRuptureMonitorViewProps> = (
   const [selectedOneClickProduct, setSelectedOneClickProduct] = useState<OneClickTargetProduct | null>(null);
   const [actionSuccessMessage, setActionSuccessMessage] = useState<string | null>(null);
 
-  const brokenCatalogProducts = (realSiteData.catalogAudit?.issues || []).filter(
-    i => !i.isFullPrintExempt && i.missingSizes.length > 0
-  );
+  const brokenCatalogProducts = (realSiteData.catalogAudit?.issues || []).filter(isCatalogProductBroken);
 
   const availableSizes = ['PP', 'P', 'M', 'G', 'GG', 'G1', 'G2'];
 

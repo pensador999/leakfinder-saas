@@ -7,6 +7,7 @@
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { circuitBreaker } from '../../lib/circuitBreaker';
 import { AgentDiagnosticResult } from '../../types';
+import { isCatalogProductBroken } from '../siteInspector';
 
 export interface AuditHistoryEntry {
   id: string;
@@ -43,8 +44,7 @@ const LOCAL_STORAGE_HISTORY_PREFIX = 'adshield_audit_history_';
  */
 export async function saveAuditToDatabase(result: AgentDiagnosticResult): Promise<string | null> {
   const domain = result.realSiteData.domain.toLowerCase().trim();
-  const brokenCount = (result.realSiteData.catalogAudit?.issues || [])
-    .filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0).length;
+  const brokenCount = (result.realSiteData.catalogAudit?.issues || []).filter(isCatalogProductBroken).length;
   
   const monthlyLoss = result.realSiteData.catalogAudit?.catalogHealthScore === 100 || brokenCount === 0
     ? 0
@@ -142,8 +142,7 @@ export async function getStoreAuditEvolution(
       if (!error && data && data.length > 0) {
         rawEntries = data.map(row => {
           const payload = row.raw_payload as AgentDiagnosticResult;
-          const broken = (payload?.realSiteData?.catalogAudit?.issues || [])
-            .filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0).length;
+          const broken = (payload?.realSiteData?.catalogAudit?.issues || []).filter(isCatalogProductBroken).length;
           const loss = broken === 0 ? 0 : broken * (payload?.input?.averageOrderValue || 180) * 8;
 
           return {
@@ -171,8 +170,7 @@ export async function getStoreAuditEvolution(
   if (rawEntries.length === 0) {
     if (!currentDiagnostic) return null;
 
-    const currentBroken = (currentDiagnostic.realSiteData.catalogAudit?.issues || [])
-      .filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0).length;
+    const currentBroken = (currentDiagnostic.realSiteData.catalogAudit?.issues || []).filter(isCatalogProductBroken).length;
     const currentLoss = currentBroken === 0 ? 0 : currentBroken * (currentDiagnostic.input.averageOrderValue || 180) * 8;
 
     // Create an initial entry for today

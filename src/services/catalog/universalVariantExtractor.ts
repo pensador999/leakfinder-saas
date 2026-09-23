@@ -4,7 +4,7 @@
 // across Shopify, Nuvemshop (Tiendanube), VTEX, Yampi and Custom Platforms.
 // ==============================================================================
 
-export type SupportedPlatform = 'Shopify' | 'Nuvemshop' | 'VTEX' | 'Yampi' | 'WooCommerce' | 'Custom';
+export type SupportedPlatform = 'Shopify' | 'Nuvemshop' | 'Tray' | 'VTEX' | 'Yampi' | 'WooCommerce' | 'Custom';
 export type ExtractionMethod = 'NATIVE_JSON' | 'JSON_LD' | 'DOM_PARSER';
 
 export interface ExtractedVariant {
@@ -37,12 +37,15 @@ export interface UniversalVariantAuditResult {
 const CORE_APPAREL_SIZES = ['M', 'G', 'GG'];
 const CORE_FOOTWEAR_SIZES = ['39', '40', '41', '42'];
 
-// 🧢 Items that are naturally Single Size, accessories, or not clothing
+// 🧢 Items that are naturally Single Size, accessories, fishing tackle, or not clothing
 const SINGLE_SIZE_TERMS = [
   'BONÉ', 'BONE', 'MEIA', 'CINTO', 'BANDANA', 'MANGUITO', 'GARRAFA', 
   'COPO', 'ÓCULOS', 'OCULOS', 'CARTEIRA', 'ADESIVO', 'CHAVEIRO', 
   'WHEY', 'CREATINA', 'SUPLEMENTO', 'MOCHILA', 'BOLSA', 'CAPA', 
-  'PULSEIRA', 'COLAR', 'BRINCO', 'LENÇO', 'LENCO', 'MÁSCARA', 'MASCARA'
+  'PULSEIRA', 'COLAR', 'BRINCO', 'LENÇO', 'LENCO', 'MÁSCARA', 'MASCARA',
+  'ISCA', 'ANZOL', 'ANZÓIS', 'ANZOIS', 'CARRETILHA', 'MOLINETE', 
+  'VARA', 'LINHA', 'SNAP', 'GIRADOR', 'CHUMBADA', 'PASSAGUÁ', 'PASSAGUA',
+  'ESTOJO', 'TRALHA', 'PORTA VARA', 'CANIVETE', 'FACÃO', 'FACAO'
 ];
 
 /**
@@ -75,17 +78,39 @@ export function normalizeSizeName(rawSize: string): string {
 /**
  * Checks if a product is naturally exempt from apparel size grid audits
  */
-export function checkProductExemption(title: string, tags: string[] = [], options: string[] = []): {
+export function checkProductExemption(
+  title: string, 
+  tags: string[] = [], 
+  options: string[] = [],
+  variants: any[] = []
+): {
   isExempt: boolean;
   reason?: string;
 } {
   const upperTitle = (title || '').toUpperCase();
-  const upperTags = tags.map(t => t.toUpperCase());
-  const upperOptions = options.map(o => o.toUpperCase());
+  const safeTags = Array.isArray(tags) ? tags : [];
+  const safeOptions = Array.isArray(options) ? options : [];
+  const safeVariants = Array.isArray(variants) ? variants : [];
 
-  // Check 1: Fulfillment tag _FULL
-  if (upperTitle.includes('_FULL') || upperTags.some(t => t.includes('_FULL') || t.includes('FULL'))) {
+  const upperTags = safeTags.map(t => String(t || '').toUpperCase());
+  const upperOptions = safeOptions.map(o => String(o || '').toUpperCase());
+
+  // Check 1: Fulfillment tag _FULL no título, tags ou opções
+  if (
+    upperTitle.includes('_FULL') || 
+    upperTitle.includes('[FULL]') ||
+    upperTags.some(t => t.includes('_FULL') || t.includes('FULL')) ||
+    upperOptions.some(o => o.includes('_FULL') || o.includes('FULL'))
+  ) {
     return { isExempt: true, reason: 'Estoque Fulfillment Externo (_FULL / Mercado Livre / Shopee)' };
+  }
+
+  // Check 1.1: SKUs de variantes contendo _FULL
+  for (const v of safeVariants) {
+    const sku = String(v?.sku || v?.skuCode || '').toUpperCase();
+    if (sku.includes('_FULL') || sku.includes('[FULL]')) {
+      return { isExempt: true, reason: 'Variante com SKU Fulfillment Externo (_FULL)' };
+    }
   }
 
   // Check 2: Known single-size accessory categories
@@ -130,8 +155,31 @@ export function extractFromShopifyJson(productJson: any): UniversalVariantAuditR
     ? productJson.options.map((o: any) => typeof o === 'string' ? o : o.name) 
     : [];
 
-  const exemption = checkProductExemption(title, tags, options);
+  const exemption = checkProductExemption(title, tags, options, rawVariants);
   if (exemption.isExempt) {
+    const allOutOfStock = rawVariants.length > 0 && rawVariants.every((v: any) => {
+      const isZeroQuantity = v.inventory_quantity !== undefined && v.inventory_quantity <= 0;
+      return (!v.available && v.inventory_policy !== 'continue') || isZeroQuantity;
+    });
+
+    if (allOutOfStock) {
+      return {
+        platform: 'Shopify',
+        detectionMethod: 'NATIVE_JSON',
+        productTitle: title,
+        hasApparelGrid: false,
+        isSingleSizeOrExempt: true,
+        exemptionReason: `${exemption.reason} — RUPTURA TOTAL (Todas as variantes indisponíveis)`,
+        totalVariants: rawVariants.length,
+        availableSizes: [],
+        rupturedSizes: ['ÚNICO (ESGOTADO)'],
+        isCriticalRupture: true,
+        estimatedMonthlyLoss: 1450,
+        confidenceScore: 100,
+        proofSnippet: `Produto de tamanho único/isenção com 100% das variantes indisponíveis no JSON nativo.`
+      };
+    }
+
     return {
       platform: 'Shopify',
       detectionMethod: 'NATIVE_JSON',
@@ -194,8 +242,27 @@ export function extractFromNuvemshopPayload(nuvemProduct: any): UniversalVariant
   const title = nuvemProduct.name || nuvemProduct.title || 'Produto Nuvemshop';
   const rawVariants = Array.isArray(nuvemProduct.variants) ? nuvemProduct.variants : [];
   
-  const exemption = checkProductExemption(title, [], []);
+  const exemption = checkProductExemption(title, [], [], rawVariants);
   if (exemption.isExempt) {
+    const allOutOfStock = rawVariants.length > 0 && rawVariants.every((v: any) => !v.available && (v.stock === 0 || v.stock === '0'));
+    if (allOutOfStock) {
+      return {
+        platform: 'Nuvemshop',
+        detectionMethod: 'NATIVE_JSON',
+        productTitle: title,
+        hasApparelGrid: false,
+        isSingleSizeOrExempt: true,
+        exemptionReason: `${exemption.reason} — RUPTURA TOTAL`,
+        totalVariants: rawVariants.length,
+        availableSizes: [],
+        rupturedSizes: ['ÚNICO (ESGOTADO)'],
+        isCriticalRupture: true,
+        estimatedMonthlyLoss: 1450,
+        confidenceScore: 98,
+        proofSnippet: `Nuvemshop LS.product: Produto de tamanho único com estoque 0 em todas as variantes.`
+      };
+    }
+
     return {
       platform: 'Nuvemshop',
       detectionMethod: 'NATIVE_JSON',
@@ -268,6 +335,8 @@ export function extractFromDOM(documentObj: Document, htmlString: string = ''): 
   let platform: SupportedPlatform = 'Custom';
   if (htmlLower.includes('cdn.shopify.com') || htmlLower.includes('window.shopify')) {
     platform = 'Shopify';
+  } else if (htmlLower.includes('tray.com.br') || htmlLower.includes('traycdn') || htmlLower.includes('data-tray-tst')) {
+    platform = 'Tray';
   } else if (htmlLower.includes('nuvemshop.com.br') || htmlLower.includes('tiendanube') || htmlLower.includes('d3ugyf2ht6aenh.cloudfront.net')) {
     platform = 'Nuvemshop';
   } else if (htmlLower.includes('vtexassets.com') || htmlLower.includes('vtex.com')) {
@@ -283,6 +352,31 @@ export function extractFromDOM(documentObj: Document, htmlString: string = ''): 
   // Check Exemption
   const exemption = checkProductExemption(title);
   if (exemption.isExempt) {
+    const isOutOfStockInDom = htmlLower.includes('esgotado') || 
+                              htmlLower.includes('sold out') || 
+                              htmlLower.includes('indisponível') || 
+                              htmlLower.includes('avise-me quando chegar') ||
+                              htmlLower.includes('avise-me') ||
+                              !!documentObj.querySelector('.sold-out, .out-of-stock, [data-available="false"], button[disabled].product-form__submit');
+
+    if (isOutOfStockInDom) {
+      return {
+        platform,
+        detectionMethod: 'DOM_PARSER',
+        productTitle: title,
+        hasApparelGrid: false,
+        isSingleSizeOrExempt: true,
+        exemptionReason: `${exemption.reason} — RUPTURA OBSERVADA NO DOM`,
+        totalVariants: 1,
+        availableSizes: [],
+        rupturedSizes: ['ÚNICO (ESGOTADO)'],
+        isCriticalRupture: true,
+        estimatedMonthlyLoss: 1450,
+        confidenceScore: 90,
+        proofSnippet: `Botão ou indicativo de produto esgotado detectado no DOM da loja.`
+      };
+    }
+
     return {
       platform,
       detectionMethod: 'DOM_PARSER',
@@ -309,6 +403,10 @@ export function extractFromDOM(documentObj: Document, htmlString: string = ''): 
     Shopify: {
       available: 'fieldset.product-form__input input[type="radio"]:not(:disabled) + label, .variant-input:not(.variant-input--unavailable) label, .swatch-element:not(.soldout) label',
       ruptured: 'fieldset.product-form__input input[type="radio"]:disabled + label, .variant-input--unavailable label, .swatch-element.soldout label, [data-available="false"]'
+    },
+    Tray: {
+      available: '.lista-variacao li:not(.indisponivel), select[name*="variacao"] option:not(:disabled), [data-tray-tst="variant-button"]:not(.disabled)',
+      ruptured: '.lista-variacao li.indisponivel, select[name*="variacao"] option:disabled, [data-tray-tst="variant-button"].disabled, .produto-esgotado'
     },
     Nuvemshop: {
       available: '.product-variants-item.js-instock, .js-variant-select option:not(:disabled), input[name*="variation"]:not(:disabled) + label',

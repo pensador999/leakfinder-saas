@@ -185,7 +185,7 @@ export default async function handler(request: any, response: any) {
       args,
       defaultViewport: { width: 1280, height: 900 },
       executablePath,
-      headless: isWindows ? 'new' : chromium.headless
+      headless: isWindows ? 'new' : ((chromium as any).headless ?? true)
     });
 
     const page = await browser.newPage();
@@ -235,7 +235,7 @@ export default async function handler(request: any, response: any) {
       // CTAs
       const allButtons = Array.from(document.querySelectorAll('button, a'));
       const ctas = allButtons.filter(el => {
-        const txt = el.innerText?.toLowerCase() || '';
+        const txt = (el as HTMLElement).innerText?.toLowerCase() || el.textContent?.toLowerCase() || '';
         return txt.includes('comprar') || txt.includes('adicionar') || txt.includes('garantir') || txt.includes('eu quero');
       });
 
@@ -316,9 +316,9 @@ export default async function handler(request: any, response: any) {
           sampleProducts.push({
             title,
             price,
-            availableSizes: availableSizes.length > 0 ? availableSizes : ['P'],
-            missingSizes: missingSizes.length > 0 ? missingSizes : (hasRupture ? ['M', 'G'] : []),
-            hasRupture
+            availableSizes: availableSizes.length > 0 ? availableSizes : [],
+            missingSizes: missingSizes.length > 0 ? missingSizes : [],
+            hasRupture: missingSizes.length > 0
           });
         }
       });

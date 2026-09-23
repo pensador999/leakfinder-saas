@@ -38,6 +38,7 @@ import {
   getShopifyWebhookUrl,
   simulateRealTimeShopifyWebhookBurst,
   MonitoredMetaAd,
+  GhostTargetMetaAd,
   MetaAdAccountConfig,
   ShopifyWebhookSimulationResult
 } from '../../services/ads/metaMarketingApiService';
@@ -55,10 +56,36 @@ export const MetaAdsAutoKillSwitchModal: React.FC<MetaAdsAutoKillSwitchModalProp
   const { realSiteData } = diagnostic;
   const domain = realSiteData.domain || 'loja.com.br';
   const brandName = realSiteData.brandName || 'Sua Loja';
-  const brokenSkus = (realSiteData.catalogAudit?.issues || []).filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
+  // 1. Vestuário com grade furada (PP ao G2) ou acessório esgotado / estoque fantasma
+  const brokenSkus = (realSiteData.catalogAudit?.issues || []).filter(i => 
+    (!i.isFullPrintExempt && i.missingSizes.length > 0) || 
+    i.missingSizes.includes('ESGOTADO') ||
+    i.missingSizes.includes('ESTOQUE_FANTASMA_SUSPEITO') ||
+    Boolean(i.isGhostInventorySuspect)
+  );
+
+  // 2. Protocolo Yellowstone: Estoque Fantasma, Acessórios e Bonés com Ruptura / Backorder Oculto
+  const ghostTargets: GhostTargetMetaAd[] = (realSiteData.catalogAudit?.issues || [])
+    .filter(i => {
+      const isAccessory = i.isResaleAccessory || i.isFullPrintExempt;
+      const titleLower = (i.productTitle || '').toLowerCase();
+      const isHeroAccessory = titleLower.includes('bone') || titleLower.includes('boné') || titleLower.includes('yellowstone') || titleLower.includes('chapeu') || titleLower.includes('trucker');
+      const isGhostSuspect = Boolean(i.isGhostInventorySuspect || i.missingSizes.includes('ESTOQUE_FANTASMA_SUSPEITO'));
+      return isGhostSuspect || (isAccessory && (i.availableSizes.length === 0 || isHeroAccessory));
+    })
+    .map(i => ({
+      sku: i.sku || 'SKU-HERO',
+      productTitle: i.productTitle,
+      productUrl: i.productUrl,
+      reason: i.isGhostInventorySuspect 
+        ? (i.recommendedAction || 'Estoque Fantasma (Protocolo Yellowstone): Promessa de Envio Imediato sem estoque físico no galpão.')
+        : 'Estoque Fantasma (Protocolo Yellowstone): Anúncio ativo para produto em backorder com estoque físico zerado.',
+      dailySpend: 160.0,
+      isGhostInventory: true
+    }));
 
   const [config, setConfig] = useState<MetaAdAccountConfig>(getStoredMetaConfig());
-  const [adsList, setAdsList] = useState<MonitoredMetaAd[]>(() => auditAndMapMetaAds(domain, brokenSkus));
+  const [adsList, setAdsList] = useState<MonitoredMetaAd[]>(() => auditAndMapMetaAds(domain, brokenSkus, ghostTargets));
   const [logs, setLogs] = useState(() => getMetaExecutionLogs());
   const [isSaving, setIsSaving] = useState(false);
   const [isPausingId, setIsPausingId] = useState<string | null>(null);
@@ -310,7 +337,15 @@ export const MetaAdsAutoKillSwitchModal: React.FC<MetaAdsAutoKillSwitchModalProp
                             <span className="text-[10px] text-indigo-600 font-mono font-bold">SKU: {ad.associatedSku}</span>
                           </td>
                           <td className="p-3">
-                            {ad.brokenSizesDetected.length > 0 ? (
+                            {ad.ruptureSeverity === 'CRITICAL_GHOST_INVENTORY' ? (
+                              <div className="flex flex-col gap-1">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-300 w-fit flex items-center gap-1">
+                                  <AlertTriangle className="w-3 h-3 text-amber-600 shrink-0" />
+                                  <span>ESTOQUE FANTASMA</span>
+                                </span>
+                                <span className="text-[10px] text-slate-500 line-clamp-1">{ad.ghostInventoryReason || 'Ruptura física com backorder ativo'}</span>
+                              </div>
+                            ) : ad.brokenSizesDetected.length > 0 ? (
                               <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-100 text-rose-800">
                                 Esgotados: {ad.brokenSizesDetected.join(', ')}
                               </span>
@@ -323,11 +358,13 @@ export const MetaAdsAutoKillSwitchModal: React.FC<MetaAdsAutoKillSwitchModalProp
                           <td className="p-3">
                             <span className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-bold flex items-center gap-1 w-fit ${
                               isPaused 
-                                ? 'bg-rose-100 text-rose-800 border border-rose-200' 
+                                ? ad.ruptureSeverity === 'CRITICAL_GHOST_INVENTORY'
+                                  ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                                  : 'bg-rose-100 text-rose-800 border border-rose-200' 
                                 : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                             }`}>
                               {isPaused ? <PauseCircle className="w-3 h-3" /> : <PlayCircle className="w-3 h-3" />}
-                              <span>{isPaused ? 'PAUSADO (SALVANDO R$)' : 'ATIVO NO AR'}</span>
+                              <span>{isPaused ? (ad.ruptureSeverity === 'CRITICAL_GHOST_INVENTORY' ? 'PAUSADO (STOCK-SHIELD)' : 'PAUSADO (SALVANDO R$)') : 'ATIVO NO AR'}</span>
                             </span>
                           </td>
                           <td className="p-3 text-right">

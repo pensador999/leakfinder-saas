@@ -107,6 +107,8 @@ export function removeStoreFromSentinel(domain: string): boolean {
   return filtered.length < stores.length;
 }
 
+import { inspectRealWebsite, isCatalogProductBroken } from '../siteInspector';
+
 /**
  * Executes a live health check on a store's public catalog feed
  */
@@ -114,33 +116,46 @@ export async function runSentinelAudit(domain: string): Promise<SentinelAuditRes
   const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/\/.*$/, '').toLowerCase();
   const timestamp = new Date().toISOString();
 
-  const mockBroken = [
-    {
-      title: 'Camiseta Regular Basic Heavy',
-      handle: 'camiseta-regular-basic-heavy',
-      brokenSizes: ['M', 'G'],
-      lossEstimateMonthly: 2500
-    },
-    {
-      title: 'Bermuda Moletom Casual Sport',
-      handle: 'bermuda-moletom-casual-sport',
-      brokenSizes: ['G'],
-      lossEstimateMonthly: 1250
-    }
-  ];
+  let brokenProducts: Array<{
+    title: string;
+    handle?: string;
+    brokenSizes: string[];
+    lossEstimateMonthly: number;
+  }> = [];
+  let totalProductsScanned = 0;
+  let totalMonthlyLoss = 0;
 
-  const totalMonthlyLoss = mockBroken.reduce((acc, curr) => acc + curr.lossEstimateMonthly, 0);
+  try {
+    const siteData = await inspectRealWebsite(cleanDomain);
+    const issues = siteData.catalogAudit?.issues || [];
+    totalProductsScanned = siteData.catalogAudit?.totalProductsScanned || issues.length;
 
-  const whatsappMessage = formatWhatsAppAlertMessage(cleanDomain, mockBroken, totalMonthlyLoss);
+    const realBroken = issues.filter(isCatalogProductBroken);
+
+    brokenProducts = realBroken.map(i => ({
+      title: i.productTitle,
+      handle: i.productUrl.split('/products/')[1] || i.sku,
+      brokenSizes: i.missingSizes,
+      lossEstimateMonthly: 1384.65
+    }));
+
+    totalMonthlyLoss = siteData.catalogAudit?.monthlyLossEstimateBRL !== undefined
+      ? Number(siteData.catalogAudit.monthlyLossEstimateBRL.toFixed(2))
+      : Number((brokenProducts.length * 1384.65).toFixed(2));
+  } catch (err) {
+    console.warn('[Sentinel] Falha ao inspecionar loja ao vivo:', err);
+  }
+
+  const whatsappMessage = formatWhatsAppAlertMessage(cleanDomain, brokenProducts, totalMonthlyLoss);
 
   // Update store telemetry in storage
   const stores = getMonitoredStores();
   const idx = stores.findIndex((s) => s.domain === cleanDomain);
   if (idx >= 0) {
     stores[idx].lastCheckedAt = timestamp;
-    stores[idx].brokenProductsCount = mockBroken.length;
+    stores[idx].brokenProductsCount = brokenProducts.length;
     stores[idx].estimatedMonthlyLoss = totalMonthlyLoss;
-    stores[idx].status = mockBroken.length > 0 ? 'warning' : 'active';
+    stores[idx].status = brokenProducts.length > 0 ? 'warning' : 'active';
     if (typeof window !== 'undefined') {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(stores));
     }
@@ -149,10 +164,10 @@ export async function runSentinelAudit(domain: string): Promise<SentinelAuditRes
   return {
     domain: cleanDomain,
     timestamp,
-    totalProductsScanned: 24,
-    brokenProducts: mockBroken,
+    totalProductsScanned,
+    brokenProducts,
     totalMonthlyLoss,
-    alertRequired: mockBroken.length > 0,
+    alertRequired: brokenProducts.length > 0,
     whatsappMessage
   };
 }

@@ -110,24 +110,22 @@ export async function runBatchProspectingAudit(
       }, lead);
 
     } catch {
-      // Fallback for unresponsive domains
+      // Error handling for unresponsive domains - zero fake data
       const fallbackLead: BatchProspectingLead = {
         id: `lead-${i + 1}-${domain}`,
         domain,
         url: `https://${domain}`,
         brandName,
-        status: 'COMPLETED',
-        platform: 'E-commerce',
-        monthlyAdWasteBRL: 1450,
-        brokenSkusCount: 1,
-        dealPriority: 'ALTA',
-        closingArgument: `Oportunidade de blindagem de grade e CRO mobile.`,
-        whatsAppPitchScript: `Olá equipe ${brandName}! Rodamos uma auditoria técnica em ${domain} e encontramos oportunidades de blindagem de anúncios.`,
+        status: 'ERROR',
+        platform: 'Inacessível / Timeout',
+        monthlyAdWasteBRL: 0,
+        brokenSkusCount: 0,
+        dealPriority: 'MODERADA',
+        closingArgument: `Domínio inacessível durante a auditoria automática. Requer validação manual.`,
+        whatsAppPitchScript: `Olá equipe ${brandName}! Tentamos rodar uma auditoria técnica em ${domain}, mas o site não respondeu no momento da inspeção.`,
         pdfDossierUrl: `https://${domain}`
       };
 
-      totalAdWaste += 1450;
-      highPriorityDeals++;
       results.push(fallbackLead);
 
       onProgress({

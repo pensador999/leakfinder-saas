@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DollarSign, Sparkles, Copy, Check, Gift, HelpCircle, MessageSquare, Send, ShieldAlert, ArrowRight } from 'lucide-react';
 import { AgentDiagnosticResult } from '../../types';
+import { isCatalogProductBroken } from '../../services/siteInspector';
 
 interface SalesCopyAgentViewProps {
   diagnostic: AgentDiagnosticResult;
@@ -23,7 +24,7 @@ export const SalesCopyAgentView: React.FC<SalesCopyAgentViewProps> = ({ diagnost
     setTimeout(() => setCopiedPitchIndex(null), 2000);
   };
 
-  const brokenItems = (realSiteData.catalogAudit?.issues || []).filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
+  const brokenItems = (realSiteData.catalogAudit?.issues || []).filter(isCatalogProductBroken);
   const sampleBrokenItem = brokenItems[0];
   const monthlyLoss = realSiteData.catalogAudit?.monthlyLossEstimateBRL !== undefined
     ? Number(realSiteData.catalogAudit.monthlyLossEstimateBRL.toFixed(2))

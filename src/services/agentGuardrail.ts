@@ -1,5 +1,5 @@
-import { AgentDiagnosticResult } from '../types';
-import { RealSiteData } from './siteInspector';
+import type { AgentDiagnosticResult } from '../types/index.ts';
+import type { RealSiteData } from './siteInspector.ts';
 
 export interface GuardrailFinding {
   id: string;

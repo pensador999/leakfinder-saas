@@ -1,6 +1,6 @@
 import { AuditInput, AgentDiagnosticResult } from '../../types';
 import { runAgentDiagnosticAsync } from '../agentEngine';
-import { extractCleanDomainAndBrand } from '../siteInspector';
+import { extractCleanDomainAndBrand, isCatalogProductBroken } from '../siteInspector';
 
 export interface MonitoredStore {
   id: string;
@@ -94,8 +94,8 @@ export async function executeAutonomousStoreAudit(
     const prevIssues = previousSnapshot.realSiteData.catalogAudit?.issues || [];
     const currentIssues = catalogIssues;
 
-    const prevBroken = prevIssues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0).length;
-    const currentBroken = currentIssues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0).length;
+    const prevBroken = prevIssues.filter(isCatalogProductBroken).length;
+    const currentBroken = currentIssues.filter(isCatalogProductBroken).length;
 
     const resolvedCount = Math.max(0, prevBroken - currentBroken);
     const newBrokenCount = Math.max(0, currentBroken - prevBroken);
@@ -119,7 +119,7 @@ export async function executeAutonomousStoreAudit(
 
   // Phase 4: Format Executive WhatsApp Alert if critical issues exist
   let alertGenerated: string | undefined;
-  const criticalBrokenSkus = catalogIssues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
+  const criticalBrokenSkus = catalogIssues.filter(isCatalogProductBroken);
 
   if (criticalBrokenSkus.length > 0) {
     const firstSku = criticalBrokenSkus[0];

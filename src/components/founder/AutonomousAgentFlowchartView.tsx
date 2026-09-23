@@ -23,8 +23,15 @@ import {
   RefreshCw,
   TrendingUp,
   Search,
-  Code2
+  Code2,
+  Terminal,
+  ShieldAlert,
+  ChevronDown,
+  ChevronUp,
+  Copy,
+  Check
 } from 'lucide-react';
+import { getSwarmAgentById } from '../../services/ai/prompts/masterSwarmPrompts.ts';
 
 export interface AgentNodeInfo {
   id: string;
@@ -390,6 +397,8 @@ export const AutonomousAgentFlowchartView: React.FC = () => {
   const [isTriggeringAll, setIsTriggeringAll] = useState<boolean>(false);
   const [globalCycles, setGlobalCycles] = useState<number>(28490);
   const [selectedLayer, setSelectedLayer] = useState<string>('TODAS');
+  const [isPromptExpanded, setIsPromptExpanded] = useState<boolean>(false);
+  const [hasCopiedPrompt, setHasCopiedPrompt] = useState<boolean>(false);
 
   // Live real-time ticker simulating continuous 24/7 autonomous swarm work
   useEffect(() => {
@@ -518,15 +527,15 @@ export const AutonomousAgentFlowchartView: React.FC = () => {
 
       {/* Layer Filter Chips */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1">
-        <span className="text-xs font-bold text-slate-500 uppercase font-mono mr-1 shrink-0">Filtrar por Camada:</span>
+        <span className="text-xs font-bold text-[#7C7C6F] uppercase font-mono mr-1 shrink-0">Filtrar por Camada:</span>
         {layersList.map(layer => (
           <button
             key={layer}
             onClick={() => setSelectedLayer(layer)}
             className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer shrink-0 ${
               selectedLayer === layer
-                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
-                : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                ? 'bg-[#0AE448] text-[#0E100F] shadow-sm'
+                : 'bg-[#141716] text-[#BBBAA6] border border-white/10 hover:border-white/20 hover:bg-[#191C1B]'
             }`}
           >
             {layer}
@@ -540,11 +549,11 @@ export const AutonomousAgentFlowchartView: React.FC = () => {
         {/* Left Column: Visual Agent Pipeline Flow (7 cols) */}
         <div className="lg:col-span-7 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-700 uppercase font-mono tracking-wider">
+            <span className="text-xs font-bold text-[#A0A090] uppercase font-mono tracking-wider">
               Enxame em Ação ({filteredAgents.length} Agentes Ativos - Clique para Inspecionar):
             </span>
-            <span className="text-[11px] font-mono text-emerald-600 font-bold flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[11px] font-mono text-[#0AE448] font-bold flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-[#0AE448] animate-pulse" />
               100% em Produção Contínua
             </span>
           </div>
@@ -559,49 +568,49 @@ export const AutonomousAgentFlowchartView: React.FC = () => {
                     onClick={() => handleSelectAgent(agent)}
                     className={`w-full p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between gap-4 ${
                       isSelected
-                        ? 'bg-slate-900 text-white border-indigo-500 shadow-xl shadow-slate-950/20 ring-2 ring-indigo-500/50'
-                        : 'bg-white text-slate-800 border-slate-200 hover:border-indigo-300 hover:bg-slate-50 shadow-xs'
+                        ? 'bg-[#191C1B] text-white border-[#0AE448] shadow-xl shadow-black/50 ring-1 ring-[#0AE448]/50'
+                        : 'bg-[#141716] text-[#FFFCE1] border-white/10 hover:border-[#0AE448]/40 hover:bg-[#191C1B] shadow-xs'
                     }`}
                   >
                     <div className="flex items-center gap-3.5 min-w-0">
                       <span className={`font-mono font-black text-xs px-2.5 py-1 rounded-xl shrink-0 ${
-                        isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'
+                        isSelected ? 'bg-[#0AE448] text-[#0E100F]' : 'bg-black/60 text-[#0AE448] border border-white/10'
                       }`}>
                         #{agent.number}
                       </span>
 
                       <div className={`p-2.5 rounded-xl shrink-0 ${
-                        isSelected ? 'bg-slate-800 border border-slate-700' : 'bg-slate-100'
+                        isSelected ? 'bg-[#101211] border border-[#0AE448]/40 text-[#0AE448]' : 'bg-[#101211] border border-white/10 text-white'
                       }`}>
                         {renderIcon(agent.iconName)}
                       </div>
 
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h4 className="font-bold text-sm leading-tight truncate">{agent.name}</h4>
-                          <span className="text-[9px] font-mono font-black px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center gap-1 shrink-0">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                          <h4 className="font-bold text-sm leading-tight truncate text-white">{agent.name}</h4>
+                          <span className="text-[9px] font-mono font-black px-2 py-0.5 rounded-full bg-[#0AE448]/15 text-[#0AE448] border border-[#0AE448]/30 flex items-center gap-1 shrink-0">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#0AE448] animate-ping" />
                             {agent.status}
                           </span>
                         </div>
-                        <p className={`text-[11px] font-mono mt-0.5 truncate ${isSelected ? 'text-slate-300' : 'text-slate-500'}`}>
+                        <p className={`text-[11px] font-mono mt-0.5 truncate ${isSelected ? 'text-[#00BAE2]' : 'text-[#7C7C6F]'}`}>
                           {agent.roleTitle}
                         </p>
-                        <p className={`text-[10px] mt-1 italic truncate ${isSelected ? 'text-indigo-300' : 'text-slate-600'}`}>
+                        <p className={`text-[10px] mt-1 italic truncate ${isSelected ? 'text-[#0AE448]' : 'text-[#A0A090]'}`}>
                           ⚡ <span className="font-semibold">{agent.currentTask}</span>
                         </p>
                       </div>
                     </div>
 
                     <ArrowRight className={`w-4 h-4 shrink-0 transition-transform ${
-                      isSelected ? 'translate-x-1 text-indigo-400' : 'text-slate-300'
+                      isSelected ? 'translate-x-1 text-[#0AE448]' : 'text-[#7C7C6F]'
                     }`} />
                   </button>
 
                   {/* Flow Connector Arrow between nodes */}
                   {index < filteredAgents.length - 1 && (
                     <div className="flex justify-center py-0.5">
-                      <div className="w-0.5 h-2 bg-indigo-200"></div>
+                      <div className="w-0.5 h-2 bg-white/10"></div>
                     </div>
                   )}
                 </div>
@@ -612,67 +621,67 @@ export const AutonomousAgentFlowchartView: React.FC = () => {
 
         {/* Right Column: Detailed Agent Inspector & Live Telemetry Panel (5 cols) */}
         <div className="lg:col-span-5 sticky top-6 space-y-4">
-          <span className="text-xs font-bold text-slate-700 uppercase font-mono tracking-wider block">
+          <span className="text-xs font-bold text-[#A0A090] uppercase font-mono tracking-wider block">
             Raio-X do Agente Selecionado:
           </span>
 
-          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-lg space-y-5">
+          <div className="p-6 rounded-3xl bg-[#101211] border border-white/10 shadow-2xl space-y-5 text-white">
             
             {/* Inspector Header */}
-            <div className="flex items-center gap-3.5 border-b border-slate-100 pb-4">
-              <div className="p-3.5 bg-slate-900 text-white rounded-2xl shadow-md">
+            <div className="flex items-center gap-3.5 border-b border-white/10 pb-4">
+              <div className="p-3.5 bg-[#141716] border border-white/10 text-[#0AE448] rounded-2xl shadow-md">
                 {renderIcon(selectedAgent.iconName)}
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono font-bold text-indigo-600 uppercase bg-indigo-50 px-2 py-0.5 rounded-md">
+                  <span className="text-[10px] font-mono font-bold text-[#00BAE2] uppercase bg-[#00BAE2]/10 border border-[#00BAE2]/20 px-2 py-0.5 rounded-md">
                     {selectedAgent.layer}
                   </span>
-                  <span className="text-[10px] font-mono font-bold text-slate-400">
+                  <span className="text-[10px] font-mono font-bold text-[#7C7C6F]">
                     #{selectedAgent.number}
                   </span>
                 </div>
-                <h3 className="font-black text-slate-900 text-lg leading-tight mt-0.5 truncate">{selectedAgent.name}</h3>
-                <p className="text-xs text-slate-500 font-mono">{selectedAgent.roleTitle}</p>
+                <h3 className="font-black text-white text-lg leading-tight mt-0.5 truncate">{selectedAgent.name}</h3>
+                <p className="text-xs text-[#7C7C6F] font-mono">{selectedAgent.roleTitle}</p>
               </div>
             </div>
 
             {/* Live Operational State Badge */}
-            <div className="p-3.5 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 text-emerald-900 space-y-1.5">
+            <div className="p-3.5 rounded-2xl bg-[#141716] border border-[#0AE448]/30 text-white space-y-1.5">
               <div className="flex items-center justify-between text-xs font-mono">
-                <span className="font-bold text-emerald-700 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                <span className="font-bold text-[#0AE448] flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-[#0AE448] animate-ping" />
                   STATUS OPERACIONAL AO VIVO:
                 </span>
-                <span className="font-black text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-md text-[10px]">
+                <span className="font-black text-[#0AE448] bg-[#0AE448]/15 border border-[#0AE448]/30 px-2 py-0.5 rounded-md text-[10px]">
                   TRABALHANDO A TODO VAPOR ⚡
                 </span>
               </div>
-              <p className="text-xs font-medium text-emerald-950 leading-relaxed font-sans">
+              <p className="text-xs font-medium text-slate-300 leading-relaxed font-sans">
                 <strong>Tarefa Ativa no Milissegundo:</strong> {selectedAgent.currentTask}.
               </p>
-              <div className="pt-2 border-t border-emerald-500/20 grid grid-cols-2 gap-2 text-[11px] font-mono text-emerald-800">
+              <div className="pt-2 border-t border-white/10 grid grid-cols-2 gap-2 text-[11px] font-mono text-slate-300">
                 <div>
-                  <span className="text-slate-400 text-[9px] block uppercase">Ciclos Hoje:</span>
-                  <span className="font-bold text-emerald-700">{selectedAgent.cyclesCompletedToday.toLocaleString('pt-BR')} execuções</span>
+                  <span className="text-[#7C7C6F] text-[9px] block uppercase">Ciclos Hoje:</span>
+                  <span className="font-bold text-[#0AE448]">{selectedAgent.cyclesCompletedToday.toLocaleString('pt-BR')} execuções</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 text-[9px] block uppercase">Latência Média:</span>
-                  <span className="font-bold text-emerald-700">{selectedAgent.avgLatency} (Zero Fila)</span>
+                  <span className="text-[#7C7C6F] text-[9px] block uppercase">Latência Média:</span>
+                  <span className="font-bold text-[#0AE448]">{selectedAgent.avgLatency} (Zero Fila)</span>
                 </div>
               </div>
             </div>
 
             {/* Cadence & Mission Statement */}
             <div className="space-y-1.5 text-xs">
-              <span className="font-bold text-slate-700 uppercase font-mono text-[10px] block">
+              <span className="font-bold text-[#A0A090] uppercase font-mono text-[10px] block">
                 Cadência & Missão Autônoma:
               </span>
-              <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-1">
-                <p className="text-[11px] font-mono font-bold text-indigo-700">
+              <div className="bg-[#141716] p-3 rounded-2xl border border-white/10 space-y-1">
+                <p className="text-[11px] font-mono font-bold text-[#00BAE2]">
                   ⏱️ {selectedAgent.executionCadence}
                 </p>
-                <p className="text-slate-700 leading-relaxed font-sans text-xs">
+                <p className="text-[#A0A090] leading-relaxed font-sans text-xs">
                   {selectedAgent.mission}
                 </p>
               </div>
@@ -680,24 +689,24 @@ export const AutonomousAgentFlowchartView: React.FC = () => {
 
             {/* Inputs & Outputs Grid */}
             <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-1.5">
-                <span className="text-[9px] font-bold text-slate-400 font-mono uppercase block">Dados de Entrada:</span>
+              <div className="p-3 bg-[#141716] rounded-2xl border border-white/10 space-y-1.5">
+                <span className="text-[9px] font-bold text-[#7C7C6F] font-mono uppercase block">Dados de Entrada:</span>
                 <ul className="space-y-1">
                   {selectedAgent.inputs.map((inp, idx) => (
-                    <li key={idx} className="text-[11px] text-slate-700 font-medium flex items-start gap-1">
-                      <span className="text-indigo-600 font-bold">•</span>
+                    <li key={idx} className="text-[11px] text-[#A0A090] font-medium flex items-start gap-1">
+                      <span className="text-[#00BAE2] font-bold">•</span>
                       <span>{inp}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div className="p-3 bg-indigo-50/70 rounded-2xl border border-indigo-200 space-y-1.5 text-indigo-950">
-                <span className="text-[9px] font-bold text-indigo-600 font-mono uppercase block">Entregáveis (Outputs):</span>
+              <div className="p-3 bg-[#141716] rounded-2xl border border-white/10 space-y-1.5 text-white">
+                <span className="text-[9px] font-bold text-[#0AE448] font-mono uppercase block">Entregáveis (Outputs):</span>
                 <ul className="space-y-1">
                   {selectedAgent.outputs.map((out, idx) => (
-                    <li key={idx} className="text-[11px] text-indigo-900 font-medium flex items-start gap-1">
-                      <span className="text-indigo-600 font-bold">✓</span>
+                    <li key={idx} className="text-[11px] text-[#0AE448] font-medium flex items-start gap-1">
+                      <span className="text-[#0AE448] font-bold">✓</span>
                       <span>{out}</span>
                     </li>
                   ))}
@@ -706,17 +715,17 @@ export const AutonomousAgentFlowchartView: React.FC = () => {
             </div>
 
             {/* Founder Directive & Tip Editor */}
-            <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 text-amber-950 space-y-2.5">
+            <div className="p-4 rounded-2xl bg-[#141716] border border-amber-500/30 text-amber-200 space-y-2.5">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-amber-800 font-bold text-xs font-mono">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                <div className="flex items-center gap-1.5 text-amber-400 font-bold text-xs font-mono">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                   <span>DIRETIVA DO FUNDADOR (LUCAS):</span>
                 </div>
 
                 {!isEditingTip ? (
                   <button
                     onClick={() => { setIsEditingTip(true); setEditTipText(selectedAgent.customTip); }}
-                    className="p-1 hover:bg-amber-200/60 rounded-lg text-amber-800 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+                    className="p-1 hover:bg-amber-500/20 rounded-lg text-amber-300 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
                   >
                     <Edit3 className="w-3 h-3" />
                     <span>Editar</span>
@@ -724,7 +733,7 @@ export const AutonomousAgentFlowchartView: React.FC = () => {
                 ) : (
                   <button
                     onClick={handleSaveTip}
-                    className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shadow-xs"
+                    className="px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-[#0E100F] rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shadow-xs"
                   >
                     <Save className="w-3 h-3" />
                     <span>Salvar</span>
@@ -733,7 +742,7 @@ export const AutonomousAgentFlowchartView: React.FC = () => {
               </div>
 
               {!isEditingTip ? (
-                <p className="text-xs text-amber-900 leading-relaxed font-sans font-medium italic">
+                <p className="text-xs text-amber-200/90 leading-relaxed font-sans font-medium italic">
                   "{selectedAgent.customTip}"
                 </p>
               ) : (
@@ -741,17 +750,100 @@ export const AutonomousAgentFlowchartView: React.FC = () => {
                   value={editTipText}
                   onChange={(e) => setEditTipText(e.target.value)}
                   rows={3}
-                  className="w-full p-2.5 text-xs bg-white border border-amber-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-amber-500 font-sans text-slate-800"
+                  className="w-full p-2.5 text-xs bg-black/60 border border-amber-500/40 rounded-xl focus:outline-none focus:ring-1 focus:ring-amber-500 font-sans text-white"
                   placeholder="Digite sua diretiva obrigatória para este agente..."
                 />
               )}
 
               {saveSuccess && (
-                <span className="text-[11px] font-mono font-bold text-emerald-700 block text-center">
+                <span className="text-[11px] font-mono font-bold text-[#0AE448] block text-center">
                   ✅ Diretiva transmitida e absorvida pelo agente!
                 </span>
               )}
             </div>
+
+            {/* Prompt de Comando & Mandato do Conselheiro de Negócios (Zero Bajulação) */}
+            {(() => {
+              const swarmDef = getSwarmAgentById(selectedAgent.id);
+              if (!swarmDef) return null;
+              
+              const handleCopyPrompt = () => {
+                if (swarmDef.systemPrompt) {
+                  navigator.clipboard.writeText(swarmDef.systemPrompt);
+                  setHasCopiedPrompt(true);
+                  setTimeout(() => setHasCopiedPrompt(false), 2500);
+                }
+              };
+
+              return (
+                <div className="p-4 rounded-2xl bg-[#0E100F] border border-white/10 text-white space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Terminal className="w-4 h-4 text-emerald-400" />
+                      <span className="text-xs font-mono font-bold tracking-tight text-white uppercase">
+                        Prompt de Comando & Conselheiro
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={handleCopyPrompt}
+                        className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-[10px] font-mono transition-all flex items-center gap-1 cursor-pointer"
+                        title="Copiar prompt completo para a área de transferência"
+                      >
+                        {hasCopiedPrompt ? (
+                          <>
+                            <Check className="w-3 h-3 text-emerald-400" />
+                            <span className="text-emerald-400 font-bold">Copiado</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3 h-3 text-slate-400" />
+                            <span>Copiar Prompt</span>
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        onClick={() => setIsPromptExpanded(!isPromptExpanded)}
+                        className="p-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-all cursor-pointer"
+                        title={isPromptExpanded ? 'Recolher prompt' : 'Expandir prompt'}
+                      >
+                        {isPromptExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Kill Switch Trigger Badge if Defined */}
+                  {swarmDef.killSwitchAction && (
+                    <div className="p-2.5 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 flex items-start gap-2 text-[11px] font-sans">
+                      <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="text-rose-200 block font-mono text-[10px] uppercase">Gatilho de Kill-Switch Imediato:</strong>
+                        <span>{swarmDef.killSwitchAction}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Expandable System Prompt Content */}
+                  {isPromptExpanded ? (
+                    <div className="space-y-2">
+                      <div className="max-h-72 overflow-y-auto p-3 bg-black/60 rounded-xl border border-white/5 font-mono text-[11px] text-slate-300 leading-relaxed whitespace-pre-wrap select-text">
+                        {swarmDef.systemPrompt}
+                      </div>
+                      <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 pt-1">
+                        <span>Status: 100% Grounding Verificado</span>
+                        <span className="text-emerald-400 font-bold">Anti-Complacência Ativa</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-slate-400 leading-relaxed font-sans line-clamp-2">
+                      {swarmDef.systemPrompt.slice(0, 160)}...
+                    </p>
+                  )}
+                </div>
+              );
+            })()}
 
           </div>
         </div>

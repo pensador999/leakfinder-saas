@@ -1,0 +1,319 @@
+import React, { useState } from 'react';
+import { 
+  TrendingUp, 
+  TrendingDown, 
+  ExternalLink, 
+  Sparkles, 
+  AlertCircle, 
+  CheckCircle2, 
+  DollarSign, 
+  Percent, 
+  Scale, 
+  Flame, 
+  Store,
+  Layers,
+  ShoppingBag,
+  ArrowRight,
+  ShieldCheck,
+  ChevronRight
+} from 'lucide-react';
+import { 
+  conductMarketPriceStudy, 
+  ProductMarketComparisonItem, 
+  PricePositionStatus 
+} from '../../services/ai/productPriceMarketBenchmarkEngine';
+import { CatalogProductIssue } from '../../services/siteInspector';
+import { formatBRL } from '../../services/ai/storeFinancialGroundingEngine';
+
+interface ProductMarketPriceBenchmarkViewProps {
+  catalogIssues: CatalogProductIssue[];
+  domain: string;
+  brandName: string;
+}
+
+export const ProductMarketPriceBenchmarkView: React.FC<ProductMarketPriceBenchmarkViewProps> = ({
+  catalogIssues,
+  domain,
+  brandName
+}) => {
+  const study = conductMarketPriceStudy(catalogIssues, domain, brandName);
+  const [selectedFilter, setSelectedFilter] = useState<'ALL' | 'PROFIT_LIFT' | 'ARBITRAGE' | 'ABOVE_MARKET'>('ALL');
+  const [selectedItem, setSelectedItem] = useState<ProductMarketComparisonItem | null>(study.items[0] || null);
+
+  const filteredItems = study.items.filter(item => {
+    if (selectedFilter === 'PROFIT_LIFT') return item.positioning === 'MUITO_ABAIXO_DO_MERCADO';
+    if (selectedFilter === 'ARBITRAGE') return item.positioning === 'ARBITRAGEM_ESTOQUE_OURO';
+    if (selectedFilter === 'ABOVE_MARKET') return item.positioning === 'ACIMA_DO_MERCADO';
+    return true;
+  });
+
+  const getPositioningBadge = (pos: PricePositionStatus) => {
+    switch (pos) {
+      case 'ARBITRAGEM_ESTOQUE_OURO':
+        return (
+          <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-1">
+            <Flame className="w-3.5 h-3.5 text-amber-600" />
+            Arbitragem de Estoque
+          </span>
+        );
+      case 'MUITO_ABAIXO_DO_MERCADO':
+        return (
+          <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 flex items-center gap-1">
+            <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
+            Oportunidade de Margem
+          </span>
+        );
+      case 'ACIMA_DO_MERCADO':
+        return (
+          <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-rose-50 text-rose-800 border border-rose-300 flex items-center gap-1">
+            <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
+            Acima do Mercado
+          </span>
+        );
+      case 'COMPETITIVO_ALINHADO':
+        return (
+          <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-blue-50 text-blue-800 border border-blue-200 flex items-center gap-1">
+            <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
+            Paridade Competitiva
+          </span>
+        );
+    }
+  };
+
+  return (
+    <div className="space-y-6 font-sans">
+      
+      {/* 1. Header do Estudo de Mercado */}
+      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 border border-indigo-500/30 text-white shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+          <div className="space-y-3 max-w-2xl">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="px-3 py-1 bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 rounded-full text-xs font-mono font-bold flex items-center gap-1.5">
+                <Scale className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Estudo de Mercado & Inteligência Competitiva de Preços</span>
+              </span>
+              <span className="px-2.5 py-0.5 bg-slate-800 text-slate-300 border border-slate-700 rounded-full text-xs font-mono">
+                Pareamento Cruzado Produto a Produto
+              </span>
+            </div>
+
+            <h3 className="text-2xl sm:text-3xl font-black tracking-tight leading-tight">
+              Índice de Preços: <span className="text-indigo-300 font-mono">{study.marketCompetitivenessIndex}%</span> da média dos concorrentes diretos
+            </h3>
+
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              {study.executiveSummary}
+            </p>
+          </div>
+
+          {/* Metric Highlights */}
+          <div className="grid grid-cols-2 gap-3 w-full lg:w-auto shrink-0 text-center">
+            <div className="p-4 bg-slate-900/80 rounded-2xl border border-slate-700 backdrop-blur-md">
+              <span className="text-[10px] uppercase font-bold text-slate-400 font-mono block">Lucro Adicional Possível</span>
+              <span className="text-2xl sm:text-3xl font-black text-emerald-400 font-mono">
+                {formatBRL(study.potentialProfitGainFromRepricingMonthlyBRL)}
+              </span>
+              <span className="text-[10px] text-emerald-300 block font-medium">via reprecificação segura</span>
+            </div>
+
+            <div className="p-4 bg-slate-900/80 rounded-2xl border border-slate-700 backdrop-blur-md">
+              <span className="text-[10px] uppercase font-bold text-slate-400 font-mono block">Arbitragens de Estoque</span>
+              <span className="text-2xl sm:text-3xl font-black text-amber-400 font-mono">
+                {study.totalArbitrageOpportunitiesCount} SKUs
+              </span>
+              <span className="text-[10px] text-amber-300 block font-medium">concorrentes esgotados</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Filtros Rápidos */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+        <span className="text-xs font-mono font-bold text-slate-500 uppercase shrink-0 mr-1">Filtrar Visão:</span>
+        {[
+          { id: 'ALL', label: `Todos os Produtos (${study.items.length})` },
+          { id: 'PROFIT_LIFT', label: `Oportunidade de Subir Preço (${study.items.filter(i => i.positioning === 'MUITO_ABAIXO_DO_MERCADO').length})` },
+          { id: 'ARBITRAGE', label: `Concorrente Esgotado (${study.items.filter(i => i.positioning === 'ARBITRAGEM_ESTOQUE_OURO').length})` },
+          { id: 'ABOVE_MARKET', label: `Acima do Mercado (${study.items.filter(i => i.positioning === 'ACIMA_DO_MERCADO').length})` }
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setSelectedFilter(tab.id as any)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold font-mono transition-all shrink-0 cursor-pointer ${
+              selectedFilter === tab.id
+                ? 'bg-indigo-600 text-white shadow-xs'
+                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* 3. Grid Lado a Lado: Produtos Pareados */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        {/* Coluna Esquerda: Lista de Produtos Comparados (5 cols) */}
+        <div className="lg:col-span-5 space-y-3">
+          <div className="flex items-center justify-between text-xs font-mono text-slate-500 px-1">
+            <span>SELECIONE UM PRODUTO</span>
+            <span>{filteredItems.length} ITENS ANALISADOS</span>
+          </div>
+
+          <div className="space-y-2.5 max-h-[720px] overflow-y-auto pr-1">
+            {filteredItems.map(item => {
+              const isSelected = selectedItem?.id === item.id;
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => setSelectedItem(item)}
+                  className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+                    isSelected 
+                      ? 'bg-indigo-50/70 border-indigo-500 shadow-md ring-1 ring-indigo-500' 
+                      : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/60'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    {item.yourImageSrc ? (
+                      <img src={item.yourImageSrc} alt={item.yourProductTitle} className="w-14 h-14 rounded-xl object-cover border border-slate-100 shrink-0" />
+                    ) : (
+                      <div className="w-14 h-14 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200 text-slate-400">
+                        <ShoppingBag className="w-6 h-6" />
+                      </div>
+                    )}
+
+                    <div className="space-y-1 flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="text-[10px] font-mono font-bold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
+                          {item.yourSku}
+                        </span>
+                        {getPositioningBadge(item.positioning)}
+                      </div>
+
+                      <h4 className="text-xs font-bold text-slate-900 truncate" title={item.yourProductTitle}>
+                        {item.yourProductTitle}
+                      </h4>
+
+                      <div className="flex items-center justify-between text-xs font-mono">
+                        <span className="font-black text-slate-900">{formatBRL(item.yourPrice)}</span>
+                        <span className="text-slate-500">Média: {formatBRL(item.marketAveragePrice)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Coluna Direita: Raio-X Detalhado do Pareamento de Concorrentes (7 cols) */}
+        <div className="lg:col-span-7">
+          {selectedItem ? (
+            <div className="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-6 sticky top-6">
+              
+              {/* Top Title Row */}
+              <div className="space-y-2 border-b border-slate-100 pb-4">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <span className="text-xs font-mono font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-200">
+                    Categoria: {selectedItem.category}
+                  </span>
+                  {getPositioningBadge(selectedItem.positioning)}
+                </div>
+
+                <h3 className="text-lg font-black text-slate-900">
+                  {selectedItem.yourProductTitle}
+                </h3>
+
+                <div className="flex items-center gap-4 text-xs font-mono text-slate-600">
+                  <span>Preço Atual: <strong className="text-slate-900 text-sm">{formatBRL(selectedItem.yourPrice)}</strong></span>
+                  <span>•</span>
+                  <span>Média de Mercado: <strong className="text-indigo-600 text-sm">{formatBRL(selectedItem.marketAveragePrice)}</strong></span>
+                  <span>•</span>
+                  <span>Faixa: <strong>{formatBRL(selectedItem.marketMinPrice)} – {formatBRL(selectedItem.marketMaxPrice)}</strong></span>
+                </div>
+              </div>
+
+              {/* Strategic Advice Card */}
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-bold text-slate-800 font-mono uppercase">
+                  <Sparkles className="w-4 h-4 text-indigo-600" />
+                  <span>Diagnóstico Estratégico de Precificação</span>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  {selectedItem.explanation}
+                </p>
+
+                {selectedItem.monthlyProfitLiftPotentialBRL > 0 && (
+                  <div className="mt-2 pt-2 border-t border-slate-200 flex items-center justify-between text-xs font-mono">
+                    <span className="text-slate-500">Sugestão de Reprecificação Inteligente:</span>
+                    <span className="text-emerald-700 font-black">
+                      Subir para {formatBRL(selectedItem.recommendedPriceBRL)} (+{formatBRL(selectedItem.monthlyProfitLiftPotentialBRL)}/mês de lucro)
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Concorrentes Pareados Lado a Lado */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-slate-700 uppercase font-mono flex items-center gap-1.5">
+                  <Store className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Lojas Concorrentes & Produtos Idênticos/Equivalentes:</span>
+                </h4>
+
+                <div className="space-y-2.5">
+                  {selectedItem.competitors.map((comp, idx) => {
+                    const diffIsPositive = comp.priceDifferenceBRL > 0; // yourPrice > comp.price
+                    return (
+                      <div key={idx} className="p-4 bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:border-slate-300 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <strong className="text-xs font-bold text-slate-900">{comp.competitorBrand}</strong>
+                            <span className="text-[10px] font-mono text-slate-400">({comp.competitorStoreUrl.replace(/^https?:\/\//, '')})</span>
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
+                              comp.isCompetitorInStock ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'
+                            }`}>
+                              {comp.isCompetitorInStock ? 'Em Estoque' : 'Esgotado / Ruptura'}
+                            </span>
+                          </div>
+
+                          <p className="text-xs text-slate-600 font-medium">
+                            <a href={comp.matchedProductUrl} target="_blank" rel="noopener noreferrer" className="hover:text-indigo-600 inline-flex items-center gap-1">
+                              {comp.matchedProductTitle}
+                              <ExternalLink className="w-3 h-3 text-slate-400" />
+                            </a>
+                          </p>
+                        </div>
+
+                        {/* Price & Spread */}
+                        <div className="text-right shrink-0 w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0">
+                          <span className="text-sm font-black text-slate-900 font-mono block">
+                            {formatBRL(comp.competitorPrice)}
+                          </span>
+                          <span className={`text-[11px] font-mono font-bold ${
+                            diffIsPositive ? 'text-rose-600' : 'text-emerald-600'
+                          }`}>
+                            {diffIsPositive ? `+${formatBRL(comp.priceDifferenceBRL)} (+${comp.priceDifferencePercent}%)` : `${formatBRL(comp.priceDifferenceBRL)} (${comp.priceDifferencePercent}%)`}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+            </div>
+          ) : (
+            <div className="p-12 text-center bg-white rounded-3xl border border-slate-200">
+              <Scale className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+              <h4 className="text-base font-bold text-slate-700">Selecione um produto para visualizar o estudo detalhado.</h4>
+            </div>
+          )}
+        </div>
+
+      </div>
+
+    </div>
+  );
+};

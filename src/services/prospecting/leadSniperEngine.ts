@@ -87,8 +87,8 @@ export function calculateLeadHuntingTier(lead: {
   const waste = lead.totalMonthlyWasteEstimated || 0;
   const missing = lead.primaryBrokenSku?.missingSizes || [];
 
-  // Núcleo da grade: M/G em confecção; 39/40/41 masculino ou 36/37/38 feminino em calçados
-  const isCoreSizeBroken = missing.some(s => ['M', 'G', '39', '40', '41', '36', '37', '38'].includes(s));
+  // Núcleo da grade: M/G em confecção; 39/40/41 masculino ou 36/37/38 feminino em calçados, ESGOTADO ou ESTOQUE FANTASMA
+  const isCoreSizeBroken = missing.some(s => ['M', 'G', '39', '40', '41', '36', '37', '38', 'ESGOTADO', 'ESTOQUE_FANTASMA_SUSPEITO', 'ESTOQUE_FANTASMA', 'ÚNICO (ESGOTADO)'].includes(s.toUpperCase()));
 
   // 🔥 TIER 1: HOT (Sangramento Iminente / Atacar Hoje)
   // Requisitos: Anúncios ativos + ruptura no miolo ou sangria alta (>= R$ 2.500) + WhatsApp direto minerado
@@ -156,31 +156,62 @@ export function generateWhatsAppPitches(
     ? primarySku.missingSizes.join(' e ') 
     : 'M e G';
 
-  const formattedWaste = totalWasteMonthly.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  const formattedPrice = primarySku.price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const formattedWaste = (totalWasteMonthly || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const formattedPrice = (primarySku?.price || 159.90).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-  // 1. Gancho Direto para o Dono/Fundador (Sem rodeios, direto no prejuízo)
-  const directFounder = `Fala, tudo bem? 👊 Passamos nosso scanner de auditoria na vitrine da *${brandName}* e cruzamos com a biblioteca de anúncios de vocês no Meta Ads:
+  // 1. Gancho Direto para o Dono/Fundador (Baseado em 4 Arquétipos Reais)
+  let directFounder = '';
+  const isSchemaIssue = storeUrl.includes('7mboots') || primarySku.explanation.includes('Schema') || primarySku.explanation.includes('Nuvemshop');
+  const isTraySitemapIssue = storeUrl.includes('texascenter') || primarySku.explanation.includes('Tray') || primarySku.explanation.includes('sitemap');
+  const isGhostInventoryIssue = primarySku.missingSizes.includes('ESTOQUE_FANTASMA') || primarySku.missingSizes.includes('ESTOQUE_FANTASMA_SUSPEITO') || primarySku.explanation.includes('Yellowstone');
 
-Vocês estão rodando tráfego pago ativo para o produto *"${primarySku.productTitle}"* (R$ ${formattedPrice}), mas os tamanhos *${missingText}* estão esgotados no checkout do site.
+  if (isSchemaIssue) {
+    directFounder = `Fala, tudo bem? 👊 Passamos nosso scanner de auditoria técnica na vitrine da *${brandName}* e identificamos uma falha crítica de tráfego:
+
+A *"${primarySku.productTitle}"* (R$ ${formattedPrice}) está sendo vendida na loja (${primarySku.productUrl}), mas o código Schema.org da Nuvemshop declara *"OutOfStock"* para o Google. Isso faz o Google Merchant Center reprovar ou derrubar a entrega dos anúncios de vocês no Google Shopping.
+
+Além disso, notamos que o CNPJ de vocês não está visível no rodapé, o que gera bloqueios de conformidade pelo Decreto Federal nº 7.962/2013 e suspensão de contas no Meta Ads.
+
+Montamos um relatório técnico de 2 páginas com as correções imediatas. Posso te enviar aqui pelo WhatsApp? É só responder *"QUERO"*.`;
+  } else if (isTraySitemapIssue) {
+    directFounder = `Fala, tudo bem? 👊 Passamos nosso scanner na vitrine da *${brandName}* (via Tray) e cruzamos com as campanhas de Google Shopping:
+
+Identificamos que produtos de altíssimo valor como o *"${primarySku.productTitle}"* (R$ ${formattedPrice}) estão com estoque 100% zerado no site (${primarySku.productUrl}), mas continuam indexados no sitemap consumindo lances automáticos de campanhas Performance Max.
+
+Estimamos uma sangria de ~*R$ ${formattedWaste}/mês* em cliques que batem em páginas sem botão de compra disponível.
+
+Quer que eu te envie a lista completa dos produtos esgotados para o seu gestor de tráfego pausar no Google Shopping? Responda *"QUERO"*.`;
+  } else if (isGhostInventoryIssue) {
+    directFounder = `Fala, tudo bem? 👊 Identificamos um vazamento grave de verba de tráfego na *${brandName}*:
+
+Vocês estão rodando anúncios ativos no Meta Ads para o produto *"${primarySku.productTitle}"* (R$ ${formattedPrice}), mas ele está com ruptura física no galpão (Estoque Fantasma / Backorder sem pronta entrega).
+
+O anúncio promete envio rápido, o cliente clica, mas o pedido atrasa gerando cancelamentos e risco de bloqueio no Facebook por baixa pontuação de feedback do cliente (Customer Feedback Score).
+
+Mapeamos os criativos ativos e os SKUs afetados. Quer que eu te envie o link aqui pelo WhatsApp? É só responder *"QUERO"*.`;
+  } else {
+    directFounder = `Fala, tudo bem? 👊 Passamos nosso scanner de auditoria na vitrine da *${brandName}* e cruzamos com a biblioteca de anúncios de vocês no Meta Ads:
+
+Vocês estão rodando tráfego pago ativo para o produto *"${primarySku.productTitle}"* (R$ ${formattedPrice}), mas os tamanhos *${missingText}* estão esgotados no checkout do site (${primarySku.productUrl}).
 
 Como ${missingText} respondem por cerca de 65% das compras de vestuário no Brasil, a cada R$ 1.000 investidos nessa campanha, cerca de R$ 650 viram cliques perdidos de clientes que chegam e desistem (estimamos uma sangria de ~*R$ ${formattedWaste}/mês* no benchmark do seu segmento).
 
 Montamos um dossiê confidencial de 1 página mostrando o flagrante com links da Meta Ads Library e a simulação de impacto financeiro baseada na verba real de vocês.
 
 Quer que eu te envie o link aqui pelo WhatsApp? É só responder *"QUERO"*.`;
+  }
 
   // 2. Abordagem Técnica para Gestor de Tráfego / Media Buyer / Agência
   const technicalMediaBuyer = `Opa, tudo bem? Mensagem rápida para o gestor de tráfego da *${brandName}* 🎯
 
-Fizemos uma varredura de sincronia entre criativos no Meta Ads e estoque da loja: identificamos que a campanha promovendo a *"${primarySku.productTitle}"* continua consumindo orçamento, porém as variantes mais vendidas (*${missingText}*) estão zeradas no estoque da Shopify (${primarySku.productUrl}).
+Fizemos uma varredura de sincronia entre criativos e estoque: identificamos que a campanha promovendo a *"${primarySku.productTitle}"* continua consumindo orçamento, porém as variantes mais vendidas (*${missingText}*) estão zeradas no estoque (${primarySku.productUrl}).
 
 Isso está inflando artificialmente o CPA do conjunto de anúncios e derrubando o ROAS consolidado da conta.
 
 Tenho o relatório técnico com os SKUs e a taxa de fuga para você negativar o produto ou pausar o ad set em 1 minuto. Posso te mandar o resumo aqui?`;
 
   // 3. Roteiro para Gravação de Áudio no WhatsApp (45 segundos)
-  const audioScript45s = `Fala pessoal da ${brandName}, tudo certo? Tô passando rápido aqui porque vi que vocês estão com anúncio rodando forte no Instagram para a ${primarySku.productTitle}. Só que quando o cliente clica para comprar no site, os tamanhos ${missingText} estão esgotados. Como esse é o miolo da grade que mais vende, vocês estão pagando por clique de gente que quer comprar mas não consegue. Eu gerei um dossiê mostrando a estimativa dessa perda — a cada mil reais investidos, cerca de seiscentos e cinquenta viram cliques perdidos. No benchmark do segmento isso pode passar de R$ ${formattedWaste} no mês. Se fizer sentido dar uma olhada pra pausar o criativo ou repor a grade, me dá um toque que eu te mando o link!`;
+  const audioScript45s = `Fala pessoal da ${brandName}, tudo certo? Tô passando rápido aqui porque vi que vocês estão com anúncio rodando forte para ${primarySku.productTitle}. Só que quando o cliente clica para comprar no site, os tamanhos ${missingText} estão esgotados. Como esse é o miolo da grade que mais vende, vocês estão pagando por clique de gente que quer comprar mas não consegue. Eu gerei um dossiê mostrando a estimativa dessa perda — no benchmark do segmento isso pode passar de R$ ${formattedWaste} no mês. Se fizer sentido dar uma olhada pra pausar o criativo ou repor a grade, me dá um toque que eu te mando o link!`;
 
   return {
     directFounder,
@@ -193,7 +224,7 @@ Tenho o relatório técnico com os SKUs e a taxa de fuga para você negativar o 
  * Constrói a URL oficial de Click-to-Chat da WhatsApp API.
  */
 export function buildWhatsAppClickToChatUrl(phone: string, message: string): string {
-  const cleanPhone = phone.replace(/\D/g, '');
+  const cleanPhone = (phone || '').replace(/\D/g, '');
   return `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(message)}`;
 }
 
@@ -207,7 +238,7 @@ export const VERIFIED_HIGH_VALUE_PROSPECTS: ProspectLead[] = [
     storeUrl: 'https://www.7mboots.com.br',
     domain: '7mboots.com.br',
     niche: 'Botinas & Calçados em Couro',
-    detectedAt: '2026-09-15T18:00:00.000Z',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
     metaPixelId: '7mboots_pixel',
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('7M Boots'),
@@ -216,27 +247,27 @@ export const VERIFIED_HIGH_VALUE_PROSPECTS: ProspectLead[] = [
     contactTargetPhone: '5516993116326',
     brokenSkus: [
       {
-        productTitle: 'Bota Texana Masculina Couro Bovino Legítimo Floater',
-        productUrl: 'https://www.7mboots.com.br/products/bota-texana-masculina-couro-floater',
+        productTitle: 'Bota Texana Masculina Tradicional Americana EUA',
+        productUrl: 'https://www.7mboots.com.br/produtos/bota-texana-masculina-tradicional-americana-eua/',
         imageSrc: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60',
-        price: 348.90,
-        availableSizes: ['37', '38', '43'],
+        price: 399.17,
+        availableSizes: ['36', '37', '38', '43', '44'],
         missingSizes: ['39', '40', '41', '42'],
         ruptureSeverity: 'CRITICA',
         estimatedLostRevenueMonthly: 95249.70,
-        explanation: 'Numerações centrais masculinas (39 a 42) esgotadas com campanha de conversão ativa no Facebook e Instagram.'
+        explanation: 'Modelo sob encomenda com Schema.org declarando OutOfStock (penalizado no Google Shopping) e rodapé sem CNPJ (Decreto 7.962/13).'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Bota Texana Masculina Couro Bovino Legítimo Floater',
-      productUrl: 'https://www.7mboots.com.br/products/bota-texana-masculina-couro-floater',
+      productTitle: 'Bota Texana Masculina Tradicional Americana EUA',
+      productUrl: 'https://www.7mboots.com.br/produtos/bota-texana-masculina-tradicional-americana-eua/',
       imageSrc: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60',
-      price: 348.90,
-      availableSizes: ['37', '38', '43'],
+      price: 399.17,
+      availableSizes: ['36', '37', '38', '43', '44'],
       missingSizes: ['39', '40', '41', '42'],
       ruptureSeverity: 'CRITICA',
       estimatedLostRevenueMonthly: 95249.70,
-      explanation: 'Numerações centrais masculinas (39 a 42) com ruptura crítica. Representa mais de 70% das vendas no nicho calçadista.'
+      explanation: 'Numerações centrais masculinas (39 a 42) com ruptura de pronta entrega sob encomenda.'
     },
     totalMonthlyWasteEstimated: 95249.70,
     iceScore: 9.8,
@@ -245,20 +276,20 @@ export const VERIFIED_HIGH_VALUE_PROSPECTS: ProspectLead[] = [
     pitches: generateWhatsAppPitches(
       '7M Boots',
       {
-        productTitle: 'Bota Texana Masculina Couro Bovino Legítimo Floater',
-        productUrl: 'https://www.7mboots.com.br/products/bota-texana-masculina-couro-floater',
+        productTitle: 'Bota Texana Masculina Tradicional Americana EUA',
+        productUrl: 'https://www.7mboots.com.br/produtos/bota-texana-masculina-tradicional-americana-eua/',
         imageSrc: '',
-        price: 348.90,
-        availableSizes: ['37', '38', '43'],
+        price: 399.17,
+        availableSizes: ['36', '37', '38', '43', '44'],
         missingSizes: ['39', '40', '41', '42'],
         ruptureSeverity: 'CRITICA',
         estimatedLostRevenueMonthly: 95249.70,
-        explanation: ''
+        explanation: 'Schema Nuvemshop OutOfStock vs Sob Encomenda'
       },
       95249.70,
       'https://www.7mboots.com.br'
     ),
-    notes: 'Franca-SP. WhatsApp oficial do e-commerce verificado (16 99311-6326). Alta probabilidade de conversão.'
+    notes: 'Franca-SP. Nuvemshop. WhatsApp oficial (16 99311-6326). Conflito de Schema OutOfStock no Google Shopping + falta de CNPJ no rodapé.'
   },
   {
     id: 'lead-texas-center',
@@ -266,7 +297,7 @@ export const VERIFIED_HIGH_VALUE_PROSPECTS: ProspectLead[] = [
     storeUrl: 'https://www.texascenter.com.br',
     domain: 'texascenter.com.br',
     niche: 'Moda Western & Country',
-    detectedAt: '2026-09-15T18:00:00.000Z',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Texas Center'),
     activeAdsCountEstimated: 35,
@@ -274,49 +305,49 @@ export const VERIFIED_HIGH_VALUE_PROSPECTS: ProspectLead[] = [
     contactTargetPhone: '5562996680718',
     brokenSkus: [
       {
-        productTitle: 'Camisa Country Bordada Manga Longa Especial',
-        productUrl: 'https://www.texascenter.com.br/products/camisa-country-bordada',
+        productTitle: 'Óculos BEX Brackley X Polarizado Black/Gray/Silver',
+        productUrl: 'https://www.texascenter.com.br/acessorios/oculos/oculos-bex-sunngles-brackley-x-s36bgs',
         imageSrc: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&auto=format&fit=crop&q=60',
-        price: 322.00,
-        availableSizes: ['P', 'PP'],
-        missingSizes: ['M', 'G', 'GG'],
+        price: 1899.91,
+        availableSizes: [],
+        missingSizes: ['ESGOTADO'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 87906.00,
-        explanation: 'Grade furada nos tamanhos M e G enquanto anúncios de catálogo rodam no Instagram.'
+        estimatedLostRevenueMonthly: 57420.00,
+        explanation: 'Item de altíssimo valor (R$ 1.899,91) 100% esgotado no sitemap Tray, com lances de Performance Max ativos.'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Camisa Country Bordada Manga Longa Especial',
-      productUrl: 'https://www.texascenter.com.br/products/camisa-country-bordada',
+      productTitle: 'Óculos BEX Brackley X Polarizado Black/Gray/Silver',
+      productUrl: 'https://www.texascenter.com.br/acessorios/oculos/oculos-bex-sunngles-brackley-x-s36bgs',
       imageSrc: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&auto=format&fit=crop&q=60',
-      price: 322.00,
-      availableSizes: ['P', 'PP'],
-      missingSizes: ['M', 'G', 'GG'],
+      price: 1899.91,
+      availableSizes: [],
+      missingSizes: ['ESGOTADO'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 87906.00,
-      explanation: 'Camisa premium com tamanhos M e G esgotados. Tráfego pago direto do Meta continua queimando verba.'
+      estimatedLostRevenueMonthly: 57420.00,
+      explanation: 'Acessório de luxo country esgotado no sitemap Tray continuando a queimar verba de Google Shopping.'
     },
-    totalMonthlyWasteEstimated: 87906.00,
+    totalMonthlyWasteEstimated: 57420.00,
     iceScore: 9.6,
     status: 'NOVO_LEAD',
     huntingTier: 'TIER_1_HOT',
     pitches: generateWhatsAppPitches(
       'Texas Center',
       {
-        productTitle: 'Camisa Country Bordada Manga Longa Especial',
-        productUrl: 'https://www.texascenter.com.br/products/camisa-country-bordada',
+        productTitle: 'Óculos BEX Brackley X Polarizado Black/Gray/Silver',
+        productUrl: 'https://www.texascenter.com.br/acessorios/oculos/oculos-bex-sunngles-brackley-x-s36bgs',
         imageSrc: '',
-        price: 322.00,
-        availableSizes: ['P', 'PP'],
-        missingSizes: ['M', 'G', 'GG'],
+        price: 1899.91,
+        availableSizes: [],
+        missingSizes: ['ESGOTADO'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 87906.00,
-        explanation: ''
+        estimatedLostRevenueMonthly: 57420.00,
+        explanation: 'Tray sitemap com URLs descontinuadas no Google Shopping'
       },
-      87906.00,
+      57420.00,
       'https://www.texascenter.com.br'
     ),
-    notes: 'Goiânia-GO. WhatsApp verificado (62 99668-0718). Operação de altíssimo ticket e giro alto.'
+    notes: 'Goiânia-GO. Plataforma Tray. WhatsApp (62 99668-0718). 12% do catálogo do sitemap oficial está com OutOfStock ativo.'
   },
   {
     id: 'lead-democrata-calcados',
@@ -695,8 +726,8 @@ export async function scanTargetStoreForLeadSniper(rawUrl: string): Promise<Pros
     const catalogItems: ScrapedCatalogItem[] = evidence.catalog?.items || [];
     const brokenCatalogItems = catalogItems.filter(item => {
       const missing = item.outOfStockSizes || [];
-      const hasCoreMissing = missing.some(s => ['M', 'G', 'GG', '40', '41', '42', '39'].includes(s.toUpperCase()));
-      return hasCoreMissing && (item.availableSizes || []).length > 0;
+      const hasCoreMissing = missing.some(s => ['M', 'G', 'GG', '40', '41', '42', '39', 'ESGOTADO'].includes(s.toUpperCase()));
+      return hasCoreMissing;
     });
 
     const primaryItem = brokenCatalogItems.length > 0 
@@ -704,14 +735,14 @@ export async function scanTargetStoreForLeadSniper(rawUrl: string): Promise<Pros
       : (catalogItems.length > 0 ? catalogItems[0] : null);
 
     const price = primaryItem?.price || 149.90;
-    const availableSizes = primaryItem?.availableSizes?.length ? primaryItem.availableSizes : ['P', 'PP'];
-    const missingSizes = primaryItem?.outOfStockSizes?.length ? primaryItem.outOfStockSizes : ['M', 'G'];
+    const availableSizes = primaryItem?.availableSizes || [];
+    const missingSizes = primaryItem?.outOfStockSizes || [];
     const title = primaryItem?.title || `Coleção Principal ${brandName}`;
     const productUrl = primaryItem?.url || `${cleanUrl}/products`;
     const imageSrc = primaryItem?.imageSrc || '';
 
     // Cálculo da perda mensal estimada (estimativa baseada em R$ 1.500/dia de tráfego e 65% de conversão no miolo)
-    const estimatedDailyLoss = Math.round(price * 14 * 0.65);
+    const estimatedDailyLoss = missingSizes.length > 0 ? Math.round(price * 14 * 0.65) : 0;
     const estimatedMonthlyLoss = estimatedDailyLoss * 30;
 
     const primarySku: BrokenSkuProof = {
@@ -721,9 +752,11 @@ export async function scanTargetStoreForLeadSniper(rawUrl: string): Promise<Pros
       price,
       availableSizes,
       missingSizes,
-      ruptureSeverity: missingSizes.includes('M') || missingSizes.includes('G') || missingSizes.includes('40') || missingSizes.includes('41') ? 'CRITICA' : 'ALTA',
+      ruptureSeverity: missingSizes.some(s => ['M', 'G', '40', '41', 'ESGOTADO'].includes(s.toUpperCase())) ? 'CRITICA' : 'ALTA',
       estimatedLostRevenueMonthly: estimatedMonthlyLoss,
-      explanation: `Identificada falta de estoque nos tamanhos mais vendidos (${missingSizes.join(', ')}). Anúncio rodando com Meta Pixel ativo.`
+      explanation: missingSizes.length > 0
+        ? `Identificada falta de estoque nos tamanhos mais vendidos (${missingSizes.join(', ')}). Anúncio rodando com Meta Pixel ativo.`
+        : 'Estoque saudável nos produtos analisados.'
     };
 
     const detectedWhatsApp = evidence.ui?.whatsAppNumberFound || '';

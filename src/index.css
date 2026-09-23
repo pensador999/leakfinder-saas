@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./styles/gsap-enterprise.css";
 
 @layer utilities {
   .scrollbar-none::-webkit-scrollbar {
@@ -12,12 +13,12 @@
 
 body {
   margin: 0;
-  background-color: #f8fafc;
-  color: #0f172a;
+  background-color: #0E100F;
+  color: #F0EFE6;
   font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  letter-spacing: -0.011em;
+  letter-spacing: -0.015em;
 }
 
 /* 🎨 Custom modern design tokens */

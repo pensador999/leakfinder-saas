@@ -1,7 +1,7 @@
-import { AgentDiagnosticResult, AuditInput } from '../types';
-import { runSiteInspectorWorker, WorkerInspectionResult } from './siteInspectorWorker';
-import { runGuardrailAudit, enforceStrictDomainIsolation } from './agentGuardrail';
-import { hashString, inspectRealWebsite } from './siteInspector';
+import type { AgentDiagnosticResult, AuditInput } from '../types/index.ts';
+import { runSiteInspectorWorker, type WorkerInspectionResult } from './siteInspectorWorker.ts';
+import { runGuardrailAudit, enforceStrictDomainIsolation } from './agentGuardrail.ts';
+import { hashString, inspectRealWebsite, isCatalogProductBroken } from './siteInspector.ts';
 import {
   buildCroAgentSkill,
   buildAdsAgentSkill,
@@ -9,19 +9,26 @@ import {
   buildSeoAgentSkill,
   buildPmGrowthAgentSkill,
   buildCompetitorAgentSkill
-} from './agentSkills';
+} from './agentSkills.ts';
 
-import { analyzeComputerVision } from './visionCoreEngine';
+import { analyzeComputerVision } from './visionCoreEngine.ts';
 
 export async function runAgentDiagnosticAsync(input: AuditInput): Promise<AgentDiagnosticResult> {
-  const workerResult = await runSiteInspectorWorker(input.siteUrl, input.targetRegion, input.niche, input.instagramHandle, input.manualCnpj);
+  const workerResult = await runSiteInspectorWorker(
+    input.siteUrl, 
+    input.targetRegion, 
+    input.niche, 
+    input.instagramHandle, 
+    input.manualCnpj,
+    input.operationMode
+  );
   return generateDiagnosticFromWorker(input, workerResult);
 }
 
-import { auditSiteSecurity } from './securityInspector';
-import { auditSocialConversion } from './socialInspector';
-import { analyzeCopyNLP } from './copyNLPInspector';
-import { analyzeOsint } from './osintEngine';
+import { auditSiteSecurity } from './securityInspector.ts';
+import { auditSocialConversion } from './socialInspector.ts';
+import { analyzeCopyNLP } from './copyNLPInspector.ts';
+import { analyzeOsint } from './osintEngine.ts';
 
 export async function runAgentDiagnostic(input: AuditInput, customWorkerResult?: WorkerInspectionResult): Promise<AgentDiagnosticResult> {
   if (customWorkerResult) {
@@ -29,7 +36,7 @@ export async function runAgentDiagnostic(input: AuditInput, customWorkerResult?:
   }
 
   const rawUrl = input.siteUrl || 'https://brkagro.com.br';
-  const siteData = await inspectRealWebsite(rawUrl);
+  const siteData = await inspectRealWebsite(rawUrl, { operationMode: input.operationMode });
 
   const defaultWorkerResult: WorkerInspectionResult = {
     siteData,
@@ -38,18 +45,43 @@ export async function runAgentDiagnostic(input: AuditInput, customWorkerResult?:
     osintData: await analyzeOsint(siteData.rawHtmlSnippet || '', siteData.domain, input.manualCnpj),
     security: auditSiteSecurity(siteData),
     social: auditSocialConversion(siteData, input.instagramHandle),
-    blindspots: [
-      {
-        id: 'bs-1',
-        severity: 'CRÍTICO',
-        title: 'Ausência de Oferta Pix com Desconto Direto no Primeiro Scroll de brkagro.com.br',
-        description: 'O site brkagro.com.br não exibe caixa de aviso para pagamento Pix com desconto imediato.',
-        impactOnSales: 'Perda de até 20% das vendas no checkout mobile.',
-        fixAction: 'Ativar aviso de Pix com 5% OFF e QR Code gigante.'
+    blindspots: (() => {
+      const items = [];
+      if (!siteData.detectedCheckoutTerms.hasPix) {
+        items.push({
+          id: 'bs-1',
+          severity: 'CRÍTICO' as const,
+          title: `Ausência de Oferta Pix com Desconto Direto no Primeiro Scroll de ${siteData.domain}`,
+          description: `O site ${siteData.domain} não exibe caixa de aviso para pagamento Pix com desconto imediato.`,
+          impactOnSales: 'Perda de margem e abandono de carrinho no checkout mobile.',
+          fixAction: 'Ativar aviso de Pix com 5% OFF e QR Code dinâmico.'
+        });
       }
-    ],
-    detectedNiche: input.niche || 'Agropecuária & Soluções no Campo',
-    inferredBrandName: 'BRKAGRO',
+      const brokenCatalogSkus = (siteData.catalogAudit?.issues || []).filter(isCatalogProductBroken);
+      if (brokenCatalogSkus.length > 0) {
+        items.push({
+          id: 'bs-stockout',
+          severity: 'CRÍTICO' as const,
+          title: `Ruptura de Estoque na Curva ABC em ${brokenCatalogSkus.length} Produto(s)`,
+          description: `Identificados produtos com tráfego ou destaque que possuem variantes centrais esgotadas.`,
+          impactOnSales: 'Cliques perdidos e taxa de rejeição acelerada na página de produto.',
+          fixAction: 'Pausar conjuntos de anúncio ou substituir URL para coleção com grade completa.'
+        });
+      }
+      if (items.length === 0) {
+        items.push({
+          id: 'bs-healthy',
+          severity: 'MÉDIO' as const,
+          title: `Catálogo e Checkout com Indicadores Principais em Conformidade`,
+          description: `Não foram detectados vazamentos graves de grade ou checkout no fluxo auditado.`,
+          impactOnSales: 'Otimização contínua de taxa de conversão.',
+          fixAction: 'Executar testes A/B no título de produto e prova social.'
+        });
+      }
+      return items;
+    })(),
+    detectedNiche: input.niche || `${siteData.brandName} E-commerce D2C`,
+    inferredBrandName: siteData.brandName,
     targetRegion: input.targetRegion
   };
 
@@ -74,7 +106,7 @@ async function generateDiagnosticFromWorker(input: AuditInput, worker: WorkerIns
   let calculatedLiftMax = 0;
 
   const catalogIssues = siteData.catalogAudit?.issues || [];
-  const brokenSizeCount = catalogIssues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0).length;
+  const brokenSizeCount = catalogIssues.filter(isCatalogProductBroken).length;
 
   if (brokenSizeCount > 0) {
     calculatedLiftMin += Math.min(22, 6 + brokenSizeCount * 2);

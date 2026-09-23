@@ -4,7 +4,7 @@
 // and adapts catalog audit rules, variant checks & conversion leakage metrics dynamically!
 // ==============================================================================
 
-import { RealSiteData } from '../siteInspector';
+import type { RealSiteData } from '../siteInspector.ts';
 
 export type UniversalNicheCategory = 
   | 'MODA_VESTUARIO'

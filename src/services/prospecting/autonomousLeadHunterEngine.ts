@@ -212,15 +212,15 @@ export async function startAutonomousHuntingSession(
       const catalogItems = evidence.catalog?.items || [];
       const brokenItems = catalogItems.filter(item => {
         const missing = item.outOfStockSizes || [];
-        const hasCoreRupture = missing.some(s => ['M', 'G', 'GG', '40', '41', '42'].includes(s.toUpperCase()));
-        return hasCoreRupture && (item.availableSizes || []).length > 0;
+        const hasCoreRupture = missing.some(s => ['M', 'G', 'GG', '40', '41', '42', 'ESGOTADO', 'ÚNICO (ESGOTADO)'].includes(s.toUpperCase())) || missing.includes('ESGOTADO');
+        return hasCoreRupture && ((item.availableSizes || []).length > 0 || missing.includes('ESGOTADO'));
       });
 
-      if (brokenItems.length > 0 || catalogItems.length > 0) {
-        const primaryItem = brokenItems.length > 0 ? brokenItems[0] : catalogItems[0];
+      if (brokenItems.length > 0) {
+        const primaryItem = brokenItems[0];
         const price = primaryItem.price > 0 ? primaryItem.price : 149.90;
-        const availableSizes = primaryItem.availableSizes?.length ? primaryItem.availableSizes : ['P', 'PP'];
-        const missingSizes = primaryItem.outOfStockSizes?.length ? primaryItem.outOfStockSizes : ['M', 'G'];
+        const availableSizes = primaryItem.availableSizes || [];
+        const missingSizes = primaryItem.outOfStockSizes?.length ? primaryItem.outOfStockSizes : ['ESGOTADO'];
 
         // Cálculo da perda mensal com centavos exatos
         const estimatedDailyLoss = Number((price * 14 * 0.65).toFixed(2));

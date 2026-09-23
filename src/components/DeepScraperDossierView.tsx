@@ -23,6 +23,7 @@ import {
   FileText
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
+import { isCatalogProductBroken } from '../services/siteInspector';
 import { ParallelSectionScraperSquad, ConsolidatedSectionSquadDossier } from '../services/orchestrator/parallelSectionScraperSquad';
 import { OneClickActionModal, OneClickTargetProduct } from './actions/OneClickActionModal';
 import { OneClickMitigationService } from '../services/actions/oneClickMitigationService';
@@ -64,7 +65,7 @@ export const DeepScraperDossierView: React.FC<DeepScraperDossierViewProps> = ({ 
         status: (realSiteData.catalogAudit?.issues.length || 0) > 0 ? 'CRÍTICO' : 'OTIMIZADO',
         totalProductsScanned: realSiteData.catalogAudit?.totalProductsScanned || 24,
         totalVariantsAudited: (realSiteData.catalogAudit?.totalProductsScanned || 24) * 4,
-        brokenSkusCount: realSiteData.catalogAudit?.issues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0).length || 3,
+        brokenSkusCount: realSiteData.catalogAudit ? realSiteData.catalogAudit.issues.filter(isCatalogProductBroken).length : 0,
         heavyImagesCount: realSiteData.catalogAudit?.heavyImagesCount || 2,
         missingAltTagsCount: realSiteData.imagesWithoutAlt || 1,
         productsWithoutSizeGuideCount: realSiteData.catalogAudit?.productsWithoutSizeGuide || 0,
@@ -100,15 +101,15 @@ export const DeepScraperDossierView: React.FC<DeepScraperDossierViewProps> = ({ 
         ]
       },
       footerLegal: {
-        status: 'OTIMIZADO',
-        hasCnpj: true,
-        cnpjFormatted: 'CNPJ Auditado no Rodapé',
-        hasCdcArticle49Mention: true,
+        status: realSiteData.legalCompliance?.isFullyCompliant ? 'OTIMIZADO' : (realSiteData.legalCompliance?.violations.length ? 'CRÍTICO' : 'OTIMIZADO'),
+        hasCnpj: Boolean(realSiteData.legalCompliance?.cnpjFound),
+        cnpjFormatted: realSiteData.legalCompliance?.cnpjFound || 'CNPJ Ausente no Rodapé (Risco Decreto 7.962/13)',
+        hasCdcArticle49Mention: Boolean(realSiteData.legalCompliance?.hasReturnPolicy7Days),
         hasReturnPolicyLink: true,
-        hasPrivacyPolicyLink: true,
+        hasPrivacyPolicyLink: Boolean(realSiteData.legalCompliance?.hasPrivacyPolicyLgpd),
         hasTermsOfServiceLink: true,
         hasSecurityCertificates: true,
-        issuesFound: []
+        issuesFound: realSiteData.legalCompliance?.violations.map(v => `${v.rule}: ${v.description}`) || []
       }
     },
     headTags: {

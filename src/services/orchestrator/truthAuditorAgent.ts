@@ -1,5 +1,5 @@
-import { CollectedEvidenceDossier } from './deepScraperAgent';
-import { AgentDiagnosticResult } from '../../types';
+import type { CollectedEvidenceDossier } from './deepScraperAgent.ts';
+import type { AgentDiagnosticResult } from '../../types/index.ts';
 
 export interface AuditedClaim {
   id: string;
@@ -150,6 +150,26 @@ export class TruthAuditorAgent {
       auditDetails: `Auditados ${inHouseItems.length} item(ns) de confecção própria e ${resaleItems.length} item(ns) de revenda externa. Zero confusão entre chão de fábrica e compras terceiras.`
     });
     factsCount++;
+
+    // 7. Artigo 7: Protocolo Anti-Estoque Fantasma & Auditoria de Tráfego Pago (O Princípio Yellowstone Dutton Ranch)
+    const ghostSuspects = catalogIssues.filter(i => 
+      i.isGhostInventorySuspect || 
+      i.missingSizes?.includes('ESTOQUE_FANTASMA_SUSPEITO') || 
+      i.missingSizes?.includes('ESTOQUE_FANTASMA')
+    );
+    const hasGhostRupture = ghostSuspects.length > 0;
+    claims.push({
+      id: 'claim-ghost-inventory-yellowstone',
+      category: 'STOCK_GRID',
+      claimStatement: 'Protocolo Anti-Estoque Fantasma: Proibição de validar estoque físico unicamente pelo botão "Adicionar à Sacola" ou Liquid "available: true".',
+      evidenceSource: 'DOM_EXTRACTED',
+      isGrounded: true,
+      verdictStatus: hasGhostRupture ? 'FALSO_POSITIVO_EXPURGADO' : 'APROVADO_FATO_REAL',
+      auditDetails: hasGhostRupture
+        ? `Detectado(s) ${ghostSuspects.length} SKU(s) sob suspeita de Estoque Fantasma / Backorder sem pronta entrega física no galpão. Comando de pausa preventiva emitido.`
+        : 'Catálogo auditado com coerência entre promessa de entrega imediata e disponibilidade física.'
+    });
+    if (hasGhostRupture) falsePositivesCount++; else factsCount++;
 
     const totalClaims = claims.length;
     const groundedClaimsCount = claims.filter(c => c.isGrounded).length;

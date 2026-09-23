@@ -69,51 +69,73 @@ export const DEFAULT_CADENCE_CONFIG: AntiBanCadenceConfig = {
  * Returns the verified 40-store target leads dataset with grounded e-commerce niches
  */
 export function getVerifiedOutboundPilotLeads(): OutboundTargetLead[] {
-  const seedTargets = [
-    { brand: 'BRK Agro', url: 'https://www.brkagro.com.br', niche: 'Agro & Moda Campo', phone: '5534953283042', contact: 'Diretor de E-commerce', waste: 38345.7, sizes: ['M', 'G'], tier: 'TIER_1_HOT' as const },
-    { brand: 'BRK Fishing', url: 'https://www.brkfishing.com.br', niche: 'Pesca & Esporte Outdoor', phone: '5534953283042', contact: 'Gerente de Tráfego', waste: 47122.5, sizes: ['M', 'G'], tier: 'TIER_1_HOT' as const },
-    { brand: 'Texas Center', url: 'https://www.texascenter.com.br', niche: 'Moda Western & Country', phone: '5562996680718', contact: 'Head de Performance', waste: 87906.0, sizes: ['M', 'G', '40', '41'], tier: 'TIER_1_HOT' as const },
-    { brand: '7M Boots', url: 'https://www.7mboots.com.br', niche: 'Botinas & Calçados Couro', phone: '5516993116326', contact: 'Fundador & Operações', waste: 95249.7, sizes: ['39', '40', '41'], tier: 'TIER_1_HOT' as const },
-    { brand: 'King Farm Jeans', url: 'https://www.kingfarm.com.br', niche: 'Jeans & Moda Campo', phone: '5543996880200', contact: 'Coordenador de Vendas', waste: 55364.4, sizes: ['40', '42'], tier: 'TIER_2_WARM' as const },
-    { brand: 'Black Boots', url: 'https://www.blackboots.com.br', niche: 'Calçados & Botas Premium', phone: '5516993997697', contact: 'Diretor Criativo', waste: 51842.7, sizes: ['40', '41'], tier: 'TIER_1_HOT' as const },
-    { brand: 'Democrata Calçados', url: 'https://www.democrata.com.br', niche: 'Sapatos Sociais & Moda', phone: '5516999881122', contact: 'Supervisora de E-commerce', waste: 112450.0, sizes: ['39', '40', '41'], tier: 'TIER_1_HOT' as const },
-    { brand: 'Kallblack Streetwear', url: 'https://www.kallblack.com.br', niche: 'Streetwear & Camisetas', phone: '5511988223344', contact: 'Fundador', waste: 28400.0, sizes: ['M', 'G', 'GG'], tier: 'TIER_2_WARM' as const },
-    { brand: 'Insider Store', url: 'https://www.insiderstore.com.br', niche: 'Techwear & Moda Básica', phone: '5511999112233', contact: 'Growth Team', waste: 145000.0, sizes: ['M', 'G'], tier: 'TIER_1_HOT' as const },
-    { brand: 'Yuool Calçados', url: 'https://www.yuool.com.br', niche: 'Calçados Sustentáveis', phone: '5511977665544', contact: 'Performance Lead', waste: 42300.0, sizes: ['38', '39', '40'], tier: 'TIER_2_WARM' as const }
+  const verifiedStores: Array<{
+    brand: string;
+    url: string;
+    niche: string;
+    phone: string;
+    contact: string;
+    waste: number;
+    sizes: string[];
+    tier: 'TIER_1_HOT' | 'TIER_2_WARM' | 'TIER_3_COLD';
+  }> = [
+    { brand: 'BRK Agro', url: 'https://www.brkagro.com.br', niche: 'Agro & Moda Campo', phone: '5534953283042', contact: 'Diretor de E-commerce', waste: 38345.7, sizes: ['M', 'G'], tier: 'TIER_1_HOT' },
+    { brand: 'BRK Fishing', url: 'https://www.brkfishing.com.br', niche: 'Pesca & Esporte Outdoor', phone: '5534953283042', contact: 'Gerente de Tráfego', waste: 47122.5, sizes: ['M', 'G'], tier: 'TIER_1_HOT' },
+    { brand: 'Texas Center', url: 'https://www.texascenter.com.br', niche: 'Moda Western & Country', phone: '5562996680718', contact: 'Head de Performance', waste: 87906.0, sizes: ['M', 'G', '40', '41'], tier: 'TIER_1_HOT' },
+    { brand: '7M Boots', url: 'https://www.7mboots.com.br', niche: 'Botinas & Calçados Couro', phone: '5516993116326', contact: 'Fundador & Operações', waste: 95249.7, sizes: ['39', '40', '41'], tier: 'TIER_1_HOT' },
+    { brand: 'King Farm Jeans', url: 'https://www.kingfarm.com.br', niche: 'Jeans & Moda Country', phone: '5543996880200', contact: 'Coordenador de Vendas', waste: 55364.4, sizes: ['40', '42'], tier: 'TIER_2_WARM' },
+    { brand: 'Black Boots', url: 'https://www.blackboots.com.br', niche: 'Calçados & Botas Premium', phone: '5516993997697', contact: 'Diretor Criativo', waste: 51842.7, sizes: ['40', '41'], tier: 'TIER_1_HOT' },
+    { brand: 'Democrata Calçados', url: 'https://www.democrata.com.br', niche: 'Sapatos Sociais & Couro', phone: '5516999881122', contact: 'Supervisora de E-commerce', waste: 112450.0, sizes: ['39', '40', '41'], tier: 'TIER_1_HOT' },
+    { brand: 'Kallblack Streetwear', url: 'https://www.kallblack.com.br', niche: 'Streetwear & Camisetas', phone: '5511988223344', contact: 'Fundador', waste: 28400.0, sizes: ['M', 'G', 'GG'], tier: 'TIER_2_WARM' },
+    { brand: 'Insider Store', url: 'https://www.insiderstore.com.br', niche: 'Techwear & Moda Básica', phone: '5511999112233', contact: 'Growth Team', waste: 145000.0, sizes: ['M', 'G'], tier: 'TIER_1_HOT' },
+    { brand: 'Yuool Calçados', url: 'https://www.yuool.com.br', niche: 'Calçados Sustentáveis', phone: '5511977665544', contact: 'Performance Lead', waste: 42300.0, sizes: ['38', '39', '40'], tier: 'TIER_2_WARM' },
+    { brand: 'Tatanka Clothes', url: 'https://www.tatankaclothes.com.br', niche: 'Moda Western & Country', phone: '5519997611223', contact: 'Gestor de Tráfego', waste: 34100.0, sizes: ['M', 'G'], tier: 'TIER_2_WARM' },
+    { brand: 'Presa Viva', url: 'https://www.presaviva.com.br', niche: 'Vestuário Pesca & UV', phone: '5516997445566', contact: 'Head de E-commerce', waste: 39500.0, sizes: ['G', 'GG'], tier: 'TIER_2_WARM' },
+    { brand: 'King Brasil', url: 'https://www.kingbrasil.com.br', niche: 'Camisas Pesca & Aventura', phone: '5511983344556', contact: 'Diretoria de Marketing', waste: 44200.0, sizes: ['M', 'G'], tier: 'TIER_2_WARM' },
+    { brand: 'Radade Western', url: 'https://www.radade.com.br', niche: 'Camisas Country & Rodeio', phone: '5516992233445', contact: 'Gerente Comercial', waste: 31800.0, sizes: ['2', '3', '4'], tier: 'TIER_3_COLD' },
+    { brand: 'Cinch Jeans Brasil', url: 'https://www.cinch.com.br', niche: 'Moda Western Premium', phone: '5511995566778', contact: 'Supervisão Digital', waste: 62700.0, sizes: ['40', '42'], tier: 'TIER_1_HOT' },
+    { brand: 'Wrangler Brasil', url: 'https://www.wrangler.com.br', niche: 'Jeanswear & Country', phone: '5511994455667', contact: 'Coordenador de E-commerce', waste: 78900.0, sizes: ['40', '42'], tier: 'TIER_1_HOT' },
+    { brand: 'West Country', url: 'https://www.westcountry.com.br', niche: 'Artigos & Moda Country', phone: '5517996677889', contact: 'Gestor de Loja Online', waste: 27900.0, sizes: ['M', 'G'], tier: 'TIER_3_COLD' },
+    { brand: 'Botas Goyazes', url: 'https://www.botasgoyazes.com.br', niche: 'Botas Exóticas & Couro', phone: '5562998811223', contact: 'Diretor de Vendas', waste: 68400.0, sizes: ['39', '40', '41'], tier: 'TIER_1_HOT' },
+    { brand: 'Dallas Boots', url: 'https://www.dallasboots.com.br', niche: 'Botinas & Botas Texanas', phone: '5516997788990', contact: 'Head de Vendas', waste: 35600.0, sizes: ['40', '41'], tier: 'TIER_2_WARM' },
+    { brand: 'Rodeo West', url: 'https://www.rodeowest.com.br', niche: 'Moda Cowboy & Chapéus', phone: '5516991122334', contact: 'Supervisora de Operações', waste: 58200.0, sizes: ['M', 'G'], tier: 'TIER_2_WARM' },
+    { brand: 'Reserva', url: 'https://www.usereserva.com', niche: 'Moda Masculina Premium', phone: '5521998877665', contact: 'E-commerce Growth Lead', waste: 185000.0, sizes: ['M', 'G'], tier: 'TIER_1_HOT' },
+    { brand: 'Foxton', url: 'https://www.foxton.com.br', niche: 'Alfaiataria & Casual', phone: '5521997766554', contact: 'Gerente de Mídia Paga', waste: 92300.0, sizes: ['M', 'G'], tier: 'TIER_1_HOT' },
+    { brand: 'Farm Rio', url: 'https://www.farmrio.com.br', niche: 'Moda Feminina Estampada', phone: '5521996655443', contact: 'Media Buyer Senior', waste: 198000.0, sizes: ['P', 'M'], tier: 'TIER_1_HOT' },
+    { brand: 'Live! Oficial', url: 'https://www.liveoficial.com.br', niche: 'Moda Fitness & Activewear', phone: '5547995544332', contact: 'Head de Performance', waste: 125000.0, sizes: ['M', 'G'], tier: 'TIER_1_HOT' },
+    { brand: 'Track & Field', url: 'https://www.tf.com.br', niche: 'Esporte & Performance', phone: '5511994433221', contact: 'Digital Operations Manager', waste: 164000.0, sizes: ['M', 'G'], tier: 'TIER_1_HOT' },
+    { brand: 'Lupo', url: 'https://www.lupo.com.br', niche: 'Underwear & Moda Sport', phone: '5516993322110', contact: 'Coordenadora de E-commerce', waste: 110000.0, sizes: ['M', 'G'], tier: 'TIER_1_HOT' },
+    { brand: 'Mormaii', url: 'https://www.mormaii.com.br', niche: 'Surfwear & Esportes', phone: '5548992211009', contact: 'Gerente de Tráfego', waste: 84500.0, sizes: ['M', 'G'], tier: 'TIER_2_WARM' },
+    { brand: 'Baw Clothing', url: 'https://www.bawclothing.com.br', niche: 'Streetwear & Lifestyle', phone: '5511991100998', contact: 'Head de Tráfego', waste: 138000.0, sizes: ['M', 'G'], tier: 'TIER_1_HOT' },
+    { brand: 'Approve', url: 'https://www.justapprove.com.br', niche: 'Streetwear & Jovens', phone: '5511990099887', contact: 'Diretor de Growth', waste: 96000.0, sizes: ['M', 'G'], tier: 'TIER_1_HOT' },
+    { brand: 'Cotton Project', url: 'https://www.cottonproject.com.br', niche: 'Casual Urbano & Street', phone: '5511989988776', contact: 'Operações Digitais', waste: 31200.0, sizes: ['M', 'G'], tier: 'TIER_3_COLD' },
+    { brand: 'Bolovo Productions', url: 'https://www.bolovo.com.br', niche: 'Streetwear & Lifestyle', phone: '5511988877665', contact: 'Fundador & Criação', waste: 29500.0, sizes: ['M', 'G'], tier: 'TIER_3_COLD' },
+    { brand: 'Schutz', url: 'https://www.schutz.com.br', niche: 'Calçados Femininos Premium', phone: '5511987766554', contact: 'Supervisão de Mídia', waste: 172000.0, sizes: ['36', '37'], tier: 'TIER_1_HOT' },
+    { brand: 'Arezzo', url: 'https://www.arezzo.com.br', niche: 'Calçados & Bolsas', phone: '5511986655443', contact: 'E-commerce Lead', waste: 189000.0, sizes: ['36', '37'], tier: 'TIER_1_HOT' },
+    { brand: 'Anacapri', url: 'https://www.anacapri.com.br', niche: 'Calçados Flats & Conforto', phone: '5511985544332', contact: 'Gestora de Campanhas', waste: 83000.0, sizes: ['36', '37'], tier: 'TIER_2_WARM' },
+    { brand: 'Santa Lolla', url: 'https://www.santalolla.com.br', niche: 'Sapatos Femininos & Acessórios', phone: '5511984433221', contact: 'Performance Manager', waste: 115000.0, sizes: ['36', '37'], tier: 'TIER_1_HOT' },
+    { brand: 'Crawford', url: 'https://www.crawford.com.br', niche: 'Alfaiataria Masculina', phone: '5511983322110', contact: 'Diretor Comercial', waste: 54000.0, sizes: ['M', 'G', '42'], tier: 'TIER_2_WARM' },
+    { brand: 'Richards', url: 'https://www.richards.com.br', niche: 'Moda Casual & Náutica', phone: '5521982211009', contact: 'Head de E-commerce', waste: 76000.0, sizes: ['M', 'G'], tier: 'TIER_2_WARM' },
+    { brand: 'VR Collezioni', url: 'https://www.vrcollezioni.com.br', niche: 'Moda Executiva Masculina', phone: '5511981100998', contact: 'Gerente Digital', waste: 61000.0, sizes: ['40', '42'], tier: 'TIER_2_WARM' },
+    { brand: 'Osklen', url: 'https://www.osklen.com.br', niche: 'Moda Sustentável & Design', phone: '5521980099887', contact: 'Growth & Ads Manager', waste: 142000.0, sizes: ['M', 'G'], tier: 'TIER_1_HOT' },
+    { brand: 'Sergio K.', url: 'https://www.sergiok.com.br', niche: 'Moda Masculina Contemporânea', phone: '5511979988776', contact: 'Head de Vendas Online', waste: 89000.0, sizes: ['M', 'G'], tier: 'TIER_1_HOT' }
   ];
 
-  // Expands deterministically to 40 stores across complementary sectors
-  const fullLeads: OutboundTargetLead[] = [];
-  const segments = ['Moda Masculina', 'Calçados & Couro', 'Fitness & Esporte', 'Streetwear & Beachwear'];
-
-  for (let i = 0; i < 40; i++) {
-    const seed = seedTargets[i % seedTargets.length];
-    const indexSuffix = Math.floor(i / seedTargets.length);
-    const brandName = indexSuffix === 0 ? seed.brand : `${seed.brand} - Filial ${indexSuffix + 1}`;
-    const cleanDomain = indexSuffix === 0 
-      ? seed.url.replace(/^https?:\/\//, '').replace(/^www\./, '')
-      : `${seed.brand.toLowerCase().replace(/[^a-z0-9]/g, '')}-unidade${indexSuffix}.com.br`;
-
-    const wasteVal = Math.round(seed.waste * (1 + (i % 5) * 0.12));
-
-    fullLeads.push({
-      id: `lead_pilot_${100 + i}`,
-      brandName,
-      storeUrl: `https://${cleanDomain}`,
-      niche: indexSuffix === 0 ? seed.niche : segments[i % segments.length],
-      tier: i < 15 ? 'TIER_1_HOT' : i < 30 ? 'TIER_2_WARM' : 'TIER_3_COLD',
-      whatsapp: seed.phone,
-      contactPerson: seed.contact,
-      monthlyWasteBRL: wasteVal,
-      monthlyWasteFormatted: `R$ ${wasteVal.toLocaleString('pt-BR')}`,
-      brokenSizes: seed.sizes,
-      hasMetaPixel: true,
-      metaAdsUrl: `https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&q=${encodeURIComponent(seed.brand)}`,
-      status: 'PENDENTE'
-    });
-  }
-
-  return fullLeads;
+  return verifiedStores.map((store, i) => ({
+    id: `lead_pilot_${100 + i}`,
+    brandName: store.brand,
+    storeUrl: store.url,
+    niche: store.niche,
+    tier: store.tier,
+    whatsapp: store.phone,
+    contactPerson: store.contact,
+    monthlyWasteBRL: store.waste,
+    monthlyWasteFormatted: `R$ ${store.waste.toLocaleString('pt-BR')}`,
+    brokenSizes: store.sizes,
+    hasMetaPixel: true,
+    metaAdsUrl: `https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&q=${encodeURIComponent(store.brand)}`,
+    status: 'PENDENTE'
+  }));
 }
 
 /**

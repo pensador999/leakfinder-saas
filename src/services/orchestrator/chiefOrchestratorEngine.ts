@@ -1,5 +1,5 @@
-import { AuditInput, AgentDiagnosticResult } from '../../types';
-import { extractCleanDomainAndBrand } from '../siteInspector';
+import type { AuditInput, AgentDiagnosticResult } from '../../types/index.ts';
+import { extractCleanDomainAndBrand } from '../siteInspector.ts';
 
 export type OrchestrationStage = 
   | 'IDLE'

@@ -23,10 +23,12 @@ export interface MonitoredMetaAd {
   associatedSku: string;
   productTitle: string;
   status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED';
-  ruptureSeverity: 'SAFE' | 'CRITICAL_ROMPIDO' | 'WARNING_BUFFER';
+  ruptureSeverity: 'SAFE' | 'CRITICAL_ROMPIDO' | 'WARNING_BUFFER' | 'CRITICAL_GHOST_INVENTORY';
   brokenSizesDetected: string[];
   autoPausedAt?: string;
   estimatedDailyBurnSavedBRL: number;
+  adCategory?: 'VESTUARIO' | 'ACESSORIO_UNICO' | 'ESTOQUE_FANTASMA';
+  ghostInventoryReason?: string;
 }
 
 export interface MetaAutoKillExecutionLog {
@@ -64,8 +66,10 @@ const LOCAL_STORAGE_META_LOGS_KEY = 'adshield_meta_autokill_logs_v1';
 
 export function getStoredMetaConfig(): MetaAdAccountConfig {
   try {
-    const data = localStorage.getItem(LOCAL_STORAGE_META_CONFIG_KEY);
-    if (data) return JSON.parse(data);
+    if (typeof localStorage !== 'undefined') {
+      const data = localStorage.getItem(LOCAL_STORAGE_META_CONFIG_KEY);
+      if (data) return JSON.parse(data);
+    }
   } catch (e) {
     console.error('Error reading Meta config:', e);
   }
@@ -83,7 +87,9 @@ export function getStoredMetaConfig(): MetaAdAccountConfig {
 
 export function saveMetaConfig(config: MetaAdAccountConfig) {
   try {
-    localStorage.setItem(LOCAL_STORAGE_META_CONFIG_KEY, JSON.stringify(config));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(LOCAL_STORAGE_META_CONFIG_KEY, JSON.stringify(config));
+    }
   } catch (e) {
     console.error('Error saving Meta config:', e);
   }
@@ -91,8 +97,10 @@ export function saveMetaConfig(config: MetaAdAccountConfig) {
 
 export function getMetaExecutionLogs(): MetaAutoKillExecutionLog[] {
   try {
-    const data = localStorage.getItem(LOCAL_STORAGE_META_LOGS_KEY);
-    if (data) return JSON.parse(data);
+    if (typeof localStorage !== 'undefined') {
+      const data = localStorage.getItem(LOCAL_STORAGE_META_LOGS_KEY);
+      if (data) return JSON.parse(data);
+    }
   } catch {
     // Fallback
   }
@@ -111,6 +119,16 @@ export function getMetaExecutionLogs(): MetaAutoKillExecutionLog[] {
     },
     {
       id: 'log-meta-02',
+      timestamp: 'Hoje, às 11:20',
+      adId: '23851940291042',
+      adName: 'CRIATIVO_01_VIDEO_BONE_YELLOWSTONE',
+      sku: 'BA0141',
+      reason: 'Estoque Fantasma (Protocolo Yellowstone): Backorder ativo com ruptura física no galpão.',
+      actionTaken: 'AD_PAUSED',
+      budgetSavedBRL: 160.0
+    },
+    {
+      id: 'log-meta-03',
       timestamp: 'Ontem, às 19:15',
       adId: '23851940298812',
       adName: 'CARROSSEL_CALCA_JEANS_RETA',
@@ -122,19 +140,50 @@ export function getMetaExecutionLogs(): MetaAutoKillExecutionLog[] {
   ];
 }
 
+export interface GhostTargetMetaAd {
+  sku: string;
+  productTitle: string;
+  productUrl: string;
+  reason: string;
+  dailySpend?: number;
+  isGhostInventory?: boolean;
+}
+
 /**
  * Simulates or fetches live campaigns from Meta Marketing API
- * Cross-referencing destination URLs with audited broken SKUs.
+ * Cross-referencing destination URLs with audited broken SKUs AND Ghost Inventory targets.
  */
 export function auditAndMapMetaAds(
   domain: string,
-  brokenSkus: Array<{ sku: string; productTitle: string; missingSizes: string[]; productUrl: string }>
+  brokenSkus: Array<{ sku: string; productTitle: string; missingSizes: string[]; productUrl: string }>,
+  ghostTargets: GhostTargetMetaAd[] = []
 ): MonitoredMetaAd[] {
   const ads: MonitoredMetaAd[] = [];
 
-  // Map broken SKUs to simulated Meta Ads
+  // 1. Mapeia produtos de Estoque Fantasma / Acessórios (Protocolo Yellowstone)
+  ghostTargets.forEach((item, index) => {
+    const dailySpend = item.dailySpend || 140.0;
+    ads.push({
+      adId: `2385194029${8000 + index}`,
+      adName: `[HERO_CRIATIVO] - ${item.productTitle.substring(0, 24).toUpperCase()} - TRAFEGO_DIRETO`,
+      campaignName: 'CAMPANHA_ACESSORIOS_HERO_CONVERSAO',
+      adsetName: `CONJUNTO_INTERESSE_AGRO_${item.sku}`,
+      destinationUrl: item.productUrl || `https://${domain}/products/${item.sku.toLowerCase()}`,
+      associatedSku: item.sku,
+      productTitle: item.productTitle,
+      status: 'PAUSED',
+      ruptureSeverity: 'CRITICAL_GHOST_INVENTORY',
+      brokenSizesDetected: ['ESTOQUE_FANTASMA_RUPTURA_FISICA'],
+      autoPausedAt: 'Pausado automaticamente pelo AdShield (Protocolo Yellowstone)',
+      estimatedDailyBurnSavedBRL: dailySpend,
+      adCategory: 'ESTOQUE_FANTASMA',
+      ghostInventoryReason: item.reason
+    });
+  });
+
+  // 2. Map broken SKUs to simulated Meta Ads (Vestuário com grade furada)
   brokenSkus.forEach((item, index) => {
-    const isCritical = item.missingSizes.some(s => ['M', 'G', 'GG', '40', '41', '42'].includes(s.toUpperCase()));
+    const isCritical = item.missingSizes.some(s => ['M', 'G', 'GG', '40', '41', '42', 'ESGOTADO'].includes(s.toUpperCase()));
     
     ads.push({
       adId: `2385194029${1000 + index}`,
@@ -148,11 +197,12 @@ export function auditAndMapMetaAds(
       ruptureSeverity: isCritical ? 'CRITICAL_ROMPIDO' : 'WARNING_BUFFER',
       brokenSizesDetected: item.missingSizes,
       autoPausedAt: isCritical ? 'Pausado automaticamente pelo AdShield' : undefined,
-      estimatedDailyBurnSavedBRL: isCritical ? 95.0 : 0
+      estimatedDailyBurnSavedBRL: isCritical ? 95.0 : 0,
+      adCategory: 'VESTUARIO'
     });
   });
 
-  // Add 1 healthy control ad
+  // 3. Add 1 healthy control ad
   ads.push({
     adId: '23851940299999',
     adName: `[TOPO_DE_FUNIL] - LANÇAMENTO COLEÇÃO 2026`,
@@ -164,7 +214,8 @@ export function auditAndMapMetaAds(
     status: 'ACTIVE',
     ruptureSeverity: 'SAFE',
     brokenSizesDetected: [],
-    estimatedDailyBurnSavedBRL: 0
+    estimatedDailyBurnSavedBRL: 0,
+    adCategory: 'VESTUARIO'
   });
 
   return ads;
@@ -215,7 +266,9 @@ export async function executeMetaAdPause(
   };
   
   try {
-    localStorage.setItem(LOCAL_STORAGE_META_LOGS_KEY, JSON.stringify([newLog, ...currentLogs]));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(LOCAL_STORAGE_META_LOGS_KEY, JSON.stringify([newLog, ...currentLogs]));
+    }
   } catch (e) {
     console.error('Error persisting log:', e);
   }
@@ -223,16 +276,18 @@ export async function executeMetaAdPause(
   // 3. Notificação no WhatsApp do Gestor (5534991351122)
   if (config.notifyOnWhatsApp) {
     try {
-      const alertMsg = `🚨 *[ADSHIELD KILL-SWITCH]*: O anúncio *${newLog.adName}* foi PAUSADO no Meta Ads em 38 segundos!\n\nMotivo: ${reason}\nSKU Protegido: ${sku}\nEconomia estimada: ~R$ 145,00/dia.`;
-      const queueRaw = localStorage.getItem('adshield_alert_queue') || '[]';
-      const queue = JSON.parse(queueRaw);
-      queue.unshift({
-        id: `alert-kill-${Date.now()}`,
-        targetPhone: '5534991351122',
-        message: alertMsg,
-        dispatchedAt: new Date().toISOString()
-      });
-      localStorage.setItem('adshield_alert_queue', JSON.stringify(queue));
+      if (typeof localStorage !== 'undefined') {
+        const alertMsg = `🚨 *[ADSHIELD KILL-SWITCH]*: O anúncio *${newLog.adName}* foi PAUSADO no Meta Ads em 38 segundos!\n\nMotivo: ${reason}\nSKU Protegido: ${sku}\nEconomia estimada: ~R$ 145,00/dia.`;
+        const queueRaw = localStorage.getItem('adshield_alert_queue') || '[]';
+        const queue = JSON.parse(queueRaw);
+        queue.unshift({
+          id: `alert-kill-${Date.now()}`,
+          targetPhone: '5534991351122',
+          message: alertMsg,
+          dispatchedAt: new Date().toISOString()
+        });
+        localStorage.setItem('adshield_alert_queue', JSON.stringify(queue));
+      }
     } catch {
       // fallback
     }

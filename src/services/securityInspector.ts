@@ -1,4 +1,4 @@
-import { RealSiteData } from './siteInspector';
+import type { RealSiteData } from './siteInspector.ts';
 
 export interface SecurityCheckItem {
   id: string;

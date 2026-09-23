@@ -1,4 +1,4 @@
-import { hashString } from '../siteInspector.ts';
+import { hashString, isCatalogProductBroken } from '../siteInspector.ts';
 import type { RealSiteData } from '../siteInspector.ts';
 import type { AuditInput } from '../../types/index.ts';
 import type { SocialAuditResult } from '../socialInspector.ts';
@@ -133,8 +133,8 @@ export function calculateStoreFinancialGrounding(
 
   // 3. CATALOG AND BROKEN SKUS METRICS — GROUNDING RIGOROSO
   const catalogIssues = realSiteData.catalogAudit?.issues || [];
-  // Apenas considera quebrado se NÃO for isento (_FULL, acessórios, equipamentos de pesca) E tiver tamanhos faltantes comprovados
-  const realBrokenIssues = catalogIssues.filter(i => !i.isFullPrintExempt && i.missingSizes.length > 0);
+  // Apenas considera quebrado se comprovado pelo protocolo universal (Grade ativa, Esgotado ou Estoque Fantasma)
+  const realBrokenIssues = catalogIssues.filter(isCatalogProductBroken);
   const catalogVolumeCount = realSiteData.catalogAudit?.totalProductsScanned || catalogIssues.length || 24;
   // NUNCA inventar SKUs rompidos se a inspeção encontrou 0!
   const brokenSkusCount = realBrokenIssues.length;
@@ -219,11 +219,26 @@ export function calculateStoreFinancialGrounding(
     adWasteMonthly = 0;
   }
 
-  // Checkout Friction Loss: falta de Pix, ausência de tabela de medidas ou lentidão severa
-  const hasPixDiscount = realSiteData.rawHtmlSnippet?.toLowerCase().includes('pix') || false;
-  const hasSizeGuide = realSiteData.rawHtmlSnippet?.toLowerCase().includes('guia de tamanhos') || 
-                       realSiteData.rawHtmlSnippet?.toLowerCase().includes('tabela de medidas') ||
-                       domain.includes('brk');
+  // Checkout Friction Loss: falta de Pix com desconto real, ausência de tabela de medidas ou lentidão severa
+  const snippet = (realSiteData.rawHtmlSnippet || '').toLowerCase();
+  const hasPixDiscount = 
+    /\b\d{1,2}%\s*(?:off|desconto)?\s*(?:no|com|via)?\s*pix\b/i.test(snippet) ||
+    /\bpix\s*(?:com)?\s*\d{1,2}%\s*(?:off|desconto)\b/i.test(snippet) ||
+    /\beconomize\b.*\bpix\b/i.test(snippet) ||
+    /\bà\s*vista\s*(?:no|via)?\s*pix\b/i.test(snippet);
+
+  const hasSizeGuide = 
+    snippet.includes('guia de tamanhos') || 
+    snippet.includes('tabela de medidas') ||
+    snippet.includes('size_chart') ||
+    snippet.includes('size-chart') ||
+    snippet.includes('product-addons') ||
+    snippet.includes('kiwisizing') ||
+    snippet.includes('sizebay') ||
+    snippet.includes('provador virtual') ||
+    snippet.includes('cleansizechart') ||
+    Boolean(realSiteData.catalogAudit?.issues.some(i => i.hasSizeGuide)) ||
+    Boolean(realSiteData.isMarketplaceSeller);
 
   let checkoutFrictionMonthly = 0;
   if (!hasPixDiscount) {
@@ -231,7 +246,7 @@ export function calculateStoreFinancialGrounding(
     const estimatedMonthlyOrders = baseMonthlyRevenueMin / Math.max(50, groundedAverageTicket);
     checkoutFrictionMonthly += Number((estimatedMonthlyOrders * (groundedAverageTicket * 0.0265)).toFixed(2));
   }
-  if (!hasSizeGuide && !domain.includes('brk')) {
+  if (!hasSizeGuide && !realSiteData.isMarketplaceSeller) {
     // Risco de devolução ou desistência de compra por falta de tabela de medidas
     checkoutFrictionMonthly += Number((baseMonthlyRevenueMin * 0.0145).toFixed(2));
   }

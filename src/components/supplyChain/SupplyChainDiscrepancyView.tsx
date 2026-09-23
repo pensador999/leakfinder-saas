@@ -16,11 +16,13 @@ import {
   Zap,
   Box,
   Truck,
-  MessageSquare
+  MessageSquare,
+  Package
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../../types';
 import { auditSupplyChainDiscrepancy, SupplyChainSyncAuditResult, SkuDiscrepancyAlert } from '../../services/supplyChain/erpHubDiscrepancyEngine';
 import { formatBRL } from '../../services/ai/storeFinancialGroundingEngine';
+import { ResaleReplenishmentFlowSection } from './ResaleReplenishmentFlowSection';
 
 interface SupplyChainDiscrepancyViewProps {
   diagnostic: AgentDiagnosticResult;
@@ -30,6 +32,7 @@ export const SupplyChainDiscrepancyView: React.FC<SupplyChainDiscrepancyViewProp
   const { realSiteData, input } = diagnostic;
   const syncAudit: SupplyChainSyncAuditResult = auditSupplyChainDiscrepancy(realSiteData, input);
 
+  const [mainViewMode, setMainViewMode] = useState<'REPLENISHMENT_FLOW' | 'DISCREPANCY_ERP'>('REPLENISHMENT_FLOW');
   const [copiedScriptId, setCopiedScriptId] = useState<string | null>(null);
   const [safetyBuffer, setSafetyBuffer] = useState<number>(syncAudit.suggestedSafetyBufferUnits || 2);
   const [selectedRoleTab, setSelectedRoleTab] = useState<'traffic' | 'magis5' | 'sankhya'>('traffic');
@@ -42,6 +45,44 @@ export const SupplyChainDiscrepancyView: React.FC<SupplyChainDiscrepancyViewProp
 
   return (
     <div className="space-y-8 font-sans">
+
+      {/* Sub-Navigation: Reposição de Revenda vs Descompasso ERP */}
+      <div className="flex items-center justify-between p-1.5 bg-slate-100 rounded-2xl border border-slate-200">
+        <div className="flex items-center gap-1.5 w-full">
+          <button
+            onClick={() => setMainViewMode('REPLENISHMENT_FLOW')}
+            className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold font-mono transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              mainViewMode === 'REPLENISHMENT_FLOW'
+                ? 'bg-white text-indigo-900 shadow-sm border border-slate-200/80'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Package className="w-4 h-4 text-amber-500" />
+            <span>Reposição de Revenda & Envio Imediato (Fluxo Contínuo)</span>
+          </button>
+
+          <button
+            onClick={() => setMainViewMode('DISCREPANCY_ERP')}
+            className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold font-mono transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              mainViewMode === 'DISCREPANCY_ERP'
+                ? 'bg-white text-indigo-900 shadow-sm border border-slate-200/80'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Factory className="w-4 h-4 text-indigo-600" />
+            <span>Descompasso ERP, Hub & Tráfego Pago (Sankhya/Magis5)</span>
+          </button>
+        </div>
+      </div>
+
+      {mainViewMode === 'REPLENISHMENT_FLOW' ? (
+        <ResaleReplenishmentFlowSection
+          catalogIssues={realSiteData.catalogAudit?.issues || []}
+          domain={realSiteData.domain}
+          brandName={realSiteData.brandName}
+        />
+      ) : (
+        <>
       
       {/* 1. Header Banner & Executive Score */}
       <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-950 to-indigo-950 border border-indigo-500/30 shadow-2xl text-white relative overflow-hidden">
@@ -408,6 +449,8 @@ export const SupplyChainDiscrepancyView: React.FC<SupplyChainDiscrepancyViewProp
           </div>
         </div>
       </div>
+      </>
+      )}
 
     </div>
   );

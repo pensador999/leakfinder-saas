@@ -1,0 +1,155 @@
+/* ==============================================================================
+   🏛️ GSAP OBSIDIAN & ENTERPRISE DESIGN SYSTEM (AdShield / LeakFinder)
+   Direct inspiration: https://gsap.com/ • Obsidian Matte & Precision Engineering
+   ============================================================================== */
+
+:root {
+  /* 🖤 Obsidian Palette */
+  --bg-obsidian-root: #0E100F;
+  --bg-obsidian-surface: #141716;
+  --bg-obsidian-card: #191C1B;
+  --bg-obsidian-card-hover: #222624;
+  --bg-obsidian-input: #101211;
+
+  /* ⚡ Functional High-Contrast Accents */
+  --color-gsap-green: #0AE448;
+  --color-gsap-green-hover: #09c93f;
+  --color-gsap-green-glow: rgba(10, 228, 72, 0.18);
+  --color-gsap-amber: #FF8709;
+  --color-gsap-pink: #F100CB;
+  --color-gsap-blue: #00BAE2;
+  
+  /* 🖋️ Typography Colors */
+  --text-obsidian-white: #FFFCE1;
+  --text-obsidian-primary: #F0EFE6;
+  --text-obsidian-secondary: #BBBAA6;
+  --text-obsidian-muted: #7C7C6F;
+
+  /* 📐 Hairline Borders */
+  --border-hairline: 1px solid rgba(255, 255, 255, 0.08);
+  --border-hairline-hover: 1px solid rgba(255, 255, 255, 0.16);
+  --border-hairline-green: 1px solid rgba(10, 228, 72, 0.35);
+  --border-hairline-amber: 1px solid rgba(255, 135, 9, 0.35);
+  --border-hairline-pink: 1px solid rgba(241, 0, 203, 0.35);
+
+  /* 🔮 Easing curves matching GSAP.com */
+  --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-in-out-quart: cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+/* 🌐 Dark Canvas Foundation */
+.bg-obsidian-root {
+  background-color: var(--bg-obsidian-root);
+  color: var(--text-obsidian-primary);
+}
+
+.bg-obsidian-surface {
+  background-color: var(--bg-obsidian-surface);
+}
+
+.bg-obsidian-card {
+  background-color: var(--bg-obsidian-card);
+  border: var(--border-hairline);
+}
+
+.bg-obsidian-card:hover {
+  background-color: var(--bg-obsidian-card-hover);
+  border: var(--border-hairline-hover);
+}
+
+/* 📐 Precision Hairline Borders */
+.hairline-border {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hairline-border-green {
+  border: 1px solid rgba(10, 228, 72, 0.4);
+  box-shadow: 0 0 15px -3px rgba(10, 228, 72, 0.15);
+}
+
+/* 🔘 GSAP Magnetic Button with Flair */
+.gsap-btn-primary {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-gsap-green);
+  color: #0E100F;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  border-radius: 9999px;
+  padding: 0.85rem 1.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: transform 0.2s var(--ease-out-quart), box-shadow 0.2s var(--ease-out-quart);
+  cursor: pointer;
+}
+
+.gsap-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px -2px rgba(10, 228, 72, 0.4);
+}
+
+.gsap-btn-primary:active {
+  transform: translateY(0);
+}
+
+/* 🔘 GSAP Secondary Outlined Button */
+.gsap-btn-secondary {
+  position: relative;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.03);
+  color: var(--text-obsidian-primary);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s var(--ease-out-quart);
+  cursor: pointer;
+}
+
+.gsap-btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.24);
+  color: var(--text-obsidian-white);
+  transform: translateY(-1px);
+}
+
+/* 🎯 Glowing Micro-Indicators */
+.status-beacon-green {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-gsap-green);
+  box-shadow: 0 0 10px var(--color-gsap-green);
+}
+
+.status-beacon-amber {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-gsap-amber);
+  box-shadow: 0 0 10px var(--color-gsap-amber);
+}
+
+.status-beacon-pink {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-gsap-pink);
+  box-shadow: 0 0 10px var(--color-gsap-pink);
+}
+
+/* 🔬 Grid Background com Hairlines */
+.obsidian-grid-pattern {
+  background-color: #0E100F;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
