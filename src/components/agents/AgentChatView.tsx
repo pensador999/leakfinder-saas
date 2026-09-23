@@ -95,8 +95,8 @@ export const AgentChatView: React.FC<AgentChatViewProps> = ({ diagnostic }) => {
               onClick={() => setSelectedAgent(agent.id as any)}
               className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
                 selectedAgent === agent.id
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
-                  : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+                  ? 'bg-[#0AE448] text-[#0E100F] shadow-sm font-mono'
+                  : 'bg-[#141716] text-[#BBBAA6] border border-white/10 hover:border-white/20 hover:bg-[#191C1B]'
               }`}
             >
               <IconComp className="w-3.5 h-3.5 shrink-0" />
@@ -107,7 +107,7 @@ export const AgentChatView: React.FC<AgentChatViewProps> = ({ diagnostic }) => {
       </div>
 
       {/* Chat Container */}
-      <div className="bg-white border border-slate-200 rounded-3xl p-5 flex flex-col h-[520px] shadow-sm">
+      <div className="bg-[#101211] border border-white/10 rounded-3xl p-5 flex flex-col h-[520px] shadow-2xl text-white">
         
         {/* Messages Scroll Area */}
         <div className="flex-1 overflow-y-auto space-y-4 p-2">
@@ -117,20 +117,20 @@ export const AgentChatView: React.FC<AgentChatViewProps> = ({ diagnostic }) => {
               className={`flex gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {msg.sender === 'agent' && (
-                <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 shrink-0 mt-1">
+                <div className="w-8 h-8 rounded-xl bg-[#141716] border border-[#0AE448]/30 flex items-center justify-center text-[#0AE448] shrink-0 mt-1">
                   <Bot className="w-4 h-4" />
                 </div>
               )}
 
               <div className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-4 text-xs leading-relaxed ${
                 msg.sender === 'user'
-                  ? 'bg-blue-600 text-white rounded-br-none shadow-xs font-medium'
-                  : 'bg-slate-50 text-slate-800 border border-slate-200 rounded-bl-none font-medium'
+                  ? 'bg-[#191C1B] text-white border border-[#0AE448]/40 rounded-br-none shadow-xs font-medium'
+                  : 'bg-[#141716] text-[#FFFCE1] border border-white/10 rounded-bl-none font-medium'
               }`}>
                 {msg.agentPersona && (
-                  <div className="flex items-center justify-between gap-2 mb-1.5 text-[10px] font-bold text-blue-700 uppercase tracking-wider">
+                  <div className="flex items-center justify-between gap-2 mb-1.5 text-[10px] font-bold text-[#0AE448] uppercase tracking-wider font-mono">
                     <span>Agente {msg.agentPersona}</span>
-                    <span className="text-slate-400 font-mono">{msg.timestamp}</span>
+                    <span className="text-[#7C7C6F] font-mono">{msg.timestamp}</span>
                   </div>
                 )}
                 <div>
@@ -139,7 +139,7 @@ export const AgentChatView: React.FC<AgentChatViewProps> = ({ diagnostic }) => {
               </div>
 
               {msg.sender === 'user' && (
-                <div className="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0 mt-1">
+                <div className="w-8 h-8 rounded-xl bg-[#141716] border border-white/10 text-white flex items-center justify-center shrink-0 mt-1">
                   <User className="w-4 h-4" />
                 </div>
               )}
@@ -147,35 +147,35 @@ export const AgentChatView: React.FC<AgentChatViewProps> = ({ diagnostic }) => {
           ))}
 
           {isTyping && (
-            <div className="flex items-center gap-2 text-xs text-blue-700 bg-blue-50 p-3 rounded-xl border border-blue-200 w-fit font-medium">
-              <Sparkles className="w-4 h-4 animate-spin text-blue-600" />
+            <div className="flex items-center gap-2 text-xs text-[#0AE448] bg-[#141716] p-3 rounded-xl border border-[#0AE448]/30 w-fit font-mono font-medium">
+              <Sparkles className="w-4 h-4 animate-spin text-[#0AE448]" />
               <span>Agente {selectedAgent} está analisando os dados...</span>
             </div>
           )}
         </div>
 
         {/* Autopilot & Quick Suggestion Chips */}
-        <div className="pt-3 border-t border-slate-100 flex flex-col gap-3">
+        <div className="pt-3 border-t border-white/10 flex flex-col gap-3">
           <button
             onClick={() => {
               setSelectedAgent('Orquestrador');
               handleSendMessage('[AUTOPILOT] Aja como CEO. Cruze os diagnósticos de todos os 6 agentes. Gere um Relatório Executivo de Alto Nível focando nos 3 maiores vazamentos de receita deste negócio e forneça um plano de ação tático. Retorne o resultado formatado de forma limpa e muito profissional.');
             }}
             disabled={isTyping}
-            className="w-full flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-bold shadow-md transition-all cursor-pointer disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 p-3 bg-[#0AE448] hover:bg-[#09c93f] text-[#0E100F] rounded-xl font-bold shadow-md transition-all cursor-pointer disabled:opacity-50"
           >
-            <Sparkles className="w-5 h-5" />
-            Autopilot: Gerar Relatório de Diretoria
+            <Sparkles className="w-5 h-5 text-[#0E100F]" />
+            <span>Autopilot: Gerar Relatório de Diretoria</span>
           </button>
 
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            <span className="text-[10px] text-slate-400 uppercase font-bold shrink-0">Perguntas Rápidas:</span>
+            <span className="text-[10px] text-[#7C7C6F] uppercase font-bold shrink-0 font-mono">Perguntas Rápidas:</span>
             {quickQuestions.map((q, i) => (
               <button
                 key={i}
                 onClick={() => handleSendMessage(q)}
                 disabled={isTyping}
-                className="px-2.5 py-1 text-[11px] bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-lg border border-slate-200 transition-all shrink-0 cursor-pointer font-medium disabled:opacity-50"
+                className="px-2.5 py-1 text-[11px] bg-[#141716] hover:bg-[#191C1B] text-[#FFFCE1] hover:text-[#0AE448] rounded-lg border border-white/10 hover:border-[#0AE448]/40 transition-all shrink-0 cursor-pointer font-medium disabled:opacity-50"
               >
                 {q}
               </button>
@@ -196,12 +196,12 @@ export const AgentChatView: React.FC<AgentChatViewProps> = ({ diagnostic }) => {
             placeholder={`Pergunte ao Agente ${selectedAgent} sobre ${realSiteData.domain}...`}
             value={inputQuery}
             onChange={(e) => setInputQuery(e.target.value)}
-            className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 focus:border-blue-600 rounded-xl text-xs text-slate-900 placeholder-slate-400 outline-none transition-all font-medium"
+            className="flex-1 px-4 py-3 bg-[#141716] border border-white/10 focus:border-[#0AE448] rounded-xl text-xs text-white placeholder-[#7C7C6F] outline-none transition-all font-medium"
           />
           <button
             type="submit"
             disabled={!inputQuery.trim() || isTyping}
-            className="p-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl transition-all shadow-xs cursor-pointer"
+            className="p-3 bg-[#0AE448] hover:bg-[#09c93f] disabled:bg-[#191C1B] disabled:text-[#7C7C6F] text-[#0E100F] rounded-xl transition-all shadow-xs cursor-pointer"
           >
             <Send className="w-4 h-4" />
           </button>

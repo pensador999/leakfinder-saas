@@ -261,26 +261,26 @@ export const FloatingAiChatWidget: React.FC = () => {
 
       {/* 🏛️ Floating Chat Window */}
       {isOpen && (
-        <div className="bg-white/95 backdrop-blur-2xl border border-slate-200/90 rounded-3xl w-[360px] sm:w-[420px] h-[580px] shadow-2xl shadow-slate-900/25 overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div className="bg-[#101211]/95 backdrop-blur-2xl border border-white/10 rounded-3xl w-[360px] sm:w-[420px] h-[580px] shadow-2xl shadow-black/80 overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-5 duration-200 text-white">
           
           {/* Header Executive Deep Obsidian */}
-          <div className="p-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800 relative">
+          <div className="p-4 bg-[#0E100F] text-white flex items-center justify-between border-b border-white/10 relative">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <div className="p-2.5 bg-gradient-to-br from-blue-600 via-indigo-600 to-sky-500 rounded-xl text-white shadow-md shadow-blue-500/30">
-                  <Bot className="w-5 h-5 text-white" />
+                <div className="p-2.5 bg-[#141716] border border-[#0AE448]/40 rounded-xl text-[#0AE448] shadow-md shadow-[#0AE448]/20">
+                  <Bot className="w-5 h-5 text-[#0AE448]" />
                 </div>
-                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 border-2 border-slate-900 rounded-full animate-pulse"></span>
+                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-[#0AE448] border-2 border-[#0E100F] rounded-full animate-pulse"></span>
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h3 className="font-bold text-sm tracking-tight">AdShield Concierge</h3>
-                  <span className="px-2 py-0.2 bg-blue-500/20 text-blue-300 text-[10px] font-mono font-bold rounded border border-blue-500/30">
+                  <h3 className="font-bold text-sm tracking-tight text-white">AdShield Concierge</h3>
+                  <span className="px-2 py-0.5 bg-[#0AE448]/15 text-[#0AE448] text-[10px] font-mono font-bold rounded-md border border-[#0AE448]/30">
                     IA 24h
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
-                  <span className="text-emerald-400 font-medium">Online</span> • Lucas & Time Técnico
+                <p className="text-[11px] text-[#7C7C6F] flex items-center gap-1 mt-0.5">
+                  <span className="text-[#0AE448] font-medium">Online</span> • Lucas & Time Técnico
                 </p>
               </div>
             </div>
@@ -288,14 +288,14 @@ export const FloatingAiChatWidget: React.FC = () => {
             <div className="flex items-center gap-1">
               <button
                 onClick={() => handleOpenWhatsAppWithLucas()}
-                className="p-2 text-emerald-400 hover:text-emerald-300 hover:bg-slate-800/80 rounded-xl transition-all cursor-pointer"
+                className="p-2 text-[#0AE448] hover:text-white hover:bg-white/5 rounded-xl transition-all cursor-pointer"
                 title="Abrir WhatsApp oficial do Lucas (34 99135-1122)"
               >
                 <Phone className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-2 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-xl transition-all cursor-pointer"
+                className="p-2 text-[#7C7C6F] hover:text-white hover:bg-white/5 rounded-xl transition-all cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -303,13 +303,13 @@ export const FloatingAiChatWidget: React.FC = () => {
           </div>
 
           {/* Action Ribbon: ROI Calculator & Fast WhatsApp Button */}
-          <div className="px-3 py-2 bg-slate-100/90 border-b border-slate-200/80 flex items-center justify-between gap-2 text-xs font-bold font-mono">
+          <div className="px-3 py-2 bg-[#141716] border-b border-white/10 flex items-center justify-between gap-2 text-xs font-bold font-mono">
             <button
               onClick={() => setIsRoiMode(prev => !prev)}
               className={`px-3 py-1 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer text-[11px] ${
                 isRoiMode 
-                  ? 'bg-blue-600 text-white shadow-xs' 
-                  : 'bg-white hover:bg-blue-50 text-blue-700 border border-slate-200 hover:border-blue-300'
+                  ? 'bg-[#0AE448] text-[#0E100F] shadow-xs' 
+                  : 'bg-[#191C1B] hover:bg-white/10 text-[#00BAE2] border border-white/10 hover:border-[#00BAE2]/40'
               }`}
             >
               <Calculator className="w-3.5 h-3.5" />
@@ -318,31 +318,31 @@ export const FloatingAiChatWidget: React.FC = () => {
 
             <button
               onClick={() => handleOpenWhatsAppWithLucas()}
-              className="px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl text-[11px] transition-all flex items-center gap-1 cursor-pointer"
+              className="px-3 py-1 bg-[#0AE448]/15 hover:bg-[#0AE448]/25 text-[#0AE448] border border-[#0AE448]/30 rounded-xl text-[11px] transition-all flex items-center gap-1 cursor-pointer"
             >
-              <Phone className="w-3 h-3 text-emerald-600" />
+              <Phone className="w-3 h-3 text-[#0AE448]" />
               <span>Falar no WhatsApp</span>
             </button>
           </div>
 
           {/* Interactive ROI Calculator Drawer (Inline) */}
           {isRoiMode && (
-            <div className="p-4 bg-gradient-to-br from-blue-900 to-indigo-950 text-white border-b border-blue-800 animate-fadeIn space-y-3">
+            <div className="p-4 bg-[#0E100F] text-white border-b border-white/10 animate-fadeIn space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-cyan-300 flex items-center gap-1.5 font-mono">
-                  <Zap className="w-3.5 h-3.5 text-amber-300" />
+                <span className="text-xs font-bold text-[#00BAE2] flex items-center gap-1.5 font-mono">
+                  <Zap className="w-3.5 h-3.5 text-[#0AE448]" />
                   Calculadora Expressa de Desperdício Evitado
                 </span>
                 <button 
                   onClick={() => setIsRoiMode(false)}
-                  className="text-slate-400 hover:text-white text-xs cursor-pointer"
+                  className="text-[#7C7C6F] hover:text-white text-xs cursor-pointer"
                 >
                   ✕
                 </button>
               </div>
 
               <div className="space-y-2">
-                <label className="text-[11px] text-slate-300 block">
+                <label className="text-[11px] text-[#A0A090] block">
                   Quanto sua loja investe no Meta Ads por mês?
                 </label>
                 <div className="grid grid-cols-4 gap-1.5">
@@ -352,8 +352,8 @@ export const FloatingAiChatWidget: React.FC = () => {
                       onClick={() => setRoiSpendInput(val)}
                       className={`py-1.5 rounded-lg text-[11px] font-mono font-bold transition-all cursor-pointer ${
                         roiSpendInput === val
-                          ? 'bg-blue-500 text-white shadow-sm'
-                          : 'bg-slate-800/80 hover:bg-slate-700 text-slate-300'
+                          ? 'bg-[#0AE448] text-[#0E100F] shadow-sm'
+                          : 'bg-[#141716] hover:bg-[#191C1B] text-[#FFFCE1] border border-white/10'
                       }`}
                     >
                       R$ {val >= 1000 ? `${val / 1000}k` : val}
@@ -364,7 +364,7 @@ export const FloatingAiChatWidget: React.FC = () => {
 
               <button
                 onClick={() => handleCalculateRoi(roiSpendInput)}
-                className="w-full py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                className="w-full py-2 bg-[#0AE448] hover:bg-[#09c93f] text-[#0E100F] rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
               >
                 <span>Calcular Economia com AdShield</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -373,7 +373,7 @@ export const FloatingAiChatWidget: React.FC = () => {
           )}
 
           {/* Messages Feed */}
-          <div className="p-4 overflow-y-auto flex-1 space-y-3.5 text-xs bg-slate-50/70">
+          <div className="p-4 overflow-y-auto flex-1 space-y-3.5 text-xs bg-[#0E100F]">
             {messages.map((msg) => (
               <div
                 key={msg.id}
@@ -382,23 +382,23 @@ export const FloatingAiChatWidget: React.FC = () => {
                 <div
                   className={`p-3.5 rounded-2xl max-w-[90%] whitespace-pre-wrap leading-relaxed shadow-2xs ${
                     msg.sender === 'user'
-                      ? 'bg-blue-600 text-white rounded-br-none font-medium'
+                      ? 'bg-[#191C1B] text-white border border-[#0AE448]/40 rounded-br-none font-medium'
                       : msg.isRoiResult
-                        ? 'bg-emerald-50 text-emerald-950 border border-emerald-200 rounded-bl-none font-sans shadow-xs'
-                        : 'bg-white text-slate-800 border border-slate-200/90 rounded-bl-none font-sans'
+                        ? 'bg-[#141716] text-[#0AE448] border border-[#0AE448]/40 rounded-bl-none font-sans shadow-xs'
+                        : 'bg-[#141716] text-[#FFFCE1] border border-white/10 rounded-bl-none font-sans'
                   }`}
                 >
                   {msg.text}
 
                   {/* CTA button if ROI result */}
                   {msg.isRoiResult && msg.roiData && (
-                    <div className="mt-3 pt-2.5 border-t border-emerald-200 flex items-center justify-between">
-                      <span className="text-[10px] font-mono text-emerald-700 font-bold">Payback: &lt; 5 dias</span>
+                    <div className="mt-3 pt-2.5 border-t border-[#0AE448]/20 flex items-center justify-between">
+                      <span className="text-[10px] font-mono text-[#0AE448] font-bold">Payback: &lt; 5 dias</span>
                       <button
                         onClick={() => handleOpenWhatsAppWithLucas(`Olá Lucas! Fiz a simulação de ROI no AdShield: invisto R$ ${msg.roiData?.spend.toLocaleString('pt-BR')} e vi que posso salvar ~R$ ${msg.roiData?.savedMonthly.toLocaleString('pt-BR')}/mês. Gostaria de ativar a proteção!`)}
-                        className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer"
+                        className="px-3 py-1 bg-[#0AE448] hover:bg-[#09c93f] text-[#0E100F] text-[11px] font-bold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer"
                       >
-                        <FontAwesomeIcon icon={faWhatsapp} className="w-3 h-3 text-white" />
+                        <FontAwesomeIcon icon={faWhatsapp} className="w-3 h-3 text-[#0E100F]" />
                         <span>Ativar no WhatsApp</span>
                       </button>
                     </div>
@@ -412,10 +412,10 @@ export const FloatingAiChatWidget: React.FC = () => {
                       <button
                         key={idx}
                         onClick={() => handleSendMessage(reply)}
-                        className="px-3 py-1.5 bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-700 rounded-xl text-[11px] font-medium transition-all flex items-center gap-1 cursor-pointer shadow-2xs text-left"
+                        className="px-3 py-1.5 bg-[#141716] hover:bg-[#191C1B] border border-white/10 hover:border-[#0AE448]/40 text-[#FFFCE1] hover:text-[#0AE448] rounded-xl text-[11px] font-medium transition-all flex items-center gap-1 cursor-pointer shadow-2xs text-left"
                       >
                         <span>{reply}</span>
-                        <ChevronRight className="w-3 h-3 text-slate-400 shrink-0" />
+                        <ChevronRight className="w-3 h-3 text-[#7C7C6F] shrink-0" />
                       </button>
                     ))}
                   </div>
@@ -424,10 +424,10 @@ export const FloatingAiChatWidget: React.FC = () => {
             ))}
 
             {isTyping && (
-              <div className="flex items-center gap-1.5 text-slate-400 text-xs p-3 bg-white rounded-2xl w-24 border border-slate-200 shadow-2xs">
-                <span className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce"></span>
-                <span className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                <span className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+              <div className="flex items-center gap-1.5 text-[#7C7C6F] text-xs p-3 bg-[#141716] rounded-2xl w-24 border border-white/10 shadow-2xs">
+                <span className="w-1.5 h-1.5 bg-[#0AE448] rounded-full animate-bounce"></span>
+                <span className="w-1.5 h-1.5 bg-[#0AE448] rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                <span className="w-1.5 h-1.5 bg-[#0AE448] rounded-full animate-bounce [animation-delay:0.4s]"></span>
               </div>
             )}
 
@@ -436,39 +436,39 @@ export const FloatingAiChatWidget: React.FC = () => {
 
           {/* Lead Capture Footer Bar */}
           {!leadCaptured && (
-            <form onSubmit={handleCaptureLeadPhone} className="p-2.5 bg-gradient-to-r from-emerald-50 to-teal-50 border-t border-emerald-200 flex items-center gap-2">
+            <form onSubmit={handleCaptureLeadPhone} className="p-2.5 bg-[#141716] border-t border-white/10 flex items-center gap-2">
               <input
                 type="tel"
                 placeholder="Seu WhatsApp (ex: 34 99135-1122)..."
                 value={leadPhone}
                 onChange={(e) => setLeadPhone(e.target.value)}
-                className="flex-1 px-3 py-2 text-xs bg-white border border-emerald-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-slate-800 placeholder-slate-400"
+                className="flex-1 px-3 py-2 text-xs bg-[#0E100F] border border-white/10 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#0AE448] font-mono text-white placeholder-[#7C7C6F]"
               />
               <button
                 type="submit"
                 disabled={!leadPhone.trim()}
-                className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 shadow-2xs"
+                className="px-3.5 py-2 bg-[#0AE448] hover:bg-[#09c93f] disabled:opacity-40 text-[#0E100F] rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 shadow-2xs"
               >
-                <CheckCircle2 className="w-3.5 h-3.5" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#0E100F]" />
                 <span>Receber Dossiê</span>
               </button>
             </form>
           )}
 
           {/* Input Footer Bar */}
-          <div className="p-3 bg-white border-t border-slate-200 flex items-center gap-2">
+          <div className="p-3 bg-[#101211] border-t border-white/10 flex items-center gap-2">
             <input
               type="text"
               placeholder="Digite sua dúvida sobre catálogo ou anúncios..."
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-              className="flex-1 px-3.5 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-800 placeholder-slate-400"
+              className="flex-1 px-3.5 py-2 text-xs bg-[#141716] border border-white/10 rounded-xl focus:outline-none focus:border-[#0AE448] text-white placeholder-[#7C7C6F]"
             />
             <button
               onClick={() => handleSendMessage()}
               disabled={!inputText.trim()}
-              className="p-2.5 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-200 text-white rounded-xl transition-all cursor-pointer shadow-xs disabled:cursor-not-allowed"
+              className="p-2.5 bg-[#0AE448] hover:bg-[#09c93f] disabled:bg-[#191C1B] disabled:text-[#7C7C6F] text-[#0E100F] rounded-xl transition-all cursor-pointer shadow-xs disabled:cursor-not-allowed"
             >
               <Send className="w-4 h-4" />
             </button>

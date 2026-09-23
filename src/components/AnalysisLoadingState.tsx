@@ -105,32 +105,36 @@ export const AnalysisLoadingState: React.FC<AnalysisLoadingStateProps> = ({ site
 
   return (
     <div className="py-12 flex items-center justify-center p-4">
-      <div className="w-full max-w-xl bg-white border border-slate-200 rounded-3xl p-8 shadow-md text-center">
+      <div className="w-full max-w-xl bg-[#101211] border border-white/10 rounded-3xl p-8 shadow-2xl text-center space-y-6">
         
-        {/* Animated Central Icon */}
-        <div className="relative inline-flex items-center justify-center mb-6">
-          <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/25">
-            <Layers className="w-8 h-8 text-white animate-pulse" />
+        {/* Animated Central Icon with GSAP Neon Pulse */}
+        <div className="relative inline-flex items-center justify-center">
+          <div className="w-16 h-16 bg-[#141716] border border-[#0AE448]/40 rounded-2xl flex items-center justify-center shadow-lg shadow-[#0AE448]/20">
+            <Layers className="w-8 h-8 text-[#0AE448] animate-pulse" />
           </div>
+          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[#0AE448] rounded-full border-2 border-[#101211] animate-ping" />
+          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[#0AE448] rounded-full border-2 border-[#101211]" />
         </div>
 
-        <h3 className="text-xl font-extrabold text-slate-900 tracking-tight mb-1">
-          Inspecionando <span className="text-blue-600 font-mono">{siteUrl}</span>
-        </h3>
-        <p className="text-xs text-slate-500 mb-6">
-          Nossa inteligência LeakFinder está fazendo o scraping e a auditoria em tempo real...
-        </p>
+        <div>
+          <h3 className="text-xl font-black text-white tracking-tight mb-1">
+            Inspecionando <span className="text-[#0AE448] font-mono">{siteUrl}</span>
+          </h3>
+          <p className="text-xs text-[#7C7C6F]">
+            Enxame de 18 agentes auditando DOM ao vivo, catálogo, conformidade legal e anúncios em tempo real...
+          </p>
+        </div>
 
-        {/* Progress Bar */}
-        <div className="w-full bg-slate-100 rounded-full h-2.5 mb-8 p-0.5 border border-slate-200 overflow-hidden">
+        {/* Precision Progress Bar */}
+        <div className="w-full bg-[#191C1B] rounded-full h-2 p-0.5 border border-white/10 overflow-hidden">
           <div
-            className="bg-blue-600 h-full rounded-full transition-all duration-500 ease-out"
+            className="bg-gradient-to-r from-[#0AE448] to-[#00BAE2] h-full rounded-full transition-all duration-500 ease-out shadow-sm shadow-[#0AE448]/50"
             style={{ width: `${progressPercentage}%` }}
           />
         </div>
 
-        {/* Steps List */}
-        <div className="space-y-3 text-left">
+        {/* Steps List in Dark Obsidian */}
+        <div className="space-y-2.5 text-left">
           {steps.map((step, idx) => {
             const isDone = idx < currentStepIndex;
             const isCurrent = idx === currentStepIndex;
@@ -139,36 +143,40 @@ export const AnalysisLoadingState: React.FC<AnalysisLoadingStateProps> = ({ site
             return (
               <div
                 key={step.id}
-                className={`p-3.5 rounded-xl border transition-all duration-300 flex items-center gap-3.5 ${
+                className={`p-3 rounded-2xl border transition-all duration-300 flex items-center gap-3.5 ${
                   isCurrent
-                    ? 'bg-blue-50/80 border-blue-300 shadow-xs'
+                    ? 'bg-[#191C1B] border-[#0AE448] shadow-md shadow-black/40 ring-1 ring-[#0AE448]/40'
                     : isDone
-                    ? 'bg-slate-50 border-slate-200 text-slate-500'
-                    : 'bg-white border-slate-100 text-slate-400 opacity-50'
+                    ? 'bg-[#141716] border-white/10 text-white'
+                    : 'bg-[#101211] border-white/5 text-[#7C7C6F] opacity-40'
                 }`}
               >
-                <div className={`p-2 rounded-lg ${
-                  isCurrent ? 'bg-blue-600 text-white' : isDone ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'
+                <div className={`p-2 rounded-xl shrink-0 ${
+                  isCurrent 
+                    ? 'bg-[#0AE448] text-[#0E100F] shadow-sm' 
+                    : isDone 
+                    ? 'bg-[#0AE448]/15 text-[#0AE448] border border-[#0AE448]/30' 
+                    : 'bg-[#191C1B] border border-white/5 text-[#7C7C6F]'
                 }`}>
                   {isDone ? (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <CheckCircle2 className="w-4 h-4 text-[#0AE448]" />
                   ) : isCurrent ? (
-                    <Loader2 className="w-4 h-4 animate-spin text-white" />
+                    <Loader2 className="w-4 h-4 animate-spin text-[#0E100F]" />
                   ) : (
                     <StepIcon className="w-4 h-4" />
                   )}
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <span className={`text-xs font-bold ${isCurrent ? 'text-slate-900' : isDone ? 'text-slate-700' : 'text-slate-400'}`}>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className={`text-xs font-bold truncate ${isCurrent ? 'text-white' : isDone ? 'text-slate-200' : 'text-[#7C7C6F]'}`}>
                       {step.agent}
                     </span>
-                    <span className="text-[10px] text-slate-400 font-mono">
+                    <span className="text-[10px] text-[#7C7C6F] font-mono shrink-0">
                       {step.role}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 truncate mt-0.5">
+                  <p className="text-xs text-[#A0A090] truncate mt-0.5 font-sans">
                     {step.message}
                   </p>
                 </div>
