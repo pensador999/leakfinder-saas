@@ -180,76 +180,76 @@ export const MetaAdsAutoKillSwitchModal: React.FC<MetaAdsAutoKillSwitchModalProp
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[75] flex items-center justify-center p-4 overflow-y-auto font-sans">
-      <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden my-8 relative flex flex-col max-h-[92vh] border border-slate-200 animate-fadeIn">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[75] flex items-center justify-center p-4 overflow-y-auto font-sans">
+      <div className="w-full max-w-5xl bg-[#101211] rounded-3xl shadow-2xl overflow-hidden my-8 relative flex flex-col max-h-[92vh] border border-white/10 animate-fadeIn text-[#FFFCE1]">
         
         {/* Header */}
-        <div className="p-6 bg-slate-900 text-white flex items-center justify-between shrink-0">
+        <div className="p-6 bg-[#0E100F] text-[#FFFCE1] flex items-center justify-between shrink-0 border-b border-white/10">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-rose-500/20 text-rose-400 rounded-2xl border border-rose-500/30">
               <Power className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold">Kill-Switch Autônomo Meta Ads</h2>
+                <h2 className="text-lg font-bold text-[#FFFCE1]">Kill-Switch Autônomo Meta Ads</h2>
                 <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-md">
                   Pausa &lt;60s
                 </span>
               </div>
-              <p className="text-xs text-slate-400">Pausa criativos instantaneamente quando tamanhos-chave esgotam na vitrine.</p>
+              <p className="text-xs text-[#BBBAA6]">Pausa criativos instantaneamente quando tamanhos-chave esgotam na vitrine.</p>
             </div>
           </div>
 
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-slate-800 rounded-xl text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="p-2 hover:bg-white/10 rounded-xl text-slate-400 hover:text-white transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="px-6 pt-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between flex-wrap gap-2 shrink-0">
+        <div className="px-6 pt-4 bg-[#141716] border-b border-white/10 flex items-center justify-between flex-wrap gap-2 shrink-0">
           <div className="flex gap-2 flex-wrap">
             <button
               onClick={() => setActiveTab('MONITOR')}
-              className={`px-4 py-2 text-xs font-bold rounded-t-xl transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === 'MONITOR' ? 'bg-white border-t-2 border-indigo-600 text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+              className={`px-4 py-2 text-xs font-bold rounded-t-xl transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === 'MONITOR' ? 'bg-[#101211] border-t-2 border-[#0AE448] text-[#0AE448] shadow-xs' : 'text-[#BBBAA6] hover:text-[#FFFCE1]'}`}
             >
-              <Target className="w-3.5 h-3.5 text-indigo-600" />
+              <Target className="w-3.5 h-3.5 text-[#0AE448]" />
               <span>Anúncios Monitorados ({adsList.length})</span>
             </button>
             <button
               onClick={() => setActiveTab('SIMULATOR')}
-              className={`px-4 py-2 text-xs font-bold rounded-t-xl transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === 'SIMULATOR' ? 'bg-white border-t-2 border-amber-500 text-amber-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+              className={`px-4 py-2 text-xs font-bold rounded-t-xl transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === 'SIMULATOR' ? 'bg-[#101211] border-t-2 border-amber-500 text-amber-400 shadow-xs' : 'text-[#BBBAA6] hover:text-[#FFFCE1]'}`}
             >
               <Zap className="w-3.5 h-3.5 text-amber-500" />
               <span>Simulador em Tempo Real (&lt;60s)</span>
             </button>
             <button
               onClick={() => setActiveTab('LOGS')}
-              className={`px-4 py-2 text-xs font-bold rounded-t-xl transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === 'LOGS' ? 'bg-white border-t-2 border-indigo-600 text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+              className={`px-4 py-2 text-xs font-bold rounded-t-xl transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === 'LOGS' ? 'bg-[#101211] border-t-2 border-cyan-500 text-cyan-400 shadow-xs' : 'text-[#BBBAA6] hover:text-[#FFFCE1]'}`}
             >
-              <History className="w-3.5 h-3.5 text-slate-600" />
+              <History className="w-3.5 h-3.5 text-cyan-400" />
               <span>Histórico de Pausas ({logs.length})</span>
             </button>
             <button
               onClick={() => setActiveTab('SETTINGS')}
-              className={`px-4 py-2 text-xs font-bold rounded-t-xl transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === 'SETTINGS' ? 'bg-white border-t-2 border-indigo-600 text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+              className={`px-4 py-2 text-xs font-bold rounded-t-xl transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === 'SETTINGS' ? 'bg-[#101211] border-t-2 border-[#00BAE2] text-[#00BAE2] shadow-xs' : 'text-[#BBBAA6] hover:text-[#FFFCE1]'}`}
             >
-              <Settings className="w-3.5 h-3.5 text-slate-600" />
+              <Settings className="w-3.5 h-3.5 text-[#00BAE2]" />
               <span>Webhook Shopify & Credenciais</span>
             </button>
           </div>
 
           {/* Master Kill Switch Toggle Button */}
           <div className="flex items-center gap-2 pb-2">
-            <span className="text-xs font-bold text-slate-600">Piloto Automático:</span>
+            <span className="text-xs font-bold text-[#BBBAA6]">Piloto Automático:</span>
             <button
               onClick={handleToggleAutoKill}
               className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${
                 config.autoKillEnabled
-                  ? 'bg-emerald-600 text-white hover:bg-emerald-500'
-                  : 'bg-slate-300 text-slate-700 hover:bg-slate-400'
+                  ? 'bg-[#0AE448] text-slate-950 hover:bg-[#0AE448]/90 font-black'
+                  : 'bg-white/10 text-[#BBBAA6] hover:bg-white/15'
               }`}
             >
               <Power className="w-3.5 h-3.5" />
@@ -267,34 +267,34 @@ export const MetaAdsAutoKillSwitchModal: React.FC<MetaAdsAutoKillSwitchModalProp
         )}
 
         {/* Modal Body */}
-        <div className="p-6 sm:p-8 overflow-y-auto space-y-6">
+        <div className="p-6 sm:p-8 overflow-y-auto space-y-6 bg-[#101211]">
           
           {/* Top KPI Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="p-4 rounded-2xl bg-slate-900 text-white border border-slate-800">
-              <span className="text-[10px] uppercase font-bold text-slate-400 font-mono block">Economia Mensal em Mídia</span>
-              <span className="text-2xl font-black text-emerald-400 font-mono">
+            <div className="p-4 rounded-2xl bg-[#141716] text-[#FFFCE1] border border-white/10">
+              <span className="text-[10px] uppercase font-bold text-[#BBBAA6] font-mono block">Economia Mensal em Mídia</span>
+              <span className="text-2xl font-black text-[#0AE448] font-mono">
                 {formatBRL(totalSavedMonthly)}
               </span>
-              <span className="text-[10px] text-slate-400 block font-medium">
+              <span className="text-[10px] text-[#BBBAA6] block font-medium">
                 {totalSavedMonthly > 0 ? 'verba não desperdiçada' : 'anúncios em estoque seguro'}
               </span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-white border border-slate-200">
-              <span className="text-[10px] uppercase font-bold text-slate-500 font-mono block">Anúncios sob Proteção</span>
-              <span className="text-2xl font-black text-indigo-600 font-mono">
+            <div className="p-4 rounded-2xl bg-[#141716] border border-white/10 text-[#FFFCE1]">
+              <span className="text-[10px] uppercase font-bold text-[#BBBAA6] font-mono block">Anúncios sob Proteção</span>
+              <span className="text-2xl font-black text-[#00BAE2] font-mono">
                 {adsList.length} Ativos
               </span>
-              <span className="text-[10px] text-slate-500 block font-medium">tempo de reação: &lt; 45 segundos</span>
+              <span className="text-[10px] text-[#BBBAA6] block font-medium">tempo de reação: &lt; 45 segundos</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200">
-              <span className="text-[10px] uppercase font-bold text-rose-700 font-mono block">Pausados por Ruptura</span>
-              <span className="text-2xl font-black text-rose-600 font-mono">
+            <div className="p-4 rounded-2xl bg-[#141716] border border-rose-500/20 text-[#FFFCE1]">
+              <span className="text-[10px] uppercase font-bold text-rose-400 font-mono block">Pausados por Ruptura</span>
+              <span className="text-2xl font-black text-rose-400 font-mono">
                 {adsList.filter(a => a.status === 'PAUSED').length} Anúncios
               </span>
-              <span className="text-[10px] text-rose-700 block font-medium">cliques vazios estancados</span>
+              <span className="text-[10px] text-rose-400/80 block font-medium">cliques vazios estancados</span>
             </div>
           </div>
 
@@ -305,15 +305,15 @@ export const MetaAdsAutoKillSwitchModal: React.FC<MetaAdsAutoKillSwitchModalProp
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">Conjuntos & Anúncios Vinculados ao Catálogo</h4>
-                  <p className="text-xs text-slate-500">Mapeamento em tempo real entre criativos do Meta Ads e o estoque da vitrine.</p>
+                  <h4 className="text-sm font-bold text-[#FFFCE1]">Conjuntos & Anúncios Vinculados ao Catálogo</h4>
+                  <p className="text-xs text-[#BBBAA6]">Mapeamento em tempo real entre criativos do Meta Ads e o estoque da vitrine.</p>
                 </div>
               </div>
 
-              <div className="border border-slate-200 rounded-2xl overflow-hidden">
+              <div className="border border-white/10 rounded-2xl overflow-hidden bg-[#141716]">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-bold uppercase text-[10px] font-mono">
+                    <tr className="bg-[#191C1B] border-b border-white/10 text-[#BBBAA6] font-bold uppercase text-[10px] font-mono">
                       <th className="p-3">Anúncio / Campanha</th>
                       <th className="p-3">SKU & Produto</th>
                       <th className="p-3">Status de Grade</th>
@@ -321,20 +321,20 @@ export const MetaAdsAutoKillSwitchModal: React.FC<MetaAdsAutoKillSwitchModalProp
                       <th className="p-3 text-right">Comando</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-white/5">
                     {adsList.map((ad) => {
                       const isPaused = ad.status === 'PAUSED';
                       const isCritical = ad.ruptureSeverity === 'CRITICAL_ROMPIDO';
 
                       return (
-                        <tr key={ad.adId} className="hover:bg-slate-50 transition-colors">
+                        <tr key={ad.adId} className="hover:bg-white/5 transition-colors">
                           <td className="p-3">
-                            <span className="font-bold text-slate-900 block">{ad.adName}</span>
-                            <span className="text-[10px] text-slate-400 font-mono">ID: {ad.adId}</span>
+                            <span className="font-bold text-[#FFFCE1] block">{ad.adName}</span>
+                            <span className="text-[10px] text-[#BBBAA6] font-mono">ID: {ad.adId}</span>
                           </td>
                           <td className="p-3">
-                            <span className="font-semibold text-slate-800 block">{ad.productTitle}</span>
-                            <span className="text-[10px] text-indigo-600 font-mono font-bold">SKU: {ad.associatedSku}</span>
+                            <span className="font-semibold text-white block">{ad.productTitle}</span>
+                            <span className="text-[10px] text-[#00BAE2] font-mono font-bold">SKU: {ad.associatedSku}</span>
                           </td>
                           <td className="p-3">
                             {ad.ruptureSeverity === 'CRITICAL_GHOST_INVENTORY' ? (
