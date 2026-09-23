@@ -57,55 +57,55 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
   const shopSlug = OneClickMitigationService.getShopSlug(realSiteData.domain);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-[#FFFCE1]">
 
       {/* STORE OVERVIEW & AUDIT GROUNDING BAR */}
-      <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+      <div className="p-5 rounded-3xl bg-[#101211] border border-white/10 shadow-2xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-2xl shadow-md">
+          <div className="p-3 bg-gradient-to-br from-[#141716] to-[#191C1B] text-[#0AE448] rounded-2xl border border-white/10 shadow-md">
             <Layers className="w-6 h-6" />
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="text-lg font-black text-slate-900 font-mono tracking-tight">
+              <h2 className="text-lg font-black text-[#FFFCE1] font-mono tracking-tight">
                 {realSiteData.brandName || 'LOJA AUDITADA'}
               </h2>
-              <span className="px-2.5 py-0.5 text-xs font-mono font-bold bg-emerald-50 text-emerald-800 rounded-full border border-emerald-200 inline-flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              <span className="px-2.5 py-0.5 text-xs font-mono font-bold bg-[#0AE448]/20 text-[#0AE448] rounded-full border border-[#0AE448]/30 inline-flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#0AE448]" />
                 DOM Auditado ao Vivo
               </span>
               {realSiteData.isMarketplaceSeller ? (
-                <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold bg-orange-100 text-orange-800 rounded-md border border-orange-300 inline-flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-orange-500 inline-block" />
+                <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold bg-orange-500/20 text-orange-400 rounded-md border border-orange-500/30 inline-flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-orange-400 inline-block" />
                   {realSiteData.ecommercePlatform} Seller: {realSiteData.sellerIdentifier || realSiteData.brandName}
                 </span>
               ) : (
                 <span className={`px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-md border inline-flex items-center gap-1 ${
-                  realSiteData.ecommercePlatform === 'Shopify' ? 'bg-emerald-50 text-emerald-800 border-emerald-300' :
-                  realSiteData.ecommercePlatform === 'Tray' ? 'bg-blue-50 text-blue-800 border-blue-300' :
-                  realSiteData.ecommercePlatform === 'Nuvemshop' ? 'bg-purple-50 text-purple-800 border-purple-300' :
-                  realSiteData.ecommercePlatform === 'VTEX' ? 'bg-pink-50 text-pink-800 border-pink-300' :
-                  'bg-slate-100 text-slate-700 border-slate-300'
+                  realSiteData.ecommercePlatform === 'Shopify' ? 'bg-[#0AE448]/20 text-[#0AE448] border-[#0AE448]/30' :
+                  realSiteData.ecommercePlatform === 'Tray' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' :
+                  realSiteData.ecommercePlatform === 'Nuvemshop' ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' :
+                  realSiteData.ecommercePlatform === 'VTEX' ? 'bg-pink-500/20 text-pink-400 border-pink-500/30' :
+                  'bg-white/10 text-[#BBBAA6] border-white/15'
                 }`}>
                   CMS: {realSiteData.ecommercePlatform || 'E-Commerce'}
                 </span>
               )}
               {realSiteData.googleShoppingShield && realSiteData.googleShoppingShield.discrepantProductsCount > 0 && (
-                <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-amber-50 text-amber-800 rounded-md border border-amber-300 inline-flex items-center gap-1">
-                  <AlertTriangle className="w-3 h-3 text-amber-600" />
+                <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-amber-500/20 text-amber-400 rounded-md border border-amber-500/30 inline-flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3 text-amber-400" />
                   Google Shopping: {realSiteData.googleShoppingShield.discrepantProductsCount} Schema OutOfStock
                 </span>
               )}
               {realSiteData.legalCompliance && (
                 <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded-md border inline-flex items-center gap-1 ${
-                  realSiteData.legalCompliance.isFullyCompliant ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'
+                  realSiteData.legalCompliance.isFullyCompliant ? 'bg-[#0AE448]/20 text-[#0AE448] border-[#0AE448]/30' : 'bg-red-500/20 text-red-400 border-red-500/30'
                 }`}>
                   <ShieldCheck className="w-3 h-3" />
                   {realSiteData.legalCompliance.cnpjFound ? `CNPJ: ${realSiteData.legalCompliance.cnpjFound}` : 'Sem CNPJ no Rodapé'}
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-[#BBBAA6] mt-0.5">
               {realSiteData.isMarketplaceSeller 
                 ? `Auditoria de Seller em Marketplace: SEO de título, ficha técnica, Buy Box e conformidade algorítmica na ${realSiteData.ecommercePlatform}.`
                 : 'Auditoria profunda de catálogo, imagens, grade de tamanhos e integridade de checkout.'}
@@ -120,15 +120,15 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
               href={`https://admin.shopify.com/store/${shopSlug}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold font-mono transition-all flex items-center gap-1.5 shadow-xs hover:scale-105 active:scale-95 cursor-pointer"
+              className="px-3 py-2 bg-[#141716] hover:bg-[#191C1B] text-[#FFFCE1] border border-white/10 rounded-xl text-xs font-bold font-mono transition-all flex items-center gap-1.5 shadow-xs hover:border-[#0AE448]/40 cursor-pointer"
               title="Abrir painel administrativo da Shopify desta loja"
             >
-              <FontAwesomeIcon icon={faShopify} className="w-3.5 h-3.5 text-emerald-400" />
+              <FontAwesomeIcon icon={faShopify} className="w-3.5 h-3.5 text-[#0AE448]" />
               <span>Shopify Admin ({shopSlug})</span>
             </a>
           )}
           {realSiteData.isMarketplaceSeller && (
-            <span className="px-3 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold font-mono flex items-center gap-1.5 shadow-xs">
+            <span className="px-3 py-2 bg-[#141716] text-[#FFFCE1] border border-white/10 rounded-xl text-xs font-bold font-mono flex items-center gap-1.5 shadow-xs">
               <span className="w-2 h-2 rounded-full bg-orange-400 inline-block" />
               <span>Seller Oficial ({realSiteData.sellerIdentifier || realSiteData.brandName})</span>
             </span>
@@ -147,22 +147,22 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
               }
             }}
             disabled={isDownloadingPdf}
-            className="px-3.5 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-indigo-600/20 hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-50"
+            className="px-3.5 py-2 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 font-black rounded-xl text-xs transition-all flex items-center gap-1.5 shadow-lg shadow-[#0AE448]/20 hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-50"
             title="Baixar Relatório Executivo Oficial em PDF com 1 clique"
           >
             {isDownloadingPdf ? (
               <>
-                <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-3.5 h-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
                 <span>Gerando PDF...</span>
               </>
             ) : downloadSuccess ? (
               <>
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-slate-950" />
                 <span>Dossiê Baixado!</span>
               </>
             ) : (
               <>
-                <Download className="w-3.5 h-3.5 text-indigo-200" />
+                <Download className="w-3.5 h-3.5 text-slate-950" />
                 <span>Baixar Dossiê PDF</span>
               </>
             )}
@@ -172,11 +172,11 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
             href={realSiteData.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+            className="px-3 py-2 bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
             title="Abrir vitrine da loja em nova aba"
           >
             <span>{realSiteData.isMarketplaceSeller ? `Ver Anúncio na ${realSiteData.ecommercePlatform}` : 'Ver Loja'}</span>
-            <ExternalLink className="w-3.5 h-3.5" />
+            <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
           </a>
         </div>
       </div>
@@ -185,64 +185,64 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
         
         {/* 1. Confecção Própria PCP */}
-        <div className="p-3.5 bg-white border border-slate-200 rounded-2xl space-y-1 shadow-2xs">
-          <div className="flex items-center justify-between text-slate-500">
+        <div className="p-3.5 bg-[#141716] border border-white/10 rounded-2xl space-y-1 shadow-md">
+          <div className="flex items-center justify-between text-[#BBBAA6]">
             <span className="font-mono text-[10px] uppercase font-bold flex items-center gap-1">
-              <Factory className="w-3.5 h-3.5 text-blue-600" /> Própria (PCP)
+              <Factory className="w-3.5 h-3.5 text-[#00BAE2]" /> Própria (PCP)
             </span>
-            <span className="text-[10px] font-bold text-blue-600">Sublimação</span>
+            <span className="text-[10px] font-bold text-[#00BAE2]">Sublimação</span>
           </div>
-          <p className="text-xl font-black font-mono text-slate-900">{inHouseCount} SKUs</p>
-          <p className="text-[10px] text-slate-500">Costura sob demanda</p>
+          <p className="text-xl font-black font-mono text-[#FFFCE1]">{inHouseCount} SKUs</p>
+          <p className="text-[10px] text-[#BBBAA6]">Costura sob demanda</p>
         </div>
 
         {/* 2. Revenda Externa */}
-        <div className="p-3.5 bg-white border border-slate-200 rounded-2xl space-y-1 shadow-2xs">
-          <div className="flex items-center justify-between text-slate-500">
+        <div className="p-3.5 bg-[#141716] border border-white/10 rounded-2xl space-y-1 shadow-md">
+          <div className="flex items-center justify-between text-[#BBBAA6]">
             <span className="font-mono text-[10px] uppercase font-bold flex items-center gap-1">
-              <ShoppingBag className="w-3.5 h-3.5 text-amber-600" /> Revenda Externa
+              <ShoppingBag className="w-3.5 h-3.5 text-amber-400" /> Revenda Externa
             </span>
-            <span className="text-[10px] font-bold text-amber-600">Compras</span>
+            <span className="text-[10px] font-bold text-amber-400">Compras</span>
           </div>
-          <p className="text-xl font-black font-mono text-slate-900">{resaleCount} SKUs</p>
-          <p className="text-[10px] text-slate-500">Botão, calçados, bonés</p>
+          <p className="text-xl font-black font-mono text-[#FFFCE1]">{resaleCount} SKUs</p>
+          <p className="text-[10px] text-[#BBBAA6]">Botão, calçados, bonés</p>
         </div>
 
         {/* 3. Isenção Regra _FULL */}
-        <div className="p-3.5 bg-white border border-slate-200 rounded-2xl space-y-1 shadow-2xs">
-          <div className="flex items-center justify-between text-slate-500">
+        <div className="p-3.5 bg-[#141716] border border-white/10 rounded-2xl space-y-1 shadow-md">
+          <div className="flex items-center justify-between text-[#BBBAA6]">
             <span className="font-mono text-[10px] uppercase font-bold flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Regra _FULL
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#0AE448]" /> Regra _FULL
             </span>
-            <span className="text-[10px] font-bold text-emerald-600">Isentos</span>
+            <span className="text-[10px] font-bold text-[#0AE448]">Isentos</span>
           </div>
-          <p className="text-xl font-black font-mono text-emerald-600">{fullExemptCount} SKUs</p>
-          <p className="text-[10px] text-slate-500">Zero falso-positivo</p>
+          <p className="text-xl font-black font-mono text-[#0AE448]">{fullExemptCount} SKUs</p>
+          <p className="text-[10px] text-[#BBBAA6]">Zero falso-positivo</p>
         </div>
 
         {/* 4. Sensor de Imagens */}
-        <div className={`p-3.5 border rounded-2xl space-y-1 shadow-2xs ${
+        <div className={`p-3.5 border rounded-2xl space-y-1 shadow-md ${
           missingImagesCount > 0 
-            ? 'bg-rose-50/70 border-rose-200' 
-            : 'bg-white border-slate-200'
+            ? 'bg-rose-500/10 border-rose-500/30' 
+            : 'bg-[#141716] border-white/10'
         }`}>
           <div className="flex items-center justify-between">
-            <span className="font-mono text-[10px] uppercase font-bold flex items-center gap-1 text-slate-600">
+            <span className="font-mono text-[10px] uppercase font-bold flex items-center gap-1 text-[#BBBAA6]">
               {missingImagesCount > 0 ? (
-                <ImageOff className="w-3.5 h-3.5 text-rose-600" />
+                <ImageOff className="w-3.5 h-3.5 text-rose-400" />
               ) : (
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#0AE448]" />
               )}
               Sensor de Imagens
             </span>
-            <span className={`text-[10px] font-bold ${missingImagesCount > 0 ? 'text-rose-700' : 'text-emerald-600'}`}>
+            <span className={`text-[10px] font-bold ${missingImagesCount > 0 ? 'text-rose-400' : 'text-[#0AE448]'}`}>
               {missingImagesCount > 0 ? 'Crítico' : '100% OK'}
             </span>
           </div>
-          <p className={`text-xl font-black font-mono ${missingImagesCount > 0 ? 'text-rose-600' : 'text-slate-900'}`}>
+          <p className={`text-xl font-black font-mono ${missingImagesCount > 0 ? 'text-rose-400' : 'text-[#FFFCE1]'}`}>
             {missingImagesCount > 0 ? `${missingImagesCount} Sem Foto` : 'Zero Quebradas'}
           </p>
-          <p className={`text-[10px] ${missingImagesCount > 0 ? 'text-rose-600 font-bold' : 'text-slate-500'}`}>
+          <p className={`text-[10px] ${missingImagesCount > 0 ? 'text-rose-400 font-bold' : 'text-[#BBBAA6]'}`}>
             {missingImagesCount > 0 ? 'Requer inativação imediata' : 'Todas fotos ativas'}
           </p>
         </div>
@@ -253,100 +253,100 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 font-medium">
         
         {/* Growth Score Badge Card */}
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between">
+        <div className="p-5 rounded-2xl bg-[#101211] border border-white/10 shadow-2xl space-y-3 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 font-mono">AdShield Score</span>
-            <span className="px-2 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-700 rounded-full border border-blue-200">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#BBBAA6] font-mono">AdShield Score</span>
+            <span className="px-2 py-0.5 text-[10px] font-bold bg-[#0AE448]/20 text-[#0AE448] rounded-full border border-[#0AE448]/30">
               Auditado
             </span>
           </div>
 
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-black font-mono text-slate-900 tracking-tight">{growthScore}</span>
-            <span className="text-lg font-bold text-slate-400">/ 100</span>
+            <span className="text-4xl font-black font-mono text-[#FFFCE1] tracking-tight">{growthScore}</span>
+            <span className="text-lg font-bold text-slate-500">/ 100</span>
           </div>
 
-          <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+          <div className="w-full bg-[#191C1B] h-2 rounded-full overflow-hidden border border-white/5">
             <div 
-              className="bg-blue-600 h-full rounded-full transition-all duration-1000"
+              className="bg-gradient-to-r from-[#0AE448] to-[#00BAE2] h-full rounded-full transition-all duration-1000"
               style={{ width: `${growthScore}%` }}
             />
           </div>
 
-          <p className="text-[11px] text-slate-600 leading-relaxed font-medium flex items-center gap-1.5">
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-            <span>Oportunidades em <strong className="font-mono text-slate-900">{realSiteData.domain}</strong></span>
+          <p className="text-[11px] text-[#BBBAA6] leading-relaxed font-medium flex items-center gap-1.5">
+            <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+            <span>Oportunidades em <strong className="font-mono text-white">{realSiteData.domain}</strong></span>
           </p>
         </div>
 
         {/* Revenue Lift Projection Card */}
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between">
+        <div className="p-5 rounded-2xl bg-[#101211] border border-white/10 shadow-2xl space-y-3 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-700 font-mono">Projeção Lift</span>
-            <div className="p-1.5 bg-emerald-50 text-emerald-600 rounded-xl">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#0AE448] font-mono">Projeção Lift</span>
+            <div className="p-1.5 bg-[#0AE448]/10 text-[#0AE448] rounded-xl border border-[#0AE448]/20">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
 
           <div>
-            <span className="text-3xl font-black font-mono text-emerald-600 tracking-tight">+{estimatedRevenueLiftMin}% a +{estimatedRevenueLiftMax}%</span>
-            <p className="text-[11px] text-slate-500 mt-1 font-medium">
+            <span className="text-3xl font-black font-mono text-[#0AE448] tracking-tight">+{estimatedRevenueLiftMin}% a +{estimatedRevenueLiftMax}%</span>
+            <p className="text-[11px] text-[#BBBAA6] mt-1 font-medium">
               Projeção de recuperação de receita corrigindo os gargalos de catálogo e checkout.
             </p>
           </div>
           
           <div className="space-y-1.5">
-            <div className="flex items-center gap-2 text-[10px] font-mono text-slate-500">
+            <div className="flex items-center gap-2 text-[10px] font-mono text-[#BBBAA6]">
               <span className="w-14">Otimista</span>
-              <div className="flex-1 bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-emerald-500 h-full rounded-full" style={{ width: '85%' }} />
+              <div className="flex-1 bg-[#191C1B] h-1.5 rounded-full overflow-hidden border border-white/5">
+                <div className="bg-[#0AE448] h-full rounded-full" style={{ width: '85%' }} />
               </div>
-              <span className="text-emerald-700 font-bold">+{estimatedRevenueLiftMax}%</span>
+              <span className="text-[#0AE448] font-bold">+{estimatedRevenueLiftMax}%</span>
             </div>
-            <div className="flex items-center gap-2 text-[10px] font-mono text-slate-500">
+            <div className="flex items-center gap-2 text-[10px] font-mono text-[#BBBAA6]">
               <span className="w-14">Realista</span>
-              <div className="flex-1 bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-emerald-400 h-full rounded-full" style={{ width: '60%' }} />
+              <div className="flex-1 bg-[#191C1B] h-1.5 rounded-full overflow-hidden border border-white/5">
+                <div className="bg-[#00BAE2] h-full rounded-full" style={{ width: '60%' }} />
               </div>
-              <span className="text-emerald-700 font-bold">+{estimatedRevenueLiftMin}%</span>
+              <span className="text-[#00BAE2] font-bold">+{estimatedRevenueLiftMin}%</span>
             </div>
           </div>
         </div>
 
         {/* Computer Vision & Heatmap Card */}
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between">
+        <div className="p-5 rounded-2xl bg-[#101211] border border-white/10 shadow-2xl space-y-3 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-indigo-700 font-mono flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-600" /> Visão IA
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#00BAE2] font-mono flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#00BAE2]" /> Visão IA
             </span>
-            <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-xl">
+            <div className="p-1.5 bg-[#00BAE2]/10 text-[#00BAE2] rounded-xl border border-[#00BAE2]/20">
               <Eye className="w-4 h-4" />
             </div>
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-1.5 bg-[#141716] p-3 rounded-xl border border-white/5">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-500 font-medium">Foco no CTA:</span>
-              <span className={`font-mono font-bold ${visionAnalysis.eyeTracking.focusScoreCta >= 70 ? 'text-emerald-600' : 'text-amber-600'}`}>
+              <span className="text-[#BBBAA6] font-medium">Foco no CTA:</span>
+              <span className={`font-mono font-bold ${visionAnalysis.eyeTracking.focusScoreCta >= 70 ? 'text-[#0AE448]' : 'text-amber-400'}`}>
                 {visionAnalysis.eyeTracking.focusScoreCta}%
               </span>
             </div>
 
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-500 font-medium">Contraste:</span>
-              <span className="font-mono font-bold text-slate-900 flex items-center gap-1">
+              <span className="text-[#BBBAA6] font-medium">Contraste:</span>
+              <span className="font-mono font-bold text-white flex items-center gap-1">
                 {visionAnalysis.contrastAudit.contrastRatio}:1
                 {visionAnalysis.contrastAudit.wcagAaPassed ? (
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 inline" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#0AE448] inline" />
                 ) : (
-                  <AlertCircle className="w-3.5 h-3.5 text-amber-600 inline" />
+                  <AlertCircle className="w-3.5 h-3.5 text-amber-400 inline" />
                 )}
               </span>
             </div>
 
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-500 font-medium">Ímã Visual:</span>
-              <span className="font-bold text-rose-600 truncate max-w-[120px] flex items-center gap-1">
+              <span className="text-[#BBBAA6] font-medium">Ímã Visual:</span>
+              <span className="font-bold text-rose-400 truncate max-w-[120px] flex items-center gap-1">
                 <Flame className="w-3 h-3 shrink-0" /> {visionAnalysis.eyeTracking.mainFocusElement}
               </span>
             </div>
@@ -354,20 +354,20 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
 
           <button
             onClick={() => onSelectAgentTab('vision')}
-            className="w-full py-2 px-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            className="w-full py-2 px-3 bg-white/5 hover:bg-white/10 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-white/10"
           >
             <span>Ver Heatmap</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-3.5 h-3.5 text-[#0AE448]" />
           </button>
         </div>
 
         {/* Shopify Telemetry & Ad Waste Benchmark Card */}
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3 flex flex-col justify-between">
+        <div className="p-5 rounded-2xl bg-[#101211] border border-white/10 shadow-2xl space-y-3 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-rose-700 font-mono flex items-center gap-1.5">
-              <Activity className="w-3.5 h-3.5 text-rose-600" /> Sangria Estimada
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-rose-400 font-mono flex items-center gap-1.5">
+              <Activity className="w-3.5 h-3.5 text-rose-400" /> Sangria Estimada
             </span>
-            <span className="px-2 py-0.5 text-[9px] font-mono font-bold bg-amber-50 text-amber-800 border border-amber-200 rounded-md">
+            <span className="px-2 py-0.5 text-[9px] font-mono font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-md">
               Benchmark Nicho
             </span>
           </div>
@@ -376,21 +376,21 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
             {finances.financialRisk.totalMonthlyLoss > 0 ? (
               <>
                 <div className="flex items-baseline gap-1.5">
-                  <span className="text-2xl font-black font-mono text-rose-600 tracking-tight">
+                  <span className="text-2xl font-black font-mono text-rose-400 tracking-tight">
                     ~{finances.financialRisk.formattedMonthlyLoss}
                   </span>
-                  <span className="text-xs text-slate-500 font-mono">/ mês</span>
+                  <span className="text-xs text-[#BBBAA6] font-mono">/ mês</span>
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1 leading-relaxed">
+                <p className="text-[10px] text-[#BBBAA6] mt-1 leading-relaxed">
                   Projeção estatística: ~65% dos cliques desperdiçados nos {finances.brokenSkusCount} SKU(s) sem grade central.
                 </p>
               </>
             ) : (
               <>
-                <span className="text-2xl font-black font-mono text-emerald-600 tracking-tight">
+                <span className="text-2xl font-black font-mono text-[#0AE448] tracking-tight">
                   Grade Blindada (R$ 0)
                 </span>
-                <p className="text-[11px] text-emerald-700 mt-0.5 font-medium">
+                <p className="text-[11px] text-[#0AE448] mt-0.5 font-medium">
                   Catálogo 100% íntegro. Zero desperdício em anúncios de produtos rompidos.
                 </p>
               </>
@@ -399,10 +399,10 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
 
           <button
             onClick={() => onSelectAgentTab('telemetry')}
-            className={`w-full py-2 px-3 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+            className={`w-full py-2 px-3 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer border ${
               finances.financialRisk.totalMonthlyLoss > 0
-                ? 'bg-rose-50 hover:bg-rose-100 text-rose-700'
-                : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800'
+                ? 'bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border-rose-500/30'
+                : 'bg-[#0AE448]/15 hover:bg-[#0AE448]/25 text-[#0AE448] border-[#0AE448]/30'
             }`}
           >
             <span>Ver Telemetria & Gravações</span>

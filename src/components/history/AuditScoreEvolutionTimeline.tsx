@@ -50,9 +50,9 @@ export const AuditScoreEvolutionTimeline: React.FC<AuditScoreEvolutionTimelinePr
 
   if (isLoading) {
     return (
-      <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm animate-pulse space-y-4">
-        <div className="h-5 w-48 bg-slate-200 rounded" />
-        <div className="h-20 bg-slate-100 rounded-2xl" />
+      <div className="p-6 rounded-3xl bg-[#101211] border border-white/10 shadow-2xl animate-pulse space-y-4">
+        <div className="h-5 w-48 bg-white/10 rounded" />
+        <div className="h-20 bg-white/5 rounded-2xl" />
       </div>
     );
   }
@@ -64,12 +64,12 @@ export const AuditScoreEvolutionTimeline: React.FC<AuditScoreEvolutionTimelinePr
   const hasMultipleAudits = evolution.audits.length > 1;
 
   return (
-    <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-950 to-indigo-950 text-white shadow-xl border border-slate-800/80 relative overflow-hidden font-sans">
+    <div className="p-6 sm:p-8 rounded-3xl bg-[#101211] text-[#FFFCE1] shadow-2xl border border-white/10 relative overflow-hidden font-sans">
       {/* Background ambient glow */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-[#0AE448]/5 rounded-full blur-3xl pointer-events-none" />
 
       {/* Header */}
-      <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-mono font-bold uppercase tracking-wider border border-indigo-500/30 flex items-center gap-1.5">
@@ -111,50 +111,50 @@ export const AuditScoreEvolutionTimeline: React.FC<AuditScoreEvolutionTimelinePr
 
       {/* 3 Executive Evolution KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6 relative z-10">
-        <div className="p-4 rounded-2xl bg-slate-800/50 border border-slate-700/60 backdrop-blur-sm space-y-1">
-          <p className="text-[10px] font-mono uppercase font-bold text-slate-400 flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+        <div className="p-4 rounded-2xl bg-[#141716] border border-white/10 space-y-1">
+          <p className="text-[10px] font-mono uppercase font-bold text-[#BBBAA6] flex items-center gap-1">
+            <Sparkles className="w-3.5 h-3.5 text-[#00BAE2]" />
             Score Inicial vs Atual
           </p>
           <div className="flex items-baseline gap-2">
-            <span className="text-xl font-bold text-slate-400 line-through">
+            <span className="text-xl font-bold text-slate-500 line-through">
               {evolution.initialScore}
             </span>
-            <span className="text-2xl font-black text-emerald-400">
+            <span className="text-2xl font-black text-[#0AE448]">
               {evolution.currentScore}
             </span>
-            <span className="text-xs text-slate-400">/ 100</span>
+            <span className="text-xs text-[#BBBAA6]">/ 100</span>
           </div>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-[#BBBAA6]">
             {hasMultipleAudits ? `Primeira auditoria em ${new Date(evolution.firstAuditDate).toLocaleDateString('pt-BR')}` : 'Primeira auditoria da loja'}
           </p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-slate-800/50 border border-slate-700/60 backdrop-blur-sm space-y-1">
-          <p className="text-[10px] font-mono uppercase font-bold text-slate-400 flex items-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+        <div className="p-4 rounded-2xl bg-[#141716] border border-white/10 space-y-1">
+          <p className="text-[10px] font-mono uppercase font-bold text-[#BBBAA6] flex items-center gap-1">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#0AE448]" />
             Sangria em Mídia Estancada
           </p>
-          <p className="text-2xl font-black text-emerald-400 font-mono">
+          <p className="text-2xl font-black text-[#0AE448] font-mono">
             {evolution.totalMonthlyWastePrevented > 0 
               ? `+R$ ${evolution.totalMonthlyWastePrevented.toLocaleString('pt-BR')}/mês` 
               : 'Grade Blindada'}
           </p>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-[#BBBAA6]">
             Economia contínua de verba de tráfego
           </p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-slate-800/50 border border-slate-700/60 backdrop-blur-sm space-y-1">
-          <p className="text-[10px] font-mono uppercase font-bold text-slate-400 flex items-center gap-1">
-            <Clock className="w-3.5 h-3.5 text-blue-400" />
+        <div className="p-4 rounded-2xl bg-[#141716] border border-white/10 space-y-1">
+          <p className="text-[10px] font-mono uppercase font-bold text-[#BBBAA6] flex items-center gap-1">
+            <Clock className="w-3.5 h-3.5 text-[#00BAE2]" />
             Status da Telemetria
           </p>
           <p className="text-lg font-bold text-white flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#0AE448] animate-pulse" />
             Sincronizado ao Vivo
           </p>
-          <p className="text-[11px] text-slate-400 font-mono">
+          <p className="text-[11px] text-[#BBBAA6] font-mono">
             Última checagem: {new Date(evolution.latestAuditDate).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
           </p>
         </div>
@@ -162,7 +162,7 @@ export const AuditScoreEvolutionTimeline: React.FC<AuditScoreEvolutionTimelinePr
 
       {/* Visual Timeline Nodes */}
       <div className="space-y-3 relative z-10">
-        <p className="text-[10px] font-mono uppercase font-bold text-slate-400 tracking-wider">
+        <p className="text-[10px] font-mono uppercase font-bold text-[#BBBAA6] tracking-wider">
           Histórico Granular de Varreduras
         </p>
         
@@ -176,13 +176,13 @@ export const AuditScoreEvolutionTimeline: React.FC<AuditScoreEvolutionTimelinePr
                 key={audit.id}
                 className={`p-3.5 sm:p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all ${
                   audit.isCurrent
-                    ? 'bg-indigo-950/40 border-indigo-500/50 shadow-inner'
-                    : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
+                    ? 'bg-[#141716] border-[#0AE448]/40 shadow-inner'
+                    : 'bg-[#141716]/60 border-white/5 hover:border-white/15'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-mono font-bold text-xs ${
-                    audit.isCurrent ? 'bg-indigo-500 text-white' : 'bg-slate-800 text-slate-400'
+                    audit.isCurrent ? 'bg-[#0AE448] text-slate-950 font-black' : 'bg-white/10 text-[#BBBAA6]'
                   }`}>
                     #{evolution.audits.length - idx}
                   </div>
@@ -192,12 +192,12 @@ export const AuditScoreEvolutionTimeline: React.FC<AuditScoreEvolutionTimelinePr
                         {isToday ? 'Hoje' : auditDate.toLocaleDateString('pt-BR')} às {auditDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                       </p>
                       {audit.isCurrent && (
-                        <span className="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 text-[10px] font-mono font-bold border border-indigo-500/30">
+                        <span className="px-2 py-0.5 rounded-md bg-[#0AE448]/20 text-[#0AE448] text-[10px] font-mono font-bold border border-[#0AE448]/30">
                           AUDITORIA ATIVA
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-[#BBBAA6]">
                       {audit.brokenSkusCount > 0 
                         ? `${audit.brokenSkusCount} SKU(s) com ruptura de grade` 
                         : 'Grade 100% Blindada e Saudável'}
