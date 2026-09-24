@@ -8,6 +8,7 @@
 import { extractCleanDomainAndBrand } from '../siteInspector';
 import { DeepScraperAgent, ScrapedCatalogItem } from '../orchestrator/deepScraperAgent';
 import { RAW_PILOT_20_PROSPECTS } from './pilotProspectsCatalog';
+import { resolveDynamicVertical } from '../ai/dynamicVerticalContext';
 
 export type LeadProspectStatus = 
   | 'NOVO_LEAD' 
@@ -191,11 +192,24 @@ O anúncio promete envio rápido, o cliente clica, mas o pedido atrasa gerando c
 
 Mapeamos os criativos ativos e os SKUs afetados. Quer que eu te envie o link aqui pelo WhatsApp? É só responder *"QUERO"*.`;
   } else {
+    const vertical = resolveDynamicVertical(`${primarySku.productTitle} ${storeUrl} ${brandName}`);
+    let verticalContextHook = `Como ${missingText} respondem por cerca de 65% das compras de vestuário no Brasil, a cada R$ 1.000 investidos nessa campanha, cerca de R$ 650 viram cliques perdidos de clientes que chegam e desistem`;
+
+    if (vertical.verticalId === 'CALCADOS_COURO') {
+      verticalContextHook = `Como as numerações ${missingText} respondem por cerca de 70% das compras masculinas de calçados no Brasil, a cada R$ 1.000 investidos na campanha do calçado, ~R$ 700 são queimados com clientes que não encontram seu calce exato`;
+    } else if (vertical.verticalId === 'AGRO_CAMPO_OUTDOOR') {
+      verticalContextHook = `No segmento agro e moda campo, os tamanhos ${missingText} concentram mais de 75% da procura dos clientes. O comprador clica no anúncio mas encontra a porteira fechada pela grade furada`;
+    } else if (vertical.verticalId === 'STREETWEAR_MODA_URBANA') {
+      verticalContextHook = `No streetwear e tech apparel, ${missingText} concentram mais de 69% da demanda dos drops. O cliente busca a peça no corte ideal, vê indisponível e migra para a concorrência`;
+    } else if (vertical.verticalId === 'FITNESS_BEACHWEAR') {
+      verticalContextHook = `No público fitness e activewear, os tamanhos ${missingText} concentram mais de 72% da demanda feminina. Sem esse tamanho disponível, a perda de conversão no primeiro scroll é imediata`;
+    }
+
     directFounder = `Fala, tudo bem? 👊 Passamos nosso scanner de auditoria na vitrine da *${brandName}* e cruzamos com a biblioteca de anúncios de vocês no Meta Ads:
 
-Vocês estão rodando tráfego pago ativo para o produto *"${primarySku.productTitle}"* (R$ ${formattedPrice}), mas os tamanhos *${missingText}* estão esgotados no checkout do site (${primarySku.productUrl}).
+Vocês estão rodando tráfego pago ativo para o produto *"${primarySku.productTitle}"* (R$ ${formattedPrice}) no nicho [${vertical.label}], mas os tamanhos *${missingText}* estão esgotados no checkout do site (${primarySku.productUrl}).
 
-Como ${missingText} respondem por cerca de 65% das compras de vestuário no Brasil, a cada R$ 1.000 investidos nessa campanha, cerca de R$ 650 viram cliques perdidos de clientes que chegam e desistem (estimamos uma sangria de ~*R$ ${formattedWaste}/mês* no benchmark do seu segmento).
+${verticalContextHook} (estimamos uma sangria de ~*R$ ${formattedWaste}/mês* baseada no CPC setorial do seu nicho).
 
 Montamos um dossiê confidencial de 1 página mostrando o flagrante com links da Meta Ads Library e a simulação de impacto financeiro baseada na verba real de vocês.
 
@@ -205,9 +219,9 @@ Quer que eu te envie o link aqui pelo WhatsApp? É só responder *"QUERO"*.`;
   // 2. Abordagem Técnica para Gestor de Tráfego / Media Buyer / Agência
   const technicalMediaBuyer = `Opa, tudo bem? Mensagem rápida para o gestor de tráfego da *${brandName}* 🎯
 
-Fizemos uma varredura de sincronia entre criativos e estoque: identificamos que a campanha promovendo a *"${primarySku.productTitle}"* continua consumindo orçamento, porém as variantes mais vendidas (*${missingText}*) estão zeradas no estoque (${primarySku.productUrl}).
+Fizemos uma varredura de sincronia entre criativos e estoque: identificamos que a campanha promovendo a *"${primarySku.productTitle}"* continua consumindo orçamento no Meta Ads, porém as variantes mais vendidas (*${missingText}*) estão zeradas no estoque (${primarySku.productUrl}).
 
-Isso está inflando artificialmente o CPA do conjunto de anúncios e derrubando o ROAS consolidado da conta.
+Isso está inflando artificialmente o CPA do conjunto de anúncios e derrubando o ROAS consolidado da conta no segmento [${resolveDynamicVertical(storeUrl).label}].
 
 Tenho o relatório técnico com os SKUs e a taxa de fuga para você negativar o produto ou pausar o ad set em 1 minuto. Posso te mandar o resumo aqui?`;
 

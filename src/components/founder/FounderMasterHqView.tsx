@@ -4,7 +4,6 @@ import {
   DollarSign, 
   TrendingUp, 
   Users, 
-  Phone, 
   Target, 
   Send, 
   CheckCircle2, 
@@ -64,6 +63,7 @@ import { DevOpsSelfHealingControlCenterView } from './DevOpsSelfHealingControlCe
 import { InfrastructureFourPillarsMonitor } from './InfrastructureFourPillarsMonitor';
 import { BatchLeadExportModal } from '../export/BatchLeadExportModal';
 import { AutonomousOutboundRadarView } from '../prospecting/AutonomousOutboundRadarView';
+import { VerticalSwarmCommandCenterView } from './VerticalSwarmCommandCenterView';
 
 export const FounderMasterHqView: React.FC = () => {
   const [metrics, setMetrics] = useState<BusinessMetricsSummary | null>(null);
@@ -105,8 +105,8 @@ export const FounderMasterHqView: React.FC = () => {
     return INITIAL_FOUNDER_DIRECTIVES;
   });
   const [activeTab, setActiveTab] = useState<
-    'OUTBOUND_RADAR' | 'CRM_PROSPECTION' | 'KILLSWITCH_RADAR' | 'BLEED_HISTORY' | 'WHATSAPP_QUEUE' | 'CONCIERGE_LEADS' | 'SELF_LEARNING' | 'DEVOPS_AUTO_HEAL' | 'DIRECTIVES' | 'INFRASTRUCTURE_360'
-  >('OUTBOUND_RADAR');
+    'VERTICAL_SWARM' | 'OUTBOUND_RADAR' | 'CRM_PROSPECTION' | 'KILLSWITCH_RADAR' | 'BLEED_HISTORY' | 'WHATSAPP_QUEUE' | 'CONCIERGE_LEADS' | 'SELF_LEARNING' | 'DEVOPS_AUTO_HEAL' | 'DIRECTIVES' | 'INFRASTRUCTURE_360'
+  >('VERTICAL_SWARM');
   const [isSavingDirectives, setIsSavingDirectives] = useState<boolean>(false);
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
 
@@ -387,6 +387,18 @@ export const FounderMasterHqView: React.FC = () => {
       {/* Sub-Tabs: Navigation Bar 2.0 */}
       <div className="flex items-center gap-2 border-b border-white/10 pb-2 text-xs font-bold overflow-x-auto">
         <button
+          onClick={() => setActiveTab('VERTICAL_SWARM')}
+          className={`px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+            activeTab === 'VERTICAL_SWARM'
+              ? 'bg-[#0AE448] text-slate-950 font-black shadow-lg shadow-[#0AE448]/20'
+              : 'text-[#BBBAA6] hover:text-[#FFFCE1] hover:bg-white/5'
+          }`}
+        >
+          <Layers className="w-3.5 h-3.5" />
+          <span>🎯 Inteligência Verticalizada (5 Nichos)</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('OUTBOUND_RADAR')}
           className={`px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
             activeTab === 'OUTBOUND_RADAR'
@@ -442,7 +454,7 @@ export const FounderMasterHqView: React.FC = () => {
               : 'text-[#BBBAA6] hover:text-[#FFFCE1] hover:bg-white/5'
           }`}
         >
-          <Phone className="w-3.5 h-3.5" />
+          <MessageSquare className="w-3.5 h-3.5" />
           <span>📲 Fila WhatsApp ({whatsappQueue.length})</span>
         </button>
 
@@ -506,6 +518,13 @@ export const FounderMasterHqView: React.FC = () => {
           <span>Monitor 360º</span>
         </button>
       </div>
+
+      {/* TAB -1: HYPER-SPECIALIZED VERTICAL SWARM COMMAND CENTER */}
+      {activeTab === 'VERTICAL_SWARM' && (
+        <div className="space-y-6 animate-fadeIn">
+          <VerticalSwarmCommandCenterView />
+        </div>
+      )}
 
       {/* TAB 0: AUTONOMOUS OUTBOUND RADAR & PILOT PIPELINE (20 LEADS) */}
       {activeTab === 'OUTBOUND_RADAR' && (
@@ -1106,7 +1125,7 @@ export const FounderMasterHqView: React.FC = () => {
                   <div key={item.id} className="p-3.5 bg-[#141716] rounded-2xl border border-white/10 flex items-center justify-between text-xs">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-emerald-500/20 text-[#0AE448] rounded-xl font-bold font-mono">
-                        <Phone className="w-4 h-4" />
+                        <MessageSquare className="w-4 h-4" />
                       </div>
                       <div>
                         <span className="font-bold text-[#FFFCE1] font-mono text-sm block">{item.phone_number}</span>

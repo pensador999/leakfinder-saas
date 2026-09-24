@@ -3,8 +3,16 @@
 // Skill: software-architecture + ecommerce-cro-catalog-doctor + falsify
 // PAPEL EXCLUSIVO: O Alicerce Matemático do AdShield. Modela com rigor atuarial
 // a curva gaussiana de demanda, a sangria diária/mensal em anúncios e o lucro cessante.
-// ISOLAMENTO: ZERO scraping de telefone ou canais de contato. Apenas matemática pura.
+// VERTICALIZAÇÃO: Conectado diretamente ao DynamicVerticalContext para alimentar
+// parâmetros exatos de nicho (demanda, CPC de Meta Ads, vocabulário e ticket médio).
 // ==============================================================================
+
+import { 
+  resolveDynamicVertical, 
+  DynamicVerticalProfile, 
+  SupportedVerticalId,
+  DYNAMIC_VERTICAL_REGISTRY 
+} from './dynamicVerticalContext';
 
 export type ProductNicheCategory = 
   | 'VESTUARIO_MODA' 
@@ -32,7 +40,7 @@ export interface BleedActuaryInput {
   estimatedDailyVisitors?: number;
   adSpendMonthlyEstimatedBRL?: number;
   grossMarginPct?: number; // Padrão 55%
-  cvrBaselinePct?: number; // Padrão 1.5%
+  cvrBaselinePct?: number; // Padrão baseado no nicho
 }
 
 export interface BleedActuaryResult {
@@ -40,6 +48,7 @@ export interface BleedActuaryResult {
   unitPriceBRL: number;
   nicheDetected: ProductNicheCategory;
   nicheLabel: string;
+  verticalProfile: DynamicVerticalProfile;
   
   // Análise da Grade
   sizeDemandDistribution: SizeDemandWeight[];
@@ -66,92 +75,21 @@ export interface BleedActuaryResult {
   severity: BleedSeverityLevel;
   methodologyNote: string;
   plainTextExecutivePitch: string;
-}
-
-// 📊 MATRIZ GAUSSIANA DE DEMANDA BRASILEIRA POR NICHO E TAMANHO
-const GAUSSIAN_DEMAND_CURVES: Record<ProductNicheCategory, { [size: string]: number }> = {
-  VESTUARIO_MODA: {
-    'PP': 5,
-    'P': 15,
-    'M': 35,
-    'G': 30,
-    'GG': 10,
-    'XG': 3,
-    'G2': 2
-  },
-  CALCADOS_COURO_TENIS: {
-    '37': 4,
-    '38': 8,
-    '39': 22,
-    '40': 28,
-    '41': 20,
-    '42': 12,
-    '43': 4,
-    '44': 2
-  },
-  AGRO_CAMPO_OUTDOOR: {
-    'P': 8,
-    'M': 28,
-    'G': 38,
-    'GG': 18,
-    'XG': 5,
-    'G2': 3
-  },
-  FITNESS_BEACHWEAR: {
-    'PP': 8,
-    'P': 26,
-    'M': 38,
-    'G': 20,
-    'GG': 8
-  },
-  COSMETICOS_BEAUTY: {
-    'PADRAO': 100
-  },
-  ACESSORIOS_JOIAS: {
-    'UNICO': 100
-  },
-  GENERICO: {
-    'P': 20,
-    'M': 35,
-    'G': 30,
-    'GG': 15
-  }
-};
-
-/**
- * Detecta a categoria atuarial pelo título ou nicho informado
- */
-export function detectActuaryNiche(titleOrNiche: string): ProductNicheCategory {
-  const norm = titleOrNiche.toLowerCase();
-  if (norm.includes('sapato') || norm.includes('bota') || norm.includes('botina') || norm.includes('calçado') || norm.includes('tênis') || norm.includes('coturno') || norm.includes('sandália')) {
-    return 'CALCADOS_COURO_TENIS';
-  }
-  if (norm.includes('agro') || norm.includes('camisa polo') || norm.includes('western') || norm.includes('country') || norm.includes('camper') || norm.includes('campo') || norm.includes('pesca') || norm.includes('chapeu') || norm.includes('chapéu')) {
-    return 'AGRO_CAMPO_OUTDOOR';
-  }
-  if (norm.includes('legging') || norm.includes('top') || norm.includes('biquíni') || norm.includes('fitness') || norm.includes('beachwear') || norm.includes('academia')) {
-    return 'FITNESS_BEACHWEAR';
-  }
-  if (norm.includes('skincare') || norm.includes('sérum') || norm.includes('creme') || norm.includes('perfume') || norm.includes('cosmético') || norm.includes('batom')) {
-    return 'COSMETICOS_BEAUTY';
-  }
-  if (norm.includes('camisa') || norm.includes('camiseta') || norm.includes('calça') || norm.includes('vestido') || norm.includes('jaqueta') || norm.includes('moletom') || norm.includes('bermuda')) {
-    return 'VESTUARIO_MODA';
-  }
-  return 'GENERICO';
+  visceralLossHook: string;
 }
 
 /**
  * AGENTE ATUARIAL DE SANGRIA
- * Calcula a perda financeira real com precisão matemática, sem arredondamentos arbitrários.
+ * Calcula a perda financeira real com precisão matemática, adaptando dinamicamente
+ * à vertical detectada pelo DynamicVerticalContext.
  */
 export function calculateActuarialBleed(input: BleedActuaryInput): BleedActuaryResult {
   const unitPrice = input.productPriceBRL > 0 ? input.productPriceBRL : 149.90;
-  const niche = typeof input.niche === 'string' && input.niche in GAUSSIAN_DEMAND_CURVES 
-    ? (input.niche as ProductNicheCategory)
-    : detectActuaryNiche(`${input.productTitle} ${input.niche || ''}`);
-
-  const demandCurve = GAUSSIAN_DEMAND_CURVES[niche] || GAUSSIAN_DEMAND_CURVES.GENERICO;
+  
+  // Resolve o perfil de vertical dinâmico hiper-especializado
+  const vertical = resolveDynamicVertical(`${input.productTitle} ${input.niche || ''}`);
+  
+  const demandCurve = vertical.gaussianDemandDistribution;
   const outOfStockUpper = input.outOfStockSizes.map(s => s.toUpperCase().trim());
   const availableUpper = input.availableSizes.map(s => s.toUpperCase().trim());
 
@@ -169,8 +107,7 @@ export function calculateActuarialBleed(input: BleedActuaryInput): BleedActuaryR
   } else {
     for (const [sizeKey, weight] of Object.entries(demandCurve)) {
       const isMissing = outOfStockUpper.some(o => o === sizeKey || o.includes(sizeKey));
-      const isCore = (niche === 'CALCADOS_COURO_TENIS' && ['39', '40', '41'].includes(sizeKey)) ||
-                     (niche !== 'CALCADOS_COURO_TENIS' && ['M', 'G'].includes(sizeKey));
+      const isCore = vertical.coreDemandSizes.includes(sizeKey);
 
       sizeDemandDistribution.push({
         size: sizeKey,
@@ -187,7 +124,7 @@ export function calculateActuarialBleed(input: BleedActuaryInput): BleedActuaryR
       totalDemandCovered += weight;
     }
 
-    // Se tamanhos fora da curva padrão estiverem esgotados (ex: GG, XG), garantir mínimo
+    // Se tamanhos fora da curva padrão estiverem esgotados (ex: GG, XG), garantir proporcionalidade
     if (rupturedDemandPct === 0 && outOfStockUpper.length > 0) {
       rupturedDemandPct = Math.min(85, outOfStockUpper.length * 20);
     }
@@ -196,14 +133,12 @@ export function calculateActuarialBleed(input: BleedActuaryInput): BleedActuaryR
   // Normaliza proporção de ruptura (0.00 a 1.00)
   const ruptureRatio = Math.min(1, Math.max(0.05, rupturedDemandPct / 100));
 
-  // 2. Parâmetros de Tráfego e Conversão
-  // Tráfego diário base estimado com base no ticket e investimento típico
+  // 2. Parâmetros de Tráfego e Conversão calibrados pela vertical
   const dailyVisitors = input.estimatedDailyVisitors || Math.max(80, Math.round(3500 / Math.max(50, unitPrice)));
-  const baselineCvr = (input.cvrBaselinePct || 1.6) / 100; // 1.6% de conversão padrão e-commerce BR
+  const baselineCvr = (input.cvrBaselinePct || vertical.baselineCvrPct) / 100;
   const dailyPotentialConversions = dailyVisitors * baselineCvr;
   
   // Conversões frustradas por dia decorrentes da grade rompida
-  // 82% dos clientes que não encontram seu tamanho abandonam o carrinho sem migrar para outro item
   const bounceRateOnRupture = 0.82;
   const dailyConversionsLost = Number((dailyPotentialConversions * ruptureRatio * bounceRateOnRupture).toFixed(2));
 
@@ -211,26 +146,19 @@ export function calculateActuarialBleed(input: BleedActuaryInput): BleedActuaryR
   const lostRevenueDailyBRL = Number((dailyConversionsLost * unitPrice).toFixed(2));
   const lostRevenueMonthlyBRL = Number((lostRevenueDailyBRL * 30).toFixed(2));
 
-  // 4. Mídia Desperdiçada no Meta/Google Ads
-  // Custo por Clique (CPC) médio do nicho no Meta Ads Brasil
-  let benchmarkCpc = 1.15;
-  if (niche === 'CALCADOS_COURO_TENIS') benchmarkCpc = 1.45;
-  if (niche === 'AGRO_CAMPO_OUTDOOR') benchmarkCpc = 1.65;
-  if (niche === 'COSMETICOS_BEAUTY') benchmarkCpc = 0.95;
-
-  // Verba de mídia jogada no lixo diária = visitantes trazidos que caíram no tamanho em falta * CPC
+  // 4. Mídia Desperdiçada no Meta/Google Ads (alimentada pelo CPC real da vertical)
+  const benchmarkCpc = vertical.benchmarkMetaAdsCpcBRL;
   const wastedMediaAdDailyBRL = Number((dailyVisitors * ruptureRatio * benchmarkCpc * 0.70).toFixed(2));
   const wastedMediaAdMonthlyBRL = Number((wastedMediaAdDailyBRL * 30).toFixed(2));
 
   // 5. Total de Sangria Atuarial Combinada (Mídia + Margem de Venda Perdida)
-  // A sangria atuarial real combina a verba de anúncios queimada com a margem de contribuição líquida perdida (55%)
   const grossMargin = (input.grossMarginPct || 55) / 100;
   const netContributionLostMonthly = lostRevenueMonthlyBRL * grossMargin;
   const totalMonthlyBleedBRL = Number((wastedMediaAdMonthlyBRL + netContributionLostMonthly).toFixed(2));
   const annualizedBleedProjectionBRL = Number((totalMonthlyBleedBRL * 12).toFixed(2));
 
   // 6. Impacto no CAC (Custo de Aquisição de Clientes)
-  const estimatedNormalCacBRL = Number((unitPrice * 0.28).toFixed(2)); // Benchmark 28% do ticket médio
+  const estimatedNormalCacBRL = Number((unitPrice * 0.28).toFixed(2));
   const inflatedCacFactor = Number((1 / Math.max(0.2, 1 - (ruptureRatio * 0.75))).toFixed(2));
   const estimatedInflatedCacBRL = Number((estimatedNormalCacBRL * inflatedCacFactor).toFixed(2));
 
@@ -240,30 +168,32 @@ export function calculateActuarialBleed(input: BleedActuaryInput): BleedActuaryR
   if (totalMonthlyBleedBRL >= 9000 || hasCoreRupture) severity = 'CRITICA';
   if (totalMonthlyBleedBRL >= 25000) severity = 'CATASTROFICA';
 
-  // 8. Rótulo de Nicho Formatado
-  const nicheLabels: Record<ProductNicheCategory, string> = {
-    VESTUARIO_MODA: 'Vestuário & Moda D2C',
-    CALCADOS_COURO_TENIS: 'Calçados & Couro',
-    AGRO_CAMPO_OUTDOOR: 'Agro & Moda Country',
-    FITNESS_BEACHWEAR: 'Fitness & Beachwear',
-    COSMETICOS_BEAUTY: 'Beleza & Cosméticos',
-    ACESSORIOS_JOIAS: 'Acessórios & Joias',
-    GENERICO: 'E-commerce Geral'
-  };
+  // 8. Escolha do gancho de dor visceral do nicho
+  const visceralHooks = vertical.vocabulary.lossPainHooks;
+  const visceralLossHook = visceralHooks[Math.floor(Math.random() * visceralHooks.length)] || visceralHooks[0];
+
+  // Mapeamento de tipo para compatibilidade legada
+  let legacyNicheCategory: ProductNicheCategory = 'GENERICO';
+  if (vertical.verticalId === 'CALCADOS_COURO') legacyNicheCategory = 'CALCADOS_COURO_TENIS';
+  else if (vertical.verticalId === 'AGRO_CAMPO_OUTDOOR') legacyNicheCategory = 'AGRO_CAMPO_OUTDOOR';
+  else if (vertical.verticalId === 'STREETWEAR_MODA_URBANA') legacyNicheCategory = 'VESTUARIO_MODA';
+  else if (vertical.verticalId === 'FITNESS_BEACHWEAR') legacyNicheCategory = 'FITNESS_BEACHWEAR';
+  else if (vertical.verticalId === 'COSMETICOS_BEAUTY') legacyNicheCategory = 'COSMETICOS_BEAUTY';
 
   const plainTextExecutivePitch = 
     `Detectamos que o SKU "${input.productTitle}" (R$ ${unitPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}) ` +
-    `está com ${rupturedDemandPct.toFixed(0)}% da curva de demanda rompida (${outOfStockUpper.join(', ')} esgotados). ` +
-    `Com tráfego pago ativo, a sangria mensal estimada é de R$ ${totalMonthlyBleedBRL.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} ` +
+    `está com ${rupturedDemandPct.toFixed(0)}% da curva de demanda rompida (${outOfStockUpper.join(', ')} esgotados) no nicho [${vertical.label}]. ` +
+    `Com tráfego pago ativo (CPC de benchmark R$ ${benchmarkCpc.toFixed(2)}), a sangria mensal estimada é de R$ ${totalMonthlyBleedBRL.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} ` +
     `(sendo R$ ${wastedMediaAdMonthlyBRL.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} em cliques inúteis e ` +
     `R$ ${lostRevenueMonthlyBRL.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} em faturamento frustrado). ` +
-    `Isso inflaciona seu CAC em ${inflatedCacFactor}x [Simulação Baseada em Curva de Gauss & ROAS Alvo].`;
+    `Isso inflaciona seu CAC em ${inflatedCacFactor}x [Simulação Baseada em Curva de Gauss de ${vertical.label}].`;
 
   return {
     productTitle: input.productTitle,
     unitPriceBRL: unitPrice,
-    nicheDetected: niche,
-    nicheLabel: nicheLabels[niche],
+    nicheDetected: legacyNicheCategory,
+    nicheLabel: vertical.label,
+    verticalProfile: vertical,
     sizeDemandDistribution,
     rupturedDemandPct: Number(rupturedDemandPct.toFixed(1)),
     hasCoreRupture,
@@ -279,7 +209,8 @@ export function calculateActuarialBleed(input: BleedActuaryInput): BleedActuaryR
     estimatedNormalCacBRL,
     estimatedInflatedCacBRL,
     severity,
-    methodologyNote: `[Simulação Baseada em Curva Normal de Gauss de ${nicheLabels[niche]} - Demanda Rompida: ${rupturedDemandPct.toFixed(1)}%]`,
-    plainTextExecutivePitch
+    methodologyNote: `[Simulação Baseada em Curva Normal de Gauss de ${vertical.label} - Demanda Rompida: ${rupturedDemandPct.toFixed(1)}%]`,
+    plainTextExecutivePitch,
+    visceralLossHook
   };
 }
