@@ -36,7 +36,8 @@ import {
   ShoppingBag,
   ArrowUpRight,
   Shield,
-  CheckCircle
+  CheckCircle,
+  Radar
 } from 'lucide-react';
 import { 
   ProspectStoreLead, 
@@ -62,6 +63,7 @@ import { AgentSelfEvolutionView } from './AgentSelfEvolutionView';
 import { DevOpsSelfHealingControlCenterView } from './DevOpsSelfHealingControlCenterView';
 import { InfrastructureFourPillarsMonitor } from './InfrastructureFourPillarsMonitor';
 import { BatchLeadExportModal } from '../export/BatchLeadExportModal';
+import { AutonomousOutboundRadarView } from '../prospecting/AutonomousOutboundRadarView';
 
 export const FounderMasterHqView: React.FC = () => {
   const [metrics, setMetrics] = useState<BusinessMetricsSummary | null>(null);
@@ -103,8 +105,8 @@ export const FounderMasterHqView: React.FC = () => {
     return INITIAL_FOUNDER_DIRECTIVES;
   });
   const [activeTab, setActiveTab] = useState<
-    'CRM_PROSPECTION' | 'KILLSWITCH_RADAR' | 'BLEED_HISTORY' | 'WHATSAPP_QUEUE' | 'CONCIERGE_LEADS' | 'SELF_LEARNING' | 'DEVOPS_AUTO_HEAL' | 'DIRECTIVES' | 'INFRASTRUCTURE_360'
-  >('CRM_PROSPECTION');
+    'OUTBOUND_RADAR' | 'CRM_PROSPECTION' | 'KILLSWITCH_RADAR' | 'BLEED_HISTORY' | 'WHATSAPP_QUEUE' | 'CONCIERGE_LEADS' | 'SELF_LEARNING' | 'DEVOPS_AUTO_HEAL' | 'DIRECTIVES' | 'INFRASTRUCTURE_360'
+  >('OUTBOUND_RADAR');
   const [isSavingDirectives, setIsSavingDirectives] = useState<boolean>(false);
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
 
@@ -382,6 +384,18 @@ export const FounderMasterHqView: React.FC = () => {
       {/* Sub-Tabs: Navigation Bar 2.0 */}
       <div className="flex items-center gap-2 border-b border-white/10 pb-2 text-xs font-bold overflow-x-auto">
         <button
+          onClick={() => setActiveTab('OUTBOUND_RADAR')}
+          className={`px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+            activeTab === 'OUTBOUND_RADAR'
+              ? 'bg-[#0AE448] text-slate-950 font-black shadow-lg shadow-[#0AE448]/20'
+              : 'text-[#BBBAA6] hover:text-[#FFFCE1] hover:bg-white/5'
+          }`}
+        >
+          <Radar className="w-3.5 h-3.5" />
+          <span>🎯 Radar Outbound & GTM Piloto (20 Leads)</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('CRM_PROSPECTION')}
           className={`px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
             activeTab === 'CRM_PROSPECTION'
@@ -489,6 +503,13 @@ export const FounderMasterHqView: React.FC = () => {
           <span>Monitor 360º</span>
         </button>
       </div>
+
+      {/* TAB 0: AUTONOMOUS OUTBOUND RADAR & PILOT PIPELINE (20 LEADS) */}
+      {activeTab === 'OUTBOUND_RADAR' && (
+        <div className="space-y-6">
+          <AutonomousOutboundRadarView />
+        </div>
+      )}
 
       {/* TAB 1: OUTBOUND PROSPECTION CRM */}
       {activeTab === 'CRM_PROSPECTION' && (
