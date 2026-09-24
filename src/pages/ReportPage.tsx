@@ -6,7 +6,7 @@ import { CookieBanner } from '../components/CookieBanner';
 import { TabLoadingSkeleton } from '../components/TabLoadingSkeleton';
 import { detectMarketplace } from '../services/marketplaceInspector';
 import { AgentDiagnosticResult } from '../types';
-import { LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit } from 'lucide-react';
+import { LayoutDashboard, Eye, ShoppingCart, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
@@ -50,7 +50,6 @@ export function ReportPage() {
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
   const [isAdminDashboardOpen, setIsAdminDashboardOpen] = useState<boolean>(false);
-  const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchAudit = async () => {
@@ -97,7 +96,7 @@ export function ReportPage() {
   const [viewMode, setViewMode] = useState<'merchant' | 'war_room'>('merchant');
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center font-bold text-slate-600">Carregando Relatório...</div>;
+    return <div className="min-h-screen bg-[#0E100F] text-[#FFFCE1] flex items-center justify-center font-mono text-sm">Carregando Relatório AdShield...</div>;
   }
 
   const totalCatalogAlerts = ((diagnostic?.realSiteData.catalogAudit?.productsWithBrokenGrid || 0) + 
@@ -141,7 +140,7 @@ export function ReportPage() {
   const tabs = viewMode === 'merchant' ? merchantTabs : warRoomTabs;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased pb-20">
+    <div className="min-h-screen bg-[#0E100F] text-[#FFFCE1] font-sans antialiased pb-20 selection:bg-[#0AE448] selection:text-slate-950">
       
       {/* Sticky Header Actions */}
       <Header 
@@ -160,12 +159,12 @@ export function ReportPage() {
           <div className="space-y-4">
             
             {/* 🎛️ 3-MODE SELECTOR SWITCHER (PROGRESSIVE DISCLOSURE) */}
-            <div className="p-3 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="p-3 bg-[#101211] rounded-2xl border border-white/10 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-500 uppercase font-mono">Modo de Visualização:</span>
+                <span className="text-xs font-mono font-bold text-[#BBBAA6] uppercase tracking-wider">Modo de Visualização:</span>
               </div>
 
-              <div className="flex items-center bg-slate-100 p-1 rounded-xl gap-1 text-xs font-bold w-full sm:w-auto">
+              <div className="flex items-center bg-[#0E100F] p-1 rounded-xl border border-white/5 gap-1 text-xs font-bold w-full sm:w-auto">
                 <button
                   onClick={() => {
                     setViewMode('merchant');
@@ -175,11 +174,11 @@ export function ReportPage() {
                   }}
                   className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
                     viewMode === 'merchant'
-                      ? 'bg-white text-slate-900 shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-white/10 text-[#0AE448] border border-[#0AE448]/30 shadow-xs'
+                      : 'text-[#BBBAA6] hover:text-[#FFFCE1]'
                   }`}
                 >
-                  <ShoppingCart className="w-3.5 h-3.5 text-emerald-600" />
+                  <ShoppingCart className="w-3.5 h-3.5 text-[#0AE448]" />
                   <span>🛍️ Modo Lojista (6 Abas de Lucro)</span>
                 </button>
 
@@ -187,18 +186,18 @@ export function ReportPage() {
                   onClick={() => setViewMode('war_room')}
                   className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
                     viewMode === 'war_room'
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-[#0AE448] text-slate-950 shadow-md shadow-[#0AE448]/20 font-black'
+                      : 'text-[#BBBAA6] hover:text-[#FFFCE1]'
                   }`}
                 >
-                  <Cpu className="w-3.5 h-3.5 text-cyan-400" />
+                  <Cpu className="w-3.5 h-3.5" />
                   <span>⚡ Modo Engenheiro / War Room</span>
                 </button>
               </div>
             </div>
 
             {/* Clean Tab Navigation (Wrap Responsive, 100% Visible) */}
-            <div className="flex flex-wrap items-center gap-1.5 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs">
+            <div className="flex flex-wrap items-center gap-1.5 bg-[#101211] p-2.5 rounded-2xl border border-white/10 shadow-xl">
               {tabs.map((tab) => {
                 const TabIcon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -207,19 +206,17 @@ export function ReportPage() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shrink-0 cursor-pointer border ${
+                    className={`px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 transition-all shrink-0 cursor-pointer border ${
                       isActive
-                        ? tab.highlight
-                          ? 'bg-[#0056b3] text-white border-[#0056b3] shadow-md shadow-blue-500/20'
-                          : 'bg-[#0056b3] text-white border-[#0056b3] shadow-sm'
-                        : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-[#0056b3] hover:bg-slate-50'
+                        ? 'bg-[#0AE448] text-slate-950 border-[#0AE448] shadow-lg shadow-[#0AE448]/20 font-black'
+                        : 'bg-[#141716] text-[#BBBAA6] border-white/5 hover:border-white/20 hover:text-[#FFFCE1] hover:bg-white/5 font-semibold'
                     }`}
                   >
-                    <TabIcon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                    <TabIcon className={`w-3.5 h-3.5 ${isActive ? 'text-slate-950' : 'text-[#BBBAA6]'}`} />
                     <span>{tab.label}</span>
                     {tab.badge !== undefined && (
-                      <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold ${
-                        isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+                      <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono font-black ${
+                        isActive ? 'bg-slate-950/20 text-slate-950' : 'bg-white/10 text-[#0AE448]'
                       }`}>
                         {tab.badge}
                       </span>
@@ -249,86 +246,86 @@ export function ReportPage() {
                     <DeepScraperDossierView diagnostic={diagnostic} />
                   )}
 
-                {activeTab === 'truth_auditor' && (
-                  <TruthAuditorTribunalView diagnostic={diagnostic} />
-                )}
+                  {activeTab === 'truth_auditor' && (
+                    <TruthAuditorTribunalView diagnostic={diagnostic} />
+                  )}
 
-                {activeTab === 'swarm_control' && (
-                  <AutonomousSwarmControlView diagnostic={diagnostic} />
-                )}
+                  {activeTab === 'swarm_control' && (
+                    <AutonomousSwarmControlView diagnostic={diagnostic} />
+                  )}
 
-                {activeTab === 'marketplace' && (
-                  <MarketplaceAuditView diagnostic={diagnostic} />
-                )}
+                  {activeTab === 'marketplace' && (
+                    <MarketplaceAuditView diagnostic={diagnostic} />
+                  )}
 
-                {activeTab === 'vitals' && (
-                  <CoreWebVitalsAuditView diagnostic={diagnostic} />
-                )}
+                  {activeTab === 'vitals' && (
+                    <CoreWebVitalsAuditView diagnostic={diagnostic} />
+                  )}
 
-                {activeTab === 'pricing' && (
-                  <PricingElasticitySimulatorView diagnostic={diagnostic} />
-                )}
+                  {activeTab === 'pricing' && (
+                    <PricingElasticitySimulatorView diagnostic={diagnostic} />
+                  )}
 
-                {activeTab === 'rupture_monitor' && (
-                  <StockRuptureMonitorView diagnostic={diagnostic} />
-                )}
+                  {activeTab === 'rupture_monitor' && (
+                    <StockRuptureMonitorView diagnostic={diagnostic} />
+                  )}
 
-                {activeTab === 'trust_badge' && (
-                  <TrustBadgeGeneratorView diagnostic={diagnostic} />
-                )}
+                  {activeTab === 'trust_badge' && (
+                    <TrustBadgeGeneratorView diagnostic={diagnostic} />
+                  )}
 
-                {activeTab === 'catalog' && (
-                  <BlindspotAuditView diagnostic={diagnostic} />
-                )}
+                  {activeTab === 'catalog' && (
+                    <BlindspotAuditView diagnostic={diagnostic} />
+                  )}
 
-                {activeTab === 'telemetry' && (
-                  <ShopifyTelemetryView diagnostic={diagnostic} />
-                )}
+                  {activeTab === 'telemetry' && (
+                    <ShopifyTelemetryView diagnostic={diagnostic} />
+                  )}
 
-                {activeTab === 'scripts' && (
-                  <ThemeScriptGeneratorView diagnostic={diagnostic} />
-                )}
+                  {activeTab === 'scripts' && (
+                    <ThemeScriptGeneratorView diagnostic={diagnostic} />
+                  )}
 
-                {activeTab === 'vision' && (
-                  <ComputerVisionInspectionView diagnostic={diagnostic} />
-                )}
+                  {activeTab === 'vision' && (
+                    <ComputerVisionInspectionView diagnostic={diagnostic} />
+                  )}
 
-                {activeTab === 'competitor' && (
-                  <CompetitorAgentView diagnostic={diagnostic} />
-                )}
+                  {activeTab === 'competitor' && (
+                    <CompetitorAgentView diagnostic={diagnostic} />
+                  )}
 
-                {activeTab === 'kanban' && (
-                  <ActionPlanKanban diagnostic={diagnostic} />
-                )}
+                  {activeTab === 'kanban' && (
+                    <ActionPlanKanban diagnostic={diagnostic} />
+                  )}
 
-                {activeTab === 'code_security' && (
-                  <div className="space-y-6">
-                    <SecurityAgentView diagnostic={diagnostic} />
-                    <SeoAgentView diagnostic={diagnostic} />
-                  </div>
-                )}
+                  {activeTab === 'code_security' && (
+                    <div className="space-y-6">
+                      <SecurityAgentView diagnostic={diagnostic} />
+                      <SeoAgentView diagnostic={diagnostic} />
+                    </div>
+                  )}
 
-                {activeTab === 'cro_copy' && (
-                  <div className="space-y-6">
-                    <CroAgentView diagnostic={diagnostic} />
-                    <SalesCopyAgentView diagnostic={diagnostic} />
-                    <AdsAgentView diagnostic={diagnostic} />
-                  </div>
-                )}
+                  {activeTab === 'cro_copy' && (
+                    <div className="space-y-6">
+                      <CroAgentView diagnostic={diagnostic} />
+                      <SalesCopyAgentView diagnostic={diagnostic} />
+                      <AdsAgentView diagnostic={diagnostic} />
+                    </div>
+                  )}
 
-                {activeTab === 'social_pm' && (
-                  <div className="space-y-6">
-                    <SocialAgentView diagnostic={diagnostic} />
-                    <PmGrowthAgentView diagnostic={diagnostic} />
-                  </div>
-                )}
+                  {activeTab === 'social_pm' && (
+                    <div className="space-y-6">
+                      <SocialAgentView diagnostic={diagnostic} />
+                      <PmGrowthAgentView diagnostic={diagnostic} />
+                    </div>
+                  )}
 
-                {activeTab === 'tools' && (
-                  <div className="space-y-6">
-                    <AgentChatView diagnostic={diagnostic} />
-                    <RoasCalculator />
-                  </div>
-                )}
+                  {activeTab === 'tools' && (
+                    <div className="space-y-6">
+                      <AgentChatView diagnostic={diagnostic} />
+                      <RoasCalculator />
+                    </div>
+                  )}
                 </Suspense>
               </ErrorBoundary>
             </div>
@@ -359,15 +356,15 @@ export function ReportPage() {
       </Suspense>
 
       {/* Footer Legal em Conformidade com Decreto 7.962/2013 */}
-      <footer className="max-w-7xl mx-auto py-8 px-4 border-t border-slate-200 mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+      <footer className="max-w-7xl mx-auto py-8 px-4 border-t border-white/10 mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-[#BBBAA6] gap-4">
         <div>
-          <p className="font-bold text-slate-800">AdShield • BRK GROUP TECNOLOGIA LTDA</p>
-          <p className="text-[11px] text-slate-500 font-mono">CNPJ: 52.894.218/0001-90 • Auditoria 360º sob Marco Civil e LGPD.</p>
+          <p className="font-bold text-[#FFFCE1]">AdShield • BRK GROUP TECNOLOGIA LTDA</p>
+          <p className="text-[11px] text-[#BBBAA6] font-mono">CNPJ: 52.894.218/0001-90 • Auditoria 360º sob Marco Civil e LGPD.</p>
         </div>
         <div className="flex flex-wrap items-center gap-4 text-xs">
-          <button onClick={() => navigate('/about')} className="hover:text-blue-600 font-bold transition-colors cursor-pointer">Quem Somos</button>
-          <button onClick={() => navigate('/terms')} className="hover:text-blue-600 transition-colors cursor-pointer">Termos de Uso</button>
-          <button onClick={() => navigate('/privacy')} className="hover:text-blue-600 font-semibold transition-colors cursor-pointer">Política de Privacidade & LGPD</button>
+          <button onClick={() => navigate('/about')} className="hover:text-[#0AE448] font-bold transition-colors cursor-pointer">Quem Somos</button>
+          <button onClick={() => navigate('/terms')} className="hover:text-[#0AE448] transition-colors cursor-pointer">Termos de Uso</button>
+          <button onClick={() => navigate('/privacy')} className="hover:text-[#0AE448] font-semibold transition-colors cursor-pointer">Política de Privacidade & LGPD</button>
         </div>
       </footer>
 
