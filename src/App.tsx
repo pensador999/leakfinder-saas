@@ -12,6 +12,7 @@ import { RegisterPage } from './pages/RegisterPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { TermsPage } from './pages/TermsPage';
 import { AboutUsPage } from './pages/AboutUsPage';
+import { LgpdConsentBanner } from './components/LgpdConsentBanner';
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
             <Route path="/sobre" element={<AboutUsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <LgpdConsentBanner />
         </BrowserRouter>
       </ErrorBoundary>
     </AuthProvider>
