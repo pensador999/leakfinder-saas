@@ -398,6 +398,37 @@ const MASTER_KNOWLEDGE_CLUSTERS: DomainKnowledgeCluster[] = [
       'Qual a diferença entre o plano Starter e o Pro?'
     ],
     shouldTriggerLeadForm: false
+  },
+
+  // 11. Política de Atendimento: Chat & WhatsApp Assíncrono (Sem Ligações de Voz)
+  {
+    id: 'no_voice_calls_policy',
+    categoryName: 'Política de Atendimento & Canais de Contato',
+    keywords: ['ligar', 'telefone', 'ligação', 'chamada', 'fone', 'ligue', 'ligue-me', 'ligar para vocês', 'número para ligar', 'atendimento por voz', 'falar no telefone'],
+    intents: ['PHONE_CALL_REQUEST', 'VOICE_CALL_POLICY', 'CONTACT_CHANNELS'],
+    responseAngles: {
+      directExplanation: [
+        'Por diretriz de integridade técnica, segurança e rastreabilidade, **nosso suporte opera 100% via Chat com IA e WhatsApp Oficial por texto/áudio assíncrono**. Não realizamos nem recebemos chamadas telefônicas de voz.',
+        'Nosso atendimento é estritamente digital para que todos os diagnósticos, números de sangria auditada em R$, códigos e evidências fiquem **formalizados, gravados e documentados por escrito**.',
+        'Você não precisa esperar em filas de espera ou falar ao telefone: basta enviar sua dúvida ou URL da sua loja aqui no chat ou no WhatsApp oficial que nosso time técnico e a IA respondem imediatamente.'
+      ],
+      technicalDetail: [
+        'Todas as interações técnicas envolvem compartilhamento de dados JSON, relatórios forenses e links de auditoria que requerem visualização em tela, impossíveis de auditar com precisão via ligação telefônica tradicional.',
+        'Seu canal direto é o WhatsApp oficial (+55 34 99135-1122), com respostas documentadas em até 15 minutos em horário comercial.'
+      ],
+      businessRoiImpact: [
+        'O atendimento assíncrono economiza seu tempo e garante que você receba o diagnóstico completo com prints, SKUs e simulação de ROI pronta para executar.'
+      ],
+      actionableAdvice: [
+        'Clique no botão verde "WhatsApp Direto" na barra superior ou continue tirando suas dúvidas aqui mesmo no chat com a IA.'
+      ]
+    },
+    recommendedNextPrompts: [
+      'Quero falar com um especialista no WhatsApp agora',
+      'Como o AdShield calcula o desperdício no Meta Ads?',
+      'Qual a diferença entre o plano Starter e o Pro?'
+    ],
+    shouldTriggerLeadForm: true
   }
 ];
 

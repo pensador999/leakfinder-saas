@@ -5,6 +5,8 @@
 // Hubs (Magis5), Pixels, e detecta Estoque Fantasma (Regra Yellowstone Dutton Ranch).
 // ==============================================================================
 
+import { auditPlatformPolicyCompliance, PlatformPolicyAuditReport } from './platformPolicyWatcher';
+
 export type EcommercePlatform = 
   | 'SHOPIFY' 
   | 'VTEX' 
@@ -66,6 +68,7 @@ export interface TechReverseEngineeringResult {
     hasTikTokPixel: boolean;
     trackingScriptsCount: number;
   };
+  platformPolicyAudit: PlatformPolicyAuditReport;
   architectureFindings: string[];
 }
 
@@ -226,6 +229,7 @@ export function reverseEngineerStoreTechStack(
       hasTikTokPixel: hasTikTok,
       trackingScriptsCount: [hasMeta, hasGtm, hasGa4, hasClarity, hasTikTok].filter(Boolean).length
     },
+    platformPolicyAudit: auditPlatformPolicyCompliance(platformType, domain),
     architectureFindings: findings
   };
 }

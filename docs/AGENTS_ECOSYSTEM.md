@@ -230,9 +230,61 @@ Todos os 18 agentes estão contratualmente vinculados ao [`AGENTS.md`](file:///c
 
 ## 📈 5. Como Adicionar um Novo Agente ao Enxame
 
-Para adicionar o 19º agente ao LeakFinder:
+Para adicionar novos agentes ao LeakFinder / AdShield:
 1. Criar a lógica do serviço em `src/services/agents/[novoAgente].ts`.
 2. Criar o componente de interface correspondente em `src/components/agents/[NovoAgente]View.tsx`.
 3. Registrar o novo agente no `ChiefExecutiveOrchestratorAgent` para incluí-lo na cadeia de delegação e na síntese de prioridades.
 4. Adicionar as regras de auditoria no `universalCatalogAdapter.mjs` caso o agente execute no Daemon 24/7.
 5. Atualizar este compêndio (`docs/AGENTS_ECOSYSTEM.md`) mantendo o grounding de 100%.
+
+---
+
+## 🏛️ 6. Especializações Atuariais, Prospecção & Compliance (AdShield 2026)
+
+Em decorrência da auditoria profunda das operações e das diretrizes executivas, as seguintes especializações atômicas e regras de governança foram implementadas:
+
+### 📐 1. Agente Engenheiro Atuarial de Sangria (`BleedActuaryEngine`)
+* **Arquivo:** [`src/services/ai/bleedActuaryEngine.ts`](file:///c:/Users/lucas/OneDrive/Documentos/WORKER/src/services/ai/bleedActuaryEngine.ts)
+* **Papel:** O alicerce econométrico e matemático central do AdShield. Isolado de qualquer lógica de scraping ou telefonia.
+* **Modelo Matemático:**
+  - **Curva Gaussiana de Demanda por Nicho:** Mapeia a concentração real de compras no Brasil (ex: Vestuário: M/G = 65%; Calçados: 39-41 = 70%; Agro/Outdoor: G/GG/M = 75%).
+  - **Decomposição da Sangria:**
+    - `wastedMediaAdMonthlyBRL`: Verba de tráfego pago (Meta/Google Ads) queimada em cliques direcionados a tamanhos zerados.
+    - `lostRevenueMonthlyBRL`: Lucro cessante decorrente de clientes que abandonam o checkout por falta de tamanho.
+    - `inflatedCacFactor`: Multiplicador real de encarecimento do CAC (Custo de Aquisição de Clientes) decorrente do bounce rate.
+  - **Precisão Atuarial:** Valores calculados com centavos exatos, sem arredondamentos grosseiros, com selo `[Simulação Baseada em Curva de Gauss & ROAS Alvo]`.
+
+### 📱 2. Agente Minerador de Identidade & Contatos Comerciais (`CommercialContactSniperEngine`)
+* **Arquivo:** [`src/services/prospecting/commercialContactSniperEngine.ts`](file:///c:/Users/lucas/OneDrive/Documentos/WORKER/src/services/prospecting/commercialContactSniperEngine.ts)
+* **Papel:** Especialista em inteligência de contato e auditoria jurídica de transparência no e-commerce.
+* **Competências:**
+  - **Mineração Forense de WhatsApp:** Extração cirúrgica de links `wa.me`, `api.whatsapp.com` e números móveis no DOM e rodapé.
+  - **Auditoria do Decreto Federal nº 7.962/2013:** Verifica se a loja cumpre a Lei do E-commerce exibindo CNPJ, Razão Social e endereço físico visível no rodapé. Aponta infrações legais para lojas em desacordo.
+  - **Higienização Telefônica:** Validação de DDD brasileiro (11 a 99), código DDI 55 e formatação rigorosa de celulares com 9º dígito.
+
+### 🦅 3. Regra "Qualidade Depois Quantidade" no Harvester (`HarvesterQualityGatekeeper`)
+* **Arquivo:** [`src/services/prospecting/autonomousLeadHunterEngine.ts`](file:///c:/Users/lucas/OneDrive/Documentos/WORKER/src/services/prospecting/autonomousLeadHunterEngine.ts)
+* **Princípio:** O robô prioriza dezenas de leads de altíssimo valor e dor comprovada em vez de minerar milhares de lojas com erros 404, sem tráfego ou sem estoque.
+* **Esteira dos 5 Portais de Qualidade (Quality Gate):**
+  1. *Gate 1 (Conectividade):* Domínio deve responder HTTP 200 com certificado SSL válido (descarte imediato de 404/500).
+  2. *Gate 2 (Tráfego Pago Ativo):* Loja deve possuir Meta Pixel, GTM ou TikTok Pixel ativo no `<head>`.
+  3. *Gate 3 (Catálogo Auditável):* Pelo menos 1 produto com variantes de tamanho identificadas.
+  4. *Gate 4 (Ruptura em Tamanhos Centrais):* Ruptura comprovada nos tamanhos de alto giro (M/G ou 39/40/41).
+  5. *Gate 5 (Corte Atuarial Mínimo):* Sangria mensal calculada pelo `BleedActuaryEngine` deve ser >= R$ 2.000/mês.
+* **Quality Score (0 a 100):** Leads com pontuação inferior a 60 pontos são automaticamente descartados antes de entrar na base.
+
+### 🛡️ 4. Agente Observador de Políticas de Plataformas (`PlatformPolicyWatcher`)
+* **Arquivo:** [`src/services/reverseEngineering/platformPolicyWatcher.ts`](file:///c:/Users/lucas/OneDrive/Documentos/WORKER/src/services/reverseEngineering/platformPolicyWatcher.ts)
+* **Papel:** Sentinela do Agente 2 (Reverse Probe) para acompanhar atualizações contínuas nas plataformas Shopify, VTEX, Tray e Nuvemshop.
+* **Monitoramento Contínuo:**
+  - *Shopify API 2026-01:* Monitoramento de `inventory_policy: continue` (detecção de Estoque Fantasma / Regra Yellowstone Dutton Ranch) e limites de `/products.json`.
+  - *VTEX IO Intelligent Search:* Transição de endpoints de busca e checagem de `commertialOffer.AvailableQuantity`.
+  - *Tray Commerce:* Auditoria de estoque por variante e APIs abertas.
+  - *Auto-Fallback:* Comuta automaticamente para adaptadores de contingência (Schema.org microdata / XML sitemaps) caso endpoints públicos sejam alterados pelo tema.
+
+### 🚫 5. Diretriz Permanente "Zero Voice Calls" (Sem Ligações Telefônicas)
+* **Regra Operacional:**
+  - O cliente **NÃO PODE ligar para a empresa**. Todos os botões, ícones de discagem e referências a ligações telefônicas de voz foram removidos do site e do Concierge.
+  - O modelo de atendimento e fechamento é **100% digital, documentado e assíncrono**, operando exclusivamente através de Chat com IA Concierge e WhatsApp Oficial (Click-to-Chat com texto auditado).
+  - Garante rastreabilidade, histórico gravado por escrito de diagnósticos e elimina filas de espera telefônicas.
+
