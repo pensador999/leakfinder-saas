@@ -266,6 +266,9 @@ export const FounderMasterHqView: React.FC = () => {
                 <span className="w-2 h-2 rounded-full bg-[#0AE448] animate-pulse"></span>
                 <span>Vigia 24/7 Ativo (&lt;60s)</span>
               </span>
+              <span className="px-2.5 py-0.5 text-xs font-mono font-bold rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 flex items-center gap-1">
+                <span>🔒 Air-Gap: Embargo de Disparos Ativo (Laboratório)</span>
+              </span>
             </div>
             <p className="text-xs text-[#BBBAA6] mt-1 max-w-2xl leading-relaxed">
               Métricas financeiras consolidadas, radar autônomo do Kill-Switch na Meta Graph API, histórico de sangria evitada e central de prospecção de alta conversão.

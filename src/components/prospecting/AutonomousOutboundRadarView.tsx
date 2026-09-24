@@ -26,8 +26,12 @@ import {
   TrendingDown,
   Terminal,
   Zap,
-  Clock
+  Clock,
+  Cpu,
+  Lock,
+  FlaskConical
 } from 'lucide-react';
+import { TechReverseEngineeringInspectorModal } from '../reverseEngineering/TechReverseEngineeringInspectorModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faFire, 
@@ -128,6 +132,9 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
     setIsHunting(false);
   };
 
+  const [isAirGapActive, setIsAirGapActive] = useState<boolean>(true); // 🔒 MODO LABORATÓRIO: Embargo Total de Disparos Ativo
+  const [selectedLeadForTechInspection, setSelectedLeadForTechInspection] = useState<ProspectLead | null>(null);
+
   const handleCopyPitch = (leadId: string, text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedPitchId(leadId);
@@ -137,6 +144,14 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
   const handleOpenWhatsApp = (lead: ProspectLead, pitchType: 'directFounder' | 'technicalMediaBuyer' | 'audioScript45s') => {
     const text = lead.pitches[pitchType];
     const phone = lead.contactTargetPhone || lead.detectedWhatsApp || '';
+    
+    // 🔒 TRAVA AIR-GAP: Bloqueia disparo externo involuntário e abre o Raio-X Técnico
+    if (isAirGapActive) {
+      handleCopyPitch(lead.id, text);
+      setSelectedLeadForTechInspection(lead);
+      return;
+    }
+
     if (!phone) {
       handleCopyPitch(lead.id, text);
       alert(`⚠️ A vitrine "${lead.brandName}" não possui número público de WhatsApp detectado.\n\nO roteiro de abordagem foi copiado para sua área de transferência para contato via direct do Instagram ou SAC.`);
@@ -149,6 +164,12 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
   };
 
   const handleQueueAutomaticDispatch = async (lead: ProspectLead) => {
+    // 🔒 TRAVA AIR-GAP: Bloqueia automação de webhook externo
+    if (isAirGapActive) {
+      setSelectedLeadForTechInspection(lead);
+      return;
+    }
+
     const pitchType = activePitchType[lead.id] || 'directFounder';
     const queuedItem = enqueueLeadForOutreach(lead, pitchType);
     await dispatchSingleQueueItem(queuedItem.id);
@@ -160,6 +181,42 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
   return (
     <div className="space-y-6 font-sans">
       
+      {/* 🔒 Banner de Embargo & Modo Laboratório de Engenharia Reversa (Air-Gap) */}
+      <div className="p-4 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-[#FFFCE1] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-amber-500/20 text-amber-300 rounded-2xl border border-amber-500/40 shrink-0">
+            <Lock className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-extrabold text-sm text-amber-300 font-mono">
+                🔒 MODO LABORATÓRIO / EMBARGO DE DISPARO ATIVO (AIR-GAP)
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40">
+                ZERO DISPARO EXTERNO
+              </span>
+            </div>
+            <p className="text-xs text-[#BBBAA6] mt-0.5 leading-relaxed">
+              Nenhuma mensagem será transmitida aos leads. O sistema está em quarentena segura para <strong>Engenharia de Software</strong>, <strong>Engenharia Reversa de Plataformas/ERPs</strong> e <strong>Protocolo Falsify</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => setIsAirGapActive(!isAirGapActive)}
+            className={`px-3.5 py-2 rounded-xl text-xs font-mono font-bold border transition-all cursor-pointer flex items-center gap-1.5 shadow-md ${
+              isAirGapActive
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
+                : 'bg-rose-500/20 text-rose-300 border-rose-500/40 hover:bg-rose-500/30'
+            }`}
+          >
+            <Lock className="w-3.5 h-3.5" />
+            <span>{isAirGapActive ? 'Trava Air-Gap Ligada (Seguro)' : 'Trava Desligada (Atenção)'}</span>
+          </button>
+        </div>
+      </div>
+
       {/* 1. Header Banner & Radar Swarm Controller */}
       <div className="p-6 rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 border border-indigo-500/30 text-white shadow-xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -640,6 +697,15 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                   </div>
 
                   <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <button
+                      onClick={() => setSelectedLeadForTechInspection(lead)}
+                      className="flex-1 sm:flex-none px-3.5 py-2 bg-[#00BAE2]/10 hover:bg-[#00BAE2]/20 text-[#00BAE2] border border-[#00BAE2]/30 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
+                      title="Dissecar Stack Tecnológica (Plataforma, ERP, Hub) e rodar teste Popperiano Falsify"
+                    >
+                      <Cpu className="w-3.5 h-3.5 text-[#00BAE2]" />
+                      <span>🔬 Raio-X & Falsify</span>
+                    </button>
+
                     {onSelectLeadForDossier && (
                       <button
                         onClick={() => onSelectLeadForDossier(lead)}
@@ -774,6 +840,15 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
             </div>
           </div>
         </div>
+      )}
+
+      {/* 6. Modal de Raio-X de Engenharia Reversa e Protocolo Falsify */}
+      {selectedLeadForTechInspection && (
+        <TechReverseEngineeringInspectorModal
+          lead={selectedLeadForTechInspection}
+          isOpen={Boolean(selectedLeadForTechInspection)}
+          onClose={() => setSelectedLeadForTechInspection(null)}
+        />
       )}
 
     </div>
