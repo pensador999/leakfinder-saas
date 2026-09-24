@@ -1,28 +1,78 @@
 version: '3.8'
 
 services:
-  leakfinder-app:
-    build: .
-    container_name: leakfinder_saas_prod
+  # ============================================================================
+  # 🌐 SERVIÇO WEB: Frontend React SPA Servido por Nginx de Alta Performance
+  # ============================================================================
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web
+    container_name: adshield-web
+    restart: unless-stopped
     ports:
-      - "3000:80"
-    restart: always
-    environment:
-      - NODE_ENV=production
-      - VITE_REMOTE_MCP_WORKER_URL=http://mcp-headless-worker:3001
+      - "80:80"
     depends_on:
-      - mcp-headless-worker
+      - worker
+    networks:
+      - adshield-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
 
-  mcp-headless-worker:
-    build: ./docker/mcp-headless-worker
-    container_name: adshield_mcp_headless_worker
-    ports:
-      - "3001:3001"
-    restart: always
-    env_file:
-      - ./docker/mcp-headless-worker/.env
+  # ============================================================================
+  # 🤖 SERVIÇO WORKER: Headless Crawler, Webhooks & Agendador Cron 24/7
+  # ============================================================================
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.worker
+    container_name: adshield-worker
+    restart: unless-stopped
+    shm_size: '1gb' # Evita crash de Chromium por falta de memória compartilhada
     environment:
       - NODE_ENV=production
       - PORT=3001
-      - MAX_CONCURRENT_PAGES=4
-      - MCP_API_KEY=${MCP_API_KEY:-d2c4b969b83b3fdfe6ccf6371971bca5ea6382b717ce68cd87e9fafb44cdead2}
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+      - CHROME_BIN=/usr/bin/chromium
+      - REDIS_URL=redis://redis:6379
+      - DOCKER_ENV=true
+    ports:
+      - "3001:3001"
+    depends_on:
+      - redis
+    networks:
+      - adshield-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2048M
+
+  # ============================================================================
+  # ⚡ SERVIÇO REDIS: Fila em Memória para Tarefas Assíncronas (BullMQ)
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: adshield-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "200mb", "--maxmemory-policy", "noeviction"]
+    volumes:
+      - redis-data:/data
+    networks:
+      - adshield-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+networks:
+  adshield-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+    driver: local

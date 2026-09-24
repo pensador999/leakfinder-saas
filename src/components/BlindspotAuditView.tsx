@@ -155,20 +155,20 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
     <div className="space-y-6 font-sans">
       
       {/* Header Banner */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+      <div className="p-6 rounded-3xl bg-[#101211] border border-white/10 shadow-2xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
-          <div className="p-3.5 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl text-white shadow-md shadow-blue-500/20">
+          <div className="p-3.5 bg-gradient-to-br from-[#0AE448]/20 to-blue-600/30 border border-[#0AE448]/30 rounded-2xl text-[#0AE448] shadow-lg shadow-[#0AE448]/10">
             <Layers className="w-8 h-8" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-slate-900">Agente 09 — Universal Catalog Doctor ({realSiteData.brandName})</h2>
-              <span className="px-2.5 py-0.5 bg-blue-100 text-blue-800 text-xs font-bold rounded-full">
+              <h2 className="text-xl font-black text-[#FFFCE1]">Agente 09 — Universal Catalog Doctor ({realSiteData.brandName})</h2>
+              <span className="px-2.5 py-0.5 bg-[#0AE448]/10 border border-[#0AE448]/30 text-[#0AE448] text-xs font-mono font-bold rounded-full">
                 Validação Grade PP→G2 & Regra _FULL
               </span>
             </div>
-            <p className="text-xs text-slate-600 mt-1 max-w-2xl">
-              Auditoria de integridade dos produtos: segregação entre <strong>Revenda</strong> vs <strong>Fabricação Própria (PCP)</strong>, grade completa de tamanhos (PP ao G2), isenção para camisas <code className="bg-slate-100 text-indigo-700 px-1 py-0.5 rounded font-mono font-bold">_FULL</code> e URLs reais sem 404.
+            <p className="text-xs text-[#BBBAA6] mt-1 max-w-2xl leading-relaxed">
+              Auditoria de integridade dos produtos: segregação entre <strong className="text-[#FFFCE1]">Revenda</strong> vs <strong className="text-[#FFFCE1]">Fabricação Própria (PCP)</strong>, grade completa de tamanhos (PP ao G2), isenção para camisas <code className="bg-white/5 border border-white/10 text-[#00BAE2] px-1.5 py-0.5 rounded font-mono font-bold">_FULL</code> e URLs reais sem 404.
             </p>
           </div>
         </div>
@@ -178,7 +178,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
           <button
             onClick={handleSweepFullCatalog}
             disabled={isSweepingFull}
-            className="px-3.5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-blue-600/20 disabled:opacity-50"
+            className="px-3.5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-blue-600/20 disabled:opacity-50"
             title="Varre 100% dos produtos e variantes com paginação exaustiva na Shopify"
           >
             {isSweepingFull ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
@@ -187,7 +187,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
 
           <button
             onClick={exportAllSkusCsv}
-            className="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-emerald-600/20"
+            className="px-3.5 py-2.5 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 font-black text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-[#0AE448]/20"
             title="Exportar planilha completa com 100% dos SKUs individuais"
           >
             <Download className="w-4 h-4" />
@@ -196,28 +196,28 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
 
           <button
             onClick={() => setShowSizeChartModal(true)}
-            className="px-3.5 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-xs"
+            className="px-3.5 py-2.5 bg-white/5 hover:bg-white/10 text-[#FFFCE1] border border-white/10 font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer"
           >
-            <Ruler className="w-4 h-4 text-indigo-600" />
+            <Ruler className="w-4 h-4 text-[#00BAE2]" />
             <span>Guia Medidas</span>
           </button>
 
           <button
             onClick={exportCatalogCsv}
-            className="px-3.5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-slate-900/10"
+            className="px-3.5 py-2.5 bg-white/5 hover:bg-white/10 text-[#FFFCE1] border border-white/10 font-bold text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-4 h-4 text-[#BBBAA6]" />
             <span>Exportar Planilha</span>
           </button>
 
-          <div className="p-3 bg-slate-900 text-white rounded-2xl flex items-center gap-3 text-right">
+          <div className="p-3 bg-[#141716] border border-white/10 text-[#FFFCE1] rounded-2xl flex items-center gap-3 text-right shadow-md">
             <div>
-              <p className="text-[10px] uppercase font-bold text-slate-400">Saúde</p>
-              <p className="text-xl font-black text-emerald-400 leading-none mt-0.5">
-                {catalogAudit?.catalogHealthScore || 92}<span className="text-xs text-slate-400">/100</span>
+              <p className="text-[10px] uppercase font-bold text-[#BBBAA6]">Saúde</p>
+              <p className="text-xl font-black text-[#0AE448] leading-none mt-0.5">
+                {catalogAudit?.catalogHealthScore || 92}<span className="text-xs text-[#BBBAA6]">/100</span>
               </p>
             </div>
-            <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-emerald-400">
+            <div className="w-8 h-8 rounded-xl bg-[#0AE448]/10 border border-[#0AE448]/30 flex items-center justify-center text-[#0AE448]">
               <Sparkles className="w-4 h-4" />
             </div>
           </div>
@@ -225,86 +225,86 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
       </div>
 
       {/* 🛡️ BANNER DE TRANSPARÊNCIA E GROUNDING (AGENTS.MD RULE 1) */}
-      <div className="p-4 bg-slate-900 text-white rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+      <div className="p-4 bg-[#101211] text-[#FFFCE1] rounded-2xl border border-[#0AE448]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-md">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-emerald-500/20 text-emerald-400 rounded-xl border border-emerald-500/30 shrink-0">
-            <ShieldCheck className="w-5 h-5 text-emerald-400" />
+          <div className="p-2.5 bg-[#0AE448]/10 text-[#0AE448] rounded-xl border border-[#0AE448]/30 shrink-0">
+            <ShieldCheck className="w-5 h-5 text-[#0AE448]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-white">Dados 100% Públicos & Auditados ao Vivo</span>
-              <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full text-[10px] font-mono font-bold">
+              <span className="font-bold text-[#FFFCE1]">Dados 100% Públicos & Auditados ao Vivo</span>
+              <span className="px-2 py-0.5 bg-[#0AE448]/10 text-[#0AE448] border border-[#0AE448]/30 rounded-full text-[10px] font-mono font-bold">
                 Zero Alucinação
               </span>
             </div>
-            <p className="text-slate-400 text-[11px] mt-0.5">
-              Estes {catalogAudit?.totalProductsScanned || 0} produtos e {catalogAudit?.totalSkusAudited || allSkusFlat.length} SKUs individuais foram extraídos diretamente do DOM público e da paginação do endpoint <code className="text-emerald-300">/products.json</code> da loja.
+            <p className="text-[#BBBAA6] text-[11px] mt-0.5">
+              Estes {catalogAudit?.totalProductsScanned || 0} produtos e {catalogAudit?.totalSkusAudited || allSkusFlat.length} SKUs individuais foram extraídos diretamente do DOM público e da paginação do endpoint <code className="text-[#0AE448] font-mono">/products.json</code> da loja.
             </p>
           </div>
         </div>
 
-        <div className="text-left sm:text-right text-[10px] text-slate-400 font-mono shrink-0 pl-11 sm:pl-0">
+        <div className="text-left sm:text-right text-[10px] text-[#BBBAA6] font-mono shrink-0 pl-11 sm:pl-0">
           <span>Estoque físico em galpão e dados confidenciais</span>
-          <span className="block text-indigo-400 font-semibold">Requerem conexão via API da Shopify Admin / ERP Sankhya</span>
+          <span className="block text-[#00BAE2] font-semibold">Requerem conexão via API da Shopify Admin / ERP Sankhya</span>
         </div>
       </div>
 
       {/* Metric Counters Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
-          <p className="text-[11px] font-bold text-slate-500 uppercase">Produtos Auditados</p>
-          <p className="text-xl font-bold text-slate-900 mt-1">{catalogAudit?.totalProductsScanned || 0}</p>
-          <p className="text-[10px] text-slate-500 mt-0.5">Catálogo Geral</p>
+        <div className="p-4 rounded-2xl bg-[#101211] border border-white/10 shadow-xs">
+          <p className="text-[11px] font-bold text-[#BBBAA6] uppercase">Produtos Auditados</p>
+          <p className="text-xl font-black text-[#FFFCE1] mt-1">{catalogAudit?.totalProductsScanned || 0}</p>
+          <p className="text-[10px] text-[#BBBAA6]/70 mt-0.5">Catálogo Geral</p>
         </div>
 
-        <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 shadow-xs">
-          <p className="text-[11px] font-bold text-blue-700 uppercase">Total SKUs Mapeados</p>
-          <p className="text-xl font-bold text-blue-900 mt-1">{catalogAudit?.totalSkusAudited || allSkusFlat.length}</p>
-          <p className="text-[10px] text-blue-600 mt-0.5">100% Variantes Únicas</p>
+        <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 shadow-xs">
+          <p className="text-[11px] font-bold text-blue-300 uppercase">Total SKUs Mapeados</p>
+          <p className="text-xl font-black text-blue-200 mt-1">{catalogAudit?.totalSkusAudited || allSkusFlat.length}</p>
+          <p className="text-[10px] text-blue-400 mt-0.5">100% Variantes Únicas</p>
         </div>
 
-        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 shadow-xs">
-          <p className="text-[11px] font-bold text-rose-700 uppercase">SKUs Rompidos</p>
-          <p className="text-xl font-bold text-rose-900 mt-1">
+        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 shadow-xs">
+          <p className="text-[11px] font-bold text-rose-300 uppercase">SKUs Rompidos</p>
+          <p className="text-xl font-black text-rose-200 mt-1">
             {catalogAudit?.totalSkusInStockout !== undefined 
               ? catalogAudit.totalSkusInStockout 
               : allSkusFlat.filter(s => !s.available).length}
           </p>
-          <p className="text-[10px] text-rose-600 mt-0.5">Gerando Sangria</p>
+          <p className="text-[10px] text-rose-400 mt-0.5">Gerando Sangria</p>
         </div>
 
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 shadow-xs">
-          <p className="text-[11px] font-bold text-emerald-700 uppercase">SKUs em Estoque</p>
-          <p className="text-xl font-bold text-emerald-900 mt-1">
+        <div className="p-4 rounded-2xl bg-[#0AE448]/10 border border-[#0AE448]/20 shadow-xs">
+          <p className="text-[11px] font-bold text-[#0AE448] uppercase">SKUs em Estoque</p>
+          <p className="text-xl font-black text-[#0AE448] mt-1">
             {catalogAudit?.totalSkusInStock !== undefined 
               ? catalogAudit.totalSkusInStock 
               : allSkusFlat.filter(s => s.available).length}
           </p>
-          <p className="text-[10px] text-emerald-600 mt-0.5">Prontos p/ Venda</p>
+          <p className="text-[10px] text-[#0AE448]/70 mt-0.5">Prontos p/ Venda</p>
         </div>
 
-        <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 shadow-xs">
-          <p className="text-[11px] font-bold text-amber-700 uppercase">Grades Furadas</p>
-          <p className="text-xl font-bold text-amber-900 mt-1">{catalogAudit?.productsWithBrokenGrid || 0}</p>
-          <p className="text-[10px] text-amber-600 mt-0.5">Falta PP, G1 ou G2</p>
+        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 shadow-xs">
+          <p className="text-[11px] font-bold text-amber-300 uppercase">Grades Furadas</p>
+          <p className="text-xl font-black text-amber-200 mt-1">{catalogAudit?.productsWithBrokenGrid || 0}</p>
+          <p className="text-[10px] text-amber-400 mt-0.5">Falta PP, G1 ou G2</p>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 shadow-xs">
-          <p className="text-[11px] font-bold text-slate-600 uppercase">Isentos _FULL</p>
-          <p className="text-xl font-bold text-slate-900 mt-1">{catalogAudit?.productsWithFullExemption || 0}</p>
-          <p className="text-[10px] text-slate-500 mt-0.5">Sem Ruptura PCP</p>
+        <div className="p-4 rounded-2xl bg-[#141716] border border-white/10 shadow-xs">
+          <p className="text-[11px] font-bold text-[#BBBAA6] uppercase">Isentos _FULL</p>
+          <p className="text-xl font-black text-[#FFFCE1] mt-1">{catalogAudit?.productsWithFullExemption || 0}</p>
+          <p className="text-[10px] text-[#BBBAA6]/70 mt-0.5">Sem Ruptura PCP</p>
         </div>
       </div>
 
       {/* 🗂️ MODO DE VISUALIZAÇÃO: VISÃO POR PRODUTO vs INVENTÁRIO SKU POR SKU */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-slate-200 pb-3 gap-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-white/10 pb-3 gap-3">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setViewMode('PRODUTOS')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
               viewMode === 'PRODUTOS'
-                ? 'bg-slate-900 text-white shadow-sm'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-[#0AE448] text-slate-950 font-black shadow-lg shadow-[#0AE448]/20'
+                : 'bg-white/5 text-[#BBBAA6] hover:bg-white/10 hover:text-[#FFFCE1]'
             }`}
           >
             <Layers className="w-4 h-4" />
@@ -315,8 +315,8 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
             onClick={() => setViewMode('SKUS_EXAUSTIVO')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
               viewMode === 'SKUS_EXAUSTIVO'
-                ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-blue-600 text-white font-black shadow-lg shadow-blue-500/20'
+                : 'bg-white/5 text-[#BBBAA6] hover:bg-white/10 hover:text-[#FFFCE1]'
             }`}
           >
             <Barcode className="w-4 h-4" />
@@ -330,8 +330,8 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
         </div>
 
         {viewMode === 'SKUS_EXAUSTIVO' && (
-          <div className="text-xs text-slate-500 font-medium">
-            Exibindo <strong>{filteredSkus.length}</strong> de <strong>{allSkusFlat.length}</strong> SKUs
+          <div className="text-xs text-[#BBBAA6] font-medium">
+            Exibindo <strong className="text-[#FFFCE1]">{filteredSkus.length}</strong> de <strong className="text-[#FFFCE1]">{allSkusFlat.length}</strong> SKUs
           </div>
         )}
       </div>
@@ -339,10 +339,10 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
       {viewMode === 'SKUS_EXAUSTIVO' ? (
         <div className="space-y-4">
           {/* Controls: Search & Status Filters */}
-          <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+          <div className="p-4 bg-[#101211] rounded-2xl border border-white/10 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
             {/* Search Input */}
             <div className="relative flex-1">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[#BBBAA6]/60 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Buscar por SKU, nome do produto, tamanho (ex: G, GG, 42) ou barcode..."
@@ -351,7 +351,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                   setSkuSearchQuery(e.target.value);
                   setSkuCurrentPage(1);
                 }}
-                className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-[#0E100F] border border-white/10 text-[#FFFCE1] placeholder-[#BBBAA6]/40 focus:outline-none focus:ring-1 focus:ring-[#0AE448] focus:border-[#0AE448] transition-all"
               />
               {skuSearchQuery && (
                 <button
@@ -359,7 +359,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                     setSkuSearchQuery('');
                     setSkuCurrentPage(1);
                   }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#BBBAA6] hover:text-[#FFFCE1] cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -371,7 +371,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
               <button
                 onClick={() => { setSkuStatusFilter('TODOS'); setSkuCurrentPage(1); }}
                 className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
-                  skuStatusFilter === 'TODOS' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  skuStatusFilter === 'TODOS' ? 'bg-[#0AE448] text-slate-950 font-black' : 'bg-white/5 text-[#BBBAA6] hover:bg-white/10 hover:text-[#FFFCE1]'
                 }`}
               >
                 Todos ({allSkusFlat.length})
@@ -380,7 +380,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
               <button
                 onClick={() => { setSkuStatusFilter('RUPTURA'); setSkuCurrentPage(1); }}
                 className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-                  skuStatusFilter === 'RUPTURA' ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+                  skuStatusFilter === 'RUPTURA' ? 'bg-rose-500 text-white font-black' : 'bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 border border-rose-500/20'
                 }`}
               >
                 <AlertCircle className="w-3.5 h-3.5" />
@@ -390,7 +390,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
               <button
                 onClick={() => { setSkuStatusFilter('ESTOQUE'); setSkuCurrentPage(1); }}
                 className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-                  skuStatusFilter === 'ESTOQUE' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                  skuStatusFilter === 'ESTOQUE' ? 'bg-[#0AE448] text-slate-950 font-black' : 'bg-[#0AE448]/10 text-[#0AE448] hover:bg-[#0AE448]/20 border border-[#0AE448]/20'
                 }`}
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
@@ -400,7 +400,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
               <button
                 onClick={() => { setSkuStatusFilter('ISENTOS_FULL'); setSkuCurrentPage(1); }}
                 className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
-                  skuStatusFilter === 'ISENTOS_FULL' ? 'bg-indigo-600 text-white' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200'
+                  skuStatusFilter === 'ISENTOS_FULL' ? 'bg-indigo-600 text-white font-black' : 'bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20 border border-indigo-500/20'
                 }`}
               >
                 Isentos _FULL ({allSkusFlat.filter(s => s.isFullExempt).length})
@@ -409,7 +409,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
               <button
                 onClick={() => { setSkuStatusFilter('PCP'); setSkuCurrentPage(1); }}
                 className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
-                  skuStatusFilter === 'PCP' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  skuStatusFilter === 'PCP' ? 'bg-white/20 text-[#FFFCE1] font-black' : 'bg-white/5 text-[#BBBAA6] hover:bg-white/10'
                 }`}
               >
                 PCP Têxtil ({allSkusFlat.filter(s => s.manufacturingType === 'FABRICACAO_PROPRIA').length})
@@ -418,7 +418,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
               <button
                 onClick={() => { setSkuStatusFilter('REVENDA'); setSkuCurrentPage(1); }}
                 className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
-                  skuStatusFilter === 'REVENDA' ? 'bg-amber-600 text-white' : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200'
+                  skuStatusFilter === 'REVENDA' ? 'bg-amber-500 text-slate-950 font-black' : 'bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/20'
                 }`}
               >
                 Revenda ({allSkusFlat.filter(s => s.manufacturingType === 'REVENDA').length})
@@ -427,24 +427,24 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
           </div>
 
           {/* Table of SKUs */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+          <div className="bg-[#101211] rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-900 text-white font-bold text-[11px] uppercase tracking-wider">
-                    <th className="p-3.5 border-b border-slate-800">Código SKU</th>
-                    <th className="p-3.5 border-b border-slate-800">Produto & Origem</th>
-                    <th className="p-3.5 border-b border-slate-800 text-center">Tamanho</th>
-                    <th className="p-3.5 border-b border-slate-800">Preço</th>
-                    <th className="p-3.5 border-b border-slate-800 text-center">Status Estoque</th>
-                    <th className="p-3.5 border-b border-slate-800 text-right">Sangria Est. (Mês)</th>
-                    <th className="p-3.5 border-b border-slate-800 text-center">Ações</th>
+                  <tr className="bg-[#141716] text-[#FFFCE1] font-bold text-[11px] uppercase tracking-wider">
+                    <th className="p-3.5 border-b border-white/10">Código SKU</th>
+                    <th className="p-3.5 border-b border-white/10">Produto & Origem</th>
+                    <th className="p-3.5 border-b border-white/10 text-center">Tamanho</th>
+                    <th className="p-3.5 border-b border-white/10">Preço</th>
+                    <th className="p-3.5 border-b border-white/10 text-center">Status Estoque</th>
+                    <th className="p-3.5 border-b border-white/10 text-right">Sangria Est. (Mês)</th>
+                    <th className="p-3.5 border-b border-white/10 text-center">Ações</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-white/5">
                   {paginatedSkus.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="p-8 text-center text-slate-400">
+                      <td colSpan={7} className="p-8 text-center text-[#BBBAA6]">
                         Nenhum SKU encontrado para os filtros selecionados.
                       </td>
                     </tr>
@@ -452,19 +452,19 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                     paginatedSkus.map((skuItem, idx) => {
                       const skuProductUrl = skuItem.productUrl || `https://${realSiteData.domain}/products/${skuItem.productHandle || ''}`;
                       return (
-                        <tr key={`${skuItem.skuId}-${idx}`} className="hover:bg-slate-50/80 transition-colors">
+                        <tr key={`${skuItem.skuId}-${idx}`} className="hover:bg-white/5 transition-colors">
                           {/* SKU Code */}
-                          <td className="p-3.5 font-mono font-bold text-slate-900 whitespace-nowrap">
+                          <td className="p-3.5 font-mono font-bold text-[#FFFCE1] whitespace-nowrap">
                             <div className="flex items-center gap-1.5">
                               <span>{skuItem.skuCode || 'SEM-SKU'}</span>
                               {skuItem.skuCode && (
                                 <button
                                   onClick={() => handleCopyText(String(skuItem.skuId), skuItem.skuCode)}
-                                  className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                                  className="text-[#BBBAA6] hover:text-[#FFFCE1] cursor-pointer"
                                   title="Copiar Código SKU"
                                 >
                                   {copiedId === String(skuItem.skuId) ? (
-                                    <Check className="w-3 h-3 text-emerald-600" />
+                                    <Check className="w-3 h-3 text-[#0AE448]" />
                                   ) : (
                                     <Copy className="w-3 h-3" />
                                   )}
@@ -472,7 +472,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                               )}
                             </div>
                             {skuItem.barcode && (
-                              <span className="text-[10px] text-slate-400 font-normal block">
+                              <span className="text-[10px] text-[#BBBAA6]/60 font-mono block">
                                 EAN: {skuItem.barcode}
                               </span>
                             )}
@@ -485,30 +485,30 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                                 <img
                                   src={skuItem.productImages[0]}
                                   alt={skuItem.productTitle}
-                                  className="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0 bg-slate-100"
+                                  className="w-9 h-9 rounded-lg object-cover border border-white/10 shrink-0 bg-black/40"
                                   onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
                                 />
                               ) : (
-                                <div className="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 shrink-0">
+                                <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[#BBBAA6] shrink-0">
                                   <ImageOff className="w-4 h-4" />
                                 </div>
                               )}
                               <div className="min-w-0">
-                                <p className="font-semibold text-slate-800 truncate text-xs" title={skuItem.productTitle}>
+                                <p className="font-semibold text-[#FFFCE1] truncate text-xs" title={skuItem.productTitle}>
                                   {skuItem.productTitle}
                                 </p>
                                 <div className="flex items-center gap-1.5 mt-0.5">
                                   {skuItem.manufacturingType === 'REVENDA' ? (
-                                    <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">
+                                    <span className="text-[10px] font-bold text-amber-300 bg-amber-500/10 px-1.5 py-0.2 rounded border border-amber-500/20">
                                       Revenda
                                     </span>
                                   ) : (
-                                    <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.2 rounded border border-indigo-200">
+                                    <span className="text-[10px] font-bold text-indigo-300 bg-indigo-500/10 px-1.5 py-0.2 rounded border border-indigo-500/20">
                                       PCP Têxtil
                                     </span>
                                   )}
                                   {skuItem.isFullExempt && (
-                                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                                    <span className="text-[10px] font-bold text-[#0AE448] bg-[#0AE448]/10 px-1.5 py-0.2 rounded border border-[#0AE448]/20">
                                       _FULL
                                     </span>
                                   )}
@@ -519,25 +519,25 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
 
                           {/* Size / Variant */}
                           <td className="p-3.5 text-center whitespace-nowrap">
-                            <span className="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-800 font-bold rounded-lg text-xs">
+                            <span className="px-2.5 py-1 bg-white/5 border border-white/10 text-[#FFFCE1] font-bold rounded-lg text-xs">
                               {skuItem.variantTitle || 'Único'}
                             </span>
                           </td>
 
                           {/* Price */}
-                          <td className="p-3.5 font-bold text-slate-800 whitespace-nowrap">
+                          <td className="p-3.5 font-bold text-[#FFFCE1] whitespace-nowrap font-mono">
                             R$ {skuItem.price.toFixed(2).replace('.', ',')}
                           </td>
 
                           {/* Stock Status */}
                           <td className="p-3.5 text-center whitespace-nowrap">
                             {skuItem.available ? (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold rounded-full text-[11px]">
-                                <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Em Estoque
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#0AE448]/10 border border-[#0AE448]/30 text-[#0AE448] font-bold rounded-full text-[11px]">
+                                <CheckCircle2 className="w-3 h-3 text-[#0AE448]" /> Em Estoque
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 border border-rose-200 text-rose-800 font-bold rounded-full text-[11px]">
-                                <AlertTriangle className="w-3 h-3 text-rose-600" /> Ruptura / Esgotado
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-500/10 border border-rose-500/30 text-rose-300 font-bold rounded-full text-[11px]">
+                                <AlertTriangle className="w-3 h-3 text-rose-400" /> Ruptura / Esgotado
                               </span>
                             )}
                           </td>
@@ -545,12 +545,12 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                           {/* Estimated Loss */}
                           <td className="p-3.5 text-right font-mono font-bold whitespace-nowrap">
                             {!skuItem.available ? (
-                              <span className="text-rose-600 flex items-center justify-end gap-1">
+                              <span className="text-rose-400 flex items-center justify-end gap-1">
                                 <Flame className="w-3 h-3 text-rose-500" />
                                 R$ {((skuItem.estimatedWastedAdSpendDay * 30) || (skuItem.price * 15)).toFixed(2).replace('.', ',')}
                               </span>
                             ) : (
-                              <span className="text-slate-400 text-[11px]">R$ 0,00</span>
+                              <span className="text-[#BBBAA6]/40 text-[11px]">R$ 0,00</span>
                             )}
                           </td>
 
@@ -561,10 +561,10 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                                 href={skuProductUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors inline-flex items-center gap-1 text-[11px] font-semibold"
+                                className="p-1.5 bg-white/5 hover:bg-white/10 text-[#FFFCE1] border border-white/10 rounded-lg transition-colors inline-flex items-center gap-1 text-[11px] font-semibold"
                                 title="Abrir Produto na Loja (Zero 404)"
                               >
-                                <ExternalLink className="w-3.5 h-3.5" />
+                                <ExternalLink className="w-3.5 h-3.5 text-[#00BAE2]" />
                                 <span className="hidden xl:inline">Abrir</span>
                               </a>
 
@@ -584,10 +584,10 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                                       reason: 'BROKEN_SIZES'
                                     });
                                   }}
-                                  className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg transition-colors inline-flex items-center gap-1 text-[11px] font-bold cursor-pointer"
+                                  className="p-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 rounded-lg transition-colors inline-flex items-center gap-1 text-[11px] font-bold cursor-pointer"
                                   title="Mitigar Sangria (Kill-Switch ou Rascunho)"
                                 >
-                                  <Power className="w-3.5 h-3.5 text-rose-600" />
+                                  <Power className="w-3.5 h-3.5 text-rose-400" />
                                   <span className="hidden xl:inline">Mitigar</span>
                                 </button>
                               )}
@@ -603,17 +603,17 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
 
             {/* Pagination Controls */}
             {totalSkuPages > 1 && (
-              <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                <p className="text-slate-600">
-                  Página <strong className="text-slate-900">{skuCurrentPage}</strong> de{' '}
-                  <strong className="text-slate-900">{totalSkuPages}</strong> ({filteredSkus.length} SKUs no total)
+              <div className="p-4 bg-[#141716] border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                <p className="text-[#BBBAA6]">
+                  Página <strong className="text-[#FFFCE1]">{skuCurrentPage}</strong> de{' '}
+                  <strong className="text-[#FFFCE1]">{totalSkuPages}</strong> ({filteredSkus.length} SKUs no total)
                 </p>
 
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setSkuCurrentPage(p => Math.max(1, p - 1))}
                     disabled={skuCurrentPage === 1}
-                    className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
+                    className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg font-bold text-[#FFFCE1] hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
                   >
                     <ChevronLeft className="w-4 h-4" /> Anterior
                   </button>
@@ -630,8 +630,8 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                           onClick={() => setSkuCurrentPage(pageNum)}
                           className={`w-7 h-7 rounded-lg font-bold text-xs flex items-center justify-center cursor-pointer transition-colors ${
                             skuCurrentPage === pageNum
-                              ? 'bg-blue-600 text-white shadow-xs'
-                              : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                              ? 'bg-[#0AE448] text-slate-950 font-black shadow-xs'
+                              : 'bg-white/5 border border-white/10 text-[#BBBAA6] hover:bg-white/10 hover:text-[#FFFCE1]'
                           }`}
                         >
                           {pageNum}
@@ -643,7 +643,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                   <button
                     onClick={() => setSkuCurrentPage(p => Math.min(totalSkuPages, p + 1))}
                     disabled={skuCurrentPage === totalSkuPages}
-                    className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
+                    className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg font-bold text-[#FFFCE1] hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
                   >
                     Próxima <ChevronRight className="w-4 h-4" />
                   </button>
@@ -656,13 +656,13 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
         <>
           {/* Filter Chips */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-        <span className="text-slate-400 font-bold flex items-center gap-1 shrink-0 mr-1">
-          <Filter className="w-3.5 h-3.5" /> Filtrar:
+        <span className="text-[#BBBAA6] font-bold flex items-center gap-1 shrink-0 mr-1">
+          <Filter className="w-3.5 h-3.5 text-[#0AE448]" /> Filtrar:
         </span>
         <button
           onClick={() => setActiveFilter('TODOS')}
           className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
-            activeFilter === 'TODOS' ? 'bg-slate-900 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+            activeFilter === 'TODOS' ? 'bg-[#0AE448] text-slate-950 font-black shadow-lg shadow-[#0AE448]/20' : 'bg-white/5 border border-white/10 text-[#BBBAA6] hover:bg-white/10 hover:text-[#FFFCE1]'
           }`}
         >
           Todos ({catalogAudit?.issues.length || 0})
@@ -670,7 +670,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
         <button
           onClick={() => setActiveFilter('GRADE_FURADA')}
           className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
-            activeFilter === 'GRADE_FURADA' ? 'bg-rose-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+            activeFilter === 'GRADE_FURADA' ? 'bg-rose-500 text-white font-black shadow-lg shadow-rose-500/20' : 'bg-rose-500/10 border border-rose-500/20 text-rose-300 hover:bg-rose-500/20'
           }`}
         >
           <AlertTriangle className="w-3.5 h-3.5" />
@@ -679,7 +679,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
         <button
           onClick={() => setActiveFilter('REVENDA')}
           className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
-            activeFilter === 'REVENDA' ? 'bg-amber-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+            activeFilter === 'REVENDA' ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/20' : 'bg-amber-500/10 border border-amber-500/20 text-amber-300 hover:bg-amber-500/20'
           }`}
         >
           <ShoppingBag className="w-3.5 h-3.5" />
@@ -688,7 +688,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
         <button
           onClick={() => setActiveFilter('FABRICACAO_PROPRIA')}
           className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
-            activeFilter === 'FABRICACAO_PROPRIA' ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+            activeFilter === 'FABRICACAO_PROPRIA' ? 'bg-indigo-600 text-white font-black shadow-lg shadow-indigo-600/20' : 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 hover:bg-indigo-500/20'
           }`}
         >
           <Factory className="w-3.5 h-3.5" />
@@ -697,7 +697,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
         <button
           onClick={() => setActiveFilter('ISENTOS_FULL')}
           className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
-            activeFilter === 'ISENTOS_FULL' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+            activeFilter === 'ISENTOS_FULL' ? 'bg-[#0AE448] text-slate-950 font-black shadow-lg shadow-[#0AE448]/20' : 'bg-[#0AE448]/10 border border-[#0AE448]/20 text-[#0AE448] hover:bg-[#0AE448]/20'
           }`}
         >
           <CheckCircle2 className="w-3.5 h-3.5" />
@@ -706,7 +706,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
         <button
           onClick={() => setActiveFilter('SEM_FOTO')}
           className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
-            activeFilter === 'SEM_FOTO' ? 'bg-slate-800 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+            activeFilter === 'SEM_FOTO' ? 'bg-white/20 text-[#FFFCE1] font-black' : 'bg-white/5 border border-white/10 text-[#BBBAA6] hover:bg-white/10'
           }`}
         >
           Sem Foto ({catalogAudit?.productsWithMissingImages || 0})
@@ -714,7 +714,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
         <button
           onClick={() => setActiveFilter('IMAGENS_PESADAS')}
           className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
-            activeFilter === 'IMAGENS_PESADAS' ? 'bg-amber-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+            activeFilter === 'IMAGENS_PESADAS' ? 'bg-amber-600 text-white font-black' : 'bg-white/5 border border-white/10 text-[#BBBAA6] hover:bg-white/10'
           }`}
         >
           Imagens Pesadas ({catalogAudit?.heavyImagesCount || 0})
@@ -729,89 +729,89 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
           return (
             <div
               key={issue.id}
-              className={`p-5 rounded-2xl bg-white border transition-all shadow-xs space-y-4 ${
+              className={`p-6 rounded-3xl bg-[#101211] border transition-all shadow-xl space-y-4 ${
                 !issue.isFullPrintExempt && issue.missingSizes.length > 0
-                  ? 'border-rose-300 ring-1 ring-rose-100'
+                  ? 'border-rose-500/40 bg-[#141212]'
                   : issue.isFullPrintExempt
-                  ? 'border-emerald-200 bg-emerald-50/20'
-                  : 'border-slate-200 hover:border-slate-300'
+                  ? 'border-[#0AE448]/40 bg-[#101411]'
+                  : 'border-white/10 hover:border-white/20'
               }`}
             >
               {/* Product Header Row */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono font-bold text-xs bg-slate-100 text-slate-800 px-2 py-0.5 rounded-lg border border-slate-200 flex items-center gap-1.5">
+                    <span className="font-mono font-bold text-xs bg-white/5 text-[#FFFCE1] px-2 py-0.5 rounded-lg border border-white/10 flex items-center gap-1.5">
                       <span>SKU: {issue.sku}</span>
                       <button
                         onClick={() => handleCopyText(issue.id, issue.sku)}
-                        className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                        className="text-[#BBBAA6] hover:text-[#FFFCE1] cursor-pointer"
                         title="Copiar SKU"
                       >
-                        {copiedId === issue.id ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                        {copiedId === issue.id ? <Check className="w-3 h-3 text-[#0AE448]" /> : <Copy className="w-3 h-3" />}
                       </button>
                     </span>
 
                     {/* Manufacturing Type Badge */}
                     {issue.manufacturingType === 'REVENDA' || issue.isResaleAccessory ? (
-                      <span className="px-2.5 py-0.5 bg-amber-50 text-amber-900 border border-amber-300 font-extrabold text-[10px] uppercase rounded-lg flex items-center gap-1">
-                        <PackageCheck className="w-3 h-3 text-amber-600" /> Revenda (Fornecedor Externo)
+                      <span className="px-2.5 py-0.5 bg-amber-500/10 text-amber-300 border border-amber-500/20 font-black text-[10px] uppercase rounded-lg flex items-center gap-1">
+                        <PackageCheck className="w-3 h-3 text-amber-400" /> Revenda (Fornecedor Externo)
                       </span>
                     ) : (
-                      <span className="px-2.5 py-0.5 bg-indigo-50 text-indigo-900 border border-indigo-200 font-extrabold text-[10px] uppercase rounded-lg flex items-center gap-1">
-                        <Factory className="w-3 h-3 text-indigo-600" /> Fabr. Própria (PCP Têxtil)
+                      <span className="px-2.5 py-0.5 bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-black text-[10px] uppercase rounded-lg flex items-center gap-1">
+                        <Factory className="w-3 h-3 text-indigo-400" /> Fabr. Própria (PCP Têxtil)
                       </span>
                     )}
 
                     {issue.categoryType === 'VESTUARIO_CASUAL_ALGODAO' ? (
-                      <span className="px-2.5 py-0.5 bg-amber-100 text-amber-800 border border-amber-200 font-bold text-[10px] uppercase rounded-lg flex items-center gap-1">
-                        <PackageCheck className="w-3 h-3 text-amber-600" /> Camisa de Algodão / Casual (Código APC)
+                      <span className="px-2.5 py-0.5 bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold text-[10px] uppercase rounded-lg flex items-center gap-1">
+                        <PackageCheck className="w-3 h-3 text-amber-400" /> Camisa de Algodão / Casual (Código APC)
                       </span>
                     ) : issue.categoryType === 'EQUIPAMENTO_PESCA' ? (
-                      <span className="px-2.5 py-0.5 bg-indigo-100 text-indigo-800 border border-indigo-200 font-bold text-[10px] uppercase rounded-lg flex items-center gap-1">
-                        <PackageCheck className="w-3 h-3 text-indigo-600" /> Equipamento & Tralha de Pesca (Iscas / Varas / Anzóis)
+                      <span className="px-2.5 py-0.5 bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-bold text-[10px] uppercase rounded-lg flex items-center gap-1">
+                        <PackageCheck className="w-3 h-3 text-indigo-400" /> Equipamento & Tralha de Pesca (Iscas / Varas / Anzóis)
                       </span>
                     ) : issue.isResaleAccessory ? (
-                      <span className="px-2.5 py-0.5 bg-blue-100 text-blue-800 border border-blue-200 font-bold text-[10px] uppercase rounded-lg flex items-center gap-1">
-                        <PackageCheck className="w-3 h-3 text-blue-600" /> Acessório / Revenda (Tamanho Único)
+                      <span className="px-2.5 py-0.5 bg-blue-500/10 text-blue-300 border border-blue-500/20 font-bold text-[10px] uppercase rounded-lg flex items-center gap-1">
+                        <PackageCheck className="w-3 h-3 text-blue-400" /> Acessório / Revenda (Tamanho Único)
                       </span>
                     ) : issue.isFullPrintExempt ? (
-                      <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold text-[10px] uppercase rounded-lg flex items-center gap-1">
-                        <PackageCheck className="w-3 h-3 text-emerald-600" /> Isento pela Regra _FULL (Estampa Especial)
+                      <span className="px-2.5 py-0.5 bg-[#0AE448]/10 text-[#0AE448] border border-[#0AE448]/20 font-bold text-[10px] uppercase rounded-lg flex items-center gap-1">
+                        <PackageCheck className="w-3 h-3 text-[#0AE448]" /> Isento pela Regra _FULL (Estampa Especial)
                       </span>
                     ) : issue.missingSizes.length > 0 ? (
-                      <span className="px-2.5 py-0.5 bg-rose-100 text-rose-800 border border-rose-200 font-bold text-[10px] uppercase rounded-lg flex items-center gap-1">
-                        <AlertTriangle className="w-3 h-3 text-rose-600" /> Grade Furada ({issue.missingSizes.length} tamanhos ausentes)
+                      <span className="px-2.5 py-0.5 bg-rose-500/10 text-rose-300 border border-rose-500/20 font-bold text-[10px] uppercase rounded-lg flex items-center gap-1">
+                        <AlertTriangle className="w-3 h-3 text-rose-400" /> Grade Furada ({issue.missingSizes.length} tamanhos ausentes)
                       </span>
                     ) : (
-                      <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-700 font-bold text-[10px] uppercase rounded-lg">
+                      <span className="px-2.5 py-0.5 bg-[#0AE448]/10 text-[#0AE448] border border-[#0AE448]/20 font-bold text-[10px] uppercase rounded-lg">
                         Grade Completa (PP a G2)
                       </span>
                     )}
 
                     {!issue.hasValidImage && (
-                      <span className="px-2 py-0.5 bg-rose-50 text-rose-700 font-bold text-[10px] uppercase rounded-lg">
+                      <span className="px-2 py-0.5 bg-rose-500/10 text-rose-300 border border-rose-500/20 font-bold text-[10px] uppercase rounded-lg">
                         Sem Foto
                       </span>
                     )}
 
                     {issue.imageWeightKb > 350 && (
-                      <span className="px-2 py-0.5 bg-amber-50 text-amber-700 font-bold text-[10px] uppercase rounded-lg">
+                      <span className="px-2 py-0.5 bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold text-[10px] uppercase rounded-lg">
                         {issue.imageWeightKb} KB (Pesado)
                       </span>
                     )}
                   </div>
 
-                  <h3 className="text-sm font-bold text-slate-900 pt-1">{issue.productTitle}</h3>
+                  <h3 className="text-base font-black text-[#FFFCE1] pt-1">{issue.productTitle}</h3>
                   
                   {/* 🔗 DIRECT PRODUCT LINK DISPLAY */}
-                  <div className="flex items-center gap-2 text-xs text-blue-600 font-mono pt-0.5">
-                    <Link2 className="w-3.5 h-3.5 text-slate-400" />
+                  <div className="flex items-center gap-2 text-xs font-mono pt-0.5">
+                    <Link2 className="w-3.5 h-3.5 text-[#BBBAA6]" />
                     <a 
                       href={productDirectUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="hover:underline flex items-center gap-1 text-slate-600 hover:text-blue-600 truncate max-w-md"
+                      className="hover:underline flex items-center gap-1 text-[#BBBAA6] hover:text-[#00BAE2] truncate max-w-md"
                     >
                       <span>{productDirectUrl}</span>
                     </a>
@@ -836,7 +836,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                         missingSizes: issue.missingSizes,
                         reason: 'MISSING_IMAGE'
                       })}
-                      className="px-3 py-2 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm animate-pulse"
+                      className="px-3 py-2 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-lg shadow-amber-500/20 animate-pulse font-black"
                       title="1-Clique: Colocar produto sem foto em Rascunho na Shopify para parar de queimar tráfego"
                     >
                       <Zap className="w-3.5 h-3.5" />
@@ -860,7 +860,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                         missingSizes: issue.missingSizes,
                         reason: 'BROKEN_SIZES'
                       })}
-                      className="px-3 py-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                      className="px-3 py-2 text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-lg shadow-blue-600/20"
                       title="1-Clique: Pausar anúncios no Meta Ads ou gerenciar na Shopify"
                     >
                       <Zap className="w-3.5 h-3.5" />
@@ -874,10 +874,10 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                       href={issue.adminUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3 py-2 text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                      className="px-3 py-2 text-xs font-bold bg-white/5 hover:bg-white/10 text-[#FFFCE1] border border-white/10 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
                       title="Abrir diretamente na tela de edição do Shopify Admin"
                     >
-                      <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
+                      <ExternalLink className="w-3.5 h-3.5 text-[#0AE448]" />
                       <span>Admin Shopify</span>
                     </a>
                   )}
@@ -886,11 +886,11 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                     href={productDirectUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-3.5 py-2 text-xs font-bold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    className="px-3.5 py-2 text-xs font-bold bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 border border-blue-500/20 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
                     title="Abrir página deste produto na loja em nova aba"
                   >
                     <span>Abrir na Loja</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
+                    <ExternalLink className="w-3.5 h-3.5 text-[#00BAE2]" />
                   </a>
 
                   {/* 🔬 Raio-X Detalhado de Cada SKU & Variante */}
@@ -930,19 +930,19 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
 
                       setSelectedSkuDetailProduct(deepProduct);
                     }}
-                    className="px-3 py-2 text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer border border-slate-300 shadow-xs"
+                    className="px-3 py-2 text-xs font-bold bg-white/5 hover:bg-white/10 text-[#FFFCE1] rounded-xl transition-all flex items-center gap-1.5 cursor-pointer border border-white/10"
                     title="Inspecionar todos os SKUs, tamanhos e barcodes desta peça individualmente"
                   >
-                    <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                    <Layers className="w-3.5 h-3.5 text-[#00BAE2]" />
                     <span>Raio-X de SKUs</span>
                   </button>
 
                   <button
                     onClick={() => handleCopyText(`link-${issue.id}`, productDirectUrl)}
-                    className="px-3 py-2 text-xs font-bold bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    className="px-3 py-2 text-xs font-bold bg-white/5 hover:bg-white/10 text-[#BBBAA6] border border-white/10 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
                     title="Copiar URL deste produto"
                   >
-                    {copiedId === `link-${issue.id}` ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-slate-500" />}
+                    {copiedId === `link-${issue.id}` ? <Check className="w-3.5 h-3.5 text-[#0AE448]" /> : <Copy className="w-3.5 h-3.5 text-[#BBBAA6]" />}
                     <span>{copiedId === `link-${issue.id}` ? 'Link Copiado!' : 'Copiar Link'}</span>
                   </button>
                 </div>
@@ -952,13 +952,13 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
               <div className="grid grid-cols-1 md:grid-cols-12 gap-4 text-xs">
                 
                 {/* Size Grid Inspector */}
-                <div className="md:col-span-6 p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                <div className="md:col-span-6 p-4 bg-[#141716] border border-white/10 rounded-2xl space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-700 uppercase text-[10px] flex items-center gap-1">
-                      <Ruler className="w-3.5 h-3.5 text-blue-600" /> Grade de Linha BRK (PP → G2):
+                    <span className="font-bold text-[#BBBAA6] uppercase text-[10px] flex items-center gap-1">
+                      <Ruler className="w-3.5 h-3.5 text-[#00BAE2]" /> Grade de Linha BRK (PP → G2):
                     </span>
                     {issue.isFullPrintExempt && (
-                      <span className="text-[10px] text-emerald-700 font-bold">Grade livre para modelo _FULL</span>
+                      <span className="text-[10px] text-[#0AE448] font-bold">Grade livre para modelo _FULL</span>
                     )}
                   </div>
 
@@ -972,10 +972,10 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                           key={sz}
                           className={`w-9 h-8 flex items-center justify-center font-mono font-bold text-xs rounded-lg border ${
                             isAvailable
-                              ? 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-xs'
+                              ? 'bg-[#0AE448]/10 text-[#0AE448] border-[#0AE448]/30 shadow-xs'
                               : isMissing
-                              ? 'bg-rose-50 text-rose-600 border-rose-300 line-through opacity-80'
-                              : 'bg-slate-200/60 text-slate-400 border-slate-300'
+                              ? 'bg-rose-500/10 text-rose-400 border-rose-500/30 line-through opacity-80'
+                              : 'bg-white/5 text-[#BBBAA6]/40 border-white/5'
                           }`}
                           title={isAvailable ? `Tamanho ${sz} disponível em estoque` : isMissing ? `Tamanho ${sz} em falta / não cadastrado` : `Tamanho ${sz}`}
                         >
@@ -986,67 +986,67 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                   </div>
 
                   {!issue.isFullPrintExempt && issue.missingSizes.length > 0 && (
-                    <p className="text-[11px] text-rose-700 font-semibold pt-1 flex items-center gap-1.5">
-                      <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                    <p className="text-[11px] text-rose-300 font-semibold pt-1 flex items-center gap-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
                       <span>Atenção: Clientes buscando tamanhos ({issue.missingSizes.join(', ')}) não conseguem comprar.</span>
                     </p>
                   )}
                 </div>
 
                 {/* Photo & Description Attributes */}
-                <div className="md:col-span-6 p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                  <span className="font-bold text-slate-700 uppercase text-[10px] flex items-center gap-1">
-                    <FileText className="w-3.5 h-3.5 text-indigo-600" /> Atributos de Cadastro & Mídia:
+                <div className="md:col-span-6 p-4 bg-[#141716] border border-white/10 rounded-2xl space-y-2">
+                  <span className="font-bold text-[#BBBAA6] uppercase text-[10px] flex items-center gap-1">
+                    <FileText className="w-3.5 h-3.5 text-indigo-400" /> Atributos de Cadastro & Mídia:
                   </span>
 
                   <div className="grid grid-cols-2 gap-2 text-[11px]">
-                    <div className="flex items-center justify-between p-2 bg-white rounded-lg border border-slate-200">
-                      <span className="text-slate-500">Tabela Medidas:</span>
+                    <div className="flex items-center justify-between p-2 bg-[#0E100F] rounded-xl border border-white/10">
+                      <span className="text-[#BBBAA6]">Tabela Medidas:</span>
                       <button
                         onClick={() => setShowSizeChartModal(true)}
-                        className={`font-bold hover:underline cursor-pointer flex items-center gap-1 ${issue.hasSizeGuide ? 'text-emerald-600' : 'text-rose-600'}`}
+                        className={`font-bold hover:underline cursor-pointer flex items-center gap-1 ${issue.hasSizeGuide ? 'text-[#0AE448]' : 'text-rose-400'}`}
                       >
                         {issue.hasSizeGuide ? (
                           <>
-                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                            <CheckCircle2 className="w-3 h-3 text-[#0AE448]" />
                             <span>Configurada</span>
                           </>
                         ) : (
                           <>
-                            <AlertCircle className="w-3 h-3 text-rose-600" />
+                            <AlertCircle className="w-3 h-3 text-rose-400" />
                             <span>Ausente</span>
                           </>
                         )}
                       </button>
                     </div>
 
-                    <div className="flex items-center justify-between p-2 bg-white rounded-lg border border-slate-200">
-                      <span className="text-slate-500">Foto Principal:</span>
-                      <span className={`font-bold flex items-center gap-1 ${issue.hasValidImage ? 'text-emerald-600' : 'text-rose-600'}`}>
+                    <div className="flex items-center justify-between p-2 bg-[#0E100F] rounded-xl border border-white/10">
+                      <span className="text-[#BBBAA6]">Foto Principal:</span>
+                      <span className={`font-bold flex items-center gap-1 ${issue.hasValidImage ? 'text-[#0AE448]' : 'text-rose-400'}`}>
                         {issue.hasValidImage ? (
                           <>
-                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                            <CheckCircle2 className="w-3 h-3 text-[#0AE448]" />
                             <span>{issue.imageResolutionStatus}</span>
                           </>
                         ) : (
                           <>
-                            <ImageOff className="w-3 h-3 text-rose-600" />
+                            <ImageOff className="w-3 h-3 text-rose-400" />
                             <span>Quebrada</span>
                           </>
                         )}
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between p-2 bg-white rounded-lg border border-slate-200">
-                      <span className="text-slate-500">Peso da Imagem:</span>
-                      <span className={`font-mono font-bold ${issue.imageWeightKb > 350 ? 'text-amber-600' : 'text-slate-700'}`}>
+                    <div className="flex items-center justify-between p-2 bg-[#0E100F] rounded-xl border border-white/10">
+                      <span className="text-[#BBBAA6]">Peso da Imagem:</span>
+                      <span className={`font-mono font-bold ${issue.imageWeightKb > 350 ? 'text-amber-400' : 'text-[#FFFCE1]'}`}>
                         {issue.imageWeightKb > 0 ? `${issue.imageWeightKb} KB` : 'N/A'}
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between p-2 bg-white rounded-lg border border-slate-200">
-                      <span className="text-slate-500">Texto Descritivo:</span>
-                      <span className={`font-bold ${issue.hasDescription ? 'text-slate-800' : 'text-rose-600'}`}>
+                    <div className="flex items-center justify-between p-2 bg-[#0E100F] rounded-xl border border-white/10">
+                      <span className="text-[#BBBAA6]">Texto Descritivo:</span>
+                      <span className={`font-bold ${issue.hasDescription ? 'text-[#FFFCE1]' : 'text-rose-400'}`}>
                         {issue.descriptionLength > 0 ? `${issue.descriptionLength} caracteres` : 'Vazio'}
                       </span>
                     </div>
@@ -1056,10 +1056,10 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
               </div>
 
               {/* Recommended Action Pill */}
-              <div className="p-3 bg-blue-50/70 border border-blue-100 rounded-xl flex items-center justify-between gap-2 text-xs">
+              <div className="p-3 bg-[#141716] border border-white/10 rounded-2xl flex items-center justify-between gap-2 text-xs">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-blue-600 shrink-0" />
-                  <span className="text-slate-700 font-medium">{issue.recommendedAction}</span>
+                  <Sparkles className="w-4 h-4 text-[#0AE448] shrink-0" />
+                  <span className="text-[#BBBAA6] font-medium">{issue.recommendedAction}</span>
                 </div>
               </div>
             </div>
@@ -1071,23 +1071,23 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
 
       {/* 📐 INTERACTIVE SIZE CHART MODAL (BRK OFFICIAL THEME ADDON) */}
       {showSizeChartModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-3xl bg-[#101211] rounded-3xl shadow-2xl border border-white/10 overflow-hidden max-h-[90vh] flex flex-col text-[#FFFCE1]">
             
             {/* Modal Header */}
-            <div className="p-4 bg-slate-900 text-white flex items-center justify-between">
+            <div className="p-5 bg-[#141716] border-b border-white/10 text-white flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-lg bg-white/10 text-emerald-400">
+                <div className="p-2 rounded-xl bg-[#0AE448]/10 text-[#0AE448] border border-[#0AE448]/20">
                   <Ruler className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm">Guia de Medidas Oficial — {brandTitle}</h3>
-                  <p className="text-[11px] text-slate-300">Tema Shopify &lt;product-addons data-custom-class="size_chart"&gt;</p>
+                  <h3 className="font-bold text-sm text-[#FFFCE1]">Guia de Medidas Oficial — {brandTitle}</h3>
+                  <p className="text-[11px] text-[#BBBAA6]">Tema Shopify &lt;product-addons data-custom-class="size_chart"&gt;</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowSizeChartModal(false)}
-                className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-all cursor-pointer"
+                className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[#BBBAA6] hover:text-[#FFFCE1] transition-all cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1098,10 +1098,10 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
                 
                 {/* Table Container */}
-                <div className="md:col-span-8 rounded-xl border border-slate-200 overflow-hidden shadow-xs">
+                <div className="md:col-span-8 rounded-2xl border border-white/10 overflow-hidden shadow-xs">
                   <div
                     style={{ backgroundColor: themeHeaderColor }}
-                    className="text-white text-center p-3 font-bold uppercase tracking-wider text-sm"
+                    className="text-white text-center p-3 font-bold uppercase tracking-wider text-sm shadow-md"
                   >
                     MASCULINO
                     <p className="text-[11px] font-normal tracking-normal text-white/90 mt-0.5">
@@ -1111,14 +1111,14 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
 
                   <table className="w-full text-center text-xs border-collapse">
                     <thead>
-                      <tr className="bg-slate-900 text-white font-bold">
-                        <th className="p-2.5 border border-slate-700">TAMANHO</th>
-                        <th className="p-2.5 border border-slate-700">TÓRAX</th>
-                        <th className="p-2.5 border border-slate-700">ALTURA</th>
-                        <th className="p-2.5 border border-slate-700">MANGA</th>
+                      <tr className="bg-[#0E100F] text-[#FFFCE1] font-bold">
+                        <th className="p-2.5 border border-white/10">TAMANHO</th>
+                        <th className="p-2.5 border border-white/10">TÓRAX</th>
+                        <th className="p-2.5 border border-white/10">ALTURA</th>
+                        <th className="p-2.5 border border-white/10">MANGA</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white">
+                    <tbody className="divide-y divide-white/5">
                       {[
                         { size: 'PP', torax: '49,5cm', altura: '67cm', manga: '56cm' },
                         { size: 'P', torax: '51,5cm', altura: '69cm', manga: '59,5cm' },
@@ -1130,12 +1130,12 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                       ].map((row, idx) => (
                         <tr
                           key={row.size}
-                          className={`${idx % 2 === 0 ? 'bg-slate-100' : 'bg-slate-200/70'} hover:bg-slate-300/60 transition-colors`}
+                          className={`${idx % 2 === 0 ? 'bg-[#141716]' : 'bg-[#101211]'} hover:bg-white/5 transition-colors`}
                         >
-                          <td className="p-2.5 font-bold text-slate-900 border border-white">{row.size}</td>
-                          <td className="p-2.5 text-slate-800 border border-white">{row.torax}</td>
-                          <td className="p-2.5 text-slate-800 border border-white">{row.altura}</td>
-                          <td className="p-2.5 text-slate-800 border border-white">{row.manga}</td>
+                          <td className="p-2.5 font-bold text-[#FFFCE1] border border-white/10">{row.size}</td>
+                          <td className="p-2.5 text-[#BBBAA6] border border-white/10">{row.torax}</td>
+                          <td className="p-2.5 text-[#BBBAA6] border border-white/10">{row.altura}</td>
+                          <td className="p-2.5 text-[#BBBAA6] border border-white/10">{row.manga}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1143,46 +1143,45 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                 </div>
 
                 {/* Mockup Preview Column */}
-                <div className="md:col-span-4 flex flex-col items-center justify-center p-4 bg-slate-50 rounded-xl border border-slate-200 text-center space-y-3">
-                  <div className="w-full aspect-4/5 rounded-lg bg-white border border-slate-200 overflow-hidden flex items-center justify-center p-2">
+                <div className="md:col-span-4 flex flex-col items-center justify-center p-4 bg-[#141716] rounded-2xl border border-white/10 text-center space-y-3">
+                  <div className="w-full aspect-4/5 rounded-xl bg-[#0E100F] border border-white/10 overflow-hidden flex items-center justify-center p-2">
                     {isAgro ? (
                       <img
                         src="https://cdn.shopify.com/s/files/1/0887/2083/4857/files/tabela_master_agro.png"
                         alt="Guia de Medidas BRK Agro"
                         className="max-h-full object-contain"
                         onError={(e) => {
-                          // Fallback illustration
                           (e.target as HTMLElement).style.display = 'none';
                         }}
                       />
                     ) : (
                       <div className="text-center p-4 space-y-2">
-                        <Ruler className="w-10 h-10 text-slate-400 mx-auto" />
-                        <p className="text-xs font-bold text-slate-700">Modelagem Oficial {brandTitle}</p>
-                        <p className="text-[10px] text-slate-500">Corte anatômico com punho elástico e gola protetora UV50+.</p>
+                        <Ruler className="w-10 h-10 text-[#BBBAA6] mx-auto" />
+                        <p className="text-xs font-bold text-[#FFFCE1]">Modelagem Oficial {brandTitle}</p>
+                        <p className="text-[10px] text-[#BBBAA6]">Corte anatômico com punho elástico e gola protetora UV50+.</p>
                       </div>
                     )}
                   </div>
-                  <span className="text-[11px] font-bold text-emerald-700 flex items-center gap-1">
+                  <span className="text-[11px] font-bold text-[#0AE448] flex items-center gap-1">
                     <Check className="w-3.5 h-3.5" /> Componente Ativo no Tema
                   </span>
                 </div>
 
               </div>
 
-              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+              <div className="p-3.5 bg-[#141716] rounded-2xl border border-white/10 text-xs text-[#BBBAA6] flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-[#00BAE2] shrink-0 mt-0.5" />
                 <p>
-                  <strong>Dica do Arquiteto de CRO:</strong> Como esta tabela já está configurada no tema através do addon <code className="bg-white px-1 py-0.5 rounded font-mono text-slate-800 border border-slate-200">&lt;product-addons&gt;</code>, certifique-se de que o botão esteja posicionado diretamente acima do seletor de tamanhos no celular para reduzir a taxa de devolução.
+                  <strong className="text-[#FFFCE1]">Dica do Arquiteto de CRO:</strong> Como esta tabela já está configurada no tema através do addon <code className="bg-white/5 px-1 py-0.5 rounded font-mono text-[#0AE448] border border-white/10">&lt;product-addons&gt;</code>, certifique-se de que o botão esteja posicionado diretamente acima do seletor de tamanhos no celular para reduzir a taxa de devolução.
                 </p>
               </div>
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+            <div className="p-4 bg-[#141716] border-t border-white/10 flex justify-end">
               <button
                 onClick={() => setShowSizeChartModal(false)}
-                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-all cursor-pointer"
+                className="px-4 py-2 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 font-black text-xs rounded-xl transition-all cursor-pointer shadow-lg shadow-[#0AE448]/20"
               >
                 Fechar Visualização
               </button>
@@ -1214,10 +1213,10 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
 
       {/* Action Success Toast Banner */}
       {actionSuccessMessage && (
-        <div className="fixed bottom-6 right-6 z-50 p-4 rounded-xl bg-slate-900 border border-emerald-500/30 text-white shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom duration-300">
-          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-          <span className="text-xs font-semibold text-emerald-300">{actionSuccessMessage}</span>
-          <button onClick={() => setActionSuccessMessage(null)} className="text-slate-400 hover:text-white ml-2">
+        <div className="fixed bottom-6 right-6 z-50 p-4 rounded-xl bg-[#101211] border border-[#0AE448]/40 text-[#FFFCE1] shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom duration-300">
+          <div className="w-2 h-2 rounded-full bg-[#0AE448] animate-ping" />
+          <span className="text-xs font-semibold text-[#0AE448]">{actionSuccessMessage}</span>
+          <button onClick={() => setActionSuccessMessage(null)} className="text-[#BBBAA6] hover:text-[#FFFCE1] ml-2">
             <X className="w-4 h-4" />
           </button>
         </div>

@@ -88,44 +88,44 @@ export const DualAgentConsensusTribunalView: React.FC<DualAgentConsensusTribunal
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         
-        <div className="p-5 bg-white rounded-3xl border border-slate-200 shadow-xs space-y-1">
-          <span className="text-[10px] text-slate-400 font-mono uppercase font-bold block">Falhas Submetidas</span>
-          <span className="text-2xl font-black text-slate-900 font-mono">{report.totalFindingsEvaluated}</span>
-          <p className="text-[11px] text-slate-500 font-medium">Inspecionadas pelo enxame</p>
+        <div className="p-5 bg-[#101211] rounded-3xl border border-white/10 shadow-xs space-y-1">
+          <span className="text-[10px] text-[#BBBAA6] font-mono uppercase font-bold block">Falhas Submetidas</span>
+          <span className="text-2xl font-black text-[#FFFCE1] font-mono">{report.totalFindingsEvaluated}</span>
+          <p className="text-[11px] text-[#BBBAA6] font-medium">Inspecionadas pelo enxame</p>
         </div>
 
-        <div className="p-5 bg-emerald-50/70 rounded-3xl border border-emerald-200 shadow-xs space-y-1">
-          <span className="text-[10px] text-emerald-700 font-mono uppercase font-bold block">Aprovadas por 2 Agentes</span>
-          <span className="text-2xl font-black text-emerald-800 font-mono">{report.approvedFindingsCount} Falhas</span>
-          <p className="text-[11px] text-emerald-700 font-medium">100% Confirmadas no DOM ✓</p>
+        <div className="p-5 bg-[#101211] rounded-3xl border border-[#0AE448]/30 shadow-xs space-y-1">
+          <span className="text-[10px] text-[#0AE448] font-mono uppercase font-bold block">Aprovadas por 2 Agentes</span>
+          <span className="text-2xl font-black text-[#0AE448] font-mono">{report.approvedFindingsCount} Falhas</span>
+          <p className="text-[11px] text-[#0AE448]/80 font-medium">100% Confirmadas no DOM ✓</p>
         </div>
 
-        <div className="p-5 bg-purple-50/70 rounded-3xl border border-purple-200 shadow-xs space-y-1">
-          <span className="text-[10px] text-purple-700 font-mono uppercase font-bold block">Falsos-Positivos Eliminados</span>
-          <span className="text-2xl font-black text-purple-800 font-mono">{report.falsePositivesInterceptedCount} Descartados</span>
-          <p className="text-[11px] text-purple-700 font-medium">Bloqueados pelo revisor</p>
+        <div className="p-5 bg-[#101211] rounded-3xl border border-purple-500/30 shadow-xs space-y-1">
+          <span className="text-[10px] text-purple-300 font-mono uppercase font-bold block">Falsos-Positivos Eliminados</span>
+          <span className="text-2xl font-black text-purple-300 font-mono">{report.falsePositivesInterceptedCount} Descartados</span>
+          <p className="text-[11px] text-purple-300/80 font-medium">Bloqueados pelo revisor</p>
         </div>
 
-        <div className="p-5 bg-slate-900 text-white rounded-3xl border border-slate-800 shadow-xs space-y-1">
+        <div className="p-5 bg-[#101211] text-white rounded-3xl border border-amber-500/30 shadow-xs space-y-1">
           <span className="text-[10px] text-amber-400 font-mono uppercase font-bold block">Índice de Certeza</span>
           <span className="text-2xl font-black text-amber-300 font-mono">{report.globalConsensusAccuracyPct}%</span>
-          <p className="text-[11px] text-slate-400 font-medium">Zero alucinação garantida</p>
+          <p className="text-[11px] text-[#BBBAA6] font-medium">Zero alucinação garantida</p>
         </div>
 
       </div>
 
       {/* Filter Selector */}
-      <div className="flex items-center justify-between p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200 text-xs font-bold font-mono">
+      <div className="flex items-center justify-between p-1.5 bg-[#141716] rounded-2xl border border-white/10 text-xs font-bold font-mono">
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => setActiveFilter('APPROVED')}
             className={`px-4 py-2.5 rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
               activeFilter === 'APPROVED'
-                ? 'bg-white text-emerald-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-[#0AE448] text-slate-950 font-black shadow-xs'
+                : 'text-[#BBBAA6] hover:text-white'
             }`}
           >
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-950" />
             <span>Falhas Aprovadas com Duplo Visto ({report.approvedFindingsCount})</span>
           </button>
 
@@ -133,16 +133,16 @@ export const DualAgentConsensusTribunalView: React.FC<DualAgentConsensusTribunal
             onClick={() => setActiveFilter('INTERCEPTED')}
             className={`px-4 py-2.5 rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
               activeFilter === 'INTERCEPTED'
-                ? 'bg-white text-purple-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-purple-500 text-white font-black shadow-xs'
+                : 'text-[#BBBAA6] hover:text-white'
             }`}
           >
-            <ShieldCheck className="w-4 h-4 text-purple-600" />
+            <ShieldCheck className="w-4 h-4 text-purple-200" />
             <span>Falsos-Positivos Interceptados ({report.falsePositivesInterceptedCount})</span>
           </button>
         </div>
 
-        <span className="text-[11px] text-slate-400 pr-3 hidden sm:inline">
+        <span className="text-[11px] text-[#BBBAA6] pr-3 hidden sm:inline">
           {report.gatekeeperSummary}
         </span>
       </div>
@@ -155,41 +155,41 @@ export const DualAgentConsensusTribunalView: React.FC<DualAgentConsensusTribunal
           return (
             <div
               key={item.id}
-              className={`p-6 rounded-3xl bg-white border-2 shadow-xs space-y-5 transition-all ${
-                isApproved ? 'border-slate-200 hover:border-emerald-300' : 'border-purple-200 bg-purple-50/20'
+              className={`p-6 rounded-3xl bg-[#101211] border shadow-xs space-y-5 transition-all ${
+                isApproved ? 'border-white/10 hover:border-[#0AE448]/40' : 'border-purple-500/30 bg-purple-950/10'
               }`}
             >
               
               {/* Header */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
                 <div className="flex items-center gap-3">
                   <div className={`p-2.5 rounded-2xl font-bold font-mono text-xs flex items-center gap-1.5 ${
-                    isApproved ? 'bg-emerald-50 text-emerald-700' : 'bg-purple-100 text-purple-800'
+                    isApproved ? 'bg-[#0AE448]/10 text-[#0AE448] border border-[#0AE448]/20' : 'bg-purple-500/10 text-purple-300 border border-purple-500/20'
                   }`}>
                     {isApproved ? (
                       <>
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#0AE448]" />
                         <span>2/2 APROVADO</span>
                       </>
                     ) : (
                       <>
-                        <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+                        <ShieldCheck className="w-3.5 h-3.5 text-purple-300" />
                         <span>FALSO-POSITIVO ELIMINADO</span>
                       </>
                     )}
                   </div>
                   <div>
-                    <h3 className="font-bold text-slate-900 text-base">{item.findingTitle}</h3>
-                    <span className="text-xs text-slate-400 font-mono">Categoria: {item.category}</span>
+                    <h3 className="font-bold text-[#FFFCE1] text-base">{item.findingTitle}</h3>
+                    <span className="text-xs text-[#BBBAA6] font-mono">Categoria: {item.category}</span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 bg-slate-100 text-slate-800 rounded-xl font-mono font-bold text-xs">
+                  <span className="px-3 py-1 bg-white/5 border border-white/10 text-[#FFFCE1] rounded-xl font-mono font-bold text-xs">
                     Consenso: {item.consensusScorePct}%
                   </span>
                   {item.financialImpactMonthly > 0 && (
-                    <span className="px-3 py-1 bg-rose-50 text-rose-800 border border-rose-200 rounded-xl font-mono font-bold text-xs">
+                    <span className="px-3 py-1 bg-rose-500/10 text-rose-300 border border-rose-500/30 rounded-xl font-mono font-bold text-xs">
                       R$ {item.financialImpactMonthly.toLocaleString('pt-BR')} / mês
                     </span>
                   )}
@@ -197,7 +197,7 @@ export const DualAgentConsensusTribunalView: React.FC<DualAgentConsensusTribunal
               </div>
 
               {/* Description */}
-              <p className="text-xs text-slate-600 leading-relaxed font-sans font-medium">
+              <p className="text-xs text-[#BBBAA6] leading-relaxed font-sans font-medium">
                 {item.findingDescription}
               </p>
 
@@ -205,36 +205,36 @@ export const DualAgentConsensusTribunalView: React.FC<DualAgentConsensusTribunal
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
                 
                 {/* Agent 1: Proposing Agent */}
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+                <div className="p-4 bg-[#141716] rounded-2xl border border-white/10 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-slate-500 uppercase font-bold">1º Agente (Propositor):</span>
-                    <span className="text-indigo-600 font-bold">{item.proposingAgent.confidencePct}% Certeza</span>
+                    <span className="text-[10px] text-[#BBBAA6] uppercase font-bold">1º Agente (Propositor):</span>
+                    <span className="text-sky-400 font-bold">{item.proposingAgent.confidencePct}% Certeza</span>
                   </div>
-                  <strong className="text-slate-900 block font-sans text-xs">{item.proposingAgent.agentName}</strong>
-                  <p className="text-[11px] text-slate-600 font-sans leading-relaxed flex items-start gap-1">
-                    <Search className="w-3.5 h-3.5 text-slate-500 shrink-0 mt-0.5" />
+                  <strong className="text-[#FFFCE1] block font-sans text-xs">{item.proposingAgent.agentName}</strong>
+                  <p className="text-[11px] text-[#BBBAA6] font-sans leading-relaxed flex items-start gap-1">
+                    <Search className="w-3.5 h-3.5 text-[#BBBAA6] shrink-0 mt-0.5" />
                     <span><strong>Método:</strong> {item.proposingAgent.detectionMethod}</span>
                   </p>
                 </div>
 
                 {/* Agent 2: Independent Reviewing Agent */}
                 <div className={`p-4 rounded-2xl border space-y-2 ${
-                  isApproved ? 'bg-emerald-50/60 border-emerald-200' : 'bg-purple-50/60 border-purple-200'
+                  isApproved ? 'bg-[#141716] border-[#0AE448]/30' : 'bg-purple-950/20 border-purple-500/30'
                 }`}>
                   <div className="flex items-center justify-between">
                     <span className={`text-[10px] uppercase font-bold ${
-                      isApproved ? 'text-emerald-700' : 'text-purple-700'
+                      isApproved ? 'text-[#0AE448]' : 'text-purple-300'
                     }`}>
                       2º Agente (Revisor Independente):
                     </span>
-                    <span className={`font-bold inline-flex items-center gap-1 ${isApproved ? 'text-emerald-800' : 'text-purple-800'}`}>
-                      <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                    <span className={`font-bold inline-flex items-center gap-1 ${isApproved ? 'text-[#0AE448]' : 'text-purple-300'}`}>
+                      <CheckCircle2 className="w-3 h-3 text-[#0AE448]" />
                       <span>{item.reviewingAgent.validationVote}</span>
                     </span>
                   </div>
-                  <strong className="text-slate-900 block font-sans text-xs">{item.reviewingAgent.agentName}</strong>
-                  <p className="text-[11px] text-slate-700 font-sans leading-relaxed flex items-start gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <strong className="text-[#FFFCE1] block font-sans text-xs">{item.reviewingAgent.agentName}</strong>
+                  <p className={`text-[11px] font-sans leading-relaxed flex items-start gap-1 ${isApproved ? 'text-[#BBBAA6]' : 'text-purple-200'}`}>
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#0AE448] shrink-0 mt-0.5" />
                     <span><strong>Checagem:</strong> {item.reviewingAgent.independentVerificationCheck}</span>
                   </p>
                 </div>
@@ -242,10 +242,10 @@ export const DualAgentConsensusTribunalView: React.FC<DualAgentConsensusTribunal
               </div>
 
               {/* Raw Verified Evidence Tag */}
-              <div className="p-3 bg-slate-900 text-slate-300 rounded-2xl text-[11px] font-mono flex items-center justify-between gap-3">
-                <span className="text-slate-400">Evidência Extraída do DOM: <strong className="text-emerald-400">{item.rawEvidenceVerified}</strong></span>
-                <span className="text-[10px] text-emerald-400 font-bold uppercase shrink-0 inline-flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+              <div className="p-3 bg-[#0E100F] border border-white/10 text-slate-300 rounded-2xl text-[11px] font-mono flex items-center justify-between gap-3">
+                <span className="text-[#BBBAA6]">Evidência Extraída do DOM: <strong className="text-[#0AE448]">{item.rawEvidenceVerified}</strong></span>
+                <span className="text-[10px] text-[#0AE448] font-bold uppercase shrink-0 inline-flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3 text-[#0AE448]" />
                   <span>Auditado ao Vivo</span>
                 </span>
               </div>
