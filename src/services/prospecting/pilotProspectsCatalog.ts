@@ -146,48 +146,48 @@ export const RAW_PILOT_20_PROSPECTS: Omit<ProspectLead, 'huntingTier' | 'tierAna
     contactTargetPhone: '553296497879',
     brokenSkus: [
       {
-        productTitle: 'Sapatenis Masculino Democrata Denim Shift Couro Confort',
-        productUrl: 'https://www.democrata.com.br/sapatenis-shift-couro-marrom',
+        productTitle: 'Sapatênis Denim Grow Hi-Soft 32 Preto',
+        productUrl: 'https://www.democrata.com.br/sapatenis-denim-grow-hi-soft-32-preto203201-001/p',
         imageSrc: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=500&auto=format&fit=crop&q=60',
-        price: 289.90,
-        availableSizes: ['38', '43', '44'],
-        missingSizes: ['39', '40', '41'],
-        ruptureSeverity: 'ALTA',
-        estimatedLostRevenueMonthly: 68222.70,
-        explanation: 'Sapato social/casual carro-chefe sem os tamanhos 39 a 41 (representam 70% das vendas).'
+        price: 259.90,
+        availableSizes: ['43', '44'],
+        missingSizes: ['39', '40', '41', 'ESGOTADO'],
+        ruptureSeverity: 'CRITICA',
+        estimatedLostRevenueMonthly: 51980.00,
+        explanation: 'Modelo best-seller com estoque zerado no checkout VTEX nos tamanhos de maior giro masculino (39 a 41).'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Sapatenis Masculino Democrata Denim Shift Couro Confort',
-      productUrl: 'https://www.democrata.com.br/sapatenis-shift-couro-marrom',
+      productTitle: 'Sapatênis Denim Grow Hi-Soft 32 Preto',
+      productUrl: 'https://www.democrata.com.br/sapatenis-denim-grow-hi-soft-32-preto203201-001/p',
       imageSrc: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=500&auto=format&fit=crop&q=60',
-      price: 289.90,
-      availableSizes: ['38', '43', '44'],
-      missingSizes: ['39', '40', '41'],
-      ruptureSeverity: 'ALTA',
-      estimatedLostRevenueMonthly: 68222.70,
-      explanation: 'Tamanhos de maior giro ausentes com campanhas Advantage+ ativas.'
+      price: 259.90,
+      availableSizes: ['43', '44'],
+      missingSizes: ['39', '40', '41', 'ESGOTADO'],
+      ruptureSeverity: 'CRITICA',
+      estimatedLostRevenueMonthly: 51980.00,
+      explanation: 'Tamanhos 39 a 41 esgotados na VTEX oficial com campanhas Advantage+ ativas.'
     },
-    totalMonthlyWasteEstimated: 68222.70,
-    iceScore: 9.2,
+    totalMonthlyWasteEstimated: 51980.00,
+    iceScore: 9.5,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'Democrata Calçados',
       {
-        productTitle: 'Sapatenis Masculino Democrata Denim Shift Couro Confort',
-        productUrl: 'https://www.democrata.com.br/sapatenis-shift-couro-marrom',
+        productTitle: 'Sapatênis Denim Grow Hi-Soft 32 Preto',
+        productUrl: 'https://www.democrata.com.br/sapatenis-denim-grow-hi-soft-32-preto203201-001/p',
         imageSrc: '',
-        price: 289.90,
-        availableSizes: ['38', '43', '44'],
-        missingSizes: ['39', '40', '41'],
-        ruptureSeverity: 'ALTA',
-        estimatedLostRevenueMonthly: 68222.70,
+        price: 259.90,
+        availableSizes: ['43', '44'],
+        missingSizes: ['39', '40', '41', 'ESGOTADO'],
+        ruptureSeverity: 'CRITICA',
+        estimatedLostRevenueMonthly: 51980.00,
         explanation: ''
       },
-      68222.70,
+      51980.00,
       'https://www.democrata.com.br'
     ),
-    notes: 'WhatsApp verificado (32 9649-7879). Grande player calçadista.'
+    notes: 'Franca-SP. Plataforma VTEX. WhatsApp oficial (32 9649-7879). Estoque zerado no SKU VTEX 10173.'
   },
 
   // 4. King Farm Jeans (Maringá/PR)
@@ -385,48 +385,48 @@ export const RAW_PILOT_20_PROSPECTS: Omit<ProspectLead, 'huntingTier' | 'tierAna
     contactTargetPhone: '5534953283042',
     brokenSkus: [
       {
-        productTitle: 'Camisa Manga Longa Proteção Solar Agro Pro UV50+',
-        productUrl: 'https://www.brkagro.com.br/products/camisa-manga-longa-protecao-solar-agro-pro-uv50',
-        imageSrc: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&auto=format&fit=crop&q=60',
-        price: 140.46,
-        availableSizes: ['P', 'PP'],
-        missingSizes: ['M', 'G', 'GG'],
+        productTitle: 'Chapéu American Hat Cattleman Silver',
+        productUrl: 'https://www.brkagro.com.br/products/chapeu-american-hat-cattleman-silver',
+        imageSrc: 'https://images.unsplash.com/photo-1514866726862-0f081731e63f?w=500&auto=format&fit=crop&q=60',
+        price: 2499.00,
+        availableSizes: [],
+        missingSizes: ['LG', 'MD', 'SM', 'XL', 'XS (ESGOTADO)'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 38345.70,
-        explanation: 'Anúncio de topo de funil ativo direcionando para produto sem tamanhos centrais (M e G).'
+        estimatedLostRevenueMonthly: 49980.00,
+        explanation: 'Item de altíssimo valor (R$ 2.499,00) com 100% das variantes esgotadas no front Shopify, mantendo campanhas de catálogo ativas.'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Camisa Manga Longa Proteção Solar Agro Pro UV50+',
-      productUrl: 'https://www.brkagro.com.br/products/camisa-manga-longa-protecao-solar-agro-pro-uv50',
-      imageSrc: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&auto=format&fit=crop&q=60',
-      price: 140.46,
-      availableSizes: ['P', 'PP'],
-      missingSizes: ['M', 'G', 'GG'],
+      productTitle: 'Chapéu American Hat Cattleman Silver',
+      productUrl: 'https://www.brkagro.com.br/products/chapeu-american-hat-cattleman-silver',
+      imageSrc: 'https://images.unsplash.com/photo-1514866726862-0f081731e63f?w=500&auto=format&fit=crop&q=60',
+      price: 2499.00,
+      availableSizes: [],
+      missingSizes: ['LG', 'MD', 'SM', 'XL', 'XS (ESGOTADO)'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 38345.70,
-      explanation: 'M e G esgotados no e-commerce com anúncio ativo.'
+      estimatedLostRevenueMonthly: 49980.00,
+      explanation: 'Todas as numerações esgotadas no e-commerce oficial.'
     },
-    totalMonthlyWasteEstimated: 38345.70,
-    iceScore: 9.3,
+    totalMonthlyWasteEstimated: 49980.00,
+    iceScore: 9.7,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'BRK Agro',
       {
-        productTitle: 'Camisa Manga Longa Proteção Solar Agro Pro UV50+',
-        productUrl: 'https://www.brkagro.com.br/products/camisa-manga-longa-protecao-solar-agro-pro-uv50',
+        productTitle: 'Chapéu American Hat Cattleman Silver',
+        productUrl: 'https://www.brkagro.com.br/products/chapeu-american-hat-cattleman-silver',
         imageSrc: '',
-        price: 140.46,
-        availableSizes: ['P', 'PP'],
-        missingSizes: ['M', 'G', 'GG'],
+        price: 2499.00,
+        availableSizes: [],
+        missingSizes: ['LG', 'MD', 'SM', 'XL', 'XS (ESGOTADO)'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 38345.70,
+        estimatedLostRevenueMonthly: 49980.00,
         explanation: ''
       },
-      38345.70,
+      49980.00,
       'https://www.brkagro.com.br'
     ),
-    notes: 'Campanha de tráfego ativa no Centro-Oeste e Sul do Brasil.'
+    notes: 'Campanha de tráfego ativa. Produto de R$ 2.499,00 com 100% de ruptura no front da Shopify.'
   },
 
   // 8. Tatanka Clothes (São Paulo/SP)
@@ -621,48 +621,48 @@ export const RAW_PILOT_20_PROSPECTS: Omit<ProspectLead, 'huntingTier' | 'tierAna
     contactTargetPhone: '5541991823344',
     brokenSkus: [
       {
-        productTitle: 'Tênis Öus Imigrante Essencial Camurça Preto/Branco',
-        productUrl: 'https://www.ous.com.br/tenis-ous-imigrante-preto-branco',
+        productTitle: 'Tênis Phibo 1123 Cestaria Imperial',
+        productUrl: 'https://www.ous.com.br/phibo-1123-cestaria-imperial/p',
         imageSrc: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60',
-        price: 379.90,
-        availableSizes: ['36', '43', '44'],
-        missingSizes: ['39', '40', '41', '42'],
+        price: 699.90,
+        availableSizes: [],
+        missingSizes: ['39', '40', '41', '42', 'ESGOTADO'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 72000.00,
-        explanation: 'Tênis de maior venda da marca sem a grade 39 a 42 (80% da demanda masculina).'
+        estimatedLostRevenueMonthly: 48993.00,
+        explanation: 'Modelo de alto valor (R$ 699,90) com estoque zerado no checkout VTEX (SKU 17165) continuando a receber tráfego.'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Tênis Öus Imigrante Essencial Camurça Preto/Branco',
-      productUrl: 'https://www.ous.com.br/tenis-ous-imigrante-preto-branco',
+      productTitle: 'Tênis Phibo 1123 Cestaria Imperial',
+      productUrl: 'https://www.ous.com.br/phibo-1123-cestaria-imperial/p',
       imageSrc: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60',
-      price: 379.90,
-      availableSizes: ['36', '43', '44'],
-      missingSizes: ['39', '40', '41', '42'],
+      price: 699.90,
+      availableSizes: [],
+      missingSizes: ['39', '40', '41', '42', 'ESGOTADO'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 72000.00,
-      explanation: 'Linha Imigrante sem tamanhos 39 a 42 com mídia de alta frequência.'
+      estimatedLostRevenueMonthly: 48993.00,
+      explanation: 'Estoque físico zerado na VTEX oficial com mídia ativa.'
     },
-    totalMonthlyWasteEstimated: 72000.00,
+    totalMonthlyWasteEstimated: 48993.00,
     iceScore: 9.6,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'Öus Brasil',
       {
-        productTitle: 'Tênis Öus Imigrante Essencial Camurça Preto/Branco',
-        productUrl: 'https://www.ous.com.br/tenis-ous-imigrante-preto-branco',
+        productTitle: 'Tênis Phibo 1123 Cestaria Imperial',
+        productUrl: 'https://www.ous.com.br/phibo-1123-cestaria-imperial/p',
         imageSrc: '',
-        price: 379.90,
-        availableSizes: ['36', '43', '44'],
-        missingSizes: ['39', '40', '41', '42'],
+        price: 699.90,
+        availableSizes: [],
+        missingSizes: ['39', '40', '41', '42', 'ESGOTADO'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 72000.00,
+        estimatedLostRevenueMonthly: 48993.00,
         explanation: ''
       },
-      72000.00,
+      48993.00,
       'https://www.ous.com.br'
     ),
-    notes: 'Curitiba-PR. Líder em skate streetwear nacional. WhatsApp (41 99182-3344).'
+    notes: 'Curitiba-PR. Plataforma VTEX. WhatsApp (41 99182-3344). Estoque zerado no SKU VTEX 17165.'
   },
 
   // 12. Baw Clothing (São Paulo/SP)
