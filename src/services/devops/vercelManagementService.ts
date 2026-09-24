@@ -43,7 +43,7 @@ function getAuthHeaders(token?: string) {
 }
 
 /**
- * Fetches recent deployments for the LeakFinder project
+ * Fetches recent deployments for the AdShield project
  */
 export async function fetchRecentVercelDeployments(limit = 10, token?: string): Promise<VercelDeploymentInfo[]> {
   try {
@@ -97,8 +97,8 @@ export async function fetchVercelProjectOverview(token?: string): Promise<Vercel
       nodeVersion: p.nodeVersion || '24.x',
       gitRepo: `${p.link?.org}/${p.link?.repo}`,
       productionBranch: p.link?.productionBranch || 'main',
-      liveProductionUrl: 'https://leakfinder-green.vercel.app',
-      domains: p.targets?.production?.alias || ['leakfinder-green.vercel.app']
+      liveProductionUrl: 'https://adshield.vercel.app',
+      domains: p.targets?.production?.alias || ['adshield.vercel.app']
     };
   } catch (err) {
     console.error('[Vercel API] Error fetching project overview:', err);
@@ -110,13 +110,13 @@ function getFallbackDeployments(): VercelDeploymentInfo[] {
   return [
     {
       id: 'dpl_6EwVAXRYx1q68j61CAQXkbVTR7tQ',
-      url: 'https://leakfinder-green.vercel.app',
+      url: 'https://adshield.vercel.app',
       state: 'READY',
       readySubstate: 'PROMOTED',
       createdAt: Date.now() - 600000,
       commitSha: '7b318fa',
       commitMessage: 'feat(ui): complete Phase 4 analytical views, founder HQ, prospecting & omnichannel in Obsidian Dark',
-      aliases: ['leakfinder-green.vercel.app']
+      aliases: ['adshield.vercel.app']
     }
   ];
 }

@@ -10,7 +10,6 @@ import {
   AlertCircle, 
   ExternalLink,
   Building2,
-  Phone,
   Mail,
   Printer
 } from 'lucide-react';
@@ -84,7 +83,7 @@ export function TermsPage() {
               <span className="text-[#0AE448] font-mono">1.</span> Objeto, Qualificação das Partes e Aceitação Vinculante
             </h2>
             <p>
-              Estes Termos de Uso e Condições Gerais regem a utilização da plataforma tecnológica <strong className="text-[#FFFCE1]">AdShield / LeakFinder</strong>, provida pelo <strong className="text-[#FFFCE1]">BRK GROUP TECNOLOGIA LTDA</strong> (doravante denominado "AdShield"), sociedade empresária devidamente constituída sob as leis do Brasil, inscrita no CNPJ sob o nº <strong className="text-[#FFFCE1]">52.894.218/0001-90</strong>.
+              Estes Termos de Uso e Condições Gerais regem a utilização da plataforma tecnológica <strong className="text-[#FFFCE1]">AdShield</strong>, provida pelo <strong className="text-[#FFFCE1]">BRK GROUP TECNOLOGIA LTDA</strong> (doravante denominado "AdShield"), sociedade empresária devidamente constituída sob as leis do Brasil, inscrita no CNPJ sob o nº <strong className="text-[#FFFCE1]">52.894.218/0001-90</strong>.
             </p>
             <p>
               Ao criar uma conta, navegar, auditar URLs ou contratar quaisquer planos, você (doravante "Usuário" ou "Contratante") declara ciência inequívoca e aceitação integral e irrestrita deste instrumento e da nossa Política de Privacidade. Caso discorde de qualquer cláusula, abstenha-se de utilizar a plataforma.

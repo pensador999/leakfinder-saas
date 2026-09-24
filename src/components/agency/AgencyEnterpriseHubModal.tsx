@@ -44,7 +44,7 @@ export const AgencyEnterpriseHubModal: React.FC<AgencyEnterpriseHubModalProps> =
       estimatedMonthlyLoss: 6825,
       severity: 'CRÍTICA',
       campaignStatus: '🚨 ATIVO (PAUSAR)',
-      evidenceScreenshotUrl: 'https://leakfinder-green.vercel.app/api/evidence-preview?domain=insiderstore.com.br&sizes=M,G',
+      evidenceScreenshotUrl: 'https://adshield.vercel.app/api/evidence-preview?domain=insiderstore.com.br&sizes=M,G',
       lastInspectedAt: new Date().toISOString()
     },
     {
@@ -55,7 +55,7 @@ export const AgencyEnterpriseHubModal: React.FC<AgencyEnterpriseHubModalProps> =
       estimatedMonthlyLoss: 5280,
       severity: 'CRÍTICA',
       campaignStatus: '🚨 ATIVO (PAUSAR)',
-      evidenceScreenshotUrl: 'https://leakfinder-green.vercel.app/api/evidence-preview?domain=brkagro.com.br&sizes=M,G,GG',
+      evidenceScreenshotUrl: 'https://adshield.vercel.app/api/evidence-preview?domain=brkagro.com.br&sizes=M,G,GG',
       lastInspectedAt: new Date().toISOString()
     },
     {
@@ -66,7 +66,7 @@ export const AgencyEnterpriseHubModal: React.FC<AgencyEnterpriseHubModalProps> =
       estimatedMonthlyLoss: 2700,
       severity: 'ALTA',
       campaignStatus: '🚨 ATIVO (PAUSAR)',
-      evidenceScreenshotUrl: 'https://leakfinder-green.vercel.app/api/evidence-preview?domain=calcadosconforto.com.br&sizes=39,40,41',
+      evidenceScreenshotUrl: 'https://adshield.vercel.app/api/evidence-preview?domain=calcadosconforto.com.br&sizes=39,40,41',
       lastInspectedAt: new Date().toISOString()
     }
   ];

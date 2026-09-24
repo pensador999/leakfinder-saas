@@ -190,6 +190,6 @@ export function formatWhatsAppAlertMessage(
     `${itemsText}\n\n` +
     `💸 *Vazamento Financeiro Estimado:* ~R$ ${totalLoss.toLocaleString('pt-BR')}/mês em tráfego desperdiçado.\n` +
     `⚡ *Ação Recomendada:* Pausar anúncios desses criativos ou atualizar as URLs de destino para produtos com grade disponível.\n\n` +
-    `👉 *Acesse o Dossiê Técnico Completo:* https://leakfinder-green.vercel.app/?url=${encodeURIComponent(domain)}`
+    `👉 *Acesse o Dossiê Técnico Completo:* https://adshield.vercel.app/?url=${encodeURIComponent(domain)}`
   );
 }

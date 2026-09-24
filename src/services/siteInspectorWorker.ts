@@ -151,7 +151,7 @@ export async function runSiteInspectorWorker(
         title: 'Ponto Cego de SEO: Ausência de Marcação Estruturada Schema org',
         description: `O site ${siteData.domain} não possui marcação JSON-LD do tipo Product ou Offer no HTML.`,
         impactOnSales: 'O Google não exibe estrelas de avaliação ou preço diretamente nos resultados de busca, reduzindo o CTR orgânico.',
-        fixAction: 'Ativar o código Schema JSON-LD gerado pelo Agente SEO LeakFinder no head da página.'
+        fixAction: 'Ativar o código Schema JSON-LD gerado pelo Agente SEO AdShield no head da página.'
       });
     }
 

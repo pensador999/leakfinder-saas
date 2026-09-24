@@ -1,5 +1,5 @@
 /**
- * 🛡️ ANTI-BLOCKING EDGE PROXY & NETWORK RESILIENCE SERVICE (LEAKFINDER SAAS)
+ * 🛡️ ANTI-BLOCKING EDGE PROXY & NETWORK RESILIENCE SERVICE (ADSHIELD SAAS)
  * Gerencia requisições com rotação de User-Agent, corrida de timeout (AbortController),
  * múltiplos proxies de contingência (Jina AI Edge Reader, AllOrigins, CorsProxy) e zero erros não-tratados.
  */

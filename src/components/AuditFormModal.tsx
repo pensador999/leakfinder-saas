@@ -63,13 +63,13 @@ export const AuditFormModal: React.FC<AuditFormModalProps> = ({ isOpen, onClose,
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-black text-lg text-white font-mono">LeakFinder</span>
-                <span className="px-2 py-0.5 text-[9px] font-bold uppercase bg-indigo-500/20 text-indigo-300 rounded border border-indigo-500/30">
+                <span className="font-black text-lg text-white font-mono">AdShield</span>
+                <span className="px-2 py-0.5 text-[9px] font-bold uppercase bg-emerald-500/20 text-[#0AE448] rounded border border-emerald-500/30">
                   AUTONOMOUS AUDIT
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
-                Configure os parâmetros da sua empresa para que os 6 agentes LeakFinder executem a auditoria completa de receita.
+                Configure os parâmetros da sua empresa para que o Enxame de Agentes AdShield execute a auditoria completa de receita e tráfego.
               </p>
             </div>
           </div>
@@ -206,7 +206,7 @@ export const AuditFormModal: React.FC<AuditFormModalProps> = ({ isOpen, onClose,
               type="submit"
               className="w-full py-3.5 px-6 font-bold text-sm text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:via-purple-500 hover:to-pink-500 rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 group cursor-pointer"
             >
-              <span>Executar Auditoria LeakFinder de 6 Agentes</span>
+              <span>Executar Auditoria AdShield de 18 Agentes</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>

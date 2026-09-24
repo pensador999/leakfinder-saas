@@ -95,7 +95,7 @@ export async function probeAllPillarsLive(): Promise<FourPillarsHealthReport> {
       status: githubProbe.ok || githubProbe.latency < 2000 ? 'HEALTHY' : 'DEGRADED',
       latencyMs: githubProbe.latency || 462,
       statusCode: 'Ativo',
-      details: 'Repositório pensador999/leakfinder-saas sincronizado na branch main.',
+      details: 'Repositório AdShield Core sincronizado na branch main.',
       metricLabel: 'Commit em Produção',
       metricValue: '98f9787'
     },

@@ -78,7 +78,7 @@ export class BillingService {
 
     if (params.gateway === 'ASAAS_PIX') {
       // Simulação estruturada do gateway Asaas Pix
-      const mockPixCode = `00020126580014br.gov.bcb.pix0136leakfinder-prod-${Date.now()}520400005303986540${plan.priceBrlMonthly}.005802BR5910LEAKFINDER6009SAOPAULO62070503***6304`;
+      const mockPixCode = `00020126580014br.gov.bcb.pix0136adshield-prod-${Date.now()}520400005303986540${plan.priceBrlMonthly}.005802BR5908ADSHIELD6009SAOPAULO62070503***6304`;
       
       return {
         pixQrCode: `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(mockPixCode)}`,

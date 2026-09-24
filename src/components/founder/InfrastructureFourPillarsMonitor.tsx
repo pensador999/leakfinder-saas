@@ -163,12 +163,12 @@ export const InfrastructureFourPillarsMonitor: React.FC = () => {
         <div className="flex items-center gap-2 shrink-0 font-mono text-[11px]">
           <span className="text-slate-400">Deploy Ativo:</span>
           <a 
-            href="https://leakfinder-green.vercel.app/" 
+            href="https://adshield.vercel.app/" 
             target="_blank" 
             rel="noopener noreferrer"
             className="text-indigo-400 hover:text-indigo-300 flex items-center gap-1 font-bold"
           >
-            <span>leakfinder-green.vercel.app</span>
+            <span>adshield.vercel.app</span>
             <ExternalLink className="w-3 h-3" />
           </a>
         </div>

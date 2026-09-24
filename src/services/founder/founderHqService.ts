@@ -162,8 +162,8 @@ export const SAMPLE_PROSPECT_LEADS: ProspectStoreLead[] = [
     contactWhatsApp: '5511987654321',
     contactPerson: 'Rodrigo (Fundador)',
     adCampaignRunning: true,
-    dossierUrl: 'https://leakfinder-green.vercel.app/?loja=countrylifestore.com.br',
-    outreachPitch: 'Olá Rodrigo! Nosso robô detectou que o anúncio da Country Life Store para a Camisa Work está ativo no Instagram, mas os tamanhos G e GG estão esgotados. Vocês estão perdendo cerca de R$ 14.500/mês em cliques perdidos. Geramos um dossiê gratuito da sua loja: https://leakfinder-green.vercel.app/?loja=countrylifestore.com.br',
+    dossierUrl: 'https://adshield.vercel.app/?loja=countrylifestore.com.br',
+    outreachPitch: 'Olá Rodrigo! Nosso robô detectou que o anúncio da Country Life Store para a Camisa Work está ativo no Instagram, mas os tamanhos G e GG estão esgotados. Vocês estão perdendo cerca de R$ 14.500/mês em cliques perdidos. Geramos um dossiê gratuito da sua loja: https://adshield.vercel.app/?loja=countrylifestore.com.br',
     status: 'NOVO'
   },
   {
@@ -176,8 +176,8 @@ export const SAMPLE_PROSPECT_LEADS: ProspectStoreLead[] = [
     contactWhatsApp: '5511976543210',
     contactPerson: 'Juliana (Diretora de E-Commerce)',
     adCampaignRunning: true,
-    dossierUrl: 'https://leakfinder-green.vercel.app/?loja=belladonnacalcados.com.br',
-    outreachPitch: 'Olá Juliana! Notamos que o anúncio do Sneaker Plataforma da Bella Donna está rodando sem estoque das numerações 36 e 37 (responsáveis por 44% das vendas de calçados). O prejuízo estimado é de R$ 22.800/mês. Acesse o diagnóstico da sua loja aqui: https://leakfinder-green.vercel.app/?loja=belladonnacalcados.com.br',
+    dossierUrl: 'https://adshield.vercel.app/?loja=belladonnacalcados.com.br',
+    outreachPitch: 'Olá Juliana! Notamos que o anúncio do Sneaker Plataforma da Bella Donna está rodando sem estoque das numerações 36 e 37 (responsáveis por 44% das vendas de calçados). O prejuízo estimado é de R$ 22.800/mês. Acesse o diagnóstico da sua loja aqui: https://adshield.vercel.app/?loja=belladonnacalcados.com.br',
     status: 'NOVO'
   },
   {
@@ -190,8 +190,8 @@ export const SAMPLE_PROSPECT_LEADS: ProspectStoreLead[] = [
     contactWhatsApp: '5511965432109',
     contactPerson: 'Marcos (Gestor de Tráfego)',
     adCampaignRunning: true,
-    dossierUrl: 'https://leakfinder-green.vercel.app/?loja=motopecasbrasil.com.br',
-    outreachPitch: 'Fala Marcos! Vimos o anúncio do Farol LED no Google Shopping sem indicação clara de voltagem e ano da moto, gerando abandonos de 60% no checkout. Veja o dossiê executivo completo da loja: https://leakfinder-green.vercel.app/?loja=motopecasbrasil.com.br',
+    dossierUrl: 'https://adshield.vercel.app/?loja=motopecasbrasil.com.br',
+    outreachPitch: 'Fala Marcos! Vimos o anúncio do Farol LED no Google Shopping sem indicação clara de voltagem e ano da moto, gerando abandonos de 60% no checkout. Veja o dossiê executivo completo da loja: https://adshield.vercel.app/?loja=motopecasbrasil.com.br',
     status: 'PROPOSTA_ENVIADA'
   },
   {
@@ -204,8 +204,8 @@ export const SAMPLE_PROSPECT_LEADS: ProspectStoreLead[] = [
     contactWhatsApp: '5511954321098',
     contactPerson: 'Camila (Head de Marketing)',
     adCampaignRunning: true,
-    dossierUrl: 'https://leakfinder-green.vercel.app/?loja=glowskinbeauty.com.br',
-    outreachPitch: 'Olá Camila! O Sérum da Glow Skin está com taxa de conversão mobile abaixo do benchmark porque o botão de compra fica fora da zona de alcance do polegar. Criamos um relatório visual em alta definição: https://leakfinder-green.vercel.app/?loja=glowskinbeauty.com.br',
+    dossierUrl: 'https://adshield.vercel.app/?loja=glowskinbeauty.com.br',
+    outreachPitch: 'Olá Camila! O Sérum da Glow Skin está com taxa de conversão mobile abaixo do benchmark porque o botão de compra fica fora da zona de alcance do polegar. Criamos um relatório visual em alta definição: https://adshield.vercel.app/?loja=glowskinbeauty.com.br',
     status: 'EM_NEGOCIACAO'
   }
 ];

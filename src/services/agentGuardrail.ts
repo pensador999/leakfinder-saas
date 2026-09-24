@@ -107,7 +107,7 @@ export function enforceStrictDomainIsolation(
 }
 
 /**
- * LeakFinder Guardrail & Revalidation Agent
+ * AdShield Guardrail & Revalidation Agent
  */
 export function runGuardrailAudit(
   diagnostic: AgentDiagnosticResult,

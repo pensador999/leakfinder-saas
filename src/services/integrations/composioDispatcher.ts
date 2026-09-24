@@ -107,7 +107,7 @@ export function formatSlackStockoutAlert(data: AgencyAlertData, channel = '#aler
               text: '🛡️ Painel da Agência',
               emoji: true
             },
-            url: data.dashboardUrl || 'https://leakfinder-green.vercel.app/agency'
+            url: data.dashboardUrl || 'https://adshield.vercel.app/agency'
           }
         ]
       }
@@ -124,7 +124,7 @@ export function formatDiscordStockoutAlert(data: AgencyAlertData): DiscordEmbedP
 
   return {
     username: 'AdShield Agency Sentinel',
-    avatar_url: 'https://leakfinder-green.vercel.app/logo192.png',
+    avatar_url: 'https://adshield.vercel.app/logo192.png',
     embeds: [
       {
         title: `🚨 Ruptura Crítica em Anúncio • ${data.clientName} (${cleanDomain})`,
@@ -159,6 +159,6 @@ export function dispatchAgencyAlert(
     platform,
     targetChannel,
     dispatchedAt: now,
-    mockDeliveryUrl: `https://leakfinder-green.vercel.app/api/composio-preview?platform=${platform.toLowerCase()}&domain=${encodeURIComponent(data.storeDomain)}`
+    mockDeliveryUrl: `https://adshield.vercel.app/api/composio-preview?platform=${platform.toLowerCase()}&domain=${encodeURIComponent(data.storeDomain)}`
   };
 }

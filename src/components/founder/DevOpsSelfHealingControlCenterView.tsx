@@ -140,7 +140,7 @@ export const DevOpsSelfHealingControlCenterView: React.FC = () => {
               className="px-3.5 py-1.5 bg-[#141716] hover:bg-white/10 text-[#FFFCE1] rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 border border-white/10"
             >
               <GitCommit className="w-3.5 h-3.5" />
-              <span>Ver Commits no GitHub (pensador999/leakfinder-saas)</span>
+              <span>Ver Commits no GitHub (AdShield Core)</span>
               <ExternalLink className="w-3 h-3" />
             </a>
 

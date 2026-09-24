@@ -108,6 +108,6 @@ export function createAvatarVideoSpec(params: {
       speechText: script.fullSpeechText
     },
     status: 'COMPLETED',
-    mockVideoUrl: `https://leakfinder-green.vercel.app/api/avatar-pitch-preview?jobId=${jobId}&domain=${encodeURIComponent(script.storeDomain)}`
+    mockVideoUrl: `https://adshield.vercel.app/api/avatar-pitch-preview?jobId=${jobId}&domain=${encodeURIComponent(script.storeDomain)}`
   };
 }

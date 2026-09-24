@@ -117,14 +117,14 @@ export function calculatePricingElasticity(input: PricingSimulationInput): Prici
   // O cenário de 10% geralmente vence no volume total e retenção de caixa imediato
   const bestScenarioRecommendation = pix10.netMarginDeltaMonthly >= pix7.netMarginDeltaMonthly ? pix10 : pix7;
 
-  const liquidPixBadgeSnippet = `<!-- 🟢 LEAKFINDER: BOX DINÂMICO DE DESCONTO PIX COM ECONOMIA REAL -->
+  const liquidPixBadgeSnippet = `<!-- 🟢 ADSHIELD: BOX DINÂMICO DE DESCONTO PIX COM ECONOMIA REAL -->
 <!-- Cole este bloco abaixo do preço no seu arquivo main-product.liquid ou product-form.liquid -->
 {% assign pix_discount_percentage = ${selectedPixDiscountPercent} %}
 {% assign discount_factor = 100 | minus: pix_discount_percentage | divided_by: 100.0 %}
 {% assign pix_price = product.selected_or_first_available_variant.price | times: discount_factor %}
 {% assign savings = product.selected_or_first_available_variant.price | minus: pix_price %}
 
-<div class="leakfinder-pix-badge" style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 14px; padding: 14px 18px; margin: 14px 0; display: flex; align-items: center; justify-content: space-between; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+<div class="adshield-pix-badge" style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 14px; padding: 14px 18px; margin: 14px 0; display: flex; align-items: center; justify-content: space-between; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
   <div style="display: flex; align-items: center; gap: 12px;">
     <div style="background: #16a34a; color: #fff; width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px;">
       ⚡

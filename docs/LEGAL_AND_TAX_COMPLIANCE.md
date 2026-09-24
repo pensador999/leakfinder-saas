@@ -1,5 +1,5 @@
 # ⚖️ Dossiê de Governança Jurídica, Regulatória, LGPD e Tributação
-## LeakFinder / AdShield SaaS (Ecossistema BRK Group)
+## AdShield OS (Ecossistema BRK Group)
 
 > **Data de Elaboração:** Setembro de 2026  
 > **Status:** Parecer Estratégico & Matriz de Mitigação de Riscos Regulatórios  
@@ -30,7 +30,7 @@ graph TD
 
 ### 2.1 A Legalidade da Raspagem Pública no Brasil
 * **Regra Fundamental:** Raspagem de dados **abertos e públicos** na web não é crime no Brasil, desde que:
-  1. **Não viole barreiras de autenticação/segurança privada** (Art. 154-A do Código Penal — Invasão de dispositivo informático). O LeakFinder inspeciona o HTML aberto e o `/products.json` público; ele não quebra logins restritos.
+  1. **Não viole barreiras de autenticação/segurança privada** (Art. 154-A do Código Penal — Invasão de dispositivo informático). O AdShield inspeciona o HTML aberto e o `/products.json` público; ele não quebra logins restritos.
   2. **Não caracterize Ataque de Negação de Serviço (DDoS Culposo):** Requisições em loop violento que derrubem o servidor da loja podem gerar ação de indenização por perdas e danos e lucros cessantes (Código Civil, Art. 186 e 927).
   3. **Marco Civil da Internet (Art. 3º, VI):** A disciplina do uso da internet no Brasil tem como princípio a finalidade social da rede e a liberdade dos modelos de negócios.
 

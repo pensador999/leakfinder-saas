@@ -38,7 +38,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({ isOpen, type, onClose })
               <>
                 <p className="text-[#FFFCE1] font-bold">Última atualização: 2026</p>
                 <p>
-                  O AdShield / LeakFinder respeita a sua privacidade. Esta Política de Privacidade explica como coletamos, 
+                  O AdShield respeita a sua privacidade. Esta Política de Privacidade explica como coletamos, 
                   usamos, divulgamos e protegemos as suas informações quando você visita nosso site e utiliza nosso serviço SaaS de auditoria.
                 </p>
                 <h3 className="text-sm font-bold text-[#FFFCE1] pt-2">1. Informações que Coletamos</h3>
@@ -61,7 +61,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({ isOpen, type, onClose })
               <>
                 <p className="text-[#FFFCE1] font-bold">Última atualização: 2026</p>
                 <p>
-                  Bem-vindo ao AdShield OS / LeakFinder. Estes Termos de Uso regem o seu acesso e uso do nosso 
+                  Bem-vindo ao AdShield OS. Estes Termos de Uso regem o seu acesso e uso do nosso 
                   software e serviços de auditoria de e-commerce.
                 </p>
                 <h3 className="text-sm font-bold text-[#FFFCE1] pt-2">1. Aceitação dos Termos</h3>

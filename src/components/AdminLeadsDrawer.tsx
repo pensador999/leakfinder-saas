@@ -3,7 +3,6 @@ import {
   Users, 
   X, 
   MessageCircle, 
-  Phone, 
   ExternalLink, 
   DollarSign, 
   Calendar, 
@@ -35,6 +34,7 @@ export const AdminLeadsDrawer: React.FC<AdminLeadsDrawerProps> = ({ isOpen, onCl
 
   const handleClearLeads = () => {
     if (window.confirm('Tem certeza que deseja limpar a lista de leads capturados localmente?')) {
+      localStorage.removeItem('ADSHIELD_CAPTURED_LEADS');
       localStorage.removeItem('LEAKFINDER_CAPTURED_LEADS');
       setLeads([]);
     }
@@ -51,7 +51,7 @@ export const AdminLeadsDrawer: React.FC<AdminLeadsDrawerProps> = ({ isOpen, onCl
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `leads_leakfinder_${Date.now()}.csv`);
+    link.setAttribute('download', `leads_adshield_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

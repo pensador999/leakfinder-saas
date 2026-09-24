@@ -28,8 +28,8 @@ export interface AutonomousEngineStatus {
   lastHeartbeat: string;
 }
 
-const STORAGE_KEY_RULES = 'leakfinder_learned_rules';
-const STORAGE_KEY_INCIDENTS = 'leakfinder_healing_incidents';
+const STORAGE_KEY_RULES = 'adshield_learned_rules';
+const STORAGE_KEY_INCIDENTS = 'adshield_healing_incidents';
 
 /**
  * 🤖 AUTONOMOUS SELF-HEALING & CONTINUOUS LEARNING ENGINE

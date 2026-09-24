@@ -475,7 +475,7 @@ export function executeTreeOfThoughtReasoning(
     },
     whatsAppConciergePayload: {
       agentName: '10. Vigia WhatsApp & Concierge 24h',
-      merchantHookDirectMessage: `🚨 *LeakFinder Alerta Executivo:* Identificamos que a campanha principal de ${brand} está queimando ~R$ ${dailyLoss}/dia em anúncios para SKUs com ruptura de tamanho. O concorrente líder vende por R$ ${competitorPrice} com Frete Grátis. Temos o patch pronto (Ad-Stock Sync + 7% OFF Pix para R$ ${pixDiscountPrice}). Deseja autorizar a correção em 1-clique?`,
+      merchantHookDirectMessage: `🚨 *AdShield Alerta Executivo:* Identificamos que a campanha principal de ${brand} está queimando ~R$ ${dailyLoss}/dia em anúncios para SKUs com ruptura de tamanho. O concorrente líder vende por R$ ${competitorPrice} com Frete Grátis. Temos o patch pronto (Ad-Stock Sync + 7% OFF Pix para R$ ${pixDiscountPrice}). Deseja autorizar a correção em 1-clique?`,
       projectedMonthlyRecovery: `R$ ${monthlyRecoveredAds.toLocaleString('pt-BR')}/mês em anúncios + R$ ${monthlyRecoveredSales.toLocaleString('pt-BR')}/mês em vendas salvas`
     },
     ceoSignedVerdict: '👑 Veredito Final Homologado com Louvor pelo Maestro CEO: O plano triplo está 100% co-validado e pronto para deploy imediato.',

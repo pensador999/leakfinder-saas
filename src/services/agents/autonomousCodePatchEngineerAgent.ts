@@ -108,7 +108,7 @@ export async function dispatchCommitToGitHubAndVercel(
   const randomSha = Math.random().toString(16).substring(2, 9);
   const repoUrl = 'https://github.com/pensador999/leakfinder-saas';
   const githubCommitUrl = `${repoUrl}/commits/main`;
-  const vercelDeployUrl = 'https://leakfinder-green.vercel.app/';
+  const vercelDeployUrl = 'https://adshield.vercel.app/';
 
   const result: CodePatchDispatchResult = {
     success: true,

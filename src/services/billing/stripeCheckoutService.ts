@@ -92,7 +92,7 @@ export function createStripeCheckoutSession(req: CheckoutSessionRequest): Checko
   const sessionId = `cs_live_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
   // Default production Stripe checkout route with attribution tracking
-  const baseSuccessUrl = req.returnUrl || 'https://leakfinder-green.vercel.app';
+  const baseSuccessUrl = req.returnUrl || 'https://adshield.vercel.app';
   const utmParams = `utm_source=adshield_whatsapp&utm_medium=outbound&utm_campaign=sentinel_guard`;
   const emailParam = req.customerEmail ? `&prefilled_email=${encodeURIComponent(req.customerEmail)}` : '';
   const checkoutUrl = `https://buy.stripe.com/live_adshield_${plan.id.toLowerCase()}?client_reference_id=${encodeURIComponent(cleanDomain)}${emailParam}&${utmParams}`;
@@ -206,7 +206,7 @@ export function formatWhatsAppOfferWithStripe(params: {
     `📈 *Retorno do Investimento Estimado:* ~*${roiMultiplier}x* (Economia estimada de R$ ${finalEstimatedLoss.toLocaleString('pt-BR')} vs investimento de R$ ${plan.priceBrl}/mês).\n\n` +
     `👉 *Assinar com 7 dias de garantia incondicional:*\n` +
     `${checkout.checkoutUrl}\n\n` +
-    `Ou veja o laudo auditado completo: https://leakfinder-green.vercel.app/?url=${encodeURIComponent(cleanDomain)}`
+    `Ou veja o laudo auditado completo: https://adshield.vercel.app/?url=${encodeURIComponent(cleanDomain)}`
   );
 }
 

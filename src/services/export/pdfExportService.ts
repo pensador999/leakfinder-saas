@@ -1,5 +1,5 @@
 /**
- * 🖨️ SERVIÇO DE EXPORTAÇÃO NATIVA DE PDF & DOSSIÊS EXECUTIVOS (LEAKFINDER SAAS)
+ * 🖨️ SERVIÇO DE EXPORTAÇÃO NATIVA DE PDF & DOSSIÊS EXECUTIVOS (ADSHIELD SAAS)
  * Permite download direto com 1 clique e impressão A4 diagramada sem poluição de UI.
  */
 
@@ -122,7 +122,7 @@ export class PdfExportService {
   ): void {
     const html = this.buildExecutiveDossierHtml(diagnostic, options);
     const cleanBrand = (diagnostic.realSiteData.brandName || 'Loja').replace(/[^a-zA-Z0-9]/g, '_');
-    const filename = options?.filename || `Dossie_Executivo_LeakFinder_${cleanBrand}.html`;
+    const filename = options?.filename || `Dossie_Executivo_AdShield_${cleanBrand}.html`;
 
     const blob = new Blob([html], { type: 'text/html;charset=utf-8;' });
     const link = document.createElement('a');
@@ -143,7 +143,7 @@ export class PdfExportService {
     options?: PdfExportOptions
   ): string {
     const wl: WhiteLabelConfig = getWhiteLabelConfig();
-    const agency = options?.agencyName || wl.agencyName || 'LeakFinder Growth OS';
+    const agency = options?.agencyName || wl.agencyName || 'AdShield Growth OS';
     const consultant = options?.consultantName || 'Especialista em CRO & E-Commerce';
     const phone = options?.consultantPhone || '(11) 98765-4321';
 
@@ -354,7 +354,7 @@ export class PdfExportService {
       <!-- KPI GRID -->
       <div class="kpi-grid">
         <div class="kpi-card" style="background: #0F172A; color: white;">
-          <div class="kpi-label" style="color: #94A3B8;">LeakFinder Score</div>
+          <div class="kpi-label" style="color: #94A3B8;">AdShield Score</div>
           <div class="kpi-value" style="color: #38BDF8;">${growthScore} <span style="font-size: 11px; color: #94A3B8;">/100</span></div>
           <div class="kpi-desc" style="color: #94A3B8;">Índice ponderado global</div>
         </div>
@@ -458,7 +458,7 @@ export class PdfExportService {
     <!-- FOOTER DA PÁGINA -->
     <div class="footer-bar">
       <div>Relatório Oficial • ${agency} (${consultant}) • WhatsApp: ${phone}</div>
-      <div>https://leakfinder-saas.vercel.app</div>
+      <div>https://adshield.vercel.app</div>
     </div>
   </div>
 

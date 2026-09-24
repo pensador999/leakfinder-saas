@@ -308,7 +308,7 @@ ${(realSiteData.catalogAudit?.issues || []).map(i => `- **SKU ${i.sku} (${i.prod
           {/* Footer Branding */}
           <div className="border-t border-white/10 pt-4 flex items-center justify-between text-[11px] text-[#BBBAA6] font-mono">
             <span>Relatório Oficial emitido por {agencyName}</span>
-            <span>https://leakfinder-green.vercel.app</span>
+            <span>https://adshield.vercel.app</span>
           </div>
 
         </div>

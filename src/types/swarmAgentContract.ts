@@ -1,7 +1,7 @@
-﻿/**
+/**
  * ==============================================================================
  * 🏛️ SWARM AGENT CONTRACT & GOVERNANCE INTERFACE
- * AdShield / LeakFinder SaaS • Swarm Multi-Agente V4.0
+ * AdShield SaaS • Swarm Multi-Agente V4.0
  * Protocolo de Integridade: AGENTS.md (Camadas 1, 2 e 3 de Grounding)
  * ==============================================================================
  */

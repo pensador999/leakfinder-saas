@@ -27,7 +27,7 @@ export interface TruthVerdictReport {
 
 /**
  * ⚖️ TRUTH AUDITOR AGENT (NÍVEL 3 - O JUIZ DE VERACIDADE & FACT-CHECKER)
- * Aplica o protocolo inquebrável de Grounding e Anti-Alucinação do LeakFinder.
+ * Aplica o protocolo inquebrável de Grounding e Anti-Alucinação do AdShield.
  */
 export class TruthAuditorAgent {
   private dossier: CollectedEvidenceDossier;

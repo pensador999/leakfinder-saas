@@ -1,5 +1,5 @@
 # 🚀 Plano de Negócios & Modelo de Monetização (Business Plan 2026-2027)
-## LeakFinder / AdShield SaaS (Ecossistema BRK Group)
+## AdShield SaaS (Ecossistema BRK Group)
 
 > **Documento:** Master Business Plan & Go-To-Market Strategy  
 > **Versão:** 3.0 (Orientada a Rentabilidade, Baixo Churn e Tração Dupla B2B)  
@@ -23,7 +23,7 @@
 
 ```mermaid
 graph TD
-    A["AdShield / LeakFinder"] --> B["ICP 1: O Lojista D2C / E-Commerce"]
+    A["AdShield"] --> B["ICP 1: O Lojista D2C / E-Commerce"]
     A --> C["ICP 2: A Agência de Tráfego / Consultor CRO"]
 
     B --> B1["Valor: Guardião de Margem 24/7"]
@@ -148,7 +148,7 @@ graph TD
 
 ### 7.3 Canal 3: Parcerias Estratégicas de Integração
 * Parcerias com plataformas de checkout e ERPs (Sankhya, Bling, Tiny, Magis5, Yampi, Appmax).
-* Apresentar o LeakFinder como o "auditor oficial de catálogo pré-leilão de anúncios".
+* Apresentar o AdShield como o "auditor oficial de catálogo pré-leilão de anúncios".
 
 ---
 

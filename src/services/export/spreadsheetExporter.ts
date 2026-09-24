@@ -1,5 +1,5 @@
 /**
- * 📊 SERVIÇO DE EXPORTAÇÃO DE PLANILHAS INTELIGENTES (LEAKFINDER SAAS)
+ * 📊 SERVIÇO DE EXPORTAÇÃO DE PLANILHAS INTELIGENTES (ADSHIELD SAAS)
  * Gera arquivos CSV perfeitamente compatíveis com Microsoft Excel e Google Sheets no Brasil:
  * - Separador de colunas padrão brasileiro (ponto e vírgula ;)
  * - Codificação UTF-8 com BOM (\uFEFF) para preservar acentos e cedilhas sem erros

@@ -147,7 +147,7 @@ export const CroAgentView: React.FC<CroAgentViewProps> = ({ diagnostic }) => {
 
               <div className="p-3.5 rounded-2xl bg-[#141716] border border-[#0AE448]/30 text-xs">
                 <span className="font-bold text-[#0AE448] flex items-center gap-1.5 mb-1 font-mono">
-                  <Zap className="w-3.5 h-3.5 text-[#0AE448]" /> Recomendação LeakFinder:
+                  <Zap className="w-3.5 h-3.5 text-[#0AE448]" /> Recomendação AdShield:
                 </span>
                 <p className="text-[#FFFCE1] leading-relaxed">{finding.recommendation}</p>
               </div>
@@ -160,7 +160,7 @@ export const CroAgentView: React.FC<CroAgentViewProps> = ({ diagnostic }) => {
       <div className="p-6 rounded-3xl bg-[#101211] border border-white/10 shadow-2xl space-y-4">
         <h3 className="text-sm font-black text-[#FFFCE1] flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-[#0AE448]" />
-          <span>Checklist de Ação Imediata LeakFinder (Implementação em menos de 1 hora)</span>
+          <span>Checklist de Ação Imediata AdShield (Implementação em menos de 1 hora)</span>
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {cro.quickWins.map((win, idx) => (

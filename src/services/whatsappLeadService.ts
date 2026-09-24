@@ -10,11 +10,12 @@ export interface CapturedLead {
   status: 'NOVO' | 'CONTATADO' | 'REUNIAO_AGENDADA' | 'CLIENTE_FECHADO';
 }
 
-const LEADS_STORAGE_KEY = 'LEAKFINDER_CAPTURED_LEADS';
+const PRIMARY_STORAGE_KEY = 'ADSHIELD_CAPTURED_LEADS';
+const LEGACY_STORAGE_KEY = 'LEAKFINDER_CAPTURED_LEADS';
 
 export function getStoredLeads(): CapturedLead[] {
   try {
-    const raw = localStorage.getItem(LEADS_STORAGE_KEY);
+    const raw = localStorage.getItem(PRIMARY_STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
@@ -31,7 +32,7 @@ export function saveLead(lead: Omit<CapturedLead, 'id' | 'capturedAt' | 'status'
   };
 
   const updated = [newLead, ...existing];
-  localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(updated));
+  localStorage.setItem(PRIMARY_STORAGE_KEY, JSON.stringify(updated));
   return newLead;
 }
 
@@ -43,12 +44,12 @@ export function formatWhatsAppMessage(
   estimatedLossRevenue: number,
   reportUrl: string
 ): string {
-  return `🚨 *DIAGNÓSTICO EXECUTIVO LEAKFINDER* 🚨
+  return `🚨 *DIAGNÓSTICO EXECUTIVO ADSHIELD* 🚨
 
 Olá *${merchantName || 'Lojista'}*, acabamos de rodar a auditoria técnica e financeira da sua loja *${brandName}* (${domain}):
 
-📊 *LeakFinder Growth Score:* ${growthScore}/100
-💰 *Vazamento Estimado em Carrinho:* R$ ${estimatedLossRevenue.toLocaleString('pt-BR')}/mês
+📊 *AdShield Growth Score:* ${growthScore}/100
+💰 *Sangria Estimada em Tráfego & Carrinho:* R$ ${estimatedLossRevenue.toLocaleString('pt-BR')}/mês
 ⚡ *Core Web Vitals 2026:* Avaliado (LCP + INP)
 📦 *Catálogo & Estoque:* SKUs inspecionados
 

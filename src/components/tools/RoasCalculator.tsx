@@ -28,7 +28,7 @@ export const RoasCalculator: React.FC = () => {
             <div className="p-2 bg-[#0AE448]/20 text-[#0AE448] rounded-xl border border-[#0AE448]/30">
               <Calculator className="w-5 h-5" />
             </div>
-            <h2 className="text-lg font-bold text-[#FFFCE1]">Simulador LeakFinder de Funil & ROAS de Equilíbrio</h2>
+            <h2 className="text-lg font-bold text-[#FFFCE1]">Simulador AdShield de Funil & ROAS de Equilíbrio</h2>
           </div>
           <p className="text-xs text-[#BBBAA6] mt-1 font-medium">
             Simule variações de tráfego, taxa de conversão do site e margem bruta para prever o lucro real.
@@ -167,7 +167,7 @@ export const RoasCalculator: React.FC = () => {
           <div className="p-6 rounded-3xl bg-[#101211] border border-white/10 space-y-3 shadow-2xl">
             <h3 className="text-sm font-bold text-[#FFFCE1] flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-[#0AE448]" />
-              <span>Veredito Estratégico LeakFinder</span>
+              <span>Veredito Estratégico AdShield</span>
             </h3>
 
             {Number(roas) < Number(breakEvenRoas) ? (

@@ -1,7 +1,7 @@
-# ⚡ LEAKFINDER SAAS — Auditoria, Telemetria & Remediação de E-Commerce
+# ⚡ ADSHIELD OS — Blindagem de Tráfego Pago, Auditoria & Remediação de E-Commerce
 
 <p align="center">
-  <strong>Plataforma autônoma de diagnóstico com inteligência multi-agente, telemetria comportamental e gerador de scripts (.liquid e CSS) para otimização de conversão no e-commerce.</strong>
+  <strong>Plataforma autônoma de diagnóstico com inteligência multi-agente, telemetria comportamental e gerador de scripts (.liquid e CSS) para otimização de conversão e proteção contra sangria de anúncios no e-commerce.</strong>
 </p>
 
 <p align="center">
@@ -16,9 +16,9 @@
 
 ## 🌟 Visão Geral
 
-O **LeakFinder** é uma solução de auditoria profunda e remediação instantânea que inspeciona o código-fonte, o DOM, a telemetria do Microsoft Clarity e o catálogo de lojas virtuais (Shopify, VTEX, Nuvemshop, WooCommerce e Enterprise Headless como Nike e Adidas).
+O **AdShield** é uma solução de auditoria profunda e remediação instantânea que inspeciona o código-fonte, o DOM, a telemetria do Microsoft Clarity e o catálogo de lojas virtuais (Shopify, VTEX, Nuvemshop, WooCommerce e Enterprise Headless como Nike e Adidas).
 
-Ao contrário de scanners teóricos, o LeakFinder fecha o ciclo de otimização entregando o **código exato (.liquid e CSS)** pronto para copiar e colar no tema da loja, eliminando gargalos de conversão em minutos.
+Ao contrário de scanners teóricos, o AdShield fecha o ciclo de otimização entregando o **código exato (.liquid e CSS)** pronto para copiar e colar no tema da loja, eliminando gargalos de conversão em minutos.
 
 ---
 
@@ -30,12 +30,12 @@ A arquitetura completa do sistema está documentada no padrão **C4 Model (Conte
 
 ```
 ┌────────────────────────────────────────────────────────┐
-│                      LEAKFINDER                        │
+│                       ADSHIELD                         │
 │                 ARQUITETURA C4 MODEL                   │
 └────────────────────────────────────────────────────────┘
   Nível 1: Contexto Global (Usuário & Ecossistema)
   Nível 2: Contêineres (SPA, Web Workers, Supabase, APIs)
-  Nível 3: Componentes (8 Agentes Autônomos & Motores)
+  Nível 3: Componentes (18 Agentes Autônomos & Motores)
   Nível 4: Código & Fluxo de Telemetria e Remediação
 ```
 
@@ -43,7 +43,7 @@ A arquitetura completa do sistema está documentada no padrão **C4 Model (Conte
 
 ## 🤖 Enxame Autônomo de 18 Agentes Especialistas
 
-O LeakFinder opera um ecossistema com **18 Agentes de IA Especialistas**, organizados em 5 camadas funcionais coordenadas pelo **CEO Orchestrator** e reguladas pelo **Tribunal de Consenso Duplo**:
+O AdShield opera um ecossistema com **18 Agentes de IA Especialistas**, organizados em 5 camadas funcionais coordenadas pelo **CEO Orchestrator** e reguladas pelo **Tribunal de Consenso Duplo**:
 
 | Camada | Agentes | Responsabilidade Principal |
 | :--- | :--- | :--- |
@@ -59,7 +59,7 @@ O LeakFinder opera um ecossistema com **18 Agentes de IA Especialistas**, organi
 
 ## 🛡️ Integridade de Dados & Grounding
 
-O LeakFinder opera sob o protocolo rigoroso estabelecido em **[`AGENTS.md`](./AGENTS.md)**:
+O AdShield opera sob o protocolo rigoroso estabelecido em **[`AGENTS.md`](./AGENTS.md)**:
 * **Zero Alucinação:** URLs de produtos, SKUs e dados de grade vêm diretamente da API pública ou do DOM ao vivo.
 * **Transparência de Métricas:** Valores projetados são explicitamente identificados com selo `[Simulador Dinâmico]`.
 * **Respeito aos Limites de Privacidade:** Declara com honestidade quando uma métrica exige conexão com a API da Shopify Admin ou Clarity.
@@ -94,7 +94,7 @@ chmod +x scripts/deploy/setup_vps_ubuntu.sh
 * 🛰️ **[Manual de Infraestrutura & Operações VPS 24/7 (docs/INFRASTRUCTURE_AND_OPERATIONS.md)](./docs/INFRASTRUCTURE_AND_OPERATIONS.md)**
 * 🤖 **[Dossiê Completo dos 18 Agentes (docs/AGENTS_ECOSYSTEM.md)](./docs/AGENTS_ECOSYSTEM.md)**
 * 🧭 **[Fluxo de Projeto & Workflow dos Agentes (docs/PROJECT_WORKFLOW_AND_GOVERNANCE.md)](./docs/PROJECT_WORKFLOW_AND_GOVERNANCE.md)**
-* 💼 **[Plano de Negócios & Pricing SaaS (docs/BUSINESS_PLAN_LEAKFINDER_SAAS.md)](./docs/BUSINESS_PLAN_LEAKFINDER_SAAS.md)**
+* 💼 **[Plano de Negócios & Pricing SaaS (docs/BUSINESS_PLAN_ADSHIELD_SAAS.md)](./docs/BUSINESS_PLAN_ADSHIELD_SAAS.md)**
 * ⚖️ **[Conformidade Legal & Tributária (docs/LEGAL_AND_TAX_COMPLIANCE.md)](./docs/LEGAL_AND_TAX_COMPLIANCE.md)**
 * 🎯 **[Campanha Piloto Outbound B2B (docs/DOSSIE_CAMPANHA_OUTBOUND_PILOTO.md)](./docs/DOSSIE_CAMPANHA_OUTBOUND_PILOTO.md)**
 * 🛡️ **[Protocolo de Integridade de Dados (AGENTS.md)](./AGENTS.md)**

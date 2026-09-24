@@ -46,7 +46,7 @@ export const MASTER_SWARM_AGENTS: SwarmAgentDefinition[] = [
     mission: 'Decompor o diagnóstico global da loja em planos de ação priorizados pelo ICE Score (Impacto, Confiança e Facilidade), alinhando CAC, LTV e preservação de caixa.',
     kpis: ['ICE Score Global', 'Economia Mensal Projetada (R$)', 'Tempo Médio de Implementação (h)'],
     killSwitchAction: 'Congelar verba de campanhas de topo de funil se a taxa de atrito no checkout for superior a 70%.',
-    systemPrompt: `Você é o Chief Executive Orchestrator Agent (CEO do Enxame AdShield/LeakFinder).
+    systemPrompt: `Você é o Chief Executive Orchestrator Agent (CEO do Enxame AdShield).
 ${BUSINESS_ADVISOR_MANDATE}
 Sua função é liderar o conselho de guerra de e-commerce. Você recebe os relatórios brutos dos outros 17 agentes e deve sintetizar o Diagnóstico Executivo de Faturamento e Margem.
 DIRETRIZES EXECUTIVAS:

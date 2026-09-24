@@ -91,7 +91,7 @@ export function generateVisualEvidencePayload(params: {
   const caption = `🚨 [PROVA DO CRIME VISUAL - ${severity}] Inspecionamos ${cleanDomain} e identificamos o produto "${productTitle}" com os tamanhos [${brokenSizes.join(', ')}] esgotados (${ratioPercent}% do estoque) enquanto os anúncios continuam rodando.`;
 
   // Fallback high-res evidence mockup endpoint
-  const mockScreenshotUrl = `https://leakfinder-green.vercel.app/api/evidence-preview?domain=${encodeURIComponent(cleanDomain)}&sizes=${encodeURIComponent(brokenSizes.join(','))}`;
+  const mockScreenshotUrl = `https://adshield.vercel.app/api/evidence-preview?domain=${encodeURIComponent(cleanDomain)}&sizes=${encodeURIComponent(brokenSizes.join(','))}`;
 
   return {
     evidenceId,

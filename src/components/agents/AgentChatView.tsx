@@ -15,7 +15,7 @@ export const AgentChatView: React.FC<AgentChatViewProps> = ({ diagnostic }) => {
       id: 'msg-1',
       sender: 'agent',
       agentPersona: 'Orquestrador',
-      text: `Olá! Sou o Orquestrador LeakFinder. Analisei o HTML e os metadados do site **${realSiteData.domain}** (${input.niche}) e estou pronto com nossa equipe de 6 especialistas para responder suas dúvidas. O que gostaria de otimizar agora?`,
+      text: `Olá! Sou o Orquestrador AdShield. Analisei o HTML e os metadados do site **${realSiteData.domain}** (${input.niche}) e estou pronto com nossa equipe de especialistas para responder suas dúvidas. O que gostaria de otimizar agora?`,
       timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     }
   ]);
@@ -49,11 +49,11 @@ export const AgentChatView: React.FC<AgentChatViewProps> = ({ diagnostic }) => {
       let agentResponseText = '';
 
       if (selectedAgent === 'CRO') {
-        agentResponseText = `Para **${realSiteData.domain}**, a ação de conversão imediata é ativar o **Checkout Transparente LeakFinder com Pix 5% OFF** e colocar o **Sticky Buy Button** no rodapé mobile. Isso reduz a taxa de abandono no smartphone em até 38%.`;
+        agentResponseText = `Para **${realSiteData.domain}**, a ação de conversão imediata é ativar o **Checkout Transparente AdShield com Pix 5% OFF** e colocar o **Sticky Buy Button** no rodapé mobile. Isso reduz a taxa de abandono no smartphone em até 38%.`;
       } else if (selectedAgent === 'Ads') {
         agentResponseText = `Com o Ticket Médio de R$ ${input.averageOrderValue}, recomendo alocar **60% da verba em Meta Ads (Tráfego Frio)** com vídeos estilo UGC e **30% em Retargeting Dinâmico**. Seu ROAS alvo ideal é **${diagnostic.ads.targetRoas}x**.`;
       } else if (selectedAgent === 'Copywriter') {
-        agentResponseText = `Para quebrar objeções em **${input.niche}**, adicione este selo acima do botão de compra: *"Garantia Incondicional LeakFinder de 30 Dias: Teste em casa. Devolução 100% grátis sem perguntas."*`;
+        agentResponseText = `Para quebrar objeções em **${input.niche}**, adicione este selo acima do botão de compra: *"Garantia Incondicional AdShield de 30 Dias: Teste em casa. Devolução 100% grátis sem perguntas."*`;
       } else if (selectedAgent === 'SEO') {
         agentResponseText = `O HTML de **${realSiteData.domain}** possui **${realSiteData.imagesWithoutAlt} imagens sem Alt tag**. Preencha o Alt text dessas imagens e adicione o código Schema JSON-LD de Produto para exibir estrelas no Google.`;
       } else if (selectedAgent === 'PM') {
@@ -81,7 +81,7 @@ export const AgentChatView: React.FC<AgentChatViewProps> = ({ diagnostic }) => {
       {/* Agent Selector Chips */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         {[
-          { id: 'Orquestrador', label: 'Orquestrador LeakFinder', icon: Cpu },
+          { id: 'Orquestrador', label: 'Orquestrador AdShield', icon: Cpu },
           { id: 'CRO', label: 'Agente CRO & Usabilidade', icon: ShoppingCart },
           { id: 'SEO', label: 'Agente SEO & Busca', icon: Search },
           { id: 'Ads', label: 'Agente de Ads', icon: Target },

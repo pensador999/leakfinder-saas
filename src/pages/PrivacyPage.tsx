@@ -82,7 +82,7 @@ export function PrivacyPage() {
               <span className="text-[#0AE448] font-mono">1.</span> Compromisso Institucional & Controladora dos Dados
             </h2>
             <p>
-              O <strong className="text-[#FFFCE1]">AdShield / LeakFinder</strong>, operado pela <strong className="text-[#FFFCE1]">BRK GROUP TECNOLOGIA LTDA</strong> (CNPJ nº 52.894.218/0001-90), atua com compromisso inegociável em relação à transparência, segurança cibernética e privacidade.
+              O <strong className="text-[#FFFCE1]">AdShield</strong>, operado pela <strong className="text-[#FFFCE1]">BRK GROUP TECNOLOGIA LTDA</strong> (CNPJ nº 52.894.218/0001-90), atua com compromisso inegociável em relação à transparência, segurança cibernética e privacidade.
             </p>
             <p>
               Esta Política de Privacidade disciplina o tratamento de dados em nossa plataforma SaaS, em estrita conformidade com a <strong className="text-[#FFFCE1]">Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018 — LGPD)</strong>, com o <strong className="text-[#FFFCE1]">Marco Civil da Internet (Lei nº 12.965/2014)</strong> e com os enunciados orientativos da <strong className="text-[#FFFCE1]">Autoridade Nacional de Proteção de Dados (ANPD)</strong>.

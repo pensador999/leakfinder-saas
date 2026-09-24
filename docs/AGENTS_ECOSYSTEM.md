@@ -1,4 +1,4 @@
-# 🤖 DOSSIÊ ARQUITETURAL & COMPÊNDIO DO ENXAME DE AGENTES (LEAKFINDER / ADSHIELD)
+# 🤖 DOSSIÊ ARQUITETURAL & COMPÊNDIO DO ENXAME DE AGENTES (ADSHIELD)
 
 > **Versão:** 3.0 • **Arquitetura:** Swarm Autônomo Multi-Agente • **Grounding:** 100% Real-Time Live Data  
 > **Status:** 18 Agentes Ativos e Homologados em Produção
@@ -7,7 +7,7 @@
 
 ## 🧭 1. Visão Geral da Topologia do Enxame (Swarm Topology)
 
-O **LeakFinder / AdShield** opera sob uma arquitetura de **Enxame Autônomo Hierárquico e Colaborativo**, dividida em 5 camadas funcionais com **Tribunal de Consenso** e **Grounding Absoluto**.
+O **AdShield** opera sob uma arquitetura de **Enxame Autônomo Hierárquico e Colaborativo**, dividida em 5 camadas funcionais com **Tribunal de Consenso** e **Grounding Absoluto**.
 
 Nenhum agente emite parecer isolado sem antes passar pela validação de dados reais do **Auditor de Verdade** e pelo crivo do **Tribunal de Consenso Duplo**, eliminando 100% dos falsos-positivos e alucinações de IA.
 
@@ -123,7 +123,7 @@ graph TD
 
 #### 08. High-Conversion Sales Copywriter (Copywriter de Fechamento B2B & WhatsApp)
 * **Arquivo:** [`src/components/agents/SalesCopyAgentView.tsx`](file:///c:/Users/lucas/OneDrive/Documentos/WORKER/src/components/agents/SalesCopyAgentView.tsx)
-* **Papel:** Redige abordagens de fechamento comercial de altíssima conversão para agências e consultores que utilizam o LeakFinder para prospectar e-commerces.
+* **Papel:** Redige abordagens de fechamento comercial de altíssima conversão para agências e consultores que utilizam o AdShield para prospectar e-commerces.
 * **Especialidade:** Cria mensagens de WhatsApp e e-mails embasados na **perda financeira inquestionável** descoberta pelo robô (ex: *"Sua campanha do produto X está gastando verba, mas o tamanho G acabou"*), tornando a resposta do lojista praticamente mandatória.
 
 ---
@@ -178,7 +178,7 @@ graph TD
 #### 15. SaaS Product Evolution Engineer (Engenheiro de Auto-Evolução do Produto)
 * **Arquivo:** [`src/services/agents/productEvolutionEngineerAgent.ts`](file:///c:/Users/lucas/OneDrive/Documentos/WORKER/src/services/agents/productEvolutionEngineerAgent.ts)
 * **Interface UI:** [`src/components/agents/ProductEvolutionAgentView.tsx`](file:///c:/Users/lucas/OneDrive/Documentos/WORKER/src/components/agents/ProductEvolutionAgentView.tsx)
-* **Papel:** Monitora a interação dos usuários com a plataforma LeakFinder e gera diagnósticos proativos de roadmap, sugerindo novos painéis, integrações e melhorias com base nas demandas mais frequentes.
+* **Papel:** Monitora a interação dos usuários com a plataforma AdShield e gera diagnósticos proativos de roadmap, sugerindo novos painéis, integrações e melhorias com base nas demandas mais frequentes.
 
 ---
 
@@ -230,7 +230,7 @@ Todos os 18 agentes estão contratualmente vinculados ao [`AGENTS.md`](file:///c
 
 ## 📈 5. Como Adicionar um Novo Agente ao Enxame
 
-Para adicionar novos agentes ao LeakFinder / AdShield:
+Para adicionar novos agentes ao AdShield:
 1. Criar a lógica do serviço em `src/services/agents/[novoAgente].ts`.
 2. Criar o componente de interface correspondente em `src/components/agents/[NovoAgente]View.tsx`.
 3. Registrar o novo agente no `ChiefExecutiveOrchestratorAgent` para incluí-lo na cadeia de delegação e na síntese de prioridades.

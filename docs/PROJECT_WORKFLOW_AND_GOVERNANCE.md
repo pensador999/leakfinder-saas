@@ -1,4 +1,4 @@
-﻿# 🧭 FLUXO DE PROJETO, GOVERNANÇA & WORKFLOW DOS 18 AGENTES (ADSHIELD / LEAKFINDER)
+# 🧭 FLUXO DE PROJETO, GOVERNANÇA & WORKFLOW DOS 18 AGENTES (ADSHIELD)
 
 > **Versão:** 4.0.0 • **Protocolo:** AGENTS.md (Grounding 100% Auditado)  
 > **Status:** Produção & Enxame Autônomo Ativo

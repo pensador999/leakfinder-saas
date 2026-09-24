@@ -140,7 +140,7 @@ export const SalesCopyAgentView: React.FC<SalesCopyAgentViewProps> = ({ diagnost
           <div className="p-6 rounded-3xl bg-[#101211] border border-white/10 shadow-2xl space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#BBBAA6] font-mono block">Score de Persuasão LeakFinder</span>
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#BBBAA6] font-mono block">Score de Persuasão AdShield</span>
                 <span className={`text-2xl font-black font-mono tracking-tight ${salesCopy.copyNlpAnalysis.score > 70 ? 'text-[#0AE448]' : salesCopy.copyNlpAnalysis.score > 40 ? 'text-amber-400' : 'text-rose-400'}`}>
                   {salesCopy.copyNlpAnalysis.score}/100
                 </span>
@@ -176,7 +176,7 @@ export const SalesCopyAgentView: React.FC<SalesCopyAgentViewProps> = ({ diagnost
       <div className="space-y-3">
         <h3 className="text-sm font-black text-[#FFFCE1] uppercase tracking-wider flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-[#00BAE2]" />
-          <span>Headlines Persuasivas LeakFinder</span>
+          <span>Headlines Persuasivas AdShield</span>
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -243,7 +243,7 @@ export const SalesCopyAgentView: React.FC<SalesCopyAgentViewProps> = ({ diagnost
       <div className="p-6 rounded-3xl bg-[#101211] border border-white/10 space-y-4 shadow-2xl">
         <h3 className="text-sm font-black text-[#FFFCE1] uppercase tracking-wider flex items-center gap-2">
           <HelpCircle className="w-4 h-4 text-[#0AE448]" />
-          <span>Matriz de Quebra de Objeções LeakFinder</span>
+          <span>Matriz de Quebra de Objeções AdShield</span>
         </h3>
 
         <div className="space-y-3">

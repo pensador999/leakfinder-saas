@@ -34,17 +34,17 @@ export function generateShopifyThemeScripts(domain: string, brandName: string): 
       impactLabel: '+18% a +24% Conversão Mobile',
       difficulty: 'FÁCIL (Copiar & Colar)',
       code: `{% comment %}
-  === LEAKFINDER: STICKY BUY BUTTON MOBILE (${brandName.toUpperCase()}) ===
+  === ADSHIELD: STICKY BUY BUTTON MOBILE (${brandName.toUpperCase()}) ===
 {% endcomment %}
-<div id="leakfinder-sticky-mobile-bar" class="leakfinder-sticky-bar">
-  <div class="leakfinder-sticky-content">
-    <div class="leakfinder-product-info">
-      <span class="leakfinder-prod-title">{{ product.title | truncate: 25 }}</span>
-      <span class="leakfinder-prod-price">{{ product.selected_or_first_available_variant.price | money }}</span>
+<div id="adshield-sticky-mobile-bar" class="adshield-sticky-bar">
+  <div class="adshield-sticky-content">
+    <div class="adshield-product-info">
+      <span class="adshield-prod-title">{{ product.title | truncate: 25 }}</span>
+      <span class="adshield-prod-price">{{ product.selected_or_first_available_variant.price | money }}</span>
     </div>
-    <div class="leakfinder-actions">
+    <div class="adshield-actions">
       {% if product.variants.size > 1 %}
-        <select id="leakfinder-sticky-variant-select" class="leakfinder-variant-select" onchange="document.querySelector('[name=\\"id\\"]').value = this.value;">
+        <select id="adshield-sticky-variant-select" class="adshield-variant-select" onchange="document.querySelector('[name=\\"id\\"]').value = this.value;">
           {% for variant in product.variants %}
             <option value="{{ variant.id }}" {% unless variant.available %}disabled{% endunless %}>
               {{ variant.title }} {% unless variant.available %}(Esgotado){% endunless %}
@@ -52,7 +52,7 @@ export function generateShopifyThemeScripts(domain: string, brandName: string): 
           {% endfor %}
         </select>
       {% endif %}
-      <button type="button" class="leakfinder-sticky-btn" onclick="document.querySelector('form[action*=\\"/cart/add\\"] [type=\\"submit\\"]').click();">
+      <button type="button" class="adshield-sticky-btn" onclick="document.querySelector('form[action*=\\"/cart/add\\"] [type=\\"submit\\"]').click();">
         COMPRAR
       </button>
     </div>
@@ -61,10 +61,10 @@ export function generateShopifyThemeScripts(domain: string, brandName: string): 
 
 <style>
   @media (min-width: 769px) {
-    #leakfinder-sticky-mobile-bar { display: none !important; }
+    #adshield-sticky-mobile-bar { display: none !important; }
   }
   @media (max-width: 768px) {
-    .leakfinder-sticky-bar {
+    .adshield-sticky-bar {
       position: fixed;
       bottom: 0;
       left: 0;
@@ -77,19 +77,19 @@ export function generateShopifyThemeScripts(domain: string, brandName: string): 
       transform: translateY(0);
       transition: transform 0.3s ease;
     }
-    .leakfinder-sticky-content {
+    .adshield-sticky-content {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
     }
-    .leakfinder-product-info {
+    .adshield-product-info {
       display: flex;
       flex-direction: column;
       min-width: 0;
       flex: 1;
     }
-    .leakfinder-prod-title {
+    .adshield-prod-title {
       font-size: 11px;
       font-weight: bold;
       color: #111827;
@@ -97,18 +97,18 @@ export function generateShopifyThemeScripts(domain: string, brandName: string): 
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .leakfinder-prod-price {
+    .adshield-prod-price {
       font-size: 13px;
       font-weight: 800;
       color: ${primaryColor};
     }
-    .leakfinder-actions {
+    .adshield-actions {
       display: flex;
       align-items: center;
       gap: 6px;
       flex-shrink: 0;
     }
-    .leakfinder-variant-select {
+    .adshield-variant-select {
       height: 38px;
       padding: 0 6px;
       font-size: 12px;
@@ -117,7 +117,7 @@ export function generateShopifyThemeScripts(domain: string, brandName: string): 
       border-radius: 8px;
       background: #f9fafb;
     }
-    .leakfinder-sticky-btn {
+    .adshield-sticky-btn {
       height: 38px;
       padding: 0 16px;
       background-color: ${primaryColor};
@@ -143,7 +143,7 @@ export function generateShopifyThemeScripts(domain: string, brandName: string): 
       impactLabel: 'Redução de 35% nos Cliques Errados',
       difficulty: 'FÁCIL (Copiar & Colar)',
       code: `/* ==========================================================================
-   LEAKFINDER: OTIMIZAÇÃO ERGONÔMICA DOS TAMANHOS (LEI DE FITTS - 48PX)
+   ADSHIELD: OTIMIZAÇÃO ERGONÔMICA DOS TAMANHOS (LEI DE FITTS - 48PX)
    ========================================================================== */
 @media (max-width: 768px) {
   /* Seletores de variantes em pílulas / botões */
@@ -194,28 +194,28 @@ export function generateShopifyThemeScripts(domain: string, brandName: string): 
       impactLabel: '+14% Vendas via Pix à Vista',
       difficulty: 'FÁCIL (Copiar & Colar)',
       code: `{% comment %}
-  === LEAKFINDER: CAIXA DE DESCONTO PIX & PARCELAMENTO (${brandName.toUpperCase()}) ===
+  === ADSHIELD: CAIXA DE DESCONTO PIX & PARCELAMENTO (${brandName.toUpperCase()}) ===
 {% endcomment %}
 {% assign current_variant = product.selected_or_first_available_variant %}
 {% assign pix_discount_multiplier = 0.90 %}
 {% assign pix_price = current_variant.price | times: pix_discount_multiplier %}
 {% assign economy_val = current_variant.price | minus: pix_price %}
 
-<div class="leakfinder-pix-banner">
-  <div class="leakfinder-pix-header">
-    <svg class="leakfinder-pix-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<div class="adshield-pix-banner">
+  <div class="adshield-pix-header">
+    <svg class="adshield-pix-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
     </svg>
     <span><strong>{{ pix_price | money }}</strong> no Pix <strong>(10% de Desconto)</strong></span>
   </div>
-  <div class="leakfinder-pix-sub">
+  <div class="adshield-pix-sub">
     <span>Economize <strong>{{ economy_val | money }}</strong> pagando à vista.</span>
     <span>Ou até <strong>6x de {{ current_variant.price | divided_by: 6 | money }}</strong> sem juros.</span>
   </div>
 </div>
 
 <style>
-  .leakfinder-pix-banner {
+  .adshield-pix-banner {
     margin: 14px 0;
     padding: 12px 14px;
     background: #f0fdf4;
@@ -223,20 +223,20 @@ export function generateShopifyThemeScripts(domain: string, brandName: string): 
     border-radius: 12px;
     font-family: inherit;
   }
-  .leakfinder-pix-header {
+  .adshield-pix-header {
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 14px;
     color: #166534;
   }
-  .leakfinder-pix-icon {
+  .adshield-pix-icon {
     width: 18px;
     height: 18px;
     color: #15803d;
     flex-shrink: 0;
   }
-  .leakfinder-pix-sub {
+  .adshield-pix-sub {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -259,7 +259,7 @@ export function generateShopifyThemeScripts(domain: string, brandName: string): 
       language: 'javascript',
       impactLabel: '100% Conformidade de Segurança',
       difficulty: 'FÁCIL (Copiar & Colar)',
-      code: `<!-- LEAKFINDER: REVERSE TABNABBING SECURITY DEFENSE -->
+      code: `<!-- ADSHIELD: REVERSE TABNABBING SECURITY DEFENSE -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     var externalLinks = document.querySelectorAll('a[target="_blank"]');

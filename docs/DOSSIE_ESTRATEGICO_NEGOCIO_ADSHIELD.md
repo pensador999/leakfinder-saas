@@ -1,4 +1,4 @@
-# 🛡️ DOSSIÊ EXECUTIVO & MODELO DE NEGÓCIO — ADSHIELD OS (LEAKFINDER SAAS)
+# 🛡️ DOSSIÊ EXECUTIVO & MODELO DE NEGÓCIO — ADSHIELD OS
 
 > **Documento Estratégico Corporativo, Mapeamento de Mercado, Análise de Dores e Posicionamento Competitivo**  
 > *Versão:* 3.0 Enterprise • *Classificação:* Confidencial / Investidores & Diretoria  
@@ -8,7 +8,7 @@
 
 ## Executive Summary (Resumo Executivo)
 
-O **AdShield** (originalmente desenvolvido sob o codinome **LeakFinder**) é um **Autonomous Growth OS & Neural Ad Waste Shield** concebido para estancar a maior hemorragia invisível do e-commerce contemporâneo: **a queima contínua de tráfego pago (Meta Ads e Google Ads) direcionado para páginas de produto com ruptura de grade, estoque fantasma e atritos críticos de conversão.**
+O **AdShield** é um **Autonomous Growth OS & Neural Ad Waste Shield** concebido para estancar a maior hemorragia invisível do e-commerce contemporâneo: **a queima contínua de tráfego pago (Meta Ads e Google Ads) direcionado para páginas de produto com ruptura de grade, estoque fantasma e atritos críticos de conversão.**
 
 Enquanto as ferramentas legadas do mercado (Hotjar, Microsoft Clarity, GA4) operam como "médicos legistas" — reportando o comportamento de visitantes que já foram embora e o dinheiro que já foi perdido —, o AdShield atua como um **sistema imunológico em tempo real**, inspecionando catálogos públicos, detectando furos de grade e descompassos com criativos ativos, calculando o vazamento financeiro exato em R$/mês e acionando mitigações autônomas (Kill-Switch de anúncios via API e rollback seguro).
 

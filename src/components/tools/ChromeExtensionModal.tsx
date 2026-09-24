@@ -91,7 +91,7 @@ export const ChromeExtensionModal: React.FC<ChromeExtensionModalProps> = ({ onCl
       `Olá! Inspecionamos a loja *${activeAudit.domain}* (${activeAudit.platform}) e identificamos que há produtos ativos em campanhas sofrendo com *${activeAudit.brokenGrid}*.\n\n` +
       `💸 *Desperdício Estimado em Cliques:* ~R$ ${activeAudit.estimatedLoss.toLocaleString('pt-BR')}/mês\n` +
       `🎯 *Recomendação Imediata:* Pausar anúncios desses SKUs ou substituir pelas URLs com grade disponível.\n\n` +
-      `👉 Veja o laudo técnico completo: https://leakfinder-green.vercel.app/?url=${encodeURIComponent(activeAudit.domain)}`;
+      `👉 Veja o laudo técnico completo: https://adshield.vercel.app/?url=${encodeURIComponent(activeAudit.domain)}`;
 
     navigator.clipboard.writeText(text);
     setCopiedPitch(true);

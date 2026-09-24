@@ -140,7 +140,7 @@ export function auditCoreWebVitals2026(
       : 'AUSENTE (INVISÍVEL NO GOOGLE SHOPPING)';
 
   // GERADOR DE CÓDIGO JSON-LD DE ALTA CONVERSÃO
-  const generatedJsonLdCode = `<!-- 🚀 LEAKFINDER: SCHEMA.ORG PRODUCT & GOOGLE SHOPPING ORGÂNICO RICH SNIPPETS -->
+  const generatedJsonLdCode = `<!-- 🚀 ADSHIELD: SCHEMA.ORG PRODUCT & GOOGLE SHOPPING ORGÂNICO RICH SNIPPETS -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org/",
@@ -180,7 +180,7 @@ export function auditCoreWebVitals2026(
 </script>`;
 
   // GERADOR DE SNIPPET DE ACELERAÇÃO DE LCP
-  const liquidLcpSnippet = `<!-- ⚡ LEAKFINDER LCP ACCELERATOR (Core Web Vitals 2026) -->
+  const liquidLcpSnippet = `<!-- ⚡ ADSHIELD LCP ACCELERATOR (Core Web Vitals 2026) -->
 <!-- Cole este bloco dentro da tag <head> do seu theme.liquid -->
 {% if template contains 'product' and product.featured_image %}
   <link 
@@ -193,7 +193,7 @@ export function auditCoreWebVitals2026(
 {% endif %}`;
 
   // GERADOR DE SNIPPET DE OTIMIZAÇÃO DE INP (<200ms)
-  const liquidInpSnippet = `<!-- ⚡ LEAKFINDER INP ACCELERATOR: Otimização de Resposta aos Cliques Mobile (<200ms) -->
+  const liquidInpSnippet = `<!-- ⚡ ADSHIELD INP ACCELERATOR: Otimização de Resposta aos Cliques Mobile (<200ms) -->
 <script>
   (function() {
     // 1. Executa seletores de variante com passive listeners para zerar lag de renderização
