@@ -23,6 +23,7 @@ import {
   Globe, GitCompare, Zap, Lock, Unlock, GitFork, Database, BadgeCheck, Share2, Factory,
   ChevronDown, Sparkles
 } from 'lucide-react';
+import { SimplifiedPillarNav, MainNavPillar } from '../components/navigation/SimplifiedPillarNav';
 
 // ⚡ LAZY LOADED ANALYTICAL TABS (Demanded only when tab is active)
 const ComputerVisionInspectionView = lazy(() => import('../components/agents/ComputerVisionInspectionView').then(m => ({ default: m.ComputerVisionInspectionView })));
@@ -195,96 +196,20 @@ export function HomePage() {
     ? (detectMarketplace(diagnostic.realSiteData.url, diagnostic.realSiteData.domain).isMarketplace || Boolean(diagnostic.realSiteData.isMarketplaceSeller))
     : false;
 
-  type NavigationPillar = 'PROFIT_DIAGNOSTIC' | 'CATALOG_STOCK' | 'MEDIA_INTELLIGENCE' | 'FOUNDER_SUITE';
-  const [activePillar, setActivePillar] = useState<NavigationPillar>('PROFIT_DIAGNOSTIC');
+  const [activePillar, setActivePillar] = useState<MainNavPillar>('PROFIT_DIAGNOSTIC');
 
-  // Keep activePillar synchronized whenever activeTab changes
+  // Sincroniza o pilar principal de acordo com a aba ativa selecionada
   useEffect(() => {
-    if (['founder_hq', 'agent_flowchart'].includes(activeTab)) {
-      setActivePillar('FOUNDER_SUITE');
-    } else if (['sku_crossing', 'niche_recognition', 'catalog', 'rupture_monitor'].includes(activeTab)) {
+    if (['scripts', 'kanban'].includes(activeTab)) {
+      setActivePillar('ACTIONS_SHIELD');
+    } else if (['sku_crossing', 'niche_recognition', 'catalog', 'rupture_monitor', 'supply_chain_discrepancy'].includes(activeTab)) {
       setActivePillar('CATALOG_STOCK');
-    } else if (['market_hunter', 'product_evolution', 'customer_success', 'ceo_orchestrator', 'scripts', 'orchestrator', 'scraper_dossier', 'truth_auditor', 'swarm_control', 'vitals', 'vision', 'telemetry', 'competitor', 'kanban'].includes(activeTab)) {
-      setActivePillar('MEDIA_INTELLIGENCE');
-    } else {
+    } else if (['summary', 'pricing', 'marketplace', 'collection_audit', 'omnichannel_social', 'trust_badge'].includes(activeTab)) {
       setActivePillar('PROFIT_DIAGNOSTIC');
+    } else {
+      setActivePillar('SWARM_LAB');
     }
   }, [activeTab]);
-
-  // PILARES DE NAVEGAÇÃO CORPORATIVA + SUITE DO FUNDADOR
-  const pillarCategories = [
-    {
-      id: 'PROFIT_DIAGNOSTIC' as NavigationPillar,
-      label: 'Diagnóstico & Lucro',
-      badge: 'Essencial',
-      tabs: [
-        { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
-        ...(isMarketplaceStore ? [{ id: 'marketplace', label: 'Auditoria de Marketplace & Buy Box', icon: Store, highlight: true }] : []),
-        { id: 'pricing', label: 'Simulador Pix & Margem', icon: Calculator, highlight: true },
-        { id: 'omnichannel_social', label: 'Redes Sociais & Venda Direta', icon: Share2, highlight: true },
-        { id: 'collection_audit', label: 'Coleções & Hero Banner', icon: Target, highlight: true },
-        { id: 'trust_badge', label: 'Selo de Confiança Legal', icon: ShieldCheck, highlight: true }
-      ]
-    },
-    {
-      id: 'CATALOG_STOCK' as NavigationPillar,
-      label: 'Catálogo & Estoque',
-      badge: totalCatalogAlerts > 0 ? `${totalCatalogAlerts} Alertas` : undefined,
-      tabs: [
-        { id: 'supply_chain_discrepancy', label: 'Descompasso ERP & Hub (Sankhya/Magis5)', icon: Factory, highlight: true },
-        { id: 'sku_crossing', label: 'Cruzamento SKUs & Abandonos', icon: GitCompare, highlight: true },
-        { id: 'niche_recognition', label: 'Reconhecimento de Nicho', icon: Globe, highlight: true },
-        { id: 'catalog', label: 'Catálogo & Grade PP-G2', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
-        { id: 'rupture_monitor', label: 'Vigia 24h Ruptura', icon: Flame, highlight: true }
-      ]
-    },
-    {
-      id: 'MEDIA_INTELLIGENCE' as NavigationPillar,
-      label: 'Mídia & Inteligência',
-      badge: viewMode === 'war_room' ? 'War Room' : 'IA 24h',
-      tabs: viewMode === 'merchant' ? [
-        { id: 'agent_flowchart', label: 'Enxame 18 Agentes (Autônomo)', icon: Zap, highlight: true },
-        { id: 'tree_of_thought', label: 'Debate dos Agentes (ToT)', icon: GitFork, highlight: true },
-        { id: 'truth_auditor', label: 'Tribunal de Consenso (2 Agentes)', icon: Scale, highlight: true },
-        { id: 'vector_radar', label: 'Memória RAG & Radar', icon: Database, highlight: true },
-        { id: 'market_hunter', label: 'Caçador de Mercado & Leads', icon: Compass, highlight: true },
-        { id: 'product_evolution', label: 'Auto-Evolução do Produto', icon: Wrench, highlight: true },
-        { id: 'customer_success', label: 'Clientes & Precificação (VoC)', icon: BarChart3, highlight: true },
-        { id: 'ceo_orchestrator', label: 'Orquestrador CEO', icon: Crown, highlight: true },
-        ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : [])
-      ] : [
-        { id: 'agent_flowchart', label: 'Enxame 18 Agentes (Autônomo)', icon: Zap, highlight: true },
-        { id: 'tree_of_thought', label: 'Debate dos Agentes (ToT)', icon: GitFork, highlight: true },
-        { id: 'truth_auditor', label: 'Tribunal de Consenso (Zero Falso-Positivo)', icon: Scale, highlight: true },
-        { id: 'vector_radar', label: 'Memória RAG & Radar', icon: Database, highlight: true },
-        { id: 'ceo_orchestrator', label: 'Orquestrador CEO', icon: Crown, highlight: true },
-        { id: 'orchestrator', label: 'Torre do Maestro', icon: Cpu, highlight: true },
-        { id: 'market_hunter', label: 'Caçador de Mercado & Leads', icon: Compass, highlight: true },
-        { id: 'product_evolution', label: 'Auto-Evolução do Produto', icon: Wrench, highlight: true },
-        { id: 'customer_success', label: 'Clientes & Precificação (VoC)', icon: BarChart3, highlight: true },
-        { id: 'scraper_dossier', label: 'Dossier de Evidências', icon: Search, highlight: true },
-        { id: 'swarm_control', label: 'Enxame Paralelo 24h', icon: BrainCircuit, highlight: true },
-        { id: 'vitals', label: 'Core Web Vitals 2026', icon: Gauge, highlight: true },
-        { id: 'vision', label: 'Visão & Heatmap', icon: Eye, badge: diagnostic?.visionAnalysis.warnings.length },
-        { id: 'telemetry', label: 'Telemetria & Clarity', icon: Activity },
-        ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : []),
-        { id: 'competitor', label: 'Espião', icon: Sword },
-        { id: 'kanban', label: 'Plano de Ação', icon: KanbanSquare }
-      ]
-    },
-    ...(isFounderAuthenticated ? [{
-      id: 'FOUNDER_SUITE' as NavigationPillar,
-      label: 'Gestão do Fundador',
-      badge: 'Sigiloso',
-      tabs: [
-        { id: 'founder_hq', label: 'Torre do Fundador (HQ)', icon: Crown, highlight: true },
-        { id: 'agent_flowchart', label: 'Fluxograma do Enxame', icon: Zap, highlight: true }
-      ]
-    }] : [])
-  ];
-
-  const currentPillar = pillarCategories.find(p => p.id === activePillar) || pillarCategories[0];
-  const activePillarTabs = currentPillar.tabs;
 
   return (
     <div className="min-h-screen bg-[#0E100F] obsidian-grid-pattern text-[#F0EFE6] font-sans antialiased pb-24">
@@ -381,7 +306,7 @@ export function HomePage() {
                 {/* 🎯 Lead Sniper B2B (Meta Ads & WhatsApp Closer) */}
                 <button
                   onClick={() => {
-                    setActivePillar('MEDIA_INTELLIGENCE');
+                    setActivePillar('SWARM_LAB');
                     setActiveTab('market_hunter');
                   }}
                   className="px-3 py-1.5 rounded-xl bg-[#101211] hover:bg-[#141716] text-[#00BAE2] border border-[#00BAE2]/30 hover:border-[#00BAE2]/60 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
@@ -431,7 +356,7 @@ export function HomePage() {
                     <div className="absolute right-0 top-full mt-2 w-64 bg-[#141716] rounded-2xl border border-white/10 shadow-2xl p-1.5 z-50 animate-fadeIn space-y-0.5 font-sans backdrop-blur-md">
                       <button
                         onClick={() => { 
-                          setActivePillar('MEDIA_INTELLIGENCE');
+                          setActivePillar('SWARM_LAB');
                           setActiveTab('market_hunter'); 
                           setIsToolsMenuOpen(false); 
                         }}
@@ -546,77 +471,18 @@ export function HomePage() {
               </div>
             </div>
 
-            {/* 🏛️ 3-PILLAR MASTER DIDACTIC NAVIGATION */}
-            <div className="space-y-2">
-              
-              {/* Top Segmented Pillar Selector (4 Pillars Max) */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 bg-[#101211] backdrop-blur-md p-1.5 rounded-2xl border border-white/10 shadow-inner">
-                {pillarCategories.map((pillar) => {
-                  const isPillarActive = activePillar === pillar.id;
-                  return (
-                    <button
-                      key={pillar.id}
-                      onClick={() => {
-                        setActivePillar(pillar.id);
-                        if (!pillar.tabs.some(t => t.id === activeTab)) {
-                          setActiveTab(pillar.tabs[0].id);
-                        }
-                      }}
-                      className={`px-3.5 py-2.5 rounded-xl transition-all duration-200 cursor-pointer flex items-center justify-between gap-2 text-left font-bold text-xs ${
-                        isPillarActive
-                          ? pillar.id === 'FOUNDER_SUITE'
-                            ? 'bg-[#FF8709] text-[#0E100F] shadow-md shadow-[#FF8709]/20 font-black'
-                            : 'bg-[#191C1B] text-[#0AE448] shadow-sm border border-[#0AE448]/30'
-                          : 'text-[#BBBAA6] hover:text-[#FFFCE1] hover:bg-white/5'
-                      }`}
-                    >
-                      <span className="truncate">{pillar.label}</span>
-                      {pillar.badge && (
-                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-mono shrink-0 ${
-                          isPillarActive 
-                            ? pillar.id === 'FOUNDER_SUITE' ? 'bg-[#0E100F]/30 text-[#0E100F] font-black' : 'bg-[#0AE448]/20 text-[#0AE448]'
-                            : 'bg-white/5 text-[#7C7C6F]'
-                        }`}>
-                          {pillar.badge}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Focused Sub-Tabs Row (Linear / Raycast Style) */}
-              <div className="flex flex-wrap items-center gap-1.5 bg-[#141716] backdrop-blur-xl p-2 rounded-2xl border border-white/10 shadow-2xl">
-                {activePillarTabs.map((tab) => {
-                  const TabIcon = tab.icon;
-                  const isActive = activeTab === tab.id;
-
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shrink-0 cursor-pointer border ${
-                        isActive
-                          ? activePillar === 'FOUNDER_SUITE'
-                            ? 'bg-[#FF8709] text-[#0E100F] border-[#FF8709] shadow-md shadow-[#FF8709]/20'
-                            : 'bg-[#0AE448] text-[#0E100F] border-[#0AE448] shadow-md shadow-[#0AE448]/20'
-                          : 'bg-[#101211] text-[#BBBAA6] border-white/10 hover:border-white/20 hover:text-[#FFFCE1] hover:bg-[#191C1B]'
-                      }`}
-                    >
-                      <TabIcon className={`w-3.5 h-3.5 ${isActive ? 'text-[#0E100F]' : 'text-[#7C7C6F]'}`} />
-                      <span>{tab.label}</span>
-                      {tab.badge !== undefined && (
-                        <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold ${
-                          isActive ? 'bg-black/20 text-[#0E100F]' : 'bg-white/5 text-[#7C7C6F]'
-                        }`}>
-                          {tab.badge}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            {/* 🏛️ NAVEGAÇÃO PROGRESSIVA INTUITIVA (SIMPLES, RÁPIDA E COMPLETA) */}
+            <SimplifiedPillarNav
+              activePillar={activePillar}
+              onChangePillar={setActivePillar}
+              activeTab={activeTab}
+              onChangeTab={setActiveTab}
+              isMarketplaceStore={isMarketplaceStore}
+              totalCatalogAlerts={totalCatalogAlerts}
+              isFounderAuthenticated={isFounderAuthenticated}
+              onOpenMetaAutoKill={() => setIsMetaAutoKillModalOpen(true)}
+              onOpenWhatsAppWatchdog={() => setIsWhatsAppWatchdogOpen(true)}
+            />
 
             {/* Content Area Rendering */}
             <div className="animate-in fade-in duration-200">
