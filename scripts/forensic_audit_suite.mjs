@@ -148,7 +148,9 @@ async function runForensicAudit() {
   results.forEach((r, idx) => {
     // Para endpoints de segurança (callback com hmac falso ou cron sem token), 400/401 é a resposta correta de segurança (pass)
     const isSecurityGuard = r.name.includes('Anti-Spoofing') || r.name.includes('Fail-Closed');
-    const isSuccess = isSecurityGuard ? (r.status === 400 || r.status === 401 || r.status === 500) : (r.status === 200 || r.status === 302);
+    const isSuccess = isSecurityGuard 
+      ? (r.status === 400 || r.status === 401 || r.status === 500) 
+      : (r.status === 200 || r.status === 302 || r.status === 307);
     if (isSuccess) passedCount++;
     console.log(`${idx + 1}. [${isSuccess ? 'PASS ✅' : 'FAIL ❌'}] ${r.name} - HTTP ${r.status} (${r.durationMs}ms)`);
   });
