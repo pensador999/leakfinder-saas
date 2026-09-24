@@ -13,9 +13,25 @@ export const config = {
   maxDuration: 60,
 };
 
-function sendResponse(response: any, statusCode: number, data: any) {
-  if (response?.status && typeof response.status === 'function') {
-    return response.status(statusCode).json(data);
+export interface OmnichannelCrossAuditRequestBody {
+  executeKillSwitch?: boolean;
+  targetSku?: string;
+}
+
+interface MinimalServerlessRequest {
+  method?: string;
+  body?: string | OmnichannelCrossAuditRequestBody;
+  headers?: Record<string, string>;
+}
+
+interface MinimalServerlessResponse {
+  status?: (code: number) => { json: (data: unknown) => unknown };
+}
+
+function sendResponse(response: MinimalServerlessResponse | unknown, statusCode: number, data: unknown) {
+  const resp = response as MinimalServerlessResponse;
+  if (resp?.status && typeof resp.status === 'function') {
+    return resp.status(statusCode).json(data);
   }
   return new Response(JSON.stringify(data), {
     status: statusCode,
@@ -80,12 +96,12 @@ export interface OmnichannelAuditItem {
   };
 }
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req: MinimalServerlessRequest, res: MinimalServerlessResponse) {
   if (req.method === 'OPTIONS') {
     return sendResponse(res, 200, { ok: true });
   }
 
-  let body: any = {};
+  let body: OmnichannelCrossAuditRequestBody = {};
   if (req.body) {
     body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
   }
