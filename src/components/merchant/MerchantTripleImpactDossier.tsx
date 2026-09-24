@@ -414,7 +414,7 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
               </div>
               <div>
                 <span className="text-[10px] text-[#00BAE2] uppercase tracking-wider font-mono block">Monitoramento 24h</span>
-                <span className="text-xs font-bold text-[#FFFCE1]">Ver Planos (R$ 197+)</span>
+                <span className="text-xs font-bold text-[#FFFCE1]">Ver Planos (R$ 297+)</span>
               </div>
             </div>
             <ArrowRight className="w-4 h-4 text-[#7C7C6F] group-hover:translate-x-1 transition-transform" />

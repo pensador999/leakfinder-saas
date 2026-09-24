@@ -1229,7 +1229,7 @@ export const FounderMasterHqView: React.FC = () => {
                   <input
                     type="number"
                     value={directives.priceFloorStarter}
-                    onChange={(e) => setDirectives({ ...directives, priceFloorStarter: parseInt(e.target.value) || 197 })}
+                    onChange={(e) => setDirectives({ ...directives, priceFloorStarter: parseInt(e.target.value) || 297 })}
                     className="w-full mt-1 px-3 py-1.5 bg-[#0E100F] border border-white/10 text-[#FFFCE1] rounded-xl font-mono text-xs focus:border-[#0AE448]"
                   />
                 </div>
@@ -1245,11 +1245,11 @@ export const FounderMasterHqView: React.FC = () => {
                 </div>
 
                 <div>
-                  <span className="font-bold text-[#FFFCE1] block">Enterprise (10 Lojas)</span>
+                  <span className="font-bold text-[#FFFCE1] block">Enterprise / Agency (15 Lojas)</span>
                   <input
                     type="number"
                     value={directives.priceFloorEnterprise}
-                    onChange={(e) => setDirectives({ ...directives, priceFloorEnterprise: parseInt(e.target.value) || 1290 })}
+                    onChange={(e) => setDirectives({ ...directives, priceFloorEnterprise: parseInt(e.target.value) || 1497 })}
                     className="w-full mt-1 px-3 py-1.5 bg-[#0E100F] border border-white/10 text-[#FFFCE1] rounded-xl font-mono text-xs focus:border-[#0AE448]"
                   />
                 </div>

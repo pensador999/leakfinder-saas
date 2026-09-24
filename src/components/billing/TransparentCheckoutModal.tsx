@@ -270,6 +270,24 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
           ) : (
             /* PLAN SELECTION & CHECKOUT FORM */
             <div className="space-y-6">
+
+              {/* ROI & Guarantee Trust Header */}
+              <div className="p-4 bg-gradient-to-r from-[#0AE448]/10 via-[#0AE448]/5 to-transparent border border-[#0AE448]/30 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 bg-[#0AE448]/20 text-[#0AE448] rounded-xl border border-[#0AE448]/30 shrink-0">
+                    <Sparkles className="w-4 h-4 text-[#0AE448]" />
+                  </div>
+                  <div>
+                    <span className="font-bold text-[#FFFCE1] block">Proteção de Margem & Retenção de ROAS</span>
+                    <span className="text-[11px] text-[#BBBAA6]">Evita em média R$ 12.000 a R$ 45.000/mês em tráfego pago desperdiçado com anúncios sem estoque.</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5 px-3 py-1 bg-[#0AE448]/15 border border-[#0AE448]/30 rounded-full text-[#0AE448] text-[11px] font-bold font-mono shrink-0">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Garantia 7 Dias CDC</span>
+                </div>
+              </div>
               
               {/* Billing Cycle Toggle */}
               <div className="flex items-center justify-center gap-2 p-1.5 bg-white/5 border border-white/10 rounded-2xl max-w-xs mx-auto text-xs font-bold">

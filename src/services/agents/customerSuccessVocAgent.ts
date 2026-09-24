@@ -77,9 +77,9 @@ export async function runCustomerSuccessVocAudit(): Promise<CustomerSuccessVocDo
   const pricingPlans: PricingPlanTier[] = [
     {
       id: 'starter',
-      name: 'AdShield Starter',
-      monthlyPrice: 197,
-      annualPriceDiscount: 157,
+      name: 'AdShield Starter Sentinel',
+      monthlyPrice: 297,
+      annualPriceDiscount: 237,
       targetMerchantMonthlyRevenue: 'R$ 15.000 a R$ 50.000/mês',
       idealForNiche: 'Lojas em fase de tração inicial',
       includedStoresQuota: 1,
@@ -91,12 +91,12 @@ export async function runCustomerSuccessVocAudit(): Promise<CustomerSuccessVocDo
         'Suporte prioritário via WhatsApp'
       ],
       estimatedConversionRatePct: 4.8,
-      projectedLtv: 2364,
-      recommendedPriceElasticityRange: 'R$ 147 a R$ 247/mês'
+      projectedLtv: 3564,
+      recommendedPriceElasticityRange: 'R$ 247 a R$ 347/mês'
     },
     {
       id: 'pro',
-      name: 'AdShield Pro (Mais Popular)',
+      name: 'AdShield Growth Pro Shield (Mais Escolhido)',
       monthlyPrice: 497,
       annualPriceDiscount: 397,
       targetMerchantMonthlyRevenue: 'R$ 50.000 a R$ 250.000/mês',
@@ -105,9 +105,9 @@ export async function runCustomerSuccessVocAudit(): Promise<CustomerSuccessVocDo
       features: [
         'Até 3 Lojas Virtuais Monitoradas 24/7',
         'Auditoria de Catálogo + Core Web Vitals 2026',
+        'Auto-Kill Switch Meta Ads para SKUs esgotados',
         'Espião de Concorrentes & Benchmarking de Preço',
         'Gerador de Scripts Liquid & CSS Anti-Fuga',
-        'Selo de Confiança Verificado Dinâmico',
         'Acesso à Torre de Controle do Enxame de IA'
       ],
       estimatedConversionRatePct: 3.2,
@@ -116,23 +116,23 @@ export async function runCustomerSuccessVocAudit(): Promise<CustomerSuccessVocDo
     },
     {
       id: 'enterprise',
-      name: 'AdShield Enterprise & Agency',
-      monthlyPrice: 1290,
-      annualPriceDiscount: 990,
+      name: 'AdShield Agency Scale White-Label',
+      monthlyPrice: 1497,
+      annualPriceDiscount: 1197,
       targetMerchantMonthlyRevenue: 'R$ 250.000+/mês ou Agências',
       idealForNiche: 'Grandes marcas e agências de e-commerce/CRO',
-      includedStoresQuota: 10,
+      includedStoresQuota: 15,
       features: [
-        'Até 10 Lojas Virtuais com White-label Completo',
+        'Até 15 Lojas Virtuais com White-label Completo',
         'Relatórios em PDF com logo da sua Agência',
+        'Mineração de Leads B2B (Lead Sniper Ilimitado)',
         'Webhooks customizados para Evolution API / Z-API',
         'Auditoria em tempo real a cada 1 hora',
-        'Gerente de Sucesso de Conta dedicado',
-        'SLA de resposta em menos de 15 minutos'
+        'Gerente de Sucesso de Conta dedicado e SLA 15min'
       ],
       estimatedConversionRatePct: 1.6,
-      projectedLtv: 18060,
-      recommendedPriceElasticityRange: 'R$ 990 a R$ 1.690/mês'
+      projectedLtv: 17964,
+      recommendedPriceElasticityRange: 'R$ 1.290 a R$ 1.990/mês'
     }
   ];
 

@@ -20,49 +20,49 @@ export interface StripePlanConfig {
 export const ADSHIELD_STRIPE_PLANS: Record<SubscriptionPlanId, StripePlanConfig> = {
   STARTER_MONTHLY: {
     id: 'STARTER_MONTHLY',
-    name: 'AdShield Starter',
-    priceBrl: 290,
-    stripePriceId: 'price_adshield_starter_290',
+    name: 'AdShield Starter Sentinel',
+    priceBrl: 297,
+    stripePriceId: 'price_adshield_starter_297',
     description: 'Vigilância contínua para marcas individuais em crescimento.',
     maxMonitoredStores: 1,
     features: [
       '1 Loja Inspecionada 24/7',
       'Auditoria de Estoque a cada 60 minutos',
-      'Alertas de Ruptura no WhatsApp',
+      'Alertas de Ruptura no WhatsApp da Equipe',
       'Extensão Chrome Manifest V3 Oficial',
-      'Simulador Dinâmico de Tráfego'
+      'Calculadora Atuarial de Sangria Financeira'
     ]
   },
   PRO_MONTHLY: {
     id: 'PRO_MONTHLY',
     name: 'AdShield Pro Sentinel',
-    priceBrl: 490,
-    stripePriceId: 'price_adshield_pro_490',
-    description: 'Proteção em tempo real para marcas com alto tráfego no Meta Ads.',
+    priceBrl: 497,
+    stripePriceId: 'price_adshield_pro_497',
+    description: 'Proteção em tempo real com Kill-Switch para e-commerces que investem em mídia.',
     maxMonitoredStores: 3,
     recommended: true,
     features: [
       'Até 3 Lojas Inspecionadas Simultaneamente',
-      'Sentinela Cloud 24/7 a cada 30 minutos',
-      'Alerta Imediato ao Esgotar Tamanhos M/G/GG',
-      'HUD Flutuante In-Page na sua Loja',
-      'Cruzamento Automático com Meta Ads Library',
-      'Garantia Incondicional de 7 Dias'
+      'Sentinela Cloud 24/7 a cada 15 a 30 minutos',
+      'AdShield Kill-Switch: Pausa Automática de Anúncios',
+      'Alerta Imediato (< 60s) ao Esgotar Tamanhos Campeões',
+      'Snippets Liquid (Sticky Buy Button & Desconto Pix)',
+      'Garantia Incondicional de 7 Dias (CDC Art. 49)'
     ]
   },
   AGENCY_MONTHLY: {
     id: 'AGENCY_MONTHLY',
-    name: 'AdShield Agency Scale',
-    priceBrl: 990,
-    stripePriceId: 'price_adshield_agency_990',
-    description: 'O sistema operacional de retenção de tráfego para agências de mídia.',
-    maxMonitoredStores: 10,
+    name: 'AdShield Agency Scale White-Label',
+    priceBrl: 1497,
+    stripePriceId: 'price_adshield_agency_1497',
+    description: 'O sistema operacional de retenção de clientes para agências de performance.',
+    maxMonitoredStores: 15,
     features: [
-      'Até 10 Lojas / Clientes Conectados',
-      'Relatórios Executivos em PDF White-Label',
-      'Acesso Multi-Usuário para Gestores de Tráfego',
-      'Exportação para Planilhas e Webhooks',
-      'Suporte Prioritário VIP no WhatsApp'
+      'Até 15 Lojas de Clientes Conectadas',
+      'Painel & Relatórios Executivos 100% White-Label',
+      'Caçador de Leads Outbound Ilimitado para WhatsApp',
+      'Acesso ao Enxame Completo dos 18 Agentes de IA',
+      'Suporte Prioritário VIP no WhatsApp com Engenharia'
     ]
   }
 };

@@ -107,19 +107,19 @@ export class OutboundCloserEngine {
   }
 
   /**
-   * Gera a proposta de parceria White-Label para Agências de Tráfego Pago (R$ 997/mês)
+   * Gera a proposta de parceria White-Label para Agências de Tráfego Pago (R$ 1.497/mês)
    */
   public static generateAgencyWhiteLabelOffer(agencyName: string, partnerPhone: string = ''): AgencyWhiteLabelPitch {
-    const price = 997.00;
+    const price = 1497.00;
     const body = 
       `Olá equipe da *${agencyName}*! Tudo bem?\n\n` +
       `Sou fundador do *AdShield OS*. Acompanho o trabalho de tráfego de vocês e sei como é frustrante quando o cliente cobra resultado e a culpa é do estoque furado dele que esgotou sem avisar o gestor.\n\n` +
       `Criamos uma parceria exclusiva para Agências de Tráfego:\n` +
       `1. Entregamos o AdShield com a *logo e paleta de cores da ${agencyName}* (100% White-Label).\n` +
-      `2. Monitoramento autônomo 24/7 das contas de até 20 clientes de vocês.\n` +
+      `2. Monitoramento autônomo 24/7 das contas de até 15 clientes de vocês.\n` +
       `3. Kill-Switch que pausa anúncios automaticamente quando o estoque zerar no ERP.\n` +
       `4. O robô caçador (Lead Sniper) para a ${agencyName} prospectar novas marcas no Meta Ads e fechar clientes de tráfego com o Dossiê da Prova do Crime.\n\n` +
-      `O investimento para sua agência é de apenas *R$ ${price.toFixed(2)}/mês* (menos de R$ 50/loja).\n\n` +
+      `O investimento para sua agência é de apenas *R$ ${price.toFixed(2)}/mês* (menos de R$ 100/loja monitorada).\n\n` +
       `Tem 10 minutos para uma demonstração rápida de como blindar seus clientes hoje?\n\n` +
       `🔒 _LGPD: Caso não queira receber mais propostas de parceria, responda 'PARAR'._`;
 

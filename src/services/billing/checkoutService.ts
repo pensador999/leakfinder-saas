@@ -22,52 +22,52 @@ export interface PlanDetails {
 export const SAAS_PLANS: Record<PlanTierId, PlanDetails> = {
   STARTER: {
     id: 'STARTER',
-    name: 'Starter Monitor',
-    monthlyPrice: 197,
-    yearlyMonthlyPrice: 157,
-    yearlyTotalPrice: 1884,
-    description: 'Para lojistas únicos e consultores independentes.',
+    name: 'Starter Sentinel',
+    monthlyPrice: 297,
+    yearlyMonthlyPrice: 237,
+    yearlyTotalPrice: 2844,
+    description: 'Para lojistas únicos e marcas em crescimento que anunciam no Meta Ads.',
     features: [
-      '1 Loja Virtual Monitorada 24/7',
-      'Auditoria de Ruptura de Grade (PP a G2)',
-      'Alertas de Anúncio Fantasma via E-mail',
-      'Diagnóstico de Conformidade CDC Art. 49 e CNPJ',
-      'Dossiê Executivo em PDF'
+      '1 Loja Virtual Monitorada 24/7 (Varredura a cada 60m)',
+      'Alertas de Ruptura de Grade no WhatsApp da Equipe',
+      'Extensão Chrome Manifest V3 Oficial AdShield',
+      'Calculadora Atuarial de Sangria Financeira em R$',
+      'Dossiê Executivo em PDF & Garantia Incondicional de 7 Dias'
     ]
   },
   GROWTH_PRO: {
     id: 'GROWTH_PRO',
     name: 'Growth Pro Shield',
-    badge: 'MAIS ESCOLHIDO',
+    badge: 'MAIS ESCOLHIDO • CARRO-CHEFE',
     monthlyPrice: 497,
     yearlyMonthlyPrice: 397,
     yearlyTotalPrice: 4764,
-    description: 'Para e-commerces em escala e operações multicanal (Sankhya/Magis5).',
+    description: 'Para e-commerces que investem de R$ 8k a R$ 80k/mês em mídia paga.',
     features: [
-      'Até 3 Lojas Virtuais Monitoradas',
-      'Módulo de Descompasso Sankhya ERP & Magis5 Hub',
-      'Alertas Instantâneos no WhatsApp da Equipe',
-      'Visão Computacional & Ergonomia Mobile (Fitts / WCAG)',
-      'Playbooks de Ação em 1-Clique para Tráfego e PCP',
-      'Suporte Prioritário VIP via WhatsApp'
+      'Até 3 Lojas Virtuais Monitoradas Simultaneamente',
+      'Sentinela Cloud 24/7 com Varredura a cada 15 a 30m',
+      'AdShield Kill-Switch: Pausa Automática de Anúncios no Meta Ads',
+      'Alerta Imediato (< 60s) ao esgotar tamanhos mais vendidos',
+      'Snippets Liquid Prontos: Sticky Buy Button & 7% OFF Pix',
+      'Suporte Prioritário VIP no WhatsApp com Engenharia'
     ],
     recommended: true
   },
   AGENCY_ENTERPRISE: {
     id: 'AGENCY_ENTERPRISE',
-    name: 'Agency Enterprise',
+    name: 'Agency Scale White-Label',
     badge: 'AGÊNCIAS & MULTI-LOJAS',
-    monthlyPrice: 997,
-    yearlyMonthlyPrice: 797,
-    yearlyTotalPrice: 9564,
-    description: 'Para Agências de Performance e grandes operações industriais.',
+    monthlyPrice: 1497,
+    yearlyMonthlyPrice: 1197,
+    yearlyTotalPrice: 14364,
+    description: 'Para Agências de Performance, consultores de CRO e gestores com carteira.',
     features: [
-      'Lojas e Auditorias Ilimitadas',
-      'PDF White-Label Completo (Sua Logo e Cores)',
-      'Radar de Prospecção Ativa de Clientes',
-      'Acesso a todos os 12 Agentes de Inteligência Artificial',
-      'Integração via Webhook / CRM / Zapier',
-      'Gerente de Contas Dedicado'
+      'Até 15 Lojas de Clientes Conectadas Simultaneamente',
+      'Painel & Relatórios 100% White-Label (Seu Logo e Cores)',
+      'Caçador de Leads Outbound Ilimitado para Prospecção no WhatsApp',
+      'Acesso ao Enxame Completo dos 18 Agentes de IA',
+      'Integrações Oficiais (Shopify Admin, Meta Ads, Google Ads e Webhooks)',
+      'Gerente de Contas Dedicado & Onboarding Assistido'
     ]
   }
 };

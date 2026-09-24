@@ -112,7 +112,7 @@ export async function askConciergeNeuralAgent(
   // 3. Specific questions about pricing / plans
   if (query.includes('preço') || query.includes('quanto custa') || query.includes('plano') || query.includes('valor')) {
     return {
-      answerText: 'Nossos planos são modelados para gerar ROI imediato:\n\n• **Starter (R$ 197/mês)**: 1 loja monitorada 24h + alertas de grade\n• **Pro (R$ 497/mês)**: 3 lojas + espião de concorrentes + instalação guiada\n• **Enterprise (R$ 1.290/mês)**: 10 lojas + Módulo Agência White-Label completo.\n\nRecuperar apenas 3 vendas no mês já paga o plano Pro inteiro!',
+      answerText: 'Nossos planos são modelados para gerar ROI imediato:\n\n• **Starter Sentinel (R$ 297/mês)**: 1 loja monitorada 24h + alertas de grade e vitais\n• **Growth Pro Shield (R$ 497/mês)**: 3 lojas + Vigia WhatsApp 24/7 matinal + Kill-Switch Meta Ads\n• **Agency Scale White-Label (R$ 1.497/mês)**: até 15 lojas + White-Label completo + Mineração Lead Sniper B2B.\n\nEvitar apenas 1 anúncio rodando para produto sem estoque já paga a assinatura anual inteira!',
       suggestedQuickReplies: ['Falar com consultor no WhatsApp', 'Testar auditoria grátis'],
       intentDetected: 'PRICING_PLANS',
       confidenceScore: 0.95,

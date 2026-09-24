@@ -146,9 +146,9 @@ export const INITIAL_FOUNDER_DIRECTIVES: FounderDirectivesState = {
   targetNiches: ['Moda & Vestuário', 'Calçados', 'Autopeças', 'Agropecuária', 'Beleza & Cosméticos'],
   customAiInstructions: 'Priorizar sempre lojas com anúncios ativos no Meta Ads que tenham ruptura nos tamanhos mais vendidos (G/GG/44). Sempre enfatizar o cálculo de ROI imediato.',
   autoDispatchWhatsApp: true,
-  priceFloorStarter: 197,
+  priceFloorStarter: 297,
   priceFloorPro: 497,
-  priceFloorEnterprise: 1290
+  priceFloorEnterprise: 1497
 };
 
 export const SAMPLE_PROSPECT_LEADS: ProspectStoreLead[] = [
@@ -458,10 +458,10 @@ export async function fetchLiveBusinessMetrics(): Promise<BusinessMetricsSummary
   }
 
   // Active Subscribers Model (SaaS Metrics)
-  const starterCount = 12;      // 12 * 197 = 2.364
+  const starterCount = 12;      // 12 * 297 = 3.564
   const proCount = 28;          // 28 * 497 = 13.916
-  const enterpriseCount = 6;    // 6 * 1290 = 7.740
-  const mrrProjected = (starterCount * 197) + (proCount * 497) + (enterpriseCount * 1290);
+  const enterpriseCount = 6;    // 6 * 1497 = 8.982
+  const mrrProjected = (starterCount * 297) + (proCount * 497) + (enterpriseCount * 1497);
 
   // Consolidate Bleed from Monitored Stores (BRK Agro + BRK Fishing + BRK Motors)
   const totalBleedProtectedMonthly = MONITORED_STORES_BLEED.reduce(

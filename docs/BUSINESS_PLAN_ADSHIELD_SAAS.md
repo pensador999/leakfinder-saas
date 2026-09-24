@@ -51,46 +51,51 @@ graph TD
 
 ## 💰 4. Modelo de Monetização & Tabela de Planos
 
-Para neutralizar o risco de o lojista rodar uma auditoria e cancelar em 15 dias, o modelo de precificação é amarrado em **Monitoramento Diário Contínuo e Franquia de Auditorias**.
+Para neutralizar o risco de o lojista rodar uma auditoria e cancelar em 15 dias, o modelo de precificação é amarrado em **Monitoramento Diário Contínuo, Guardião 24/7 e Automação de Kill-Switch**.
 
 ```mermaid
 graph LR
-    P1["Starter / Lojista Solo<br>R$ 197/mês"] --> P2["Pro Growth / Sentinela 24h<br>R$ 497/mês"]
-    P2 --> P3["Agency White-Label<br>R$ 997 a R$ 1.997/mês"]
-    P3 --> P4["Enterprise / Custom API<br>Sob Consulta (R$ 3k+)"]
+    P1["Starter Sentinel<br>R$ 297/mês (ou R$ 237 anual)"] --> P2["Growth Pro Shield<br>R$ 497/mês (ou R$ 397 anual)"]
+    P2 --> P3["Agency Scale White-Label<br>R$ 1.497/mês (ou R$ 1.197 anual)"]
+    P3 --> P4["Enterprise Custom API<br>Sob Consulta (R$ 3k+/mês)"]
 ```
 
 ### 4.1 Detalhamento dos Planos Oficiais
 
-#### 🥉 Plano 1: STARTER (Lojista Solo / Consultor Iniciante) — **R$ 197 / mês**
-* **Foco:** Lojas pequenas faturando até R$ 50k/mês ou consultores individuais.
+#### 🥉 Plano 1: STARTER SENTINEL (Lojista Solo / Fase de Tração) — **R$ 297 / mês** *(ou R$ 237/mês no anual)*
+* **Foco:** Lojas faturando de R$ 15k a R$ 50k/mês que investem em tráfego pago.
 * **Entregáveis:**
-  - Até 15 auditorias de lojas por mês.
-  - Relatório Executivo e Dossiê de Conversão.
-  - 1 Alerta Diário de Ruptura de Estoque.
-  - Simulador de Margem e Elasticidade no Pix.
-
-#### 🥈 Plano 2: PRO SENTINELA (Lojas em Escala & D2C) — **R$ 497 / mês** *(O Mais Vendido)*
-* **Foco:** E-commerces investindo acima de R$ 10.000/mês em tráfego pago.
-* **Entregáveis:**
-  - Auditorias Ilimitadas da própria loja e de concorrentes.
-  - **Vigia WhatsApp 24/7 (07:00 da manhã):** Notificação automática com o raio-x de SKUs que entraram em ruptura antes do gestor de tráfego ligar as campanhas.
-  - Auto-Kill Switch: Identificação imediata de criativos do Meta Ads apontando para páginas quebradas.
-  - Visão Computacional WCAG 2.1 e Mapas de Calor Heurísticos.
+  - 1 Loja Virtual Monitorada 24/7.
+  - Varredura diária de Rupturas de Grade PP ao G2.
+  - Alerta Executivo diário via WhatsApp às 07:00 da manhã.
+  - Simulador de Margem e Elasticidade no Pix vs Cartão.
+  - Auditoria Core Web Vitals e contraste WCAG 2.1.
   - Suporte prioritário via WhatsApp.
 
-#### 🥇 Plano 3: AGENCY SCALE (Agências de Performance & CRO) — **R$ 997 / mês**
-* **Foco:** Agências que desejam fechar contratos de gestão de R$ 2.500 a R$ 10.000/mês.
+#### 🥈 Plano 2: GROWTH PRO SHIELD (Lojas em Escala & D2C) — **R$ 497 / mês** *(ou R$ 397/mês no anual)* — **MAIS ESCOLHIDO / CARRO-CHEFE**
+* **Foco:** E-commerces investindo acima de R$ 10.000/mês em tráfego pago (Meta Ads / Google Ads).
 * **Entregáveis:**
-  - **White-Label Total:** Logotipo, cores e domínio da agência nos PDFs e no link compartilhado com o cliente.
-  - **Motor Lead Sniper B2B:** Mineração de até 300 lojas/mês com filtro por nicho, plataforma e investimento em anúncios.
-  - CRM de Prospecção integrado com disparos assistidos de WhatsApp.
-  - Exportação em Massa para Planilhas, CSV e Trello.
+  - Até 3 Lojas Virtuais Monitoradas 24/7.
+  - **Auto-Kill Switch Meta Ads:** Pausa imediata de criativos promovendo variantes com estoque zerado no ERP/catálogo.
+  - **Vigia WhatsApp 24/7 (07:00 da manhã):** Notificação detalhada para o time de tráfego antes da subida de lances.
+  - Espião de Concorrentes & Benchmarking de Preço.
+  - Gerador de Scripts Liquid & CSS Anti-Fuga (Tabela de Medidas e Thumb Zone).
+  - Acesso à Torre de Controle do Enxame com 18 Agentes de IA.
+
+#### 🥇 Plano 3: AGENCY SCALE WHITE-LABEL (Agências & Multi-Lojas) — **R$ 1.497 / mês** *(ou R$ 1.197/mês no anual)*
+* **Foco:** Agências de performance que atendem carteiras de clientes e fecham contratos de gestão de CRO de R$ 3.000 a R$ 10.000/mês.
+* **Entregáveis:**
+  - **White-Label Total:** Logotipo, cores e domínio da agência nos relatórios e PDFs entregues ao lojista.
+  - **Até 15 Lojas Virtuais Monitoradas** (Custo unitário < R$ 100/loja/mês).
+  - **Motor Lead Sniper B2B:** Mineração de leads no Meta Ads Library para fechar novos clientes de tráfego.
+  - CRM de Prospecção integrado com disparos assistidos com atraso humano anti-ban.
+  - Webhooks customizados para Evolution API / Z-API e ERPs (Sankhya, Tiny, Bling).
+  - Gerente de Sucesso de Conta dedicado e SLA de resposta em menos de 15 minutos.
 
 #### 💎 Add-ons & Receitas Recorrentes Adicionais (Usage-Based)
 1. **Pacote Extra de Leads Minerados (Lead Sniper):** R$ 197 para cada 500 leads enriquecidos adicionais.
-2. **Monitoramento de Concorrente em Tempo Real:** R$ 97/mês por concorrente espionado diariamente.
-3. **Instalação em 1-Clique (One-Click Setup Service):** R$ 497 taxa única para implementar tabela de medidas e ajustes no tema Shopify/Nuvemshop.
+2. **Monitoramento de Concorrente Adicional:** R$ 97/mês por concorrente espionado diariamente.
+3. **Instalação Guiada em 1-Clique (One-Click Setup Service):** R$ 497 taxa única para implementação assistida por engenheiro no tema Shopify/Nuvemshop.
 
 ---
 
@@ -98,13 +103,13 @@ graph LR
 
 | Indicador | Meta Ano 1 (2026) | Benchmark de Mercado SaaS | Observações de Eficiência |
 | :--- | :--- | :--- | :--- |
-| **Margem Bruta (Gross Margin)** | **84,5%** | 75% a 85% | Custo marginal de Chromium Serverless + Gemini Flash é < R$ 0,08 por auditoria |
-| **CAC Médio (ICP Lojista)** | R$ 220,00 | R$ 300 a R$ 600 | Aquisição via inbound orgânico e auditoria freemium |
-| **CAC Médio (ICP Agência)** | R$ 650,00 | R$ 800 a R$ 1.500 | Aquisição via prospecção direta B2B e demonstrações ao vivo |
-| **LTV Médio (Blended)** | R$ 4.200,00 | R$ 2.500 a R$ 4.000 | Ciclo médio de retenção de 8 a 12 meses |
-| **Razão LTV / CAC** | **6.4x** | > 3.0x considerado excelente | Alavancagem saudável permitindo reinvestir em mídia |
-| **Payback Period** | **1,8 meses** | < 6 meses | Retorno ultra-rápido do capital investido em aquisição |
-| **Churn Mensal Alvo** | **< 3,5%** | 4% a 7% no B2B SMB | Blindado pela rotina diária do Vigia de WhatsApp |
+| **Margem Bruta (Gross Margin)** | **88,5%** | 75% a 85% | Custo marginal de VPS + Proxies + Gemini Flash é ~R$ 0,08 por auditoria |
+| **CAC Médio (ICP Lojista)** | R$ 260,00 | R$ 300 a R$ 600 | Aquisição via inbound orgânico e auditoria freemium |
+| **CAC Médio (ICP Agência)** | R$ 750,00 | R$ 800 a R$ 1.500 | Aquisição via prospecção direta B2B e demonstrações ao vivo |
+| **LTV Médio (Blended)** | R$ 5.960,00 | R$ 2.500 a R$ 4.000 | Ciclo médio de retenção de 10 a 14 meses |
+| **Razão LTV / CAC** | **7.9x** | > 3.0x considerado excelente | Alavancagem saudável permitindo reinvestir em mídia |
+| **Payback Period** | **1,5 meses** | < 6 meses | Retorno ultra-rápido do capital investido em aquisição |
+| **Churn Mensal Alvo** | **< 2,8%** | 4% a 7% no B2B SMB | Blindado pela rotina diária do Vigia de WhatsApp e Kill-Switch |
 
 ---
 
@@ -136,7 +141,7 @@ graph TD
 * **Como funciona:** Usamos o nosso próprio motor de prospecção para minerar 1.000 agências de marketing digital e gestores de tráfego no Brasil.
 * **Abordagem de Alto Impacto:**
   > *"Olá, time da Agência X. Auditamos automaticamente 10 clientes de e-commerce da sua carteira pública. Detectamos que 4 deles estão com campanhas ativas para produtos com ruptura de estoque. Montamos este relatório em PDF de demonstração com a sua logo para você ver como fechar contratos de CRO cobrando R$ 3.000/mês a mais."*
-* **Meta:** 50 agências pagando o plano de R$ 997/mês = **R$ 49.850,00 de MRR imediato**.
+* **Meta:** 50 agências pagando o plano de R$ 1.497/mês = **R$ 74.850,00 de MRR imediato**.
 
 ### 7.2 Canal 2: O Funil "Auditoria Gratuita de 60 Segundos" (Product-Led Growth)
 * Uma barra de URL limpa e ultrarrápida na página inicial.
@@ -155,19 +160,20 @@ graph TD
 ## 🗺️ 8. Metas Financeiras e Projeção de Faturamento (DRE Projetado)
 
 ```
-+---------------------+-------------+-------------+-------------+
-| Métrica             | Mês 3       | Mês 6       | Mês 12      |
-+---------------------+-------------+-------------+-------------+
-| Clientes Ativos     | 60          | 180         | 520         |
-| - Starter (R$ 197)  | 25          | 70          | 180         |
-| - Pro (R$ 497)      | 25          | 80          | 260         |
-| - Agency (R$ 997)   | 10          | 30          | 80          |
-| MRR (Receita Mensal)| R$ 27.320   | R$ 83.430   | R$ 244.460  |
-| ARR (Anualizado)    | R$ 327.840  | R$ 1.001.160| R$ 2.933.520|
-| Custos Servidores   | R$ 2.200    | R$ 5.800    | R$ 14.200   |
-| Impostos (Simples)  | R$ 1.639    | R$ 5.005    | R$ 14.667   |
-| Margem de Contrib.  | 85,9%       | 87,0%       | 88,2%       |
-+---------------------+-------------+-------------+-------------+
++---------------------------+-------------+-------------+-------------+
+| Métrica                   | Mês 3       | Mês 6       | Mês 12      |
++---------------------------+-------------+-------------+-------------+
+| Clientes Ativos Totais    | 60          | 180         | 520         |
+| - Starter (R$ 297/mês)    | 25          | 70          | 180         |
+| - Pro Shield (R$ 497/mês) | 25          | 80          | 260         |
+| - Agency (R$ 1.497/mês)   | 10          | 30          | 80          |
+| MRR (Receita Recorrente)  | R$ 34.820   | R$ 105.460  | R$ 302.440  |
+| ARR (Anualizado)          | R$ 417.840  | R$ 1.265.520| R$ 3.629.280|
+| Custos Operacionais (COGS)| R$ 2.200    | R$ 5.800    | R$ 14.200   |
+| Impostos (Simples Nac. 6%)| R$ 2.089    | R$ 6.327    | R$ 18.146   |
+| Lucro Bruto Operacional   | R$ 30.531   | R$ 93.333   | R$ 270.094  |
+| Margem de Contribuição    | 87,7%       | 88,5%       | 89,3%       |
++---------------------------+-------------+-------------+-------------+
 ```
 
 ---

@@ -248,7 +248,7 @@ const MASTER_KNOWLEDGE_CLUSTERS: DomainKnowledgeCluster[] = [
     intents: ['PRICING_INQUIRY', 'COMMERCIAL_PLANS'],
     responseAngles: {
       directExplanation: [
-        'Nossos planos foram modelados para se pagarem com facilidade através do aumento de conversão:\n\n• **Starter (R$ 197/mês)**: 1 loja monitorada 24/7 + Alertas de grade e vitals.\n• **Pro (R$ 497/mês)**: 3 lojas + Espião de concorrentes + Vigia WhatsApp matinal + Instalação guiada.\n• **Enterprise (R$ 1.290/mês)**: 10 lojas + Módulo Agência White-Label em PDF + Gerente de Contas dedicado.',
+        'Nossos planos foram modelados para se pagarem com facilidade através do aumento de conversão:\n\n• **Starter Sentinel (R$ 297/mês)**: 1 loja monitorada 24/7 + Alertas de grade e vitals.\n• **Growth Pro Shield (R$ 497/mês)**: 3 lojas + Espião de concorrentes + Vigia WhatsApp matinal + Kill-Switch Meta Ads.\n• **Agency Scale White-Label (R$ 1.497/mês)**: até 15 lojas + Módulo Agência White-Label em PDF + Mineração Lead Sniper B2B.',
         'Oferecemos **20% de desconto no faturamento anual** com emissão automática de Nota Fiscal (NF-e).',
         'Aceitamos Pix com ativação imediata e Cartão de Crédito em até 12x.'
       ],
@@ -257,7 +257,7 @@ const MASTER_KNOWLEDGE_CLUSTERS: DomainKnowledgeCluster[] = [
         'Você pode fazer upgrade ou cancelamento a qualquer momento sem contrato de fidelidade no plano mensal.'
       ],
       businessRoiImpact: [
-        'Como o plano Starter custa R$ 197/mês, recuperar apenas 1 ou 2 vendas perdidas por mês já cobre 100% da assinatura!',
+        'Como o plano Starter custa R$ 297/mês, recuperar apenas 1 ou 2 vendas perdidas por mês já cobre 100% da assinatura!',
         'No plano Pro, o retorno sobre o investimento (ROI) médio observado pelos clientes é de 8x a 14x o valor pago.'
       ],
       actionableAdvice: [

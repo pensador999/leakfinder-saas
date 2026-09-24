@@ -30,35 +30,38 @@ export const SAAS_PRICING_PLANS: PricingPlan[] = [
   },
   {
     id: 'PRO_MONTHLY',
-    name: 'Lojista Pro & Vigia 24h',
-    priceBrlMonthly: 147,
-    priceUsdMonthly: 29,
-    creditsPerMonth: 50,
+    name: 'AdShield Pro Sentinel & Vigia 24h',
+    priceBrlMonthly: 497,
+    priceUsdMonthly: 97,
+    creditsPerMonth: 150,
     isPopular: true,
-    stripePriceId: 'price_pro_monthly_live',
+    stripePriceId: 'price_adshield_pro_497',
     features: [
-      '50 Auditorias Completas por Mês',
-      'Vigia 24h com Alertas no WhatsApp às 07:00',
-      'Simulador Dinâmico de Elasticidade Pix',
-      'Inspeção SKU por SKU do Catálogo',
-      'Exportação de Planilhas em Excel (.CSV)',
-      'Exportação de Relatórios Executivos em PDF'
+      'Até 3 Lojas Inspecionadas 24/7 (Varredura 15-30m)',
+      'AdShield Kill-Switch: Pausa Automática no Meta Ads',
+      'Vigia 24h com Alertas no WhatsApp às 07:00 ou < 60s',
+      'Simulador Dinâmico de Elasticidade e Desconto Pix',
+      'Inspeção SKU por SKU do Catálogo ao Vivo',
+      'Snippets Liquid Prontos (Sticky Button + Desconto Pix)',
+      'Exportação de Planilhas em Excel (.CSV) e PDF',
+      'Garantia Incondicional de 7 Dias (CDC Art. 49)'
     ]
   },
   {
     id: 'AGENCY_SCALE',
-    name: 'Agência & Consultoria Scale',
-    priceBrlMonthly: 497,
-    priceUsdMonthly: 99,
+    name: 'AdShield Agency Scale White-Label',
+    priceBrlMonthly: 1497,
+    priceUsdMonthly: 297,
     creditsPerMonth: 9999,
-    stripePriceId: 'price_agency_scale_live',
+    stripePriceId: 'price_adshield_agency_1497',
     features: [
-      'Auditorias Ilimitadas de Lojas',
-      'Relatórios 100% White-Label (Seu Logo e Marca)',
-      'Acesso ao Servidor MCP para Claude e Cursor',
-      'Conexão de Múltiplas Lojas Shopify/Meta Ads',
-      'Suporte Prioritário Direto com Engenharia',
-      'Pitch Pronto em 1 Clique para WhatsApp'
+      'Até 15 Lojas de Clientes Conectadas Simultaneamente',
+      'Auditorias Ilimitadas e Relatórios 100% White-Label',
+      'Caçador de Leads Outbound Ilimitado para WhatsApp',
+      'Acesso ao Servidor MCP e aos 18 Agentes de IA',
+      'Painel de Controle Unificado de Clientes da Agência',
+      'Suporte Prioritário Direto com Engenharia no WhatsApp',
+      'Pitches de Fechamento B2B Prontos em 1 Clique'
     ]
   }
 ];
