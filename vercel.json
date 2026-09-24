@@ -78,6 +78,15 @@
     },
     "api/shopify/webhooks/inventory.ts": {
       "maxDuration": 15
+    },
+    "api/sankhya/inventory.ts": {
+      "maxDuration": 60
+    },
+    "api/magis5/sync.ts": {
+      "maxDuration": 60
+    },
+    "api/omnichannel/cross-audit.ts": {
+      "maxDuration": 60
     }
   }
 }
