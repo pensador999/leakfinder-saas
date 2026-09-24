@@ -1,3 +1,4 @@
+/// <reference types="node" />
 // ==============================================================================
 // 🛡️ Vercel Serverless Function: /api/cron/swarm-runner
 // Hardened Security: Strict Bearer Token, Anti-DoS Throttling, Zero-Hardcoded Secrets

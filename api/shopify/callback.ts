@@ -1,3 +1,4 @@
+/// <reference types="node" />
 // ==============================================================================
 // 🛍️ SHOPIFY OAUTH CALLBACK: /api/shopify/callback
 // Validates Shopify HMAC-SHA256 signature, verifies anti-CSRF state token,

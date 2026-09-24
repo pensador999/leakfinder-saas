@@ -1,3 +1,4 @@
+/// <reference types="node" />
 // ==============================================================================
 // 🏭 SANKHYA ERP GATEWAY: /api/sankhya/inventory
 // Audita o estoque físico real direto das tabelas TGFEST e TGFPRO do Sankhya ERP.

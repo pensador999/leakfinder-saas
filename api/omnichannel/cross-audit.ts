@@ -1,3 +1,4 @@
+/// <reference types="node" />
 // ==============================================================================
 // 🎯 OMNICHANNEL TRUTH MATRIX: /api/omnichannel/cross-audit
 // Cruza os 4 nós operacionais:

@@ -1,3 +1,4 @@
+/// <reference types="node" />
 // ==============================================================================
 // ⚡ SHOPIFY INVENTORY WEBHOOK CONSUMER: /api/shopify/webhooks/inventory
 // Consumes 'inventory_levels/update' webhooks from Shopify Admin API.

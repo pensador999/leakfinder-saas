@@ -33,6 +33,14 @@ export class ErrorBoundary extends Component<Props, State> {
           <p className="text-sm text-[#BBBAA6] max-w-md">
             {this.props.fallbackMessage || 'Algo deu errado ao carregar estes dados. Mas não se preocupe, o restante da plataforma continua funcionando.'}
           </p>
+          {this.state.error && (
+            <div className="mt-4 p-3 bg-rose-950/40 border border-rose-500/40 rounded-xl text-left max-w-xl w-full overflow-x-auto">
+              <p className="text-xs font-mono font-bold text-rose-300">{this.state.error.name}: {this.state.error.message}</p>
+              {this.state.error.stack && (
+                <pre className="text-[10px] font-mono text-rose-400/80 mt-1 whitespace-pre-wrap">{this.state.error.stack}</pre>
+              )}
+            </div>
+          )}
           <button 
             onClick={() => this.setState({ hasError: false })}
             className="mt-4 px-4 py-2 bg-[#141716] border border-white/10 text-[#FFFCE1] rounded-xl text-sm font-semibold hover:bg-white/10 transition-colors cursor-pointer"

@@ -323,27 +323,72 @@ export const DYNAMIC_VERTICAL_REGISTRY: Record<SupportedVerticalId, DynamicVerti
   }
 };
 
+const DEFAULT_FALLBACK_VERTICAL: DynamicVerticalProfile = {
+  verticalId: 'VAREJO_GERAL',
+  label: 'Varejo Geral & Multicategorias',
+  icon: 'Store',
+  targetDemographics: 'Consumidores de compras recorrentes online',
+  geographicPoles: ['Nacional'],
+  averageTicketBRL: 199.00,
+  benchmarkMetaAdsCpcBRL: 1.20,
+  baselineCvrPct: 1.50,
+  averageReturnRatePct: 10.0,
+  gaussianDemandDistribution: {
+    'P': 20,
+    'M': 35,
+    'G': 30,
+    'GG': 15
+  },
+  coreDemandSizes: ['M', 'G'],
+  secondaryDemandSizes: ['P', 'GG'],
+  dominantTechStack: {
+    primaryErp: 'Bling / Tiny / Sankhya',
+    primaryHub: 'Plugg.to / Magis5 / AnyMarket',
+    typicalSyncLatencyMinutes: 20,
+    inventoryPolicyBehavior: 'Auditoria de variantes e estoque físico.',
+    logisticsHubNotes: 'Fulfillment padrão.'
+  },
+  vocabulary: {
+    industryTerms: ['pronta entrega', 'envio em 24h', 'nota fiscal eletrônica', 'garantia oficial'],
+    lossPainHooks: [
+      'Anúncios rodando com variantes centrais em falta queimam o orçamento de marketing.',
+      'O cliente abandona a compra se não encontrar a opção desejada de imediato.'
+    ],
+    urgencyTriggers: ['Ruptura de estoque', 'Tráfego sem conversão'],
+    closingPunchlines: ['O AdShield estanca o desperdício em anúncios em tempo real.']
+  },
+  catalogExemptionPatterns: ['tamanho unico', '_FULL'],
+  allowBackorderKeywords: ['sob encomenda'],
+  mandatoryProductFeatures: ['Tabela de Medidas / Especificações', 'Calculador de Frete']
+};
+
 /**
  * Identifica a vertical correspondente a partir de palavras-chave, nicho ou título
  */
 export function resolveDynamicVertical(rawInput: string): DynamicVerticalProfile {
-  const norm = rawInput.toLowerCase();
+  const norm = (rawInput || '').toLowerCase();
 
-  if (norm.includes('sapato') || norm.includes('bota') || norm.includes('calçado') || norm.includes('calcado') || norm.includes('tênis') || norm.includes('tenis') || norm.includes('couro') || norm.includes('coturno')) {
-    return DYNAMIC_VERTICAL_REGISTRY.CALCADOS_COURO;
-  }
-  if (norm.includes('agro') || norm.includes('campo') || norm.includes('country') || norm.includes('western') || norm.includes('pesca') || norm.includes('chapeu') || norm.includes('chapéu') || norm.includes('camper')) {
-    return DYNAMIC_VERTICAL_REGISTRY.AGRO_CAMPO_OUTDOOR;
-  }
-  if (norm.includes('streetwear') || norm.includes('oversized') || norm.includes('urban') || norm.includes('tech apparel') || norm.includes('drop') || norm.includes('skate') || norm.includes('insider')) {
-    return DYNAMIC_VERTICAL_REGISTRY.STREETWEAR_MODA_URBANA;
-  }
-  if (norm.includes('fitness') || norm.includes('beachwear') || norm.includes('legging') || norm.includes('biquíni') || norm.includes('biquini') || norm.includes('academia') || norm.includes('treino')) {
-    return DYNAMIC_VERTICAL_REGISTRY.FITNESS_BEACHWEAR;
-  }
-  if (norm.includes('cosmético') || norm.includes('cosmetico') || norm.includes('skincare') || norm.includes('beleza') || norm.includes('sérum') || norm.includes('serum') || norm.includes('creme') || norm.includes('maquiagem')) {
-    return DYNAMIC_VERTICAL_REGISTRY.COSMETICOS_BEAUTY;
+  const reg = DYNAMIC_VERTICAL_REGISTRY;
+  if (reg) {
+    if (reg.CALCADOS_COURO && (norm.includes('sapato') || norm.includes('bota') || norm.includes('calçado') || norm.includes('calcado') || norm.includes('tênis') || norm.includes('tenis') || norm.includes('couro') || norm.includes('coturno'))) {
+      return reg.CALCADOS_COURO;
+    }
+    if (reg.AGRO_CAMPO_OUTDOOR && (norm.includes('agro') || norm.includes('campo') || norm.includes('country') || norm.includes('western') || norm.includes('pesca') || norm.includes('chapeu') || norm.includes('chapéu') || norm.includes('camper'))) {
+      return reg.AGRO_CAMPO_OUTDOOR;
+    }
+    if (reg.STREETWEAR_MODA_URBANA && (norm.includes('streetwear') || norm.includes('oversized') || norm.includes('urban') || norm.includes('tech apparel') || norm.includes('drop') || norm.includes('skate') || norm.includes('insider'))) {
+      return reg.STREETWEAR_MODA_URBANA;
+    }
+    if (reg.FITNESS_BEACHWEAR && (norm.includes('fitness') || norm.includes('beachwear') || norm.includes('legging') || norm.includes('biquíni') || norm.includes('biquini') || norm.includes('academia') || norm.includes('treino'))) {
+      return reg.FITNESS_BEACHWEAR;
+    }
+    if (reg.COSMETICOS_BEAUTY && (norm.includes('cosmético') || norm.includes('cosmetico') || norm.includes('skincare') || norm.includes('beleza') || norm.includes('sérum') || norm.includes('serum') || norm.includes('creme') || norm.includes('maquiagem'))) {
+      return reg.COSMETICOS_BEAUTY;
+    }
+    if (reg.VAREJO_GERAL) {
+      return reg.VAREJO_GERAL;
+    }
   }
 
-  return DYNAMIC_VERTICAL_REGISTRY.VAREJO_GERAL;
+  return DEFAULT_FALLBACK_VERTICAL;
 }

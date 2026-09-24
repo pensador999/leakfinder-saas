@@ -1,3 +1,4 @@
+/// <reference types="node" />
 // ==============================================================================
 // 🌐 MAGIS5 HUB CONNECTOR: /api/magis5/sync
 // Conecta ao Hub Integrador Magis5 para auditar o status dos anúncios sincronizados

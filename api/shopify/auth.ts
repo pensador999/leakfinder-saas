@@ -1,3 +1,4 @@
+/// <reference types="node" />
 // ==============================================================================
 // 🛍️ SHOPIFY OAUTH INITIATOR: /api/shopify/auth
 // Validates store domain, generates cryptographic anti-CSRF state token,

@@ -1,3 +1,4 @@
+/// <reference types="node" />
 // ==============================================================================
 // 📦 SHOPIFY INVENTORY AUDIT & SYNC ENGINE: /api/shopify/sync
 // Executes GraphQL Admin API queries to audit physical warehouse inventory levels,

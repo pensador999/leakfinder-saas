@@ -9,7 +9,7 @@ import type { ProspectLead } from './leadSniperEngine';
 import { 
   generateMetaAdsLibraryUrl, 
   generateWhatsAppPitches 
-} from './leadSniperEngine';
+} from './leadSniperPitches';
 
 export const RAW_PILOT_20_PROSPECTS: Omit<ProspectLead, 'huntingTier' | 'tierAnalysis'>[] = [
   // 1. 7M Boots (Franca/SP)

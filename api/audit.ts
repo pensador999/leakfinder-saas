@@ -1,3 +1,4 @@
+/// <reference types="node" />
 // ==============================================================================
 // ⚡ VERCEL SERVERLESS FUNCTION: /api/audit
 // Serverless Headless E-Commerce Inspector via @sparticuz/chromium & puppeteer-core
