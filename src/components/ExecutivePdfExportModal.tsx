@@ -55,6 +55,7 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
 
   // Official API Connect Modal
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
+  const [previewMode, setPreviewMode] = useState<'paper' | 'obsidian'>('obsidian');
 
   const printContainerRef = useRef<HTMLDivElement>(null);
 
@@ -112,6 +113,27 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
           </div>
 
           <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 p-1 bg-[#0E100F] rounded-xl border border-white/10 text-xs font-bold font-mono">
+              <button
+                type="button"
+                onClick={() => setPreviewMode('obsidian')}
+                className={`px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  previewMode === 'obsidian' ? 'bg-[#0AE448] text-slate-950 font-black shadow-xs' : 'text-[#BBBAA6] hover:text-[#FFFCE1]'
+                }`}
+              >
+                Obsidian Dark
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewMode('paper')}
+                className={`px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  previewMode === 'paper' ? 'bg-white text-slate-950 font-black shadow-xs' : 'text-[#BBBAA6] hover:text-[#FFFCE1]'
+                }`}
+              >
+                Papel A4
+              </button>
+            </div>
+
             <button
               onClick={() => PdfExportService.downloadExecutivePdf(diagnostic, {
                 agencyName,
@@ -311,7 +333,11 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
             {/* A4 Sheet Container */}
             <div 
               ref={printContainerRef}
-              className="bg-white w-full max-w-[210mm] shadow-xl p-8 sm:p-12 space-y-8 font-sans text-slate-900 border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 h-fit"
+              className={`w-full max-w-[210mm] shadow-2xl p-8 sm:p-12 space-y-8 font-sans border print:shadow-none print:border-none print:p-0 print:m-0 print:bg-white print:text-slate-900 h-fit transition-all duration-300 ${
+                previewMode === 'obsidian'
+                  ? 'bg-[#101211] text-[#FFFCE1] border-white/10 shadow-black/80'
+                  : 'bg-white text-slate-900 border-slate-300 shadow-xl'
+              }`}
             >
               
               {/* PAGE 1: COVER & EXECUTIVE HEADER */}

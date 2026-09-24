@@ -87,6 +87,9 @@
     },
     "api/omnichannel/cross-audit.ts": {
       "maxDuration": 60
+    },
+    "api/cron/swarm-runner.ts": {
+      "maxDuration": 60
     }
   }
 }
