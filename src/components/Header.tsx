@@ -30,10 +30,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faShopify } from '@fortawesome/free-brands-svg-icons';
 import gsap from 'gsap';
+import { useNavigate } from 'react-router-dom';
 import { AgentDiagnosticResult } from '../types';
 import { getWhiteLabelConfig, WhiteLabelConfig } from '../services/whiteLabelService';
 import { SupabaseStatusIndicator } from './common/SupabaseStatusIndicator';
 import { OneClickMitigationService } from '../services/actions/oneClickMitigationService';
+import { getActiveLicense } from '../services/billing/checkoutService';
 
 export interface StorePreset {
   key: string;
@@ -71,6 +73,13 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenMitigationHistory
 }) => {
   const [whiteLabel, setWhiteLabel] = useState<WhiteLabelConfig>(getWhiteLabelConfig());
+  const navigate = useNavigate();
+  const [hasLicense, setHasLicense] = useState(false);
+
+  useEffect(() => {
+    setHasLicense(Boolean(getActiveLicense()));
+  }, []);
+
   const headerRef = useRef<HTMLElement>(null);
   const logoIconRef = useRef<HTMLDivElement>(null);
   const pulseBadgeRef = useRef<HTMLDivElement>(null);
@@ -281,13 +290,24 @@ export const Header: React.FC<HeaderProps> = ({
           
           <SupabaseStatusIndicator />
 
-          <button
-            onClick={onOpenPricing}
-            className="hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 font-bold text-xs hover:bg-amber-500/20 transition-all shadow-sm cursor-pointer hover:scale-105 active:scale-95"
-          >
-            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-            <span>Fazer Upgrade</span>
-          </button>
+          {hasLicense ? (
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-[#0AE448]/30 bg-[#0AE448]/10 text-[#0AE448] font-bold text-xs hover:bg-[#0AE448]/20 transition-all shadow-sm cursor-pointer hover:scale-105 active:scale-95"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-[#0AE448]" />
+              <span className="hidden sm:inline">Portal do Assinante</span>
+              <span className="sm:hidden">Portal</span>
+            </button>
+          ) : (
+            <button
+              onClick={onOpenPricing}
+              className="hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 font-bold text-xs hover:bg-amber-500/20 transition-all shadow-sm cursor-pointer hover:scale-105 active:scale-95"
+            >
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+              <span>Ver Planos</span>
+            </button>
+          )}
 
           {diagnostic && (
             <div ref={scoreBadgeRef} className={`hidden md:flex px-3.5 py-2 rounded-full border font-bold text-xs items-center gap-1.5 shadow-sm ${scoreBadgeColor}`}>

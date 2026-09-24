@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   X, 
   ShieldCheck, 
@@ -20,6 +21,7 @@ import {
 import { 
   SAAS_PLANS, 
   PlanTierId, 
+  PlanDetails,
   BillingCycle, 
   PaymentMethod, 
   BuyerFormData, 
@@ -34,12 +36,15 @@ import { formatBRL } from '../../services/ai/storeFinancialGroundingEngine';
 interface TransparentCheckoutModalProps {
   onClose: () => void;
   initialPlan?: PlanTierId;
+  onOpenOnboarding?: (plan: PlanDetails) => void;
 }
 
 export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> = ({
   onClose,
-  initialPlan = 'GROWTH_PRO'
+  initialPlan = 'GROWTH_PRO',
+  onOpenOnboarding
 }) => {
+  const navigate = useNavigate();
   const [selectedPlanId, setSelectedPlanId] = useState<PlanTierId>(initialPlan);
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('MONTHLY');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('PIX');
@@ -190,10 +195,18 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
               </div>
 
               <button
-                onClick={onClose}
-                className="w-full py-4 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 font-black rounded-2xl transition-all shadow-lg shadow-[#0AE448]/20 cursor-pointer flex items-center justify-center gap-2"
+                onClick={() => {
+                  onClose();
+                  if (onOpenOnboarding) {
+                    onOpenOnboarding(selectedPlan);
+                  } else {
+                    navigate('/dashboard?onboarding=true');
+                  }
+                }}
+                className="w-full py-4 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 font-black rounded-2xl transition-all shadow-lg shadow-[#0AE448]/20 cursor-pointer flex items-center justify-center gap-2 animate-pulse"
               >
-                <span>Acessar Painel de Monitoramento 24h</span>
+                <Sparkles className="w-5 h-5 text-slate-950" />
+                <span>Configurar Lojas & Ativar Proteção 24h</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
