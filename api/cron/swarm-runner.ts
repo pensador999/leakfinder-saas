@@ -84,7 +84,7 @@ export default async function handler(request: any, response: any) {
 
   // 5. Secure Execution of Autonomous 24/7 Master Pipeline
   try {
-    const { executeMasterAutonomous24hPipeline } = await import('../../src/services/swarm/masterAutonomousPipeline.ts');
+    const { executeMasterAutonomous24hPipeline } = await import('../../src/services/swarm/masterAutonomousPipeline');
     const summary = await executeMasterAutonomous24hPipeline(supabaseUrl, supabaseServiceKey);
 
     const payload = {
