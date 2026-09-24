@@ -66,6 +66,18 @@
   "functions": {
     "api/audit.ts": {
       "maxDuration": 60
+    },
+    "api/shopify/sync.ts": {
+      "maxDuration": 60
+    },
+    "api/shopify/callback.ts": {
+      "maxDuration": 30
+    },
+    "api/shopify/auth.ts": {
+      "maxDuration": 15
+    },
+    "api/shopify/webhooks/inventory.ts": {
+      "maxDuration": 15
     }
   }
 }
