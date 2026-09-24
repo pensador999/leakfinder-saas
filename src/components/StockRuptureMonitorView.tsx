@@ -157,7 +157,7 @@ export const StockRuptureMonitorView: React.FC<StockRuptureMonitorViewProps> = (
               className="px-3 py-1.5 bg-[#141716] hover:bg-[#191C1B] text-[#FFFCE1] border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs cursor-pointer shrink-0 hover:border-white/20"
             >
               <KeyRound className="w-3.5 h-3.5 text-[#0AE448]" />
-              <span>Conectar Meta Ads Real</span>
+              <span>Conectar Loja, Sankhya & Ads</span>
             </button>
           </div>
         </div>
