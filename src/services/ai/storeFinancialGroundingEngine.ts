@@ -46,6 +46,8 @@ export interface StoreFinancialGrounding {
     annualizedLoss: number;
     formattedMonthlyLoss: string;
     formattedAnnualizedLoss: string;
+    formattedAdWaste: string;
+    formattedCheckoutFriction: string;
     methodologyExplanation: string;
   };
   recoveryProjection: {
@@ -227,6 +229,27 @@ export function calculateStoreFinancialGrounding(
     /\beconomize\b.*\bpix\b/i.test(snippet) ||
     /\bà\s*vista\s*(?:no|via)?\s*pix\b/i.test(snippet);
 
+  // Determina se os produtos/loja auditada exigem tabela de medidas (exclui iscas, cutelaria, molinetes, varas, cosméticos, autopeças e itens de tamanho único)
+  const isNonApparelCatalog = 
+    domain.includes('fishing') || 
+    domain.includes('pesca') || 
+    domain.includes('motor') || 
+    domain.includes('auto') || 
+    domain.includes('peca') ||
+    domain.includes('ferramenta') ||
+    domain.includes('cosmetico') ||
+    domain.includes('joia') ||
+    (input?.niche || '').toLowerCase().includes('pesca') ||
+    (input?.niche || '').toLowerCase().includes('isca') ||
+    (input?.niche || '').toLowerCase().includes('auto') ||
+    (input?.niche || '').toLowerCase().includes('cosmético') ||
+    (realSiteData.catalogAudit?.issues || []).every(i => {
+      const title = (i.productTitle || '').toLowerCase();
+      return title.includes('isca') || title.includes('vara') || title.includes('molinete') || title.includes('carretilha') || title.includes('anzol') || title.includes('faca') || title.includes('canivete') || title.includes('bone') || title.includes('boné');
+    });
+
+  const requiresSizeGuide = !isNonApparelCatalog && !realSiteData.isMarketplaceSeller;
+
   const hasSizeGuide = 
     snippet.includes('guia de tamanhos') || 
     snippet.includes('tabela de medidas') ||
@@ -238,7 +261,8 @@ export function calculateStoreFinancialGrounding(
     snippet.includes('provador virtual') ||
     snippet.includes('cleansizechart') ||
     Boolean(realSiteData.catalogAudit?.issues.some(i => i.hasSizeGuide)) ||
-    Boolean(realSiteData.isMarketplaceSeller);
+    Boolean(realSiteData.isMarketplaceSeller) ||
+    !requiresSizeGuide; // Se for artigo de pesca/equipamento, é 100% isento de tabela de medidas
 
   let checkoutFrictionMonthly = 0;
   if (!hasPixDiscount) {
@@ -246,8 +270,8 @@ export function calculateStoreFinancialGrounding(
     const estimatedMonthlyOrders = baseMonthlyRevenueMin / Math.max(50, groundedAverageTicket);
     checkoutFrictionMonthly += Number((estimatedMonthlyOrders * (groundedAverageTicket * 0.0265)).toFixed(2));
   }
-  if (!hasSizeGuide && !realSiteData.isMarketplaceSeller) {
-    // Risco de devolução ou desistência de compra por falta de tabela de medidas
+  if (requiresSizeGuide && !hasSizeGuide) {
+    // Risco de devolução ou desistência de compra por falta de tabela de medidas (apenas vestuário/calçados)
     checkoutFrictionMonthly += Number((baseMonthlyRevenueMin * 0.0145).toFixed(2));
   }
   checkoutFrictionMonthly = Number(checkoutFrictionMonthly.toFixed(2));
@@ -283,7 +307,9 @@ export function calculateStoreFinancialGrounding(
       sourceGroundingSummary: {
         groundedCatalogFacts: [
           `Preços das variantes auditados ao vivo no DOM e no endpoint /products.json`,
-          `${brokenSkusCount} produto(s) com variantes centrais indisponíveis (estoque zerado comprovado)`,
+          brokenSkusCount > 0
+            ? `${brokenSkusCount} produto(s) com variantes centrais indisponíveis (estoque zerado comprovado)`
+            : `100% dos produtos auditados com grade íntegra (0 rupturas comprovadas)`,
           hasMeta ? 'Meta Pixel ativo no cabeçalho (<head>)' : 'Meta Pixel ausente no cabeçalho'
         ],
         projectedSimulations: [
@@ -315,9 +341,11 @@ export function calculateStoreFinancialGrounding(
       annualizedLoss,
       formattedMonthlyLoss: formatBRL(totalMonthlyLoss),
       formattedAnnualizedLoss: formatBRL(annualizedLoss),
+      formattedAdWaste: formatBRL(adWasteMonthly),
+      formattedCheckoutFriction: formatBRL(checkoutFrictionMonthly),
       methodologyExplanation: brokenSkusCount === 0
-        ? `Cálculo transparente: 0 SKUs rompidos detectados = R$ 0 de perda em anúncios.${checkoutFrictionMonthly > 0 ? ` Atrito de checkout estimado em ${formatBRL(checkoutFrictionMonthly)}/mês devido à falta de desconto no Pix.` : ' Vitrine e checkout 100% íntegros.'}`
-        : `Cálculo proporcional: ${brokenSkusCount} SKU(s) com grade esgotada detectados sob tráfego Meta Ads ativo, resultando em ~${formatBRL(adWasteMonthly)}/mês em cliques perdidos.${checkoutFrictionMonthly > 0 ? ` Mais ${formatBRL(checkoutFrictionMonthly)}/mês de atrito no Pix/checkout.` : ''}`
+        ? `Cálculo transparente: 0 SKUs rompidos detectados = R$ 0 de perda em anúncios.${checkoutFrictionMonthly > 0 ? ` Oportunidade em checkout simulada em ${formatBRL(checkoutFrictionMonthly)}/mês por falta de desconto no Pix.` : ' Vitrine e checkout 100% íntegros.'}`
+        : `Cálculo proporcional: ${brokenSkusCount} SKU(s) com grade esgotada detectados sob tráfego Meta Ads ativo, resultando em ~${formatBRL(adWasteMonthly)}/mês em cliques perdidos.${checkoutFrictionMonthly > 0 ? ` Mais ${formatBRL(checkoutFrictionMonthly)}/mês de oportunidade no Pix/checkout.` : ''}`
     },
     recoveryProjection: {
       projectedMonthlyRecovery,

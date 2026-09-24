@@ -373,11 +373,11 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
           </div>
 
           <div>
-            {finances.financialRisk.totalMonthlyLoss > 0 ? (
+            {finances.financialRisk.adWasteMonthly > 0 ? (
               <>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-2xl font-black font-mono text-rose-400 tracking-tight">
-                    ~{finances.financialRisk.formattedMonthlyLoss}
+                    ~{finances.financialRisk.formattedAdWaste}
                   </span>
                   <span className="text-xs text-[#BBBAA6] font-mono">/ mês</span>
                 </div>
@@ -400,7 +400,7 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
           <button
             onClick={() => onSelectAgentTab('telemetry')}
             className={`w-full py-2 px-3 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer border ${
-              finances.financialRisk.totalMonthlyLoss > 0
+              finances.financialRisk.adWasteMonthly > 0
                 ? 'bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border-rose-500/30'
                 : 'bg-[#0AE448]/15 hover:bg-[#0AE448]/25 text-[#0AE448] border-[#0AE448]/30'
             }`}

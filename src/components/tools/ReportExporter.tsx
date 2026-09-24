@@ -12,7 +12,7 @@ import {
   Zap 
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../../types';
-import { calculateStoreFinancialGrounding } from '../../services/ai/storeFinancialGroundingEngine';
+import { calculateStoreFinancialGrounding, formatBRL } from '../../services/ai/storeFinancialGroundingEngine';
 import { auditSupplyChainDiscrepancy } from '../../services/supplyChain/erpHubDiscrepancyEngine';
 
 interface ReportExporterProps {
@@ -40,7 +40,8 @@ export const ReportExporter: React.FC<ReportExporterProps> = ({ diagnostic, onCl
 ---
 
 ## 1. RESUMO EXECUTIVO DE IMPACTO FINANCEIRO
-- **Impacto em Mídia:** ${finances.financialRisk.totalMonthlyLoss > 0 ? `${finances.financialRisk.formattedMonthlyLoss} / mês (${finances.financialRisk.formattedAnnualizedLoss} / ano)` : 'Grade 100% Blindada (R$ 0,00 de desperdício em anúncios)'}
+- **Impacto em Mídia:** ${finances.financialRisk.adWasteMonthly > 0 ? `${finances.financialRisk.formattedAdWaste} / mês (${formatBRL(finances.financialRisk.adWasteMonthly * 12)} / ano)` : 'Grade 100% Blindada (R$ 0,00 de desperdício em anúncios)'}
+- **Oportunidade em Checkout:** ${finances.financialRisk.checkoutFrictionMonthly > 0 ? `${finances.financialRisk.formattedCheckoutFriction} / mês (Simulação Pix/Margem)` : 'Checkout Otimizado'}
 - **Ticket Médio Ponderado:** ${finances.formattedAverageTicket}
 - **Verba Estimada de Tráfego:** ${finances.estimatedAdSpend.formattedMonthly}
 - **Produtos com Ruptura de Grade:** ${finances.brokenSkusCount} SKUs críticos
@@ -157,24 +158,24 @@ ${(realSiteData.catalogAudit?.issues || []).map(i => `- **SKU ${i.sku} (${i.prod
           {/* 4-Card Executive KPI Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <div className={`p-4 rounded-2xl border space-y-1 ${
-              finances.financialRisk.totalMonthlyLoss > 0 
+              finances.financialRisk.adWasteMonthly > 0 
                 ? 'bg-[#141716] border-rose-500/30' 
                 : 'bg-[#141716] border-[#0AE448]/30'
             }`}>
               <p className={`text-[10px] font-bold uppercase font-mono ${
-                finances.financialRisk.totalMonthlyLoss > 0 ? 'text-rose-400' : 'text-[#0AE448]'
+                finances.financialRisk.adWasteMonthly > 0 ? 'text-rose-400' : 'text-[#0AE448]'
               }`}>
-                {finances.financialRisk.totalMonthlyLoss > 0 ? 'Vazamento em Mídia' : 'Status do Catálogo'}
+                {finances.financialRisk.adWasteMonthly > 0 ? 'Vazamento em Mídia' : 'Status do Catálogo'}
               </p>
               <p className={`text-xl font-black font-mono ${
-                finances.financialRisk.totalMonthlyLoss > 0 ? 'text-rose-400' : 'text-[#0AE448]'
+                finances.financialRisk.adWasteMonthly > 0 ? 'text-rose-400' : 'text-[#0AE448]'
               }`}>
-                {finances.financialRisk.totalMonthlyLoss > 0 
-                  ? finances.financialRisk.formattedMonthlyLoss 
+                {finances.financialRisk.adWasteMonthly > 0 
+                  ? finances.financialRisk.formattedAdWaste 
                   : 'Grade Blindada (R$ 0)'}
               </p>
               <p className="text-[10px] text-[#BBBAA6]">
-                {finances.financialRisk.totalMonthlyLoss > 0 
+                {finances.financialRisk.adWasteMonthly > 0 
                   ? `${finances.brokenSkusCount} SKU(s) com ruptura` 
                   : 'Zero perda em anúncios'}
               </p>

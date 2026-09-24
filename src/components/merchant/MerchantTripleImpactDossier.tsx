@@ -74,11 +74,15 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
   const formattedDynamicAnnualLoss = formatBRL(dynamicAnnualLoss);
 
   const whatsappMessage = encodeURIComponent(
-    `Olá! Acabei de gerar o Dossiê Executivo da ${realSiteData.brandName} (${realSiteData.domain}) no AdShield AI. Identificamos ${formattedDynamicLoss}/mês em risco por produtos com grade furada em anúncios ativos. Gostaria de falar com um especialista sobre a blindagem e monitoramento 24h.`
+    brokenSkus.length > 0
+      ? `Olá! Acabei de gerar o Dossiê Executivo da ${realSiteData.brandName} (${realSiteData.domain}) no AdShield AI. Identificamos ${formatBRL(dynamicAdWaste)}/mês em risco por produtos com grade furada em anúncios ativos. Gostaria de falar com um especialista sobre a blindagem e monitoramento 24h.`
+      : `Olá! Acabei de gerar o Dossiê Executivo da ${realSiteData.brandName} (${realSiteData.domain}) no AdShield AI e confirmei que nosso catálogo está 100% íntegro (R$ 0 em perda de anúncios). Gostaria de conhecer o monitoramento contínuo 24h para manter nossa operação blindada.`
   );
-  const whatsappUrl = `https://wa.me/5511999999999?text=${whatsappMessage}`;
+  const whatsappUrl = `https://wa.me/5534991351122?text=${whatsappMessage}`;
 
-  const trafficAlertScript = `*RELATÓRIO DE AUDITORIA: TRÁFEGO & ESTOQUE • ADSHIELD*\n\nTime, identificamos ${brokenSkus.length} produto(s) com anúncios ativos na Meta Ads Library, porém com as variantes centrais esgotadas na loja (${realSiteData.domain}).\n\n*Impacto Estimado:* ~${formattedDynamicLoss}/mês em cliques perdidos (baseado em ${formatBRL(activeSpend)}/mês de investimento).\n*Ação Recomendada:* Pausar os criativos dos SKUs rompidos ou substituir a URL de destino para coleções com grade completa.`;
+  const trafficAlertScript = brokenSkus.length > 0
+    ? `*RELATÓRIO DE AUDITORIA: TRÁFEGO & ESTOQUE • ADSHIELD*\n\nTime, identificamos ${brokenSkus.length} produto(s) com anúncios ativos na Meta Ads Library, porém com as variantes centrais esgotadas na loja (${realSiteData.domain}).\n\n*Impacto Estimado:* ~${formatBRL(dynamicAdWaste)}/mês em cliques perdidos (baseado em ${formatBRL(activeSpend)}/mês de investimento).\n*Ação Recomendada:* Pausar os criativos dos SKUs rompidos ou substituir a URL de destino para coleções com grade completa.`
+    : `*RELATÓRIO DE AUDITORIA: TRÁFEGO & ESTOQUE • ADSHIELD*\n\nTime, confirmamos que 100% dos produtos auditados na loja (${realSiteData.domain}) possuem grade central íntegra.\n\n*Status:* R$ 0,00 de desperdício em anúncios ativos.\n*Recomendação:* Manter monitoramento contínuo ativo via AdShield.`;
 
   const handleCopyTrafficScript = () => {
     navigator.clipboard.writeText(trafficAlertScript);
@@ -129,14 +133,14 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
           <div className="lg:col-span-8 space-y-3">
             <div className="flex items-center gap-2">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-[#FF4757] font-mono">
-                Quanto dinheiro sua loja está perdendo hoje?
+              <h2 className={`text-xs font-bold uppercase tracking-wider font-mono ${dynamicAdWaste > 0 ? 'text-[#FF4757]' : 'text-[#0AE448]'}`}>
+                {dynamicAdWaste > 0 ? 'Quanto dinheiro sua loja está perdendo em anúncios hoje?' : 'Diagnóstico de Eficiência de Tráfego & Estoque'}
               </h2>
             </div>
             <p className="text-3xl sm:text-4xl font-black tracking-tight text-white leading-tight">
-              {dynamicTotalLoss > 0 ? (
+              {dynamicAdWaste > 0 ? (
                 <>
-                  Estimamos <span className="text-[#FF4757] font-mono">{formattedDynamicLoss}/mês</span> em risco nos anúncios da <span className="text-[#0AE448] font-bold">{realSiteData.brandName}</span>
+                  Estimamos <span className="text-[#FF4757] font-mono">{formatBRL(dynamicAdWaste)}/mês</span> em risco nos anúncios da <span className="text-[#0AE448] font-bold">{realSiteData.brandName}</span>
                 </>
               ) : (
                 <>
@@ -145,13 +149,13 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
               )}
             </p>
             <p className="text-xs text-[#A0A090] leading-relaxed max-w-2xl font-sans">
-              {dynamicTotalLoss > 0 ? (
+              {dynamicAdWaste > 0 ? (
                 <>
                   Inspeção ao vivo de <strong>{realSiteData.domain}</strong>: detectados <strong>{brokenSkus.length} produto(s) com tráfego pago ativo mas com os tamanhos de maior giro (P, M, G) esgotados no HTML público</strong>.
                 </>
               ) : (
                 <>
-                  Inspeção ao vivo de <strong>{realSiteData.domain}</strong>: grade disponível nos tamanhos centrais ou catálogo composto por itens de tamanho único/revenda isentos.
+                  Inspeção ao vivo de <strong>{realSiteData.domain}</strong>: 100% da grade disponível nos tamanhos centrais auditados ou catálogo composto por itens de tamanho único/revenda isentos. {finances.financialRisk.checkoutFrictionMonthly > 0 ? `Identificamos apenas uma oportunidade simulada de ganho de margem no checkout (${finances.financialRisk.formattedCheckoutFriction}/mês via incentivo ao Pix).` : 'Nenhum desperdício em mídia detectado.'}
                 </>
               )}
             </p>
@@ -159,10 +163,16 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
 
           {/* Quick Metrics Breakdown */}
           <div className="lg:col-span-4 grid grid-cols-2 gap-3">
-            <div className="p-4 bg-[#141716] rounded-2xl border border-white/10 text-center">
-              <span className="text-[10px] uppercase font-bold text-[#7C7C6F] font-mono block">Risco Anualizado</span>
-              <span className="text-2xl font-black text-[#FF4757] font-mono">{formattedDynamicAnnualLoss}</span>
-              <span className="text-[10px] text-[#A0A090] block font-medium">em 12 meses</span>
+            <div className={`p-4 bg-[#141716] rounded-2xl border text-center ${dynamicAdWaste > 0 ? 'border-white/10' : 'border-[#0AE448]/30'}`}>
+              <span className={`text-[10px] uppercase font-bold font-mono block ${dynamicAdWaste > 0 ? 'text-[#7C7C6F]' : 'text-[#0AE448]'}`}>
+                {dynamicAdWaste > 0 ? 'Risco Anual Anúncios' : 'Desperdício Anúncios'}
+              </span>
+              <span className={`text-2xl font-black font-mono ${dynamicAdWaste > 0 ? 'text-[#FF4757]' : 'text-[#0AE448]'}`}>
+                {dynamicAdWaste > 0 ? formatBRL(dynamicAdWaste * 12) : 'R$ 0,00'}
+              </span>
+              <span className="text-[10px] text-[#A0A090] block font-medium">
+                {dynamicAdWaste > 0 ? 'em 12 meses' : '100% Blindado'}
+              </span>
             </div>
 
             <div className="p-4 bg-[#141716] rounded-2xl border border-[#0AE448]/30 text-center text-[#0AE448]">
@@ -250,11 +260,13 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
                 <span className="text-[#0AE448]">Fator Curva ABC: 65%</span>
               </div>
               <div className="p-2.5 bg-[#0E100F] rounded-lg border border-white/5 text-slate-300">
-                <code>Perda Anúncios = Investimento ({formatBRL(activeSpend)}) × Proporção de SKUs Rompidos ({brokenRatio.toFixed(3)}) × 0.65</code>
+                <code>Perda Anúncios = Investimento ({formatBRL(activeSpend)}) × Proporção de SKUs Rompidos ({brokenRatio.toFixed(3)}) × 0.65 = {formatBRL(dynamicAdWaste)}/mês</code>
                 <br />
-                <code>Perda Checkout = Atrito Pix ({formatBRL(finances.financialRisk.checkoutFrictionMonthly)})</code>
+                <code>Oportunidade Checkout = Atrito Pix ({formatBRL(finances.financialRisk.checkoutFrictionMonthly)})/mês</code>
                 <br />
-                <code className="text-[#FF4757] font-bold">Total Mensal = {formattedDynamicLoss}</code>
+                <code className={dynamicAdWaste > 0 ? "text-[#FF4757] font-bold" : "text-[#0AE448] font-bold"}>
+                  {dynamicAdWaste > 0 ? `Total em Risco de Mídia = ${formatBRL(dynamicAdWaste)}/mês` : 'Risco em Mídia = R$ 0,00 (Grade 100% Blindada)'}
+                </code>
               </div>
               <p className="text-[10px] text-[#7C7C6F] leading-relaxed">
                 *O fator de 65% reflete o benchmark de mercado onde tamanhos P, M e G concentram dois terços das compras de vestuário no Brasil. Quando esses tamanhos estão zerados, 65% dos cliques de anúncios são perdidos na página sem conversão.

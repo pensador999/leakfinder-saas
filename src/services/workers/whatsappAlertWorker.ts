@@ -82,7 +82,7 @@ export function formatDailyWhatsAppExecutiveSummary(
     brokenSkus.slice(0, 3).forEach((sku, idx) => {
       message += `${idx + 1}. *${sku.productTitle}* (Sem: ${sku.missingSizes.join(', ')})\n`;
     });
-    message += `\n💰 *Perda Estimada:* ${finances.financialRisk.formattedMonthlyLoss}/mês em queima de mídia.\n`;
+    message += `\n💰 *Perda Estimada:* ${finances.financialRisk.formattedAdWaste}/mês em queima de mídia.\n`;
     message += `👉 *Recomendação:* Repor tamanhos ou pausar criativo no Meta Ads.\n\n`;
   } else {
     message += `✅ *Catálogo Blindado:* Nenhuma ruptura crítica detectada nas grades principais.\n\n`;

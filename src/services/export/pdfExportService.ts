@@ -365,12 +365,12 @@ export class PdfExportService {
           <div class="kpi-desc" style="color: #065F46;">Otimização e recuperação</div>
         </div>
 
-        <div class="kpi-card" style="${finances.financialRisk.totalMonthlyLoss > 0 ? 'background: #FFF1F2; border-color: #FECDD3;' : 'background: #F8FAFC;'}">
-          <div class="kpi-label" style="${finances.financialRisk.totalMonthlyLoss > 0 ? 'color: #9F1239;' : 'color: #64748B;'}">Vazamento em Mídia</div>
-          <div class="kpi-value" style="${finances.financialRisk.totalMonthlyLoss > 0 ? 'color: #BE123C;' : 'color: #0F172A;'}">
-            ${finances.financialRisk.totalMonthlyLoss > 0 ? finances.financialRisk.formattedMonthlyLoss : 'R$ 0,00'}
+        <div class="kpi-card" style="${finances.financialRisk.adWasteMonthly > 0 ? 'background: #FFF1F2; border-color: #FECDD3;' : 'background: #F8FAFC;'}">
+          <div class="kpi-label" style="${finances.financialRisk.adWasteMonthly > 0 ? 'color: #9F1239;' : 'color: #64748B;'}">Vazamento em Mídia</div>
+          <div class="kpi-value" style="${finances.financialRisk.adWasteMonthly > 0 ? 'color: #BE123C;' : 'color: #0F172A;'}">
+            ${finances.financialRisk.adWasteMonthly > 0 ? finances.financialRisk.formattedAdWaste : 'R$ 0,00'}
           </div>
-          <div class="kpi-desc" style="${finances.financialRisk.totalMonthlyLoss > 0 ? 'color: #BE123C;' : 'color: #64748B;'}">
+          <div class="kpi-desc" style="${finances.financialRisk.adWasteMonthly > 0 ? 'color: #BE123C;' : 'color: #64748B;'}">
             ${finances.brokenSkusCount > 0 ? `${finances.brokenSkusCount} SKU(s) críticos` : 'Grade 100% blindada'}
           </div>
         </div>

@@ -38,7 +38,9 @@ export const PublicDossierMerchantHeader: React.FC<PublicDossierMerchantHeaderPr
   const brokenSkusCount = finances.brokenSkusCount;
 
   const whatsappPitchUrl = `https://api.whatsapp.com/send?phone=5534991351122&text=${encodeURIComponent(
-    `Olá! Vi o dossiê de auditoria da minha loja (${realSiteData.brandName}) no AdShield e quero entender como recuperar os ${finances.financialRisk.formattedMonthlyLoss} em risco por ruptura de grade e checkout.`
+    brokenSkusCount > 0
+      ? `Olá! Vi o dossiê de auditoria da minha loja (${realSiteData.brandName}) no AdShield e quero entender como recuperar os ${finances.financialRisk.formattedAdWaste}/mês em risco por ruptura de grade nos anúncios.`
+      : `Olá! Vi o dossiê de auditoria da minha loja (${realSiteData.brandName}) no AdShield e confirmei que nosso catálogo está 100% íntegro (R$ 0 em perda de anúncios). Gostaria de conhecer o monitoramento contínuo 24h para manter nossa operação blindada.`
   )}`;
 
   return (
@@ -79,18 +81,38 @@ export const PublicDossierMerchantHeader: React.FC<PublicDossierMerchantHeaderPr
           
           <div className="lg:col-span-8 space-y-3">
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight">
-              Identificamos <span className="text-rose-400 font-mono">{finances.financialRisk.formattedMonthlyLoss}/mês</span> em risco nos anúncios da <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">{realSiteData.brandName}</span>
+              {finances.financialRisk.adWasteMonthly > 0 ? (
+                <>
+                  Identificamos <span className="text-rose-400 font-mono">{finances.financialRisk.formattedAdWaste}/mês</span> em risco nos anúncios da <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">{realSiteData.brandName}</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-[#0AE448]">Grade Blindada!</span> R$ 0,00 de desperdício em anúncios para a <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">{realSiteData.brandName}</span>
+                </>
+              )}
             </h1>
             
             <p className="text-sm text-slate-300 leading-relaxed max-w-2xl">
               {realSiteData.isMarketplaceSeller ? (
-                <>
-                  Nossa inteligência inspecionou a vitrine e o catálogo do vendedor <strong>{realSiteData.brandName}</strong> no marketplace <strong>{realSiteData.ecommercePlatform}</strong> {realSiteData.sellerIdentifier ? `(Seller ID: ${realSiteData.sellerIdentifier})` : ''} e detectou <strong>{brokenSkusCount} produto(s) com grade furada</strong> e atrito na conversão, calculando o risco com base no ticket médio auditado de <strong>{finances.formattedAverageTicket}</strong>.
-                </>
+                brokenSkusCount > 0 ? (
+                  <>
+                    Nossa inteligência inspecionou a vitrine e o catálogo do vendedor <strong>{realSiteData.brandName}</strong> no marketplace <strong>{realSiteData.ecommercePlatform}</strong> {realSiteData.sellerIdentifier ? `(Seller ID: ${realSiteData.sellerIdentifier})` : ''} e detectou <strong>{brokenSkusCount} produto(s) com grade furada</strong> e atrito na conversão, calculando o risco com base no ticket médio auditado de <strong>{finances.formattedAverageTicket}</strong>.
+                  </>
+                ) : (
+                  <>
+                    Nossa inteligência inspecionou a vitrine do vendedor <strong>{realSiteData.brandName}</strong> no marketplace <strong>{realSiteData.ecommercePlatform}</strong> e confirmou <strong>100% de disponibilidade nas grades auditadas</strong> (0 rupturas com tráfego).
+                  </>
+                )
               ) : (
-                <>
-                  Nossa inteligência inspecionou o catálogo público de <strong>{realSiteData.domain}</strong> e detectou <strong>{brokenSkusCount} produto(s) com grade furada</strong> e fuga no checkout, calculando o risco com base no ticket médio auditado de <strong>{finances.formattedAverageTicket}</strong>.
-                </>
+                brokenSkusCount > 0 ? (
+                  <>
+                    Nossa inteligência inspecionou o catálogo público de <strong>{realSiteData.domain}</strong> e detectou <strong>{brokenSkusCount} produto(s) com grade furada</strong> e fuga no checkout, calculando o risco com base no ticket médio auditado de <strong>{finances.formattedAverageTicket}</strong>.
+                  </>
+                ) : (
+                  <>
+                    Nossa inteligência inspecionou o catálogo público de <strong>{realSiteData.domain}</strong> e comprovou <strong>100% de integridade na grade</strong> (0 rupturas comprovadas). {finances.financialRisk.checkoutFrictionMonthly > 0 ? `Identificamos apenas uma oportunidade simulada de otimização de margem no checkout (${finances.financialRisk.formattedCheckoutFriction}/mês via incentivo ao Pix).` : 'Vitrine e campanhas 100% blindadas contra queima de verba.'}
+                  </>
+                )
               )}
             </p>
 
@@ -105,7 +127,9 @@ export const PublicDossierMerchantHeader: React.FC<PublicDossierMerchantHeaderPr
             <div className="p-3 bg-slate-800/60 rounded-xl border border-slate-700">
               <span className="text-[10px] uppercase font-bold text-slate-400 font-mono block">Score Atual</span>
               <span className="text-2xl font-black text-amber-400 font-mono">{growthScore}/100</span>
-              <span className="text-[10px] text-amber-300 block font-medium">Requer Ajustes</span>
+              <span className={`text-[10px] block font-medium ${growthScore >= 80 ? 'text-emerald-400' : 'text-amber-300'}`}>
+                {growthScore >= 80 ? 'Catálogo Blindado' : 'Requer Ajustes'}
+              </span>
             </div>
 
             <div className="p-3 bg-emerald-950/40 rounded-xl border border-emerald-500/30 text-emerald-300">

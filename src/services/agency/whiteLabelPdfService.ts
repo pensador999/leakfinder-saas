@@ -264,11 +264,13 @@ export function generatePrintablePdfDossierHtml(
       </div>
       <div class="kpi-card">
         <span class="kpi-label">Produtos com Grade Furada</span>
-        <span class="kpi-value red">${brokenSkusCount} SKUs</span>
+        <span class="kpi-value ${brokenSkusCount > 0 ? 'red' : 'green'}">${brokenSkusCount > 0 ? `${brokenSkusCount} SKUs` : '0 SKUs (Blindado)'}</span>
       </div>
       <div class="kpi-card">
-        <span class="kpi-label">Faturamento em Risco Estimado</span>
-        <span class="kpi-value red">${finances.financialRisk.formattedMonthlyLoss}/mês</span>
+        <span class="kpi-label">Desperdício em Anúncios</span>
+        <span class="kpi-value ${finances.financialRisk.adWasteMonthly > 0 ? 'red' : 'green'}">
+          ${finances.financialRisk.adWasteMonthly > 0 ? `${finances.financialRisk.formattedAdWaste}/mês` : 'R$ 0,00'}
+        </span>
       </div>
     </div>
 
@@ -276,7 +278,11 @@ export function generatePrintablePdfDossierHtml(
     <div class="callout">
       ${config.customNotesToClient}
       <br><br>
-      <strong>Achado Crítico:</strong> Foram identificados produtos ativos em campanhas de tráfego pago que possuem indisponibilidade nos tamanhos de maior curva de vendas (G e GG), resultando em alta taxa de rejeição no checkout.
+      <strong>${brokenSkusCount > 0 ? 'Achado Crítico:' : 'Status da Auditoria:'}</strong> ${
+        brokenSkusCount > 0
+          ? 'Foram identificados produtos ativos em campanhas de tráfego pago que possuem indisponibilidade nos tamanhos de maior curva de vendas (P, M, G), resultando em cliques perdidos e alta taxa de rejeição no checkout.'
+          : 'Catálogo auditado com 100% de conformidade de grade. Nenhuma ruptura crítica detectada nos produtos com campanhas ativas. Tráfego e vitrine 100% blindados contra queima de verba.'
+      }
     </div>
 
     <div class="section-title">Conformidade Legal & Segurança da Operação</div>
