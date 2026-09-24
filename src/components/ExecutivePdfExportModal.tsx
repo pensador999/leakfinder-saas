@@ -94,20 +94,20 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-2 sm:p-4 overflow-y-auto">
       
       {/* Container Principal */}
-      <div className="bg-slate-100 w-full max-w-6xl rounded-3xl shadow-2xl border border-slate-300 flex flex-col h-[94vh] overflow-hidden">
+      <div className="bg-[#0E100F] w-full max-w-6xl rounded-3xl shadow-2xl border border-white/10 flex flex-col h-[94vh] overflow-hidden text-[#FFFCE1]">
         
         {/* Modal Top Bar (Não sai na impressão) */}
-        <div className="print:hidden p-4 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0">
+        <div className="print:hidden p-4 bg-[#141716] border-b border-white/10 flex items-center justify-between px-6 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-indigo-50 rounded-xl text-indigo-600">
+            <div className="p-2 bg-[#0AE448]/10 text-[#0AE448] rounded-xl border border-[#0AE448]/20">
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-sm text-slate-900">Gerador de Relatório Executivo em PDF (White-Label)</h3>
-              <p className="text-xs text-slate-500">Personalize a identidade da sua consultoria e imprima ou salve em PDF A4 de 1 clique.</p>
+              <h3 className="font-bold text-sm text-[#FFFCE1]">Gerador de Relatório Executivo em PDF (White-Label)</h3>
+              <p className="text-xs text-[#BBBAA6]">Personalize a identidade da sua consultoria e imprima ou salve em PDF A4 de 1 clique.</p>
             </div>
           </div>
 
@@ -119,24 +119,24 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
                 consultantPhone,
                 accentColor
               })}
-              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-105 active:scale-95"
+              className="px-4 py-2 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 rounded-xl text-xs font-black transition-all flex items-center gap-2 shadow-lg shadow-[#0AE448]/20 cursor-pointer hover:scale-105 active:scale-95"
               title="Baixar arquivo PDF consolidado com 1 clique"
             >
-              <Download className="w-4 h-4 text-emerald-400" />
+              <Download className="w-4 h-4 text-slate-950" />
               <span>Baixar Arquivo PDF (1 Clique)</span>
             </button>
 
             <button
               onClick={handlePrint}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-105 active:scale-95"
+              className="px-4 py-2 bg-white/5 hover:bg-white/10 text-[#FFFCE1] border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-105 active:scale-95"
             >
-              <Printer className="w-4 h-4" />
+              <Printer className="w-4 h-4 text-[#00BAE2]" />
               <span>Imprimir / Salvar em PDF</span>
             </button>
 
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
+              className="p-2 text-[#BBBAA6] hover:text-[#FFFCE1] rounded-xl hover:bg-white/10 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -147,48 +147,48 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
           
           {/* SIDEBAR DE CUSTOMIZAÇÃO WHITE-LABEL (Oculta na Impressão) */}
-          <div className="print:hidden w-full lg:w-80 bg-white border-r border-slate-200 p-6 space-y-5 overflow-y-auto shrink-0">
+          <div className="print:hidden w-full lg:w-80 bg-[#101211] border-r border-white/10 p-6 space-y-5 overflow-y-auto shrink-0">
             <div>
-              <h4 className="text-xs font-bold text-slate-900 uppercase font-mono flex items-center gap-2">
-                <Building2 className="w-3.5 h-3.5 text-indigo-600" /> Branding da sua Agência
+              <h4 className="text-xs font-bold text-[#FFFCE1] uppercase font-mono flex items-center gap-2">
+                <Building2 className="w-3.5 h-3.5 text-[#0AE448]" /> Branding da sua Agência
               </h4>
-              <p className="text-[11px] text-slate-500 mt-0.5">Seus dados no cabeçalho do documento.</p>
+              <p className="text-[11px] text-[#BBBAA6] mt-0.5">Seus dados no cabeçalho do documento.</p>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 mb-1">Nome da Agência / Consultoria</label>
+                <label className="block text-[11px] font-bold text-[#BBBAA6] mb-1">Nome da Agência / Consultoria</label>
                 <input
                   type="text"
                   value={agencyName}
                   onChange={(e) => setAgencyName(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-indigo-600"
+                  className="w-full px-3 py-2 bg-[#0E100F] border border-white/10 rounded-xl text-xs font-bold text-[#FFFCE1] focus:border-[#0AE448]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 mb-1">Cargo / Especialista</label>
+                <label className="block text-[11px] font-bold text-[#BBBAA6] mb-1">Cargo / Especialista</label>
                 <input
                   type="text"
                   value={consultantName}
                   onChange={(e) => setConsultantName(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-indigo-600"
+                  className="w-full px-3 py-2 bg-[#0E100F] border border-white/10 rounded-xl text-xs text-[#FFFCE1] focus:border-[#0AE448]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 mb-1">WhatsApp de Contato</label>
+                <label className="block text-[11px] font-bold text-[#BBBAA6] mb-1">WhatsApp de Contato</label>
                 <input
                   type="text"
                   value={consultantPhone}
                   onChange={(e) => setConsultantPhone(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-800 focus:outline-indigo-600"
+                  className="w-full px-3 py-2 bg-[#0E100F] border border-white/10 rounded-xl text-xs font-mono text-[#FFFCE1] focus:border-[#0AE448]"
                 />
               </div>
             </div>
 
-            <div className="border-t border-slate-100 pt-4 space-y-2">
-              <label className="block text-[11px] font-bold text-slate-700">Paleta de Cores Executiva</label>
+            <div className="border-t border-white/10 pt-4 space-y-2">
+              <label className="block text-[11px] font-bold text-[#BBBAA6]">Paleta de Cores Executiva</label>
               <div className="grid grid-cols-4 gap-2">
                 {(['indigo', 'blue', 'emerald', 'black'] as const).map((color) => (
                   <button
@@ -196,8 +196,8 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
                     onClick={() => setAccentColor(color)}
                     className={`py-1.5 rounded-lg text-[10px] font-bold border transition-all cursor-pointer capitalize ${
                       accentColor === color
-                        ? 'border-indigo-600 bg-indigo-50 text-indigo-900 font-black'
-                        : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
+                        ? 'border-[#0AE448] bg-[#0AE448]/10 text-[#0AE448] font-black'
+                        : 'border-white/10 bg-white/5 text-[#BBBAA6] hover:bg-white/10 hover:text-[#FFFCE1]'
                     }`}
                   >
                     {color === 'indigo' ? 'Índigo' : color === 'blue' ? 'Azul' : color === 'emerald' ? 'Esmeralda' : 'Preto'}
@@ -206,98 +206,98 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
               </div>
             </div>
 
-            <div className="border-t border-slate-100 pt-4 space-y-2.5">
-              <label className="block text-[11px] font-bold text-slate-700">Seções a Incluir no PDF</label>
+            <div className="border-t border-white/10 pt-4 space-y-2.5">
+              <label className="block text-[11px] font-bold text-[#BBBAA6]">Seções a Incluir no PDF</label>
               
-              <label className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
-                <input type="checkbox" checked={includeCover} onChange={(e) => setIncludeCover(e.target.checked)} className="rounded text-indigo-600" />
+              <label className="flex items-center gap-2 text-xs text-[#BBBAA6] cursor-pointer hover:text-[#FFFCE1]">
+                <input type="checkbox" checked={includeCover} onChange={(e) => setIncludeCover(e.target.checked)} className="rounded text-[#0AE448] accent-[#0AE448]" />
                 <span>Capa & Growth Score</span>
               </label>
 
-              <label className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
-                <input type="checkbox" checked={includeLeaks} onChange={(e) => setIncludeLeaks(e.target.checked)} className="rounded text-indigo-600" />
+              <label className="flex items-center gap-2 text-xs text-[#BBBAA6] cursor-pointer hover:text-[#FFFCE1]">
+                <input type="checkbox" checked={includeLeaks} onChange={(e) => setIncludeLeaks(e.target.checked)} className="rounded text-[#0AE448] accent-[#0AE448]" />
                 <span>Os 3 Maiores Vazamentos</span>
               </label>
 
-              <label className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
-                <input type="checkbox" checked={includeRupture} onChange={(e) => setIncludeRupture(e.target.checked)} className="rounded text-indigo-600" />
+              <label className="flex items-center gap-2 text-xs text-[#BBBAA6] cursor-pointer hover:text-[#FFFCE1]">
+                <input type="checkbox" checked={includeRupture} onChange={(e) => setIncludeRupture(e.target.checked)} className="rounded text-[#0AE448] accent-[#0AE448]" />
                 <span>Vigia 24h & Ruptura de Anúncios</span>
               </label>
 
-              <label className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
-                <input type="checkbox" checked={includePix} onChange={(e) => setIncludePix(e.target.checked)} className="rounded text-indigo-600" />
+              <label className="flex items-center gap-2 text-xs text-[#BBBAA6] cursor-pointer hover:text-[#FFFCE1]">
+                <input type="checkbox" checked={includePix} onChange={(e) => setIncludePix(e.target.checked)} className="rounded text-[#0AE448] accent-[#0AE448]" />
                 <span>Simulador Pix & Elasticidade</span>
               </label>
 
-              <label className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
-                <input type="checkbox" checked={includeCatalog} onChange={(e) => setIncludeCatalog(e.target.checked)} className="rounded text-indigo-600" />
+              <label className="flex items-center gap-2 text-xs text-[#BBBAA6] cursor-pointer hover:text-[#FFFCE1]">
+                <input type="checkbox" checked={includeCatalog} onChange={(e) => setIncludeCatalog(e.target.checked)} className="rounded text-[#0AE448] accent-[#0AE448]" />
                 <span>Grade de Catálogo (Regra APC)</span>
               </label>
 
-              <label className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
-                <input type="checkbox" checked={includeIceRoadmap} onChange={(e) => setIncludeIceRoadmap(e.target.checked)} className="rounded text-indigo-600" />
+              <label className="flex items-center gap-2 text-xs text-[#BBBAA6] cursor-pointer hover:text-[#FFFCE1]">
+                <input type="checkbox" checked={includeIceRoadmap} onChange={(e) => setIncludeIceRoadmap(e.target.checked)} className="rounded text-[#0AE448] accent-[#0AE448]" />
                 <span>Plano de Ação (Matriz ICE)</span>
               </label>
 
-              <label className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
-                <input type="checkbox" checked={includeFactChecker} onChange={(e) => setIncludeFactChecker(e.target.checked)} className="rounded text-indigo-600" />
+              <label className="flex items-center gap-2 text-xs text-[#BBBAA6] cursor-pointer hover:text-[#FFFCE1]">
+                <input type="checkbox" checked={includeFactChecker} onChange={(e) => setIncludeFactChecker(e.target.checked)} className="rounded text-[#0AE448] accent-[#0AE448]" />
                 <span>Certidão do Fact-Checker</span>
               </label>
             </div>
 
             {/* Planilhas e Documentos em Excel */}
-            <div className="pt-3 border-t border-slate-200 space-y-2">
-              <h4 className="text-[11px] font-bold text-slate-800 uppercase font-mono flex items-center gap-1.5">
-                <TableProperties className="w-3.5 h-3.5 text-blue-600" /> Planilhas Excel (.CSV)
+            <div className="pt-3 border-t border-white/10 space-y-2">
+              <h4 className="text-[11px] font-bold text-[#FFFCE1] uppercase font-mono flex items-center gap-1.5">
+                <TableProperties className="w-3.5 h-3.5 text-[#00BAE2]" /> Planilhas Excel (.CSV)
               </h4>
               <button
                 onClick={() => SpreadsheetExporter.exportCatalogAudit(realSiteData)}
-                className="w-full py-2 px-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-[11px] rounded-xl transition-all flex items-center justify-between shadow-2xs cursor-pointer"
+                className="w-full py-2 px-3 bg-white/5 hover:bg-white/10 border border-white/10 text-[#FFFCE1] font-bold text-[11px] rounded-xl transition-all flex items-center justify-between shadow-xs cursor-pointer"
               >
                 <span className="flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-blue-600" /> Planilha de Catálogo & SKUs
+                  <Layers className="w-3.5 h-3.5 text-[#00BAE2]" /> Planilha de Catálogo & SKUs
                 </span>
-                <Download className="w-3.5 h-3.5 text-slate-400" />
+                <Download className="w-3.5 h-3.5 text-[#BBBAA6]" />
               </button>
               <button
                 onClick={() => SpreadsheetExporter.exportFinancialActionPlan(diagnostic)}
-                className="w-full py-2 px-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-[11px] rounded-xl transition-all flex items-center justify-between shadow-2xs cursor-pointer"
+                className="w-full py-2 px-3 bg-white/5 hover:bg-white/10 border border-white/10 text-[#FFFCE1] font-bold text-[11px] rounded-xl transition-all flex items-center justify-between shadow-xs cursor-pointer"
               >
                 <span className="flex items-center gap-1.5">
-                  <TrendingUp className="w-3.5 h-3.5 text-emerald-600" /> Plano de Ação & Lucro
+                  <TrendingUp className="w-3.5 h-3.5 text-[#0AE448]" /> Plano de Ação & Lucro
                 </span>
-                <Download className="w-3.5 h-3.5 text-slate-400" />
+                <Download className="w-3.5 h-3.5 text-[#BBBAA6]" />
               </button>
               <button
                 onClick={() => SpreadsheetExporter.exportShopeeMassUpdateCsv(realSiteData)}
-                className="w-full py-2 px-3 bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-900 font-bold text-[11px] rounded-xl transition-all flex items-center justify-between shadow-2xs cursor-pointer"
+                className="w-full py-2 px-3 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-300 font-bold text-[11px] rounded-xl transition-all flex items-center justify-between shadow-xs cursor-pointer"
               >
                 <span className="flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-orange-600" /> Planilha Shopee (120 Chars SEO)
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Planilha Shopee (120 Chars SEO)
                 </span>
-                <Download className="w-3.5 h-3.5 text-orange-500" />
+                <Download className="w-3.5 h-3.5 text-amber-400" />
               </button>
             </div>
 
             {/* Conectar Integração Oficial Segura */}
-            <div className="pt-3 border-t border-slate-200 space-y-2">
+            <div className="pt-3 border-t border-white/10 space-y-2">
               <button
                 onClick={() => setIsConnectModalOpen(true)}
-                className="w-full py-2.5 px-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-[11px] rounded-xl transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+                className="w-full py-2.5 px-3 bg-white/5 hover:bg-white/10 border border-white/10 text-[#FFFCE1] font-bold text-[11px] rounded-xl transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
               >
-                <KeyRound className="w-3.5 h-3.5 text-emerald-400" />
+                <KeyRound className="w-3.5 h-3.5 text-[#0AE448]" />
                 <span>Conectar Shopify / Meta Ads</span>
               </button>
             </div>
 
             {/* Ação Rápida WhatsApp */}
-            <div className="pt-2 border-t border-slate-200">
+            <div className="pt-2 border-t border-white/10">
               <button
                 onClick={() => {
                   const msg = `DIAGNÓSTICO EXECUTIVO DE CRO & ESCALA (${realSiteData.brandName})\n\nOlá! Concluímos a auditoria profunda da sua operação:\n• Growth Score Atual: ${growthScore}/100\n• Oportunidade de Receita Extra: +R$ ${estimatedRevenueLiftMin.toLocaleString('pt-BR')} a R$ ${estimatedRevenueLiftMax.toLocaleString('pt-BR')}/mês\n• Ação Imediata: Simulador Pix + Reposição de Grade nos Anúncios.\n\nGerado por: ${agencyName} (${consultantName})\nRelatório Completo em PDF disponível.`;
                   window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
                 }}
-                className="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+                className="w-full py-2.5 px-3 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 font-black text-xs rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#0AE448]/20 cursor-pointer"
               >
                 <Phone className="w-3.5 h-3.5" />
                 <span>Enviar Pitch no WhatsApp</span>
@@ -306,7 +306,7 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
           </div>
 
           {/* DOCUMENT LIVE PREVIEW (DOCUMENTO A4 FORMATADO) */}
-          <div className="flex-1 p-4 sm:p-8 overflow-y-auto bg-slate-200/80 flex justify-center">
+          <div className="flex-1 p-4 sm:p-8 overflow-y-auto bg-[#080909] flex justify-center">
             
             {/* A4 Sheet Container */}
             <div 

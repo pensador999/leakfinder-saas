@@ -126,19 +126,19 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[70] flex items-center justify-center p-4 overflow-y-auto">
-      <div className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden my-8 relative flex flex-col max-h-[92vh] border border-slate-200 animate-fadeIn">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[60] flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl bg-[#101211] rounded-3xl shadow-2xl overflow-hidden my-8 relative flex flex-col max-h-[92vh] border border-white/10 text-[#FFFCE1] animate-fadeIn">
         
         {/* Top Header */}
-        <div className="p-5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-emerald-500/20 text-emerald-400 rounded-xl border border-emerald-500/30">
-              <ShieldCheck className="w-5 h-5" />
+        <div className="p-5 bg-[#141716] border-b border-white/10 flex items-center justify-between text-white shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 bg-[#0AE448]/10 text-[#0AE448] rounded-xl border border-[#0AE448]/30">
+              <ShieldCheck className="w-5 h-5 text-[#0AE448]" />
             </div>
             <div>
-              <h3 className="font-bold text-sm">AdShield • Checkout 100% Seguro</h3>
-              <p className="text-[11px] text-slate-400 flex items-center gap-1">
-                <Lock className="w-3 h-3 text-emerald-400" />
+              <h3 className="font-bold text-sm text-[#FFFCE1]">AdShield • Checkout 100% Seguro</h3>
+              <p className="text-[11px] text-[#BBBAA6] flex items-center gap-1">
+                <Lock className="w-3 h-3 text-[#0AE448]" />
                 <span>Criptografia SSL de 256 bits • Ativação Imediata</span>
               </p>
             </div>
@@ -146,7 +146,7 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
 
           <button 
             onClick={onClose}
-            className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-full transition-colors cursor-pointer"
+            className="p-2 bg-white/5 hover:bg-white/10 text-[#BBBAA6] hover:text-[#FFFCE1] rounded-full transition-colors cursor-pointer border border-white/10"
           >
             <X className="w-5 h-5" />
           </button>
@@ -158,40 +158,40 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
           {isSuccess ? (
             /* SUCCESS STATE */
             <div className="text-center py-12 space-y-6 max-w-md mx-auto">
-              <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto animate-bounce">
+              <div className="w-20 h-20 bg-[#0AE448]/10 text-[#0AE448] border border-[#0AE448]/30 rounded-full flex items-center justify-center mx-auto animate-bounce">
                 <CheckCircle2 className="w-12 h-12" />
               </div>
 
               <div className="space-y-2">
-                <span className="px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-mono font-bold rounded-full border border-emerald-200">
+                <span className="px-3 py-1 bg-[#0AE448]/10 text-[#0AE448] text-xs font-mono font-bold rounded-full border border-[#0AE448]/30">
                   PAGAMENTO APROVADO & LICENÇA ATIVADA
                 </span>
-                <h3 className="text-2xl font-black text-slate-900">
+                <h3 className="text-2xl font-black text-[#FFFCE1]">
                   Bem-vindo ao AdShield {selectedPlan.name}!
                 </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Sua conta foi ativada com sucesso. O recibo oficial e o token de acesso foram enviados para <strong>{buyer.email || 'seu e-mail'}</strong>.
+                <p className="text-xs text-[#BBBAA6] leading-relaxed">
+                  Sua conta foi ativada com sucesso. O recibo oficial e o token de acesso foram enviados para <strong className="text-[#FFFCE1]">{buyer.email || 'seu e-mail'}</strong>.
                 </p>
               </div>
 
-              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-left text-xs font-mono space-y-1.5 text-slate-700">
+              <div className="p-4 bg-[#141716] rounded-2xl border border-white/10 text-left text-xs font-mono space-y-1.5 text-[#BBBAA6]">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Plano Ativado:</span>
-                  <strong>{selectedPlan.name}</strong>
+                  <span>Plano Ativado:</span>
+                  <strong className="text-[#FFFCE1]">{selectedPlan.name}</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Ciclo:</span>
-                  <strong>{billingCycle === 'MONTHLY' ? 'Mensal' : 'Anual (20% OFF)'}</strong>
+                  <span>Ciclo:</span>
+                  <strong className="text-[#FFFCE1]">{billingCycle === 'MONTHLY' ? 'Mensal' : 'Anual (20% OFF)'}</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Valor Pago:</span>
-                  <strong className="text-emerald-600">{formatBRL(finalPrice)}</strong>
+                  <span>Valor Pago:</span>
+                  <strong className="text-[#0AE448]">{formatBRL(finalPrice)}</strong>
                 </div>
               </div>
 
               <button
                 onClick={onClose}
-                className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-emerald-600/20 cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-4 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 font-black rounded-2xl transition-all shadow-lg shadow-[#0AE448]/20 cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>Acessar Painel de Monitoramento 24h</span>
                 <ArrowRight className="w-4 h-4" />
@@ -201,19 +201,19 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
             /* PIX SCREEN */
             <div className="text-center py-4 space-y-6 max-w-lg mx-auto">
               <div className="space-y-1">
-                <span className="px-3 py-1 bg-teal-50 text-teal-700 text-xs font-mono font-bold rounded-full border border-teal-200">
+                <span className="px-3 py-1 bg-[#0AE448]/10 text-[#0AE448] text-xs font-mono font-bold rounded-full border border-[#0AE448]/30">
                   ⚡ PAGAMENTO VIA PIX INSTANTÂNEO
                 </span>
-                <h3 className="text-xl font-bold text-slate-900">
+                <h3 className="text-xl font-bold text-[#FFFCE1]">
                   Escaneie o QR Code ou Copie o Código
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-[#BBBAA6]">
                   Abra o app do seu banco e pague para liberação imediata.
                 </p>
               </div>
 
               {/* QR Code Container */}
-              <div className="p-4 bg-white border-2 border-slate-200 rounded-3xl inline-block shadow-md">
+              <div className="p-4 bg-white border-2 border-white/20 rounded-3xl inline-block shadow-md">
                 <img 
                   src={pixResult.pixPayload?.qrCodeBase64} 
                   alt="QR Code Pix" 
@@ -222,9 +222,9 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-mono font-bold text-slate-500 px-1">
-                  <span>Valor do Pix: <strong className="text-slate-900">{formatBRL(finalPrice)}</strong></span>
-                  <span className="flex items-center gap-1 text-amber-600">
+                <div className="flex items-center justify-between text-xs font-mono font-bold text-[#BBBAA6] px-1">
+                  <span>Valor do Pix: <strong className="text-[#0AE448]">{formatBRL(finalPrice)}</strong></span>
+                  <span className="flex items-center gap-1 text-amber-400">
                     <Clock className="w-3.5 h-3.5" />
                     <span>Expira em: {pixResult.pixPayload?.expiresAt}</span>
                   </span>
@@ -235,26 +235,26 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
                     type="text"
                     readOnly
                     value={pixResult.pixPayload?.copiaECola}
-                    className="flex-1 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-600 truncate select-all"
+                    className="flex-1 px-3 py-2.5 bg-[#0E100F] border border-white/10 rounded-xl text-xs font-mono text-[#FFFCE1] truncate select-all"
                   />
                   <button
                     onClick={handleCopyPix}
-                    className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                    className="px-4 py-2.5 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 text-xs font-black rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
                   >
-                    {copiedPix ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                    {copiedPix ? <Check className="w-4 h-4 text-slate-950" /> : <Copy className="w-4 h-4" />}
                     <span>{copiedPix ? 'Copiado!' : 'Copiar Pix'}</span>
                   </button>
                 </div>
               </div>
 
-              <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-800 flex items-center justify-between">
+              <div className="p-3.5 bg-[#141716] rounded-xl border border-white/10 text-xs text-[#BBBAA6] flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                  <div className="w-2 h-2 rounded-full bg-[#0AE448] animate-ping" />
                   <span>Aguardando identificação do pagamento...</span>
                 </div>
                 <button
                   onClick={handleSimulatePixPaid}
-                  className="text-[11px] font-bold text-emerald-700 underline cursor-pointer"
+                  className="text-[11px] font-bold text-[#0AE448] underline cursor-pointer"
                 >
                   Simular Confirmação
                 </button>
@@ -262,7 +262,7 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
 
               <button
                 onClick={() => setPixResult(null)}
-                className="text-xs text-slate-500 hover:text-slate-700 underline"
+                className="text-xs text-[#BBBAA6] hover:text-[#FFFCE1] underline cursor-pointer"
               >
                 Voltar e alterar dados ou forma de pagamento
               </button>
@@ -272,19 +272,19 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
             <div className="space-y-6">
               
               {/* Billing Cycle Toggle */}
-              <div className="flex items-center justify-center gap-3 p-1.5 bg-slate-100 rounded-2xl max-w-xs mx-auto text-xs font-bold">
+              <div className="flex items-center justify-center gap-2 p-1.5 bg-white/5 border border-white/10 rounded-2xl max-w-xs mx-auto text-xs font-bold">
                 <button
                   onClick={() => setBillingCycle('MONTHLY')}
-                  className={`flex-1 py-2 rounded-xl transition-all cursor-pointer ${billingCycle === 'MONTHLY' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+                  className={`flex-1 py-2 rounded-xl transition-all cursor-pointer ${billingCycle === 'MONTHLY' ? 'bg-[#0AE448] text-slate-950 font-black shadow-md' : 'text-[#BBBAA6] hover:text-[#FFFCE1]'}`}
                 >
                   Mensal
                 </button>
                 <button
                   onClick={() => setBillingCycle('YEARLY')}
-                  className={`flex-1 py-2 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1 ${billingCycle === 'YEARLY' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'}`}
+                  className={`flex-1 py-2 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 ${billingCycle === 'YEARLY' ? 'bg-[#0AE448] text-slate-950 font-black shadow-md' : 'text-[#BBBAA6] hover:text-[#FFFCE1]'}`}
                 >
                   <span>Anual</span>
-                  <span className="px-1.5 py-0.5 bg-emerald-500 text-white text-[9px] font-black rounded-md">20% OFF</span>
+                  <span className="px-1.5 py-0.5 bg-slate-950 text-[#0AE448] text-[9px] font-black rounded-md">20% OFF</span>
                 </button>
               </div>
 
@@ -299,38 +299,38 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
                     <div
                       key={planKey}
                       onClick={() => setSelectedPlanId(planKey)}
-                      className={`p-4 rounded-2xl border-2 transition-all cursor-pointer relative flex flex-col justify-between ${
+                      className={`p-4 rounded-2xl border transition-all cursor-pointer relative flex flex-col justify-between ${
                         isSelected 
-                          ? 'border-indigo-600 bg-indigo-50/20 shadow-md ring-2 ring-indigo-600/20' 
-                          : 'border-slate-200 bg-white hover:border-slate-300'
+                          ? 'border-[#0AE448] bg-[#0AE448]/5 shadow-lg shadow-[#0AE448]/10 ring-1 ring-[#0AE448]/30' 
+                          : 'border-white/10 bg-[#141716] hover:border-white/20'
                       }`}
                     >
                       {p.badge && (
-                        <span className="absolute -top-2.5 right-3 px-2 py-0.5 bg-indigo-600 text-white text-[9px] font-black uppercase rounded-full">
+                        <span className="absolute -top-2.5 right-3 px-2 py-0.5 bg-[#0AE448] text-slate-950 text-[9px] font-black uppercase rounded-full">
                           {p.badge}
                         </span>
                       )}
 
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-sm text-slate-900">{p.name}</h4>
-                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${isSelected ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-300'}`}>
-                            {isSelected && <Check className="w-3 h-3" />}
+                          <h4 className="font-bold text-sm text-[#FFFCE1]">{p.name}</h4>
+                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${isSelected ? 'border-[#0AE448] bg-[#0AE448] text-slate-950' : 'border-white/20'}`}>
+                            {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
                           </div>
                         </div>
 
                         <div className="flex items-baseline gap-1">
-                          <span className="text-2xl font-black font-mono text-slate-900">{formatBRL(displayPrice)}</span>
-                          <span className="text-[11px] text-slate-500">/mês</span>
+                          <span className="text-2xl font-black font-mono text-[#FFFCE1]">{formatBRL(displayPrice)}</span>
+                          <span className="text-[11px] text-[#BBBAA6]">/mês</span>
                         </div>
 
-                        <p className="text-[11px] text-slate-600 leading-tight">{p.description}</p>
+                        <p className="text-[11px] text-[#BBBAA6] leading-tight">{p.description}</p>
                       </div>
 
-                      <ul className="mt-3 pt-3 border-t border-slate-100 space-y-1 text-[11px] text-slate-600">
+                      <ul className="mt-3 pt-3 border-t border-white/5 space-y-1 text-[11px] text-[#BBBAA6]">
                         {p.features.slice(0, 3).map((feat, i) => (
                           <li key={i} className="flex items-center gap-1.5">
-                            <Check className="w-3 h-3 text-emerald-500 shrink-0" />
+                            <Check className="w-3 h-3 text-[#0AE448] shrink-0" />
                             <span className="truncate">{feat}</span>
                           </li>
                         ))}
@@ -341,57 +341,57 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
               </div>
 
               {/* Checkout Two-Column: Buyer Details & Payment Method */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 pt-4 border-t border-slate-200">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 pt-4 border-t border-white/10">
                 
                 {/* Left: Buyer Details */}
                 <div className="md:col-span-6 space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#BBBAA6] font-mono">
                     1. Seus Dados de Acesso
                   </h4>
 
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Nome Completo</label>
+                      <label className="block text-xs font-bold text-[#BBBAA6] mb-1">Nome Completo</label>
                       <input
                         type="text"
                         placeholder="Ex: Roberto Alcantara"
                         value={buyer.fullName}
                         onChange={(e) => setBuyer({ ...buyer, fullName: e.target.value })}
-                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-indigo-600 font-medium"
+                        className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 rounded-xl text-xs text-[#FFFCE1] placeholder-[#BBBAA6]/40 focus:border-[#0AE448] font-medium transition-all"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">E-mail Corporativo</label>
+                      <label className="block text-xs font-bold text-[#BBBAA6] mb-1">E-mail Corporativo</label>
                       <input
                         type="email"
                         placeholder="seuemail@empresa.com.br"
                         value={buyer.email}
                         onChange={(e) => setBuyer({ ...buyer, email: e.target.value })}
-                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-indigo-600 font-medium"
+                        className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 rounded-xl text-xs text-[#FFFCE1] placeholder-[#BBBAA6]/40 focus:border-[#0AE448] font-medium transition-all"
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">WhatsApp</label>
+                        <label className="block text-xs font-bold text-[#BBBAA6] mb-1">WhatsApp</label>
                         <input
                           type="tel"
                           placeholder="(11) 99999-9999"
                           value={buyer.phone}
                           onChange={(e) => setBuyer({ ...buyer, phone: e.target.value })}
-                          className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-indigo-600 font-medium"
+                          className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 rounded-xl text-xs text-[#FFFCE1] placeholder-[#BBBAA6]/40 focus:border-[#0AE448] font-medium transition-all"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">CPF ou CNPJ</label>
+                        <label className="block text-xs font-bold text-[#BBBAA6] mb-1">CPF ou CNPJ</label>
                         <input
                           type="text"
                           placeholder="000.000.000-00"
                           value={buyer.document}
                           onChange={(e) => setBuyer({ ...buyer, document: e.target.value })}
-                          className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-indigo-600 font-medium"
+                          className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 rounded-xl text-xs text-[#FFFCE1] placeholder-[#BBBAA6]/40 focus:border-[#0AE448] font-medium transition-all"
                         />
                       </div>
                     </div>
@@ -400,7 +400,7 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
 
                 {/* Right: Payment Method */}
                 <div className="md:col-span-6 space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#BBBAA6] font-mono">
                     2. Forma de Pagamento
                   </h4>
 
@@ -408,42 +408,42 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
                     <button
                       type="button"
                       onClick={() => setPaymentMethod('PIX')}
-                      className={`p-3 rounded-xl border-2 font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all ${
+                      className={`p-3 rounded-xl border font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all ${
                         paymentMethod === 'PIX'
-                          ? 'border-emerald-500 bg-emerald-50/30 text-emerald-700'
-                          : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                          ? 'border-[#0AE448] bg-[#0AE448]/10 text-[#0AE448]'
+                          : 'border-white/10 bg-white/5 text-[#BBBAA6] hover:bg-white/10'
                       }`}
                     >
-                      <QrCode className="w-4 h-4 text-emerald-600" />
+                      <QrCode className="w-4 h-4 text-[#0AE448]" />
                       <span>Pix Instantâneo</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setPaymentMethod('CREDIT_CARD')}
-                      className={`p-3 rounded-xl border-2 font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all ${
+                      className={`p-3 rounded-xl border font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all ${
                         paymentMethod === 'CREDIT_CARD'
-                          ? 'border-indigo-500 bg-indigo-50/30 text-indigo-700'
-                          : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                          ? 'border-[#00BAE2] bg-[#00BAE2]/10 text-[#00BAE2]'
+                          : 'border-white/10 bg-white/5 text-[#BBBAA6] hover:bg-white/10'
                       }`}
                     >
-                      <CreditCard className="w-4 h-4 text-indigo-600" />
+                      <CreditCard className="w-4 h-4 text-[#00BAE2]" />
                       <span>Cartão de Crédito</span>
                     </button>
                   </div>
 
                   {paymentMethod === 'PIX' ? (
-                    <div className="p-4 bg-emerald-50/40 rounded-2xl border border-emerald-200 space-y-3">
-                      <div className="flex items-center gap-2 text-xs text-emerald-800 font-bold">
-                        <Zap className="w-4 h-4 text-emerald-600" />
+                    <div className="p-4 bg-[#141716] rounded-2xl border border-[#0AE448]/30 space-y-3">
+                      <div className="flex items-center gap-2 text-xs text-[#0AE448] font-bold">
+                        <Zap className="w-4 h-4 text-[#0AE448]" />
                         <span>Liberação imediata sem esperar compensação bancária</span>
                       </div>
-                      <p className="text-[11px] text-slate-600 leading-relaxed">
+                      <p className="text-[11px] text-[#BBBAA6] leading-relaxed">
                         Ao clicar no botão abaixo, geraremos um QR Code exclusivo do Banco Central para você pagar via app bancário.
                       </p>
                       <button
                         onClick={handleGeneratePix}
-                        className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 cursor-pointer"
+                        className="w-full py-3.5 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 text-xs font-black rounded-xl transition-all shadow-lg shadow-[#0AE448]/20 flex items-center justify-center gap-2 cursor-pointer"
                       >
                         <span>Gerar QR Code Pix de {formatBRL(finalPrice)}</span>
                         <ArrowRight className="w-4 h-4" />
@@ -452,38 +452,38 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
                   ) : (
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Número do Cartão</label>
+                        <label className="block text-xs font-bold text-[#BBBAA6] mb-1">Número do Cartão</label>
                         <input
                           type="text"
                           placeholder="0000 0000 0000 0000"
                           maxLength={19}
                           value={card.cardNumber}
                           onChange={(e) => setCard({ ...card, cardNumber: e.target.value })}
-                          className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-900 focus:outline-indigo-600 font-medium"
+                          className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 rounded-xl text-xs font-mono text-[#FFFCE1] placeholder-[#BBBAA6]/40 focus:border-[#0AE448] font-medium"
                         />
                       </div>
 
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="block text-xs font-bold text-slate-700 mb-1">Nome no Cartão</label>
+                          <label className="block text-xs font-bold text-[#BBBAA6] mb-1">Nome no Cartão</label>
                           <input
                             type="text"
                             placeholder="Como impresso no cartão"
                             value={card.holderName}
                             onChange={(e) => setCard({ ...card, holderName: e.target.value })}
-                            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-indigo-600 font-medium uppercase"
+                            className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 rounded-xl text-xs text-[#FFFCE1] placeholder-[#BBBAA6]/40 focus:border-[#0AE448] font-medium uppercase"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-xs font-bold text-slate-700 mb-1">CVV</label>
+                          <label className="block text-xs font-bold text-[#BBBAA6] mb-1">CVV</label>
                           <input
                             type="password"
                             placeholder="123"
                             maxLength={4}
                             value={card.cvv}
                             onChange={(e) => setCard({ ...card, cvv: e.target.value })}
-                            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-900 focus:outline-indigo-600 font-medium"
+                            className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 rounded-xl text-xs font-mono text-[#FFFCE1] placeholder-[#BBBAA6]/40 focus:border-[#0AE448] font-medium"
                           />
                         </div>
                       </div>
@@ -491,7 +491,7 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
                       <button
                         onClick={handleProcessCard}
                         disabled={isProcessing}
-                        className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-400 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-indigo-600/20 flex items-center justify-center gap-2 cursor-pointer"
+                        className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 text-white text-xs font-bold rounded-xl transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2 cursor-pointer"
                       >
                         {isProcessing ? (
                           <div className="flex items-center gap-2">
@@ -509,13 +509,13 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
                   )}
 
                   {errorMessage && (
-                    <p className="text-xs text-rose-600 font-bold flex items-center gap-1">
+                    <p className="text-xs text-rose-400 font-bold flex items-center gap-1">
                       <AlertCircle className="w-3.5 h-3.5" />
                       <span>{errorMessage}</span>
                     </p>
                   )}
 
-                  <div className="pt-2 text-[10px] text-slate-400 text-center space-y-1">
+                  <div className="pt-2 text-[10px] text-[#BBBAA6]/60 text-center space-y-1">
                     <p>Garantia incondicional de 7 dias (CDC Art. 49). Cancele quando quiser.</p>
                   </div>
                 </div>

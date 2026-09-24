@@ -4,14 +4,10 @@ import {
   Send, 
   CheckCircle2, 
   AlertTriangle, 
-  Settings, 
   X, 
   RefreshCw, 
-  Check, 
-  Radio,
-  ExternalLink,
-  ShieldCheck,
-  Flame
+  ExternalLink, 
+  ShieldCheck 
 } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
@@ -99,29 +95,29 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-2xl max-h-[90vh] shadow-2xl overflow-hidden flex flex-col font-sans">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+      <div className="bg-[#101211] border border-white/10 rounded-3xl w-full max-w-2xl max-h-[90vh] shadow-2xl overflow-hidden flex flex-col font-sans text-[#FFFCE1]">
         
         {/* Header */}
-        <div className="p-6 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
+        <div className="p-6 bg-[#141716] text-white flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-emerald-600 rounded-2xl text-white shadow-md shadow-emerald-600/30">
+            <div className="p-2.5 bg-[#0AE448]/10 text-[#0AE448] border border-[#0AE448]/20 rounded-2xl shadow-md">
               <Smartphone className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold">Agente 18 — WhatsApp Executive Watchdog Worker</h2>
-                <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-md">
+                <h2 className="text-lg font-black text-[#FFFCE1]">Agente 18 — WhatsApp Executive Watchdog Worker</h2>
+                <span className="px-2 py-0.5 text-[10px] font-mono font-black bg-[#0AE448]/10 text-[#0AE448] border border-[#0AE448]/30 rounded-md">
                   Vigilância 07:00
                 </span>
               </div>
-              <p className="text-xs text-slate-400">Gateway para entrega proativa de alertas de ruptura e relatórios executivos no WhatsApp do decisor.</p>
+              <p className="text-xs text-[#BBBAA6]">Gateway para entrega proativa de alertas de ruptura e relatórios executivos no WhatsApp do decisor.</p>
             </div>
           </div>
 
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-slate-800 rounded-xl text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="p-2 hover:bg-white/10 rounded-xl text-[#BBBAA6] hover:text-[#FFFCE1] transition-colors cursor-pointer border border-white/10"
           >
             <X className="w-5 h-5" />
           </button>
@@ -131,8 +127,8 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
         <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
           
           {savedSuccess && (
-            <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <div className="p-4 rounded-2xl bg-[#0AE448]/10 border border-[#0AE448]/30 text-[#0AE448] font-bold flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-[#0AE448]" />
               <span>Configurações do WhatsApp salvas com sucesso!</span>
             </div>
           )}
@@ -141,7 +137,7 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
             
             {/* Gateway Provider Selector */}
             <div className="space-y-2">
-              <label className="block font-bold text-slate-700">Provedor de Envio WhatsApp</label>
+              <label className="block font-bold text-[#BBBAA6]">Provedor de Envio WhatsApp</label>
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                 {[
                   { id: 'DIRECT_LINK', label: '1-Clique Direto (Oficial)' },
@@ -154,10 +150,10 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
                     key={item.id}
                     type="button"
                     onClick={() => setConfig({ ...config, provider: item.id as any })}
-                    className={`p-3 rounded-2xl border text-center transition-all cursor-pointer font-bold ${
+                    className={`p-3 rounded-2xl border text-center transition-all cursor-pointer font-bold text-xs ${
                       config.provider === item.id
-                        ? 'bg-emerald-50 border-emerald-500 text-emerald-800 shadow-xs'
-                        : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                        ? 'bg-[#0AE448]/10 border-[#0AE448] text-[#0AE448] shadow-xs'
+                        : 'bg-white/5 border-white/10 text-[#BBBAA6] hover:bg-white/10 hover:text-[#FFFCE1]'
                     }`}
                   >
                     {item.label}
@@ -168,37 +164,37 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
 
             {/* Direct Link Explainer */}
             {config.provider === 'DIRECT_LINK' && (
-              <div className="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-2xl flex items-start gap-2.5 animate-fadeIn">
-                <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                <div className="text-xs text-emerald-950 leading-relaxed">
-                  <span className="font-bold">Protocolo Oficial Click-to-Chat Ativo:</span> Os alertas executivos geram deep-links criptografados da API oficial do WhatsApp (<code className="bg-emerald-100/70 px-1 py-0.5 rounded font-mono text-[11px]">api.whatsapp.com</code>), permitindo abertura imediata no WhatsApp Web ou Mobile sem risco de banimento.
+              <div className="p-3.5 bg-[#141716] border border-[#0AE448]/30 rounded-2xl flex items-start gap-2.5 animate-fadeIn">
+                <ShieldCheck className="w-5 h-5 text-[#0AE448] shrink-0 mt-0.5" />
+                <div className="text-xs text-[#BBBAA6] leading-relaxed">
+                  <span className="font-bold text-[#FFFCE1]">Protocolo Oficial Click-to-Chat Ativo:</span> Os alertas executivos geram deep-links criptografados da API oficial do WhatsApp (<code className="bg-white/5 border border-white/10 text-[#0AE448] px-1 py-0.5 rounded font-mono text-[11px]">api.whatsapp.com</code>), permitindo abertura imediata no WhatsApp Web ou Mobile sem risco de banimento.
                 </div>
               </div>
             )}
 
             {/* Endpoint URL & Token */}
             {config.provider !== 'SIMULATION' && config.provider !== 'DIRECT_LINK' && (
-              <div className="space-y-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl animate-fadeIn">
+              <div className="space-y-3 p-4 bg-[#141716] border border-white/10 rounded-2xl animate-fadeIn">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">URL da Instância / Webhook</label>
+                  <label className="block font-bold text-[#BBBAA6] mb-1">URL da Instância / Webhook</label>
                   <input
                     type="url"
                     required
                     placeholder="https://api.evolution.suaempresa.com/message/sendText/adshield"
                     value={config.endpointUrl}
                     onChange={(e) => setConfig({ ...config, endpointUrl: e.target.value })}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-mono"
+                    className="w-full px-3 py-2 text-xs bg-[#0E100F] border border-white/10 text-[#FFFCE1] rounded-xl focus:border-[#0AE448] focus:outline-none font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">API Key / Token de Autenticação</label>
+                  <label className="block font-bold text-[#BBBAA6] mb-1">API Key / Token de Autenticação</label>
                   <input
                     type="password"
                     placeholder="eyJhbGciOiJIUzI1NiIsIn..."
                     value={config.apiToken || ''}
                     onChange={(e) => setConfig({ ...config, apiToken: e.target.value })}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-mono"
+                    className="w-full px-3 py-2 text-xs bg-[#0E100F] border border-white/10 text-[#FFFCE1] rounded-xl focus:border-[#0AE448] focus:outline-none font-mono"
                   />
                 </div>
               </div>
@@ -207,23 +203,23 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="submit"
-                className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-xs transition-all cursor-pointer"
+                className="px-5 py-2.5 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-[#0AE448]/20 transition-all cursor-pointer"
               >
                 Salvar Configurações
               </button>
             </div>
           </form>
 
-          <hr className="border-slate-200" />
+          <hr className="border-white/10" />
 
           {/* Test Dispatch Box */}
-          <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+          <div className="p-4 bg-[#141716] border border-white/10 rounded-2xl space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-slate-900 flex items-center gap-2">
-                <Send className="w-4 h-4 text-emerald-600" />
+              <h3 className="font-bold text-[#FFFCE1] flex items-center gap-2">
+                <Send className="w-4 h-4 text-[#0AE448]" />
                 Disparo Executivo Real no WhatsApp
               </h3>
-              <span className="text-[10px] text-emerald-700 font-mono font-bold bg-emerald-100 px-2 py-0.5 rounded-md">
+              <span className="text-[10px] text-[#0AE448] font-mono font-bold bg-[#0AE448]/10 border border-[#0AE448]/30 px-2 py-0.5 rounded-md">
                 Destino: 5534991351122
               </span>
             </div>
@@ -235,12 +231,12 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
                   placeholder="5534991351122"
                   value={testPhone}
                   onChange={(e) => setTestPhone(e.target.value)}
-                  className="flex-1 px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-mono font-bold"
+                  className="flex-1 px-3 py-2 text-xs bg-[#0E100F] border border-white/10 text-[#FFFCE1] rounded-xl focus:border-[#0AE448] focus:outline-none font-mono font-bold"
                 />
                 <button
                   onClick={handleSendTestMessage}
                   disabled={isSendingTest}
-                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-xs shrink-0"
+                  className="px-4 py-2 bg-white/10 hover:bg-white/20 text-[#FFFCE1] font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-xs shrink-0"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isSendingTest ? 'animate-spin' : ''}`} />
                   <span>{isSendingTest ? 'Enviando...' : 'Testar Disparo'}</span>
@@ -251,7 +247,7 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
                 <button
                   type="button"
                   onClick={() => setTestPhone('5534991351122')}
-                  className="text-[11px] text-emerald-700 hover:text-emerald-900 font-semibold underline cursor-pointer"
+                  className="text-[11px] text-[#0AE448] hover:underline font-semibold cursor-pointer"
                 >
                   Usar meu WhatsApp: (34) 99135-1122
                 </button>
@@ -261,9 +257,9 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
             {testResult && (
               <div className="space-y-2">
                 <div className={`p-3 rounded-xl border text-xs font-bold flex items-center gap-2 ${
-                  testResult.success ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-rose-50 border-rose-200 text-rose-800'
+                  testResult.success ? 'bg-[#0AE448]/10 border-[#0AE448]/30 text-[#0AE448]' : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
                 }`}>
-                  {testResult.success ? <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> : <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />}
+                  {testResult.success ? <CheckCircle2 className="w-4 h-4 text-[#0AE448] shrink-0" /> : <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />}
                   <span>{testResult.message}</span>
                 </div>
 
@@ -272,11 +268,11 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
                     href={testResult.directUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-md shadow-emerald-600/25 cursor-pointer"
+                    className="w-full px-4 py-3 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 font-black rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#0AE448]/20 cursor-pointer"
                   >
-                    <FontAwesomeIcon icon={faWhatsapp} className="w-4 h-4 text-white" />
+                    <FontAwesomeIcon icon={faWhatsapp} className="w-4 h-4 text-slate-950" />
                     <span>Abrir Conversa no WhatsApp (34 99135-1122) com Alerta</span>
-                    <ExternalLink className="w-3.5 h-3.5 ml-1" />
+                    <ExternalLink className="w-3.5 h-3.5 ml-1 text-slate-950" />
                   </a>
                 )}
               </div>
