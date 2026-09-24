@@ -252,47 +252,47 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
 
       {/* 2. Quick KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center gap-3">
-          <div className="p-2.5 bg-rose-50 text-rose-600 rounded-xl">
+        <div className="p-4 rounded-2xl bg-[#101211] border border-white/10 shadow-xl flex items-center gap-3">
+          <div className="p-2.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl">
             <Flame className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 font-mono block">Leads Qualificados</span>
-            <span className="text-2xl font-black text-slate-900 font-mono">{leadsList.length} Lojas</span>
+            <span className="text-[10px] uppercase font-bold text-[#BBBAA6] font-mono block">Leads Qualificados</span>
+            <span className="text-2xl font-black text-[#FFFCE1] font-mono">{leadsList.length} Lojas</span>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center gap-3">
-          <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl">
+        <div className="p-4 rounded-2xl bg-[#101211] border border-white/10 shadow-xl flex items-center gap-3">
+          <div className="p-2.5 bg-emerald-500/10 text-[#0AE448] border border-emerald-500/20 rounded-xl">
             <TrendingDown className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 font-mono block">Sangria Mapeada</span>
-            <span className="text-xl font-black text-emerald-600 font-mono">
+            <span className="text-[10px] uppercase font-bold text-[#BBBAA6] font-mono block">Sangria Mapeada</span>
+            <span className="text-xl font-black text-[#0AE448] font-mono">
               {totalFlaggedWaste.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}/mês
             </span>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center gap-3">
-          <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
+        <div className="p-4 rounded-2xl bg-[#101211] border border-white/10 shadow-xl flex items-center gap-3">
+          <div className="p-2.5 bg-[#00BAE2]/10 text-[#00BAE2] border border-[#00BAE2]/20 rounded-xl">
             <Phone className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 font-mono block">WhatsApps Minerados</span>
-            <span className="text-2xl font-black text-blue-600 font-mono">
+            <span className="text-[10px] uppercase font-bold text-[#BBBAA6] font-mono block">WhatsApps Minerados</span>
+            <span className="text-2xl font-black text-[#00BAE2] font-mono">
               {leadsList.filter(l => !!l.detectedWhatsApp).length} Canais
             </span>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center gap-3">
-          <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
+        <div className="p-4 rounded-2xl bg-[#101211] border border-white/10 shadow-xl flex items-center gap-3">
+          <div className="p-2.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-xl">
             <CheckCircle2 className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 font-mono block">Contatados no WhatsApp</span>
-            <span className="text-2xl font-black text-indigo-600 font-mono">
+            <span className="text-[10px] uppercase font-bold text-[#BBBAA6] font-mono block">Contatados no WhatsApp</span>
+            <span className="text-2xl font-black text-indigo-300 font-mono">
               {leadsList.filter(l => l.status === 'CONTATADO' || l.status === 'DOSSIE_ENVIADO').length} Abordados
             </span>
           </div>
@@ -364,12 +364,12 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
               onClick={() => setSelectedTierFilter('ALL')}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 selectedTierFilter === 'ALL'
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800'
+                  ? 'bg-[#0AE448] text-slate-950 font-black shadow-lg shadow-[#0AE448]/20'
+                  : 'bg-[#141716] border border-white/10 text-[#BBBAA6] hover:bg-white/5 hover:text-[#FFFCE1]'
               }`}
             >
               <span>Todos os Alvos</span>
-              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${selectedTierFilter === 'ALL' ? 'bg-slate-200 text-slate-800' : 'bg-slate-700 text-slate-300'}`}>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${selectedTierFilter === 'ALL' ? 'bg-slate-950 text-[#0AE448]' : 'bg-white/10 text-[#BBBAA6]'}`}>
                 {leadsList.length}
               </span>
             </button>
@@ -428,10 +428,10 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
 
           if (displayedLeads.length === 0) {
             return (
-              <div className="p-12 text-center bg-white border border-slate-200 rounded-2xl space-y-3">
-                <ShieldAlert className="w-10 h-10 text-slate-400 mx-auto" />
-                <h4 className="font-bold text-slate-700 text-base">Nenhum lead encontrado neste Tier</h4>
-                <p className="text-xs text-slate-500 max-w-md mx-auto">
+              <div className="p-12 text-center bg-[#101211] border border-white/10 rounded-2xl space-y-3 shadow-xl">
+                <ShieldAlert className="w-10 h-10 text-[#BBBAA6] mx-auto" />
+                <h4 className="font-bold text-[#FFFCE1] text-base">Nenhum lead encontrado neste Tier</h4>
+                <p className="text-xs text-[#BBBAA6] max-w-md mx-auto">
                   Inicie uma nova sessão do Radar Autônomo para minerar mais lojas com flagrante de sangria.
                 </p>
               </div>
@@ -448,26 +448,26 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                 return (
                   <div 
                     key={lead.id}
-                    className={`p-5 rounded-2xl bg-white border shadow-sm hover:shadow-md transition-all space-y-4 ${
+                    className={`p-5 rounded-2xl bg-[#101211] border shadow-xl hover:border-white/20 transition-all space-y-4 ${
                       lead.huntingTier === 'TIER_1_HOT' 
-                        ? 'border-rose-300 ring-2 ring-rose-500/10' 
-                        : 'border-slate-200'
+                        ? 'border-rose-500/40 ring-1 ring-rose-500/20' 
+                        : 'border-white/10'
                     }`}
                   >
                     {/* Lead Header */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-slate-900 text-white font-black flex items-center justify-center text-sm">
+                        <div className="w-10 h-10 rounded-xl bg-[#141716] border border-white/10 text-[#FFFCE1] font-black flex items-center justify-center text-sm">
                           {lead.brandName.substring(0, 2).toUpperCase()}
                         </div>
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h4 className="font-extrabold text-slate-900 text-base">{lead.brandName}</h4>
+                            <h4 className="font-extrabold text-[#FFFCE1] text-base">{lead.brandName}</h4>
                             <a 
                               href={lead.storeUrl} 
                               target="_blank" 
                               rel="noopener noreferrer"
-                              className="text-slate-400 hover:text-indigo-600 transition-colors"
+                              className="text-[#BBBAA6] hover:text-[#00BAE2] transition-colors"
                             >
                               <ExternalLink className="w-3.5 h-3.5" />
                             </a>
@@ -498,52 +498,52 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
 
                       <div className="flex items-center gap-2 flex-wrap">
                         <span 
-                          className="px-2.5 py-1 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg text-xs font-mono font-bold flex items-center gap-1 shadow-2xs"
+                          className="px-2.5 py-1 bg-rose-500/10 border border-rose-500/20 text-rose-300 rounded-lg text-xs font-mono font-bold flex items-center gap-1 shadow-2xs"
                           title="Estimativa matemática calculada sobre a proporção de 65% dos cliques perdidos na falta dos tamanhos centrais"
                         >
-                          <span className="text-[9px] uppercase font-bold text-amber-700 bg-amber-100/70 px-1 py-0.2 rounded border border-amber-200 font-sans">Simulação</span>
+                          <span className="text-[9px] uppercase font-bold text-amber-300 bg-amber-500/20 px-1 py-0.2 rounded border border-amber-500/30 font-sans">Simulação</span>
                           <span>~R$ {lead.totalMonthlyWasteEstimated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês</span>
                         </span>
                         <a
                           href={lead.metaAdsLibraryUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors shadow-2xs"
+                          className="px-2.5 py-1 bg-white/5 hover:bg-white/10 text-[#FFFCE1] border border-white/10 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors shadow-2xs"
                           title="Abrir a Biblioteca Pública de Anúncios da Meta para ver os anúncios ativos desta marca ao vivo"
                         >
                           <span>Meta Ads Library</span>
-                          <ExternalLink className="w-3 h-3" />
+                          <ExternalLink className="w-3 h-3 text-[#00BAE2]" />
                         </a>
                       </div>
                     </div>
 
                     {/* Proof of Crime (Flagrante) */}
-                    <div className="p-3.5 bg-rose-50/60 border border-rose-100 rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div className="p-3.5 bg-rose-950/20 border border-rose-500/20 rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
                         {lead.primaryBrokenSku.imageSrc ? (
                           <img 
                             src={lead.primaryBrokenSku.imageSrc} 
                             alt={lead.primaryBrokenSku.productTitle} 
-                            className="w-14 h-14 object-cover rounded-lg border border-rose-200 shrink-0"
+                            className="w-14 h-14 object-cover rounded-lg border border-rose-500/30 shrink-0"
                           />
                         ) : (
-                          <div className="w-14 h-14 bg-rose-100 rounded-lg flex items-center justify-center text-rose-500 shrink-0 font-bold text-xs">
+                          <div className="w-14 h-14 bg-rose-500/10 border border-rose-500/20 rounded-lg flex items-center justify-center text-rose-400 shrink-0 font-bold text-xs">
                             SKU
                           </div>
                         )}
                         <div>
-                          <span className="text-[10px] font-bold text-rose-600 uppercase tracking-wider block">Furo Crítico de Grade</span>
-                          <p className="text-xs font-extrabold text-slate-900">{lead.primaryBrokenSku.productTitle}</p>
-                          <p className="text-[11px] text-slate-600 mt-0.5">
-                            Tamanhos Esgotados: <span className="font-bold text-rose-600">{lead.primaryBrokenSku.missingSizes.join(', ')}</span> 
+                          <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider block">Furo Crítico de Grade</span>
+                          <p className="text-xs font-extrabold text-[#FFFCE1]">{lead.primaryBrokenSku.productTitle}</p>
+                          <p className="text-[11px] text-[#BBBAA6] mt-0.5">
+                            Tamanhos Esgotados: <span className="font-bold text-rose-400">{lead.primaryBrokenSku.missingSizes.join(', ')}</span> 
                             {' '}(Disponíveis: {lead.primaryBrokenSku.availableSizes.join(', ')})
                           </p>
                         </div>
                       </div>
 
                       <div className="text-left md:text-right shrink-0">
-                        <span className="text-[10px] uppercase font-bold text-slate-500 block">WhatsApp de Contato</span>
-                        <span className="text-xs font-mono font-bold text-slate-800">
+                        <span className="text-[10px] uppercase font-bold text-[#BBBAA6] block">WhatsApp de Contato</span>
+                        <span className="text-xs font-mono font-bold text-[#0AE448]">
                           {lead.contactTargetPhone || lead.detectedWhatsApp || 'Não minerado'}
                         </span>
                       </div>
@@ -553,10 +553,10 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                     {lead.tierAnalysis && (
                       <div className={`p-3 rounded-xl border text-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-3 ${
                         lead.huntingTier === 'TIER_1_HOT' 
-                          ? 'bg-rose-50/80 border-rose-200/90 text-rose-950' 
+                          ? 'bg-rose-500/10 border-rose-500/20 text-rose-200' 
                           : lead.huntingTier === 'TIER_2_WARM'
-                          ? 'bg-amber-50/80 border-amber-200/90 text-amber-950'
-                          : 'bg-slate-50 border-slate-200 text-slate-800'
+                          ? 'bg-amber-500/10 border-amber-500/20 text-amber-200'
+                          : 'bg-[#141716] border-white/10 text-[#FFFCE1]'
                       }`}>
                         <div className="space-y-0.5 flex-1">
                           <span className="text-[10px] uppercase font-mono font-bold tracking-wider opacity-70 flex items-center gap-1">
@@ -582,7 +582,7 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                       <button
                         onClick={() => setActivePitchType(prev => ({ ...prev, [lead.id]: 'directFounder' }))}
                         className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                          currentPitchType === 'directFounder' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          currentPitchType === 'directFounder' ? 'bg-[#0AE448] text-slate-950 font-black' : 'bg-[#141716] border border-white/10 text-[#BBBAA6] hover:bg-white/5'
                         }`}
                       >
                         Dono / Fundador
@@ -590,7 +590,7 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                       <button
                         onClick={() => setActivePitchType(prev => ({ ...prev, [lead.id]: 'technicalMediaBuyer' }))}
                         className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                          currentPitchType === 'technicalMediaBuyer' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          currentPitchType === 'technicalMediaBuyer' ? 'bg-[#0AE448] text-slate-950 font-black' : 'bg-[#141716] border border-white/10 text-[#BBBAA6] hover:bg-white/5'
                         }`}
                       >
                         Gestor de Tráfego
@@ -598,7 +598,7 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                       <button
                         onClick={() => setActivePitchType(prev => ({ ...prev, [lead.id]: 'audioScript45s' }))}
                         className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                          currentPitchType === 'audioScript45s' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          currentPitchType === 'audioScript45s' ? 'bg-[#0AE448] text-slate-950 font-black' : 'bg-[#141716] border border-white/10 text-[#BBBAA6] hover:bg-white/5'
                         }`}
                       >
                         <Mic className="w-3 h-3" />
@@ -608,12 +608,12 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
 
                     <button
                       onClick={() => handleCopyPitch(lead.id, currentPitchText)}
-                      className="text-xs text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1 cursor-pointer"
+                      className="text-xs text-[#00BAE2] hover:text-[#00BAE2]/80 font-bold flex items-center gap-1 cursor-pointer"
                     >
                       {copiedPitchId === lead.id ? (
                         <>
-                          <Check className="w-3.5 h-3.5 text-emerald-600" />
-                          <span className="text-emerald-600">Copiado!</span>
+                          <Check className="w-3.5 h-3.5 text-[#0AE448]" />
+                          <span className="text-[#0AE448]">Copiado!</span>
                         </>
                       ) : (
                         <>
@@ -624,7 +624,7 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                     </button>
                   </div>
 
-                  <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 whitespace-pre-line leading-relaxed font-sans">
+                  <div className="p-3 bg-[#0E100F] border border-white/10 rounded-xl text-xs text-[#BBBAA6] whitespace-pre-line leading-relaxed font-sans">
                     {currentPitchText}
                   </div>
                 </div>
@@ -633,7 +633,7 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
                   <div className="flex items-center gap-2">
                     <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
-                      isContacted ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                      isContacted ? 'bg-emerald-500/20 text-[#0AE448] border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                     }`}>
                       {isContacted ? '✓ Contatado' : 'Aguardando Abordagem'}
                     </span>
@@ -643,9 +643,9 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                     {onSelectLeadForDossier && (
                       <button
                         onClick={() => onSelectLeadForDossier(lead)}
-                        className="flex-1 sm:flex-none px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                        className="flex-1 sm:flex-none px-3 py-2 bg-[#141716] hover:bg-white/10 text-[#FFFCE1] border border-white/10 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5"
                       >
-                        <FileText className="w-3.5 h-3.5" />
+                        <FileText className="w-3.5 h-3.5 text-[#00BAE2]" />
                         <span>Ver Dossiê</span>
                       </button>
                     )}
@@ -655,8 +655,8 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                       return (
                         <button
                           onClick={() => handleOpenWhatsApp(lead, currentPitchType)}
-                          className={`flex-1 sm:flex-none px-4 py-2 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-sm ${
-                            hasPhone ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-slate-600 hover:bg-slate-700'
+                          className={`flex-1 sm:flex-none px-4 py-2 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-lg shadow-[#0AE448]/20 ${
+                            hasPhone ? 'bg-[#0AE448] hover:bg-[#0AE448]/90' : 'bg-[#BBBAA6] hover:bg-[#FFFCE1]'
                           }`}
                           title={hasPhone ? 'Abrir conversa no WhatsApp oficial da loja' : 'WhatsApp não detectado. Clique para copiar roteiro e abordar via Instagram/SAC'}
                         >
@@ -677,16 +677,16 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
 
       {/* 5. Modal de Configurações de Webhook (Evolution API / Z-API) */}
       {isConfigModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+          <div className="bg-[#101211] rounded-3xl max-w-md w-full p-6 shadow-2xl border border-white/10 space-y-4 text-[#FFFCE1]">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div className="flex items-center gap-2">
-                <Settings className="w-5 h-5 text-indigo-600" />
-                <h4 className="font-extrabold text-base text-slate-900">Automação de WhatsApp (Outreach)</h4>
+                <Settings className="w-5 h-5 text-[#00BAE2]" />
+                <h4 className="font-extrabold text-base text-[#FFFCE1]">Automação de WhatsApp (Outreach)</h4>
               </div>
               <button 
                 onClick={() => setIsConfigModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 text-sm font-bold"
+                className="text-[#BBBAA6] hover:text-[#FFFCE1] text-sm font-bold"
               >
                 ✕
               </button>
@@ -694,60 +694,60 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Provedor de WhatsApp</label>
+                <label className="font-bold text-[#FFFCE1] block mb-1">Provedor de WhatsApp</label>
                 <select
                   value={webhookConfig.provider}
                   onChange={(e) => setWebhookConfig({ ...webhookConfig, provider: e.target.value as any })}
-                  className="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs"
+                  className="w-full bg-[#0E100F] border border-white/10 text-[#FFFCE1] rounded-xl px-3 py-2 text-xs focus:border-[#0AE448]"
                 >
-                  <option value="MANUAL_ASSISTED">Assistido 1-Clique (Abre WhatsApp Web oficial)</option>
-                  <option value="EVOLUTION_API">Evolution API (Instância Própria)</option>
-                  <option value="Z_API">Z-API (Instância Comercial)</option>
-                  <option value="CUSTOM_WEBHOOK">Webhook Customizado (n8n / Make / Node)</option>
+                  <option value="MANUAL_ASSISTED" className="bg-[#101211]">Assistido 1-Clique (Abre WhatsApp Web oficial)</option>
+                  <option value="EVOLUTION_API" className="bg-[#101211]">Evolution API (Instância Própria)</option>
+                  <option value="Z_API" className="bg-[#101211]">Z-API (Instância Comercial)</option>
+                  <option value="CUSTOM_WEBHOOK" className="bg-[#101211]">Webhook Customizado (n8n / Make / Node)</option>
                 </select>
               </div>
 
               {webhookConfig.provider !== 'MANUAL_ASSISTED' && (
                 <>
                   <div>
-                    <label className="font-bold text-slate-700 block mb-1">URL da API / Webhook</label>
+                    <label className="font-bold text-[#FFFCE1] block mb-1">URL da API / Webhook</label>
                     <input
                       type="text"
                       value={webhookConfig.apiUrl}
                       onChange={(e) => setWebhookConfig({ ...webhookConfig, apiUrl: e.target.value })}
-                      className="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs"
+                      className="w-full bg-[#0E100F] border border-white/10 text-[#FFFCE1] rounded-xl px-3 py-2 text-xs placeholder-[#BBBAA6]/40 focus:border-[#0AE448]"
                       placeholder="https://sua-instancia.evolution-api.com/message/sendText"
                     />
                   </div>
 
                   <div>
-                    <label className="font-bold text-slate-700 block mb-1">API Key / Token de Autenticação</label>
+                    <label className="font-bold text-[#FFFCE1] block mb-1">API Key / Token de Autenticação</label>
                     <input
                       type="password"
                       value={webhookConfig.apiKey}
                       onChange={(e) => setWebhookConfig({ ...webhookConfig, apiKey: e.target.value })}
-                      className="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs"
+                      className="w-full bg-[#0E100F] border border-white/10 text-[#FFFCE1] rounded-xl px-3 py-2 text-xs placeholder-[#BBBAA6]/40 focus:border-[#0AE448]"
                       placeholder="Sua chave secreta"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="font-bold text-slate-700 block mb-1">Delay Mínimo (s)</label>
+                      <label className="font-bold text-[#FFFCE1] block mb-1">Delay Mínimo (s)</label>
                       <input
                         type="number"
                         value={webhookConfig.minDelaySeconds}
                         onChange={(e) => setWebhookConfig({ ...webhookConfig, minDelaySeconds: Number(e.target.value) })}
-                        className="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs"
+                        className="w-full bg-[#0E100F] border border-white/10 text-[#FFFCE1] rounded-xl px-3 py-2 text-xs focus:border-[#0AE448]"
                       />
                     </div>
                     <div>
-                      <label className="font-bold text-slate-700 block mb-1">Delay Máximo (s)</label>
+                      <label className="font-bold text-[#FFFCE1] block mb-1">Delay Máximo (s)</label>
                       <input
                         type="number"
                         value={webhookConfig.maxDelaySeconds}
                         onChange={(e) => setWebhookConfig({ ...webhookConfig, maxDelaySeconds: Number(e.target.value) })}
-                        className="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs"
+                        className="w-full bg-[#0E100F] border border-white/10 text-[#FFFCE1] rounded-xl px-3 py-2 text-xs focus:border-[#0AE448]"
                       />
                     </div>
                   </div>
@@ -758,7 +758,7 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
             <div className="pt-2 flex items-center justify-end gap-2">
               <button
                 onClick={() => setIsConfigModalOpen(false)}
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold"
+                className="px-4 py-2 bg-[#141716] hover:bg-white/10 text-[#BBBAA6] border border-white/10 rounded-xl text-xs font-bold"
               >
                 Cancelar
               </button>
@@ -767,7 +767,7 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
                   persistOutboundConfig(webhookConfig);
                   setIsConfigModalOpen(false);
                 }}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold"
+                className="px-4 py-2 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-[#0AE448]/20"
               >
                 Salvar Configurações
               </button>

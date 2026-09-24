@@ -336,7 +336,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={onOpenSettings}
-            className="flex items-center justify-center p-2 text-slate-500 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl transition-all hover:text-slate-900 shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
+            className="flex items-center justify-center p-2 text-[#BBBAA6] bg-[#191C1B] hover:bg-[#222724] border border-white/10 rounded-full transition-all hover:text-[#0AE448] shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
             title="Configurações do Motor Neural"
           >
             <Settings className="w-4 h-4" />

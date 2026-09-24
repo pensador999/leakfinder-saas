@@ -409,7 +409,7 @@ export const ActionPlanKanban: React.FC<ActionPlanKanbanProps> = ({ diagnostic }
               key={imp}
               onClick={() => setSelectedImpact(imp)}
               className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
-                selectedImpact === imp ? 'bg-white text-slate-950' : 'bg-white/5 text-[#BBBAA6] hover:bg-white/10 hover:text-white'
+                selectedImpact === imp ? 'bg-[#0AE448] text-slate-950 font-black shadow-lg shadow-[#0AE448]/20' : 'bg-white/5 text-[#BBBAA6] hover:bg-white/10 hover:text-white'
               }`}
             >
               {imp}

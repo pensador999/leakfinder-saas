@@ -27,15 +27,15 @@ export class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <div className="flex flex-col items-center justify-center p-8 m-4 border border-red-200 bg-red-50 rounded-xl text-center">
-          <AlertTriangle className="w-12 h-12 text-red-500 mb-4" />
-          <h3 className="text-lg font-bold text-red-900 mb-2">Ops! Ocorreu um erro nesta seção.</h3>
-          <p className="text-sm text-red-700 max-w-md">
+        <div className="flex flex-col items-center justify-center p-8 m-4 border border-rose-500/30 bg-[#101211] rounded-2xl text-center shadow-xl">
+          <AlertTriangle className="w-12 h-12 text-rose-500 mb-4" />
+          <h3 className="text-lg font-bold text-[#FFFCE1] mb-2">Ops! Ocorreu um erro nesta seção.</h3>
+          <p className="text-sm text-[#BBBAA6] max-w-md">
             {this.props.fallbackMessage || 'Algo deu errado ao carregar estes dados. Mas não se preocupe, o restante da plataforma continua funcionando.'}
           </p>
           <button 
             onClick={() => this.setState({ hasError: false })}
-            className="mt-4 px-4 py-2 bg-white border border-red-300 text-red-700 rounded-lg text-sm font-semibold hover:bg-red-50 transition-colors cursor-pointer"
+            className="mt-4 px-4 py-2 bg-[#141716] border border-white/10 text-[#FFFCE1] rounded-xl text-sm font-semibold hover:bg-white/10 transition-colors cursor-pointer"
           >
             Tentar Novamente
           </button>
