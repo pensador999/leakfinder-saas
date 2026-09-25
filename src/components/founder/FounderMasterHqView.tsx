@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Crown, 
   DollarSign, 
@@ -87,6 +87,20 @@ export const FounderMasterHqView: React.FC = () => {
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
   const [isSimulatingWebhook, setIsSimulatingWebhook] = useState<boolean>(false);
   const [simulationSuccess, setSimulationSuccess] = useState<boolean>(false);
+
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const saveSuccessTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const webhookTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const webhookSuccessTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      if (saveSuccessTimerRef.current) clearTimeout(saveSuccessTimerRef.current);
+      if (webhookTimerRef.current) clearTimeout(webhookTimerRef.current);
+      if (webhookSuccessTimerRef.current) clearTimeout(webhookSuccessTimerRef.current);
+    };
+  }, []);
 
   // Kill-Switch Radar Interactive Filters & Payload Inspector
   const [ksStatusFilter, setKsStatusFilter] = useState<'ALL' | 'PAUSED' | 'EXEMPTED'>('ALL');
@@ -213,17 +227,20 @@ export const FounderMasterHqView: React.FC = () => {
 
   const handleSaveDirectives = () => {
     setIsSavingDirectives(true);
-    setTimeout(() => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
       localStorage.setItem('adshield_founder_directives', JSON.stringify(directives));
       setIsSavingDirectives(false);
       setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      if (saveSuccessTimerRef.current) clearTimeout(saveSuccessTimerRef.current);
+      saveSuccessTimerRef.current = setTimeout(() => setSaveSuccess(false), 3000);
     }, 600);
   };
 
   const handleSimulateWebhook = () => {
     setIsSimulatingWebhook(true);
-    setTimeout(() => {
+    if (webhookTimerRef.current) clearTimeout(webhookTimerRef.current);
+    webhookTimerRef.current = setTimeout(() => {
       const newEvent: KillSwitchEventLog = {
         id: `ks_${Date.now()}`,
         brandName: 'BRK Agro',
@@ -243,7 +260,8 @@ export const FounderMasterHqView: React.FC = () => {
       setKillSwitchLogs(prev => [newEvent, ...prev]);
       setIsSimulatingWebhook(false);
       setSimulationSuccess(true);
-      setTimeout(() => setSimulationSuccess(false), 3500);
+      if (webhookSuccessTimerRef.current) clearTimeout(webhookSuccessTimerRef.current);
+      webhookSuccessTimerRef.current = setTimeout(() => setSimulationSuccess(false), 3500);
     }, 1200);
   };
 

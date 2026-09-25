@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   TrendingUp, 
   Eye, 
@@ -39,6 +39,14 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
   const { growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax, realSiteData, visionAnalysis, social } = diagnostic;
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+
+  const downloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (downloadTimerRef.current) clearTimeout(downloadTimerRef.current);
+    };
+  }, []);
 
   const finances = calculateStoreFinancialGrounding(realSiteData, diagnostic.input, social);
 
@@ -139,7 +147,8 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
               try {
                 await PdfExportService.downloadExecutivePdf(diagnostic);
                 setDownloadSuccess(true);
-                setTimeout(() => setDownloadSuccess(false), 3000);
+                if (downloadTimerRef.current) clearTimeout(downloadTimerRef.current);
+                downloadTimerRef.current = setTimeout(() => setDownloadSuccess(false), 3000);
               } catch (err) {
                 console.error('Erro ao baixar dossiê:', err);
               } finally {

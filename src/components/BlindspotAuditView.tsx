@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Eye, Code, Zap, AlertCircle, ShieldCheck, ImageOff, Copy, Check, 
   AlertTriangle, Layers, Ruler, FileText, Download, Sparkles, Filter, 
@@ -38,10 +38,21 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
   const [selectedSkuDetailProduct, setSelectedSkuDetailProduct] = useState<AuditedProductWithSkus | null>(null);
   const [actionSuccessMessage, setActionSuccessMessage] = useState<string | null>(null);
 
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const successMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      if (successMessageTimerRef.current) clearTimeout(successMessageTimerRef.current);
+    };
+  }, []);
+
   const handleCopyText = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
+    if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    copyTimerRef.current = setTimeout(() => setCopiedId(null), 2000);
   };
 
   const standardSizes = ['PP', 'P', 'M', 'G', 'GG', 'G1', 'G2'];
@@ -205,7 +216,8 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
       setCurrentCatalogAudit(fullAudit);
       setViewMode('SKUS_EXAUSTIVO');
       setActionSuccessMessage(`Varredura 100% Concluída: ${fullAudit.totalProductsScanned} produtos e ${fullAudit.totalSkusAudited} SKUs auditados!`);
-      setTimeout(() => setActionSuccessMessage(null), 6000);
+      if (successMessageTimerRef.current) clearTimeout(successMessageTimerRef.current);
+      successMessageTimerRef.current = setTimeout(() => setActionSuccessMessage(null), 6000);
     } catch (err: any) {
       console.error('Erro na varredura profunda:', err);
     } finally {
@@ -219,7 +231,8 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
       catalogAudit
     });
     setActionSuccessMessage('📥 Planilha de Catálogo e Estoque exportada com sucesso (Excel / Google Sheets)!');
-    setTimeout(() => setActionSuccessMessage(null), 5000);
+    if (successMessageTimerRef.current) clearTimeout(successMessageTimerRef.current);
+    successMessageTimerRef.current = setTimeout(() => setActionSuccessMessage(null), 5000);
   };
 
   const exportAllSkusCsv = () => {
@@ -228,7 +241,8 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
       catalogAudit
     });
     setActionSuccessMessage('📥 Inventário Granular de 100% dos SKUs exportado com sucesso (Excel / Google Sheets)!');
-    setTimeout(() => setActionSuccessMessage(null), 5000);
+    if (successMessageTimerRef.current) clearTimeout(successMessageTimerRef.current);
+    successMessageTimerRef.current = setTimeout(() => setActionSuccessMessage(null), 5000);
   };
 
   const isAgro = realSiteData.domain.toLowerCase().includes('agro');
@@ -1287,7 +1301,8 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
           onClose={() => setSelectedOneClickProduct(null)}
           onActionSuccess={(record) => {
             setActionSuccessMessage(`Ação executada: ${record.notes || record.actionType}`);
-            setTimeout(() => setActionSuccessMessage(null), 5000);
+            if (successMessageTimerRef.current) clearTimeout(successMessageTimerRef.current);
+            successMessageTimerRef.current = setTimeout(() => setActionSuccessMessage(null), 5000);
           }}
         />
       )}

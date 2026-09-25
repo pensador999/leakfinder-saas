@@ -699,12 +699,14 @@ export function HomePage() {
       {/* Lazy Loaded Operational Modals */}
       <Suspense fallback={null}>
         {/* Audit Modal */}
-        <AuditFormModal
-          isOpen={activeModal === 'audit'}
-          onClose={() => setActiveModal(null)}
-          onSubmit={handleStartRealAudit}
-          initialData={diagnostic?.input}
-        />
+        {activeModal === 'audit' && (
+          <AuditFormModal
+            isOpen={true}
+            onClose={() => setActiveModal(null)}
+            onSubmit={handleStartRealAudit}
+            initialData={diagnostic?.input}
+          />
+        )}
 
         {/* Export Report Modal (White-Label PDF) */}
         {activeModal === 'export' && diagnostic && (
@@ -762,64 +764,76 @@ export function HomePage() {
           />
         )}
 
-        {diagnostic && (
+        {activeModal === 'whatsappLead' && diagnostic && (
           <WhatsAppLeadCaptureModal
             diagnostic={diagnostic}
-            isOpen={activeModal === 'whatsappLead'}
+            isOpen={true}
             onClose={() => setActiveModal(null)}
           />
         )}
 
-        <AdminLeadsDrawer
-          isOpen={activeModal === 'leadsDrawer'}
-          onClose={() => setActiveModal(null)}
-        />
+        {activeModal === 'leadsDrawer' && (
+          <AdminLeadsDrawer
+            isOpen={true}
+            onClose={() => setActiveModal(null)}
+          />
+        )}
 
-        <MonitoredStoresManagerModal
-          isOpen={activeModal === 'storesManager'}
-          onClose={() => setActiveModal(null)}
-          onSelectStoreToAudit={(url) => {
-            setAnalyzingUrl(url);
-            setIsAnalyzing(true);
-            setActiveModal(null);
-          }}
-        />
+        {activeModal === 'storesManager' && (
+          <MonitoredStoresManagerModal
+            isOpen={true}
+            onClose={() => setActiveModal(null)}
+            onSelectStoreToAudit={(url) => {
+              setAnalyzingUrl(url);
+              setIsAnalyzing(true);
+              setActiveModal(null);
+            }}
+          />
+        )}
 
-        <WhatsAppWatchdogSettingsModal
-          isOpen={activeModal === 'whatsappWatchdog'}
-          onClose={() => setActiveModal(null)}
-        />
+        {activeModal === 'whatsappWatchdog' && (
+          <WhatsAppWatchdogSettingsModal
+            isOpen={true}
+            onClose={() => setActiveModal(null)}
+          />
+        )}
 
-        <EcommerceIntegrationsHubModal
-          isOpen={activeModal === 'integrations'}
-          onClose={() => setActiveModal(null)}
-        />
+        {activeModal === 'integrations' && (
+          <EcommerceIntegrationsHubModal
+            isOpen={true}
+            onClose={() => setActiveModal(null)}
+          />
+        )}
 
-        {diagnostic && (
+        {activeModal === 'whiteLabel' && diagnostic && (
           <AgencyWhiteLabelModal
-            isOpen={activeModal === 'whiteLabel'}
+            isOpen={true}
             onClose={() => setActiveModal(null)}
             diagnostic={diagnostic}
           />
         )}
 
         {/* 🔒 Master Founder Auth Gate */}
-        <FounderAuthModal
-          isOpen={activeModal === 'founderAuth'}
-          onClose={() => setActiveModal(null)}
-          onSuccess={() => {
-            setIsFounderAuthenticated(true);
-            setActiveModal(null);
-            setActiveTab('founder_hq');
-          }}
-        />
+        {activeModal === 'founderAuth' && (
+          <FounderAuthModal
+            isOpen={true}
+            onClose={() => setActiveModal(null)}
+            onSuccess={() => {
+              setIsFounderAuthenticated(true);
+              setActiveModal(null);
+              setActiveTab('founder_hq');
+            }}
+          />
+        )}
 
-        <MitigationHistoryDrawer
-          isOpen={activeModal === 'mitigationHistory'}
-          onClose={() => setActiveModal(null)}
-        />
+        {activeModal === 'mitigationHistory' && (
+          <MitigationHistoryDrawer
+            isOpen={true}
+            onClose={() => setActiveModal(null)}
+          />
+        )}
 
-        <FloatingAiChatWidget />
+        {diagnostic && <FloatingAiChatWidget />}
       </Suspense>
 
       {/* Footer Legal & Institucional em Conformidade com Decreto 7.962/2013 */}

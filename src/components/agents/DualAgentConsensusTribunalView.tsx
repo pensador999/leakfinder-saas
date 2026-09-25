@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   ShieldCheck, 
   Scale, 
@@ -33,6 +33,14 @@ export const DualAgentConsensusTribunalView: React.FC<DualAgentConsensusTribunal
   const [activeFilter, setActiveFilter] = useState<'APPROVED' | 'INTERCEPTED'>('APPROVED');
   const [isAuditing, setIsAuditing] = useState<boolean>(false);
 
+  const auditingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (auditingTimerRef.current) clearTimeout(auditingTimerRef.current);
+    };
+  }, []);
+
   const loadConsensusReport = () => {
     const data = executeDualAgentCrossVerification(diagnostic);
     setReport(data);
@@ -44,7 +52,8 @@ export const DualAgentConsensusTribunalView: React.FC<DualAgentConsensusTribunal
 
   const handleRerunAudit = () => {
     setIsAuditing(true);
-    setTimeout(() => {
+    if (auditingTimerRef.current) clearTimeout(auditingTimerRef.current);
+    auditingTimerRef.current = setTimeout(() => {
       loadConsensusReport();
       setIsAuditing(false);
     }, 600);

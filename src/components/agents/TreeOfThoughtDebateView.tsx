@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   BrainCircuit, 
   GitFork, 
@@ -48,10 +48,21 @@ export const TreeOfThoughtDebateView: React.FC<TreeOfThoughtDebateViewProps> = (
   const [isDebating, setIsDebating] = useState<boolean>(false);
   const [copiedWhatsApp, setCopiedWhatsApp] = useState<boolean>(false);
 
+  const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debatingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+      if (debatingTimerRef.current) clearTimeout(debatingTimerRef.current);
+    };
+  }, []);
+
   const handleCopyWhatsApp = (text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedWhatsApp(true);
-    setTimeout(() => setCopiedWhatsApp(false), 2500);
+    if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+    copiedTimerRef.current = setTimeout(() => setCopiedWhatsApp(false), 2500);
   };
 
   const loadDebate = () => {
@@ -65,7 +76,8 @@ export const TreeOfThoughtDebateView: React.FC<TreeOfThoughtDebateViewProps> = (
 
   const handleRerunDebate = () => {
     setIsDebating(true);
-    setTimeout(() => {
+    if (debatingTimerRef.current) clearTimeout(debatingTimerRef.current);
+    debatingTimerRef.current = setTimeout(() => {
       loadDebate();
       setIsDebating(false);
     }, 600);

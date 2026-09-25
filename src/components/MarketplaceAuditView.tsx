@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Store, 
   Copy, 
@@ -33,6 +33,16 @@ export const MarketplaceAuditView: React.FC<MarketplaceAuditViewProps> = ({ diag
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [exportFeedback, setExportFeedback] = useState<string | null>(null);
 
+  const copiedIdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const exportFeedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copiedIdTimerRef.current) clearTimeout(copiedIdTimerRef.current);
+      if (exportFeedbackTimerRef.current) clearTimeout(exportFeedbackTimerRef.current);
+    };
+  }, []);
+
   const audit: MarketplaceListingAuditResult = generateMarketplaceListingAudit(
     realSiteData.url,
     realSiteData.domain,
@@ -44,13 +54,15 @@ export const MarketplaceAuditView: React.FC<MarketplaceAuditViewProps> = ({ diag
   const handleCopy = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
+    if (copiedIdTimerRef.current) clearTimeout(copiedIdTimerRef.current);
+    copiedIdTimerRef.current = setTimeout(() => setCopiedId(null), 2000);
   };
 
   const handleExportShopeeCsv = () => {
     SpreadsheetExporter.exportShopeeMassUpdateCsv(realSiteData);
     setExportFeedback('📥 Planilha Shopee (120 Caracteres SEO) exportada com sucesso (Excel / Google Sheets)!');
-    setTimeout(() => setExportFeedback(null), 5000);
+    if (exportFeedbackTimerRef.current) clearTimeout(exportFeedbackTimerRef.current);
+    exportFeedbackTimerRef.current = setTimeout(() => setExportFeedback(null), 5000);
   };
 
   const isMeli = audit.marketplaceType === 'MERCADO_LIVRE';
