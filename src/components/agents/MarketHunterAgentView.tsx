@@ -49,6 +49,7 @@ import {
   buildWhatsAppClickToChatUrl,
   generateMetaAdsLibraryUrl
 } from '../../services/prospecting/leadSniperEngine';
+import { ProductImageWithFallback } from '../common/ProductImageWithFallback';
 import { AgentDiagnosticResult } from '../../types';
 
 interface MarketHunterAgentViewProps {
@@ -422,17 +423,12 @@ export const MarketHunterAgentView: React.FC<MarketHunterAgentViewProps> = ({ di
                       </div>
 
                       <div className="flex items-start gap-3.5">
-                        {lead.primaryBrokenSku.imageSrc ? (
-                          <img 
-                            src={lead.primaryBrokenSku.imageSrc} 
-                            alt={lead.primaryBrokenSku.productTitle} 
-                            className="w-16 h-16 rounded-xl object-cover border border-white/10 shrink-0 bg-[#0E100F]"
-                          />
-                        ) : (
-                          <div className="w-16 h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#BBBAA6] shrink-0">
-                            <ShoppingBag className="w-6 h-6" />
-                          </div>
-                        )}
+                        <ProductImageWithFallback 
+                          src={lead.primaryBrokenSku.imageSrc} 
+                          alt={lead.primaryBrokenSku.productTitle} 
+                          category={lead.niche}
+                          className="w-16 h-16"
+                        />
                         <div className="space-y-1 min-w-0">
                           <a 
                             href={lead.primaryBrokenSku.productUrl} 

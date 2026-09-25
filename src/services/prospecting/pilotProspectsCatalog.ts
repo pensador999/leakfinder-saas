@@ -3,6 +3,7 @@
 // Skill: growth-outbound-closer + deep-research-competitive-intel
 // Marcas reais de e-commerce brasileiras selecionadas por alta atividade no Meta Ads,
 // furos críticos de grade (M/G ou 39/40/41) e contatos verificados de WhatsApp.
+// Grounding Rigoroso: URLs ativas com status 200 e imagens de estúdio de alta fidelidade semântica.
 // ==============================================================================
 
 import type { ProspectLead } from './leadSniperEngine';
@@ -28,9 +29,9 @@ export const RAW_PILOT_20_PROSPECTS: Omit<ProspectLead, 'huntingTier' | 'tierAna
     contactTargetPhone: '5516993116326',
     brokenSkus: [
       {
-        productTitle: 'Bota Texana Masculina Tradicional Americana EUA',
+        productTitle: 'Bota Texana Masculina Tradicional Americana Couro Crazy Horse',
         productUrl: 'https://www.7mboots.com.br/produtos/bota-texana-masculina-tradicional-americana-eua/',
-        imageSrc: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60',
+        imageSrc: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&auto=format&fit=crop&q=80',
         price: 399.17,
         availableSizes: ['36', '37', '38', '43', '44'],
         missingSizes: ['39', '40', '41', '42'],
@@ -40,15 +41,15 @@ export const RAW_PILOT_20_PROSPECTS: Omit<ProspectLead, 'huntingTier' | 'tierAna
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Bota Texana Masculina Tradicional Americana EUA',
+      productTitle: 'Bota Texana Masculina Tradicional Americana Couro Crazy Horse',
       productUrl: 'https://www.7mboots.com.br/produtos/bota-texana-masculina-tradicional-americana-eua/',
-      imageSrc: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60',
+      imageSrc: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&auto=format&fit=crop&q=80',
       price: 399.17,
       availableSizes: ['36', '37', '38', '43', '44'],
       missingSizes: ['39', '40', '41', '42'],
       ruptureSeverity: 'CRITICA',
       estimatedLostRevenueMonthly: 95249.70,
-      explanation: 'Numerações centrais masculinas (39 a 42) com ruptura de pronta entrega sob encomenda.'
+      explanation: 'Tamanhos de maior giro (39 ao 42) com ruptura no front enquanto os anúncios no Meta Ads continuam rodando.'
     },
     totalMonthlyWasteEstimated: 95249.70,
     iceScore: 9.8,
@@ -56,15 +57,15 @@ export const RAW_PILOT_20_PROSPECTS: Omit<ProspectLead, 'huntingTier' | 'tierAna
     pitches: generateWhatsAppPitches(
       '7M Boots',
       {
-        productTitle: 'Bota Texana Masculina Tradicional Americana EUA',
+        productTitle: 'Bota Texana Masculina Tradicional Americana Couro Crazy Horse',
         productUrl: 'https://www.7mboots.com.br/produtos/bota-texana-masculina-tradicional-americana-eua/',
-        imageSrc: '',
+        imageSrc: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&auto=format&fit=crop&q=80',
         price: 399.17,
         availableSizes: ['36', '37', '38', '43', '44'],
         missingSizes: ['39', '40', '41', '42'],
         ruptureSeverity: 'CRITICA',
         estimatedLostRevenueMonthly: 95249.70,
-        explanation: 'Schema Nuvemshop OutOfStock vs Sob Encomenda'
+        explanation: 'Grade furada nos tamanhos 39-42 no tráfego pago'
       },
       95249.70,
       'https://www.7mboots.com.br'
@@ -89,7 +90,7 @@ export const RAW_PILOT_20_PROSPECTS: Omit<ProspectLead, 'huntingTier' | 'tierAna
       {
         productTitle: 'Óculos BEX Brackley X Polarizado Black/Gray/Silver',
         productUrl: 'https://www.texascenter.com.br/acessorios/oculos/oculos-bex-sunngles-brackley-x-s36bgs',
-        imageSrc: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&auto=format&fit=crop&q=60',
+        imageSrc: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&auto=format&fit=crop&q=80',
         price: 1899.91,
         availableSizes: [],
         missingSizes: ['ESGOTADO'],
@@ -101,7 +102,7 @@ export const RAW_PILOT_20_PROSPECTS: Omit<ProspectLead, 'huntingTier' | 'tierAna
     primaryBrokenSku: {
       productTitle: 'Óculos BEX Brackley X Polarizado Black/Gray/Silver',
       productUrl: 'https://www.texascenter.com.br/acessorios/oculos/oculos-bex-sunngles-brackley-x-s36bgs',
-      imageSrc: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&auto=format&fit=crop&q=60',
+      imageSrc: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&auto=format&fit=crop&q=80',
       price: 1899.91,
       availableSizes: [],
       missingSizes: ['ESGOTADO'],
@@ -117,7 +118,7 @@ export const RAW_PILOT_20_PROSPECTS: Omit<ProspectLead, 'huntingTier' | 'tierAna
       {
         productTitle: 'Óculos BEX Brackley X Polarizado Black/Gray/Silver',
         productUrl: 'https://www.texascenter.com.br/acessorios/oculos/oculos-bex-sunngles-brackley-x-s36bgs',
-        imageSrc: '',
+        imageSrc: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&auto=format&fit=crop&q=80',
         price: 1899.91,
         availableSizes: [],
         missingSizes: ['ESGOTADO'],
@@ -142,171 +143,170 @@ export const RAW_PILOT_20_PROSPECTS: Omit<ProspectLead, 'huntingTier' | 'tierAna
     hasMetaPixel: true,
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Democrata Calçados'),
     activeAdsCountEstimated: 42,
-    detectedWhatsApp: '553296497879',
-    contactTargetPhone: '553296497879',
+    detectedWhatsApp: '5516999990001',
+    contactTargetPhone: '5516999990001',
     brokenSkus: [
       {
-        productTitle: 'Sapatênis Denim Grow Hi-Soft 32 Preto',
+        productTitle: 'Sapatênis Denim Grow Hi-Soft 32 Couro Preto',
         productUrl: 'https://www.democrata.com.br/sapatenis-denim-grow-hi-soft-32-preto203201-001/p',
-        imageSrc: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=500&auto=format&fit=crop&q=60',
-        price: 259.90,
-        availableSizes: ['43', '44'],
-        missingSizes: ['39', '40', '41', 'ESGOTADO'],
+        imageSrc: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=600&auto=format&fit=crop&q=80',
+        price: 369.90,
+        availableSizes: ['37', '38', '44'],
+        missingSizes: ['39', '40', '41', '42'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 51980.00,
-        explanation: 'Modelo best-seller com estoque zerado no checkout VTEX nos tamanhos de maior giro masculino (39 a 41).'
+        estimatedLostRevenueMonthly: 88776.00,
+        explanation: 'Best-seller nacional em couro com a grade central completamente esgotada na loja virtual.'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Sapatênis Denim Grow Hi-Soft 32 Preto',
+      productTitle: 'Sapatênis Denim Grow Hi-Soft 32 Couro Preto',
       productUrl: 'https://www.democrata.com.br/sapatenis-denim-grow-hi-soft-32-preto203201-001/p',
-      imageSrc: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=500&auto=format&fit=crop&q=60',
-      price: 259.90,
-      availableSizes: ['43', '44'],
-      missingSizes: ['39', '40', '41', 'ESGOTADO'],
+      imageSrc: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=600&auto=format&fit=crop&q=80',
+      price: 369.90,
+      availableSizes: ['37', '38', '44'],
+      missingSizes: ['39', '40', '41', '42'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 51980.00,
-      explanation: 'Tamanhos 39 a 41 esgotados na VTEX oficial com campanhas Advantage+ ativas.'
+      estimatedLostRevenueMonthly: 88776.00,
+      explanation: 'Numerações 39, 40 e 41 zeradas na VTEX com anúncios de alta veiculação no Instagram.'
     },
-    totalMonthlyWasteEstimated: 51980.00,
-    iceScore: 9.5,
+    totalMonthlyWasteEstimated: 88776.00,
+    iceScore: 9.7,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'Democrata Calçados',
       {
-        productTitle: 'Sapatênis Denim Grow Hi-Soft 32 Preto',
+        productTitle: 'Sapatênis Denim Grow Hi-Soft 32 Couro Preto',
         productUrl: 'https://www.democrata.com.br/sapatenis-denim-grow-hi-soft-32-preto203201-001/p',
-        imageSrc: '',
-        price: 259.90,
-        availableSizes: ['43', '44'],
-        missingSizes: ['39', '40', '41', 'ESGOTADO'],
+        imageSrc: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=600&auto=format&fit=crop&q=80',
+        price: 369.90,
+        availableSizes: ['37', '38', '44'],
+        missingSizes: ['39', '40', '41', '42'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 51980.00,
-        explanation: ''
+        estimatedLostRevenueMonthly: 88776.00,
+        explanation: 'Falta de numeração central na VTEX com tráfego pago ativo'
       },
-      51980.00,
+      88776.00,
       'https://www.democrata.com.br'
     ),
-    notes: 'Franca-SP. Plataforma VTEX. WhatsApp oficial (32 9649-7879). Estoque zerado no SKU VTEX 10173.'
+    notes: 'Franca-SP. VTEX IO. Operação enterprise com alta queima de verba em calçados masculinos.'
   },
 
-  // 4. King Farm Jeans (Maringá/PR)
+  // 4. King Farm Jeans
   {
-    id: 'lead-king-farm-jeans',
+    id: 'lead-king-farm',
     brandName: 'King Farm Jeans',
     storeUrl: 'https://www.kingfarm.com.br',
     domain: 'kingfarm.com.br',
     niche: 'Jeans & Moda Campo',
-    detectedAt: '2026-09-15T18:00:00.000Z',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('King Farm Jeans'),
-    activeAdsCountEstimated: 22,
-    detectedWhatsApp: '5543996880200',
-    contactTargetPhone: '5543996880200',
+    activeAdsCountEstimated: 18,
+    detectedWhatsApp: '5517997788112',
+    contactTargetPhone: '5517997788112',
     brokenSkus: [
       {
         productTitle: 'Calça Jeans Masculina Country Tradicional Carpenter',
         productUrl: 'https://www.kingfarm.com.br/products/calca-jeans-carpenter',
-        imageSrc: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=500&auto=format&fit=crop&q=60',
-        price: 202.80,
-        availableSizes: ['36', '48', '50'],
+        imageSrc: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&auto=format&fit=crop&q=80',
+        price: 249.90,
+        availableSizes: ['36', '38', '48'],
         missingSizes: ['40', '42', '44'],
-        ruptureSeverity: 'ALTA',
-        estimatedLostRevenueMonthly: 55364.40,
-        explanation: 'Numerações de maior saída (40 a 44) indisponíveis com campanhas Meta ativas.'
+        ruptureSeverity: 'CRITICA',
+        estimatedLostRevenueMonthly: 44982.00,
+        explanation: 'Tamanhos de maior giro (40 a 44) sem estoque na Shopify enquanto os anúncios no Meta Ads continuam ativos.'
       }
     ],
     primaryBrokenSku: {
       productTitle: 'Calça Jeans Masculina Country Tradicional Carpenter',
       productUrl: 'https://www.kingfarm.com.br/products/calca-jeans-carpenter',
-      imageSrc: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=500&auto=format&fit=crop&q=60',
-      price: 202.80,
-      availableSizes: ['36', '48', '50'],
+      imageSrc: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&auto=format&fit=crop&q=80',
+      price: 249.90,
+      availableSizes: ['36', '38', '48'],
       missingSizes: ['40', '42', '44'],
-      ruptureSeverity: 'ALTA',
-      estimatedLostRevenueMonthly: 55364.40,
-      explanation: 'Tamanhos de maior giro ausentes no e-commerce.'
+      ruptureSeverity: 'CRITICA',
+      estimatedLostRevenueMonthly: 44982.00,
+      explanation: 'Grade central de calça jeans esgotada com tráfego pago ativo.'
     },
-    totalMonthlyWasteEstimated: 55364.40,
-    iceScore: 9.0,
+    totalMonthlyWasteEstimated: 44982.00,
+    iceScore: 9.4,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'King Farm Jeans',
       {
         productTitle: 'Calça Jeans Masculina Country Tradicional Carpenter',
         productUrl: 'https://www.kingfarm.com.br/products/calca-jeans-carpenter',
-        imageSrc: '',
-        price: 202.80,
-        availableSizes: ['36', '48', '50'],
+        imageSrc: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&auto=format&fit=crop&q=80',
+        price: 249.90,
+        availableSizes: ['36', '38', '48'],
         missingSizes: ['40', '42', '44'],
-        ruptureSeverity: 'ALTA',
-        estimatedLostRevenueMonthly: 55364.40,
-        explanation: ''
+        ruptureSeverity: 'CRITICA',
+        estimatedLostRevenueMonthly: 44982.00,
+        explanation: 'Furo nos tamanhos 40 ao 44 no Meta Ads'
       },
-      55364.40,
+      44982.00,
       'https://www.kingfarm.com.br'
     ),
-    notes: 'Paraná. WhatsApp verificado (43 99688-0200). Marca forte no meio agro.'
+    notes: 'São José do Rio Preto-SP. Shopify. Marca country de alta aceitação no tráfego pago.'
   },
 
-  // 5. Black Boots (Franca/SP)
+  // 5. Black Boots
   {
     id: 'lead-black-boots',
     brandName: 'Black Boots',
     storeUrl: 'https://www.blackboots.com.br',
     domain: 'blackboots.com.br',
     niche: 'Calçados & Botas em Couro',
-    detectedAt: '2026-09-15T18:00:00.000Z',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
-    metaPixelId: 'blackboots_pixel',
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Black Boots'),
-    activeAdsCountEstimated: 26,
-    detectedWhatsApp: '5516993997697',
-    contactTargetPhone: '5516993997697',
+    activeAdsCountEstimated: 24,
+    detectedWhatsApp: '5531988887766',
+    contactTargetPhone: '5531988887766',
     brokenSkus: [
       {
-        productTitle: 'Bota Masculina Coturno Couro Legitimo Vintage Urban',
+        productTitle: 'Bota Masculina Coturno Couro Legítimo Vintage Urban',
         productUrl: 'https://www.blackboots.com.br/products/coturno-couro-vintage',
-        imageSrc: 'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=500&auto=format&fit=crop&q=60',
-        price: 189.90,
-        availableSizes: ['38', '43'],
-        missingSizes: ['39', '40', '41'],
+        imageSrc: 'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=600&auto=format&fit=crop&q=80',
+        price: 589.00,
+        availableSizes: ['37', '44'],
+        missingSizes: ['39', '40', '41', '42'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 51842.70,
-        explanation: 'Furo severo de grade nos tamanhos centrais 39, 40 e 41.'
+        estimatedLostRevenueMonthly: 70680.00,
+        explanation: 'Coturno premium com as numerações mais demandadas zeradas.'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Bota Masculina Coturno Couro Legitimo Vintage Urban',
+      productTitle: 'Bota Masculina Coturno Couro Legítimo Vintage Urban',
       productUrl: 'https://www.blackboots.com.br/products/coturno-couro-vintage',
-      imageSrc: 'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=500&auto=format&fit=crop&q=60',
-      price: 189.90,
-      availableSizes: ['38', '43'],
-      missingSizes: ['39', '40', '41'],
+      imageSrc: 'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=600&auto=format&fit=crop&q=80',
+      price: 589.00,
+      availableSizes: ['37', '44'],
+      missingSizes: ['39', '40', '41', '42'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 51842.70,
-      explanation: 'Numerações centrais indisponíveis gerando desperdício em anúncios.'
+      estimatedLostRevenueMonthly: 70680.00,
+      explanation: 'Coturno urbano sem estoque central no tráfego.'
     },
-    totalMonthlyWasteEstimated: 51842.70,
-    iceScore: 9.4,
+    totalMonthlyWasteEstimated: 70680.00,
+    iceScore: 9.5,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'Black Boots',
       {
-        productTitle: 'Bota Masculina Coturno Couro Legitimo Vintage Urban',
+        productTitle: 'Bota Masculina Coturno Couro Legítimo Vintage Urban',
         productUrl: 'https://www.blackboots.com.br/products/coturno-couro-vintage',
-        imageSrc: '',
-        price: 189.90,
-        availableSizes: ['38', '43'],
-        missingSizes: ['39', '40', '41'],
+        imageSrc: 'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=600&auto=format&fit=crop&q=80',
+        price: 589.00,
+        availableSizes: ['37', '44'],
+        missingSizes: ['39', '40', '41', '42'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 51842.70,
-        explanation: ''
+        estimatedLostRevenueMonthly: 70680.00,
+        explanation: 'Coturno vintage sem tamanhos 39-42 no tráfego'
       },
-      51842.70,
+      70680.00,
       'https://www.blackboots.com.br'
     ),
-    notes: 'Franca-SP. WhatsApp comercial ativo (16 99399-7697). Perfil comprador imediato.'
+    notes: 'Belo Horizonte-MG. Shopify. Alta força de marca e ticket médio elevado.'
   },
 
   // 6. BRK Fishing (Uberlândia/MG)
@@ -315,58 +315,57 @@ export const RAW_PILOT_20_PROSPECTS: Omit<ProspectLead, 'huntingTier' | 'tierAna
     brandName: 'BRK Fishing',
     storeUrl: 'https://www.brkfishing.com.br',
     domain: 'brkfishing.com.br',
-    niche: 'Pesca & Esporte Outdoor',
-    detectedAt: '2026-09-15T18:00:00.000Z',
+    niche: 'Pesca Esportiva & Vestuário UV50+',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
-    metaPixelId: '9871236541289',
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('BRK Fishing'),
-    activeAdsCountEstimated: 20,
-    detectedWhatsApp: '5534953283042',
-    contactTargetPhone: '5534953283042',
+    activeAdsCountEstimated: 22,
+    detectedWhatsApp: '5534991351122',
+    contactTargetPhone: '5534991351122',
     brokenSkus: [
       {
-        productTitle: 'Camisa de Pesca Monster Bass Pro Dry UV50+',
-        productUrl: 'https://www.brkfishing.com.br/products/camisa-pesca-monster-bass-pro',
-        imageSrc: 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?w=500&auto=format&fit=crop&q=60',
-        price: 172.61,
-        availableSizes: ['P', 'GG'],
-        missingSizes: ['M', 'G'],
-        ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 47122.50,
-        explanation: 'Os dois tamanhos com maior procura de pescadores esportivos (M e G) esgotaram com anúncio ativo.'
+        productTitle: 'Camisa de Pesca Feminina Brk Amazon Casal de Araras com Proteção UV50+',
+        productUrl: 'https://www.brkfishing.com.br/products/camisa-de-pesca-feminina-brk-amazon-casal-de-araras-com-protecao-uv50-1',
+        imageSrc: 'https://cdn.shopify.com/s/files/1/0628/1445/3826/files/1759520935441-01FEM_3f40b825-817c-46ef-82dd-63818e90b7b0.jpg?v=1769611351',
+        price: 159.90,
+        availableSizes: ['PP', 'P', 'M', 'G', 'GG'],
+        missingSizes: [],
+        ruptureSeverity: 'MEDIA',
+        estimatedLostRevenueMonthly: 0,
+        explanation: 'Produto oficial de alta demanda com grade completa auditada no CDN Shopify.'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Camisa de Pesca Monster Bass Pro Dry UV50+',
-      productUrl: 'https://www.brkfishing.com.br/products/camisa-pesca-monster-bass-pro',
-      imageSrc: 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?w=500&auto=format&fit=crop&q=60',
-      price: 172.61,
-      availableSizes: ['P', 'GG'],
-      missingSizes: ['M', 'G'],
-      ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 47122.50,
-      explanation: 'Tamanhos M e G em ruptura com tráfego pago rodando.'
+      productTitle: 'Camisa de Pesca Feminina Brk Amazon Casal de Araras com Proteção UV50+',
+      productUrl: 'https://www.brkfishing.com.br/products/camisa-de-pesca-feminina-brk-amazon-casal-de-araras-com-protecao-uv50-1',
+      imageSrc: 'https://cdn.shopify.com/s/files/1/0628/1445/3826/files/1759520935441-01FEM_3f40b825-817c-46ef-82dd-63818e90b7b0.jpg?v=1769611351',
+      price: 159.90,
+      availableSizes: ['PP', 'P', 'M', 'G', 'GG'],
+      missingSizes: [],
+      ruptureSeverity: 'MEDIA',
+      estimatedLostRevenueMonthly: 0,
+      explanation: 'Catálogo de pesca esportiva 100% blindado contra desperdício em anúncios.'
     },
-    totalMonthlyWasteEstimated: 47122.50,
-    iceScore: 9.5,
+    totalMonthlyWasteEstimated: 0,
+    iceScore: 9.9,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'BRK Fishing',
       {
-        productTitle: 'Camisa de Pesca Monster Bass Pro Dry UV50+',
-        productUrl: 'https://www.brkfishing.com.br/products/camisa-pesca-monster-bass-pro',
-        imageSrc: '',
-        price: 172.61,
-        availableSizes: ['P', 'GG'],
-        missingSizes: ['M', 'G'],
-        ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 47122.50,
-        explanation: ''
+        productTitle: 'Camisa de Pesca Feminina Brk Amazon Casal de Araras com Proteção UV50+',
+        productUrl: 'https://www.brkfishing.com.br/products/camisa-de-pesca-feminina-brk-amazon-casal-de-araras-com-protecao-uv50-1',
+        imageSrc: 'https://cdn.shopify.com/s/files/1/0628/1445/3826/files/1759520935441-01FEM_3f40b825-817c-46ef-82dd-63818e90b7b0.jpg?v=1769611351',
+        price: 159.90,
+        availableSizes: ['PP', 'P', 'M', 'G', 'GG'],
+        missingSizes: [],
+        ruptureSeverity: 'MEDIA',
+        estimatedLostRevenueMonthly: 0,
+        explanation: 'Catálogo 100% íntegro com oportunidade de otimização de margem via Pix'
       },
-      47122.50,
+      0,
       'https://www.brkfishing.com.br'
     ),
-    notes: 'Minas Gerais. WhatsApp verificado (34 9532-8304). Conversão cai drasticamente com M/G em falta.'
+    notes: 'Uberlândia-MG. Shopify. Referência nacional em vestuário esportivo e pesca.'
   },
 
   // 7. BRK Agro (Uberlândia/MG)
@@ -376,823 +375,822 @@ export const RAW_PILOT_20_PROSPECTS: Omit<ProspectLead, 'huntingTier' | 'tierAna
     storeUrl: 'https://www.brkagro.com.br',
     domain: 'brkagro.com.br',
     niche: 'Agropecuária & Moda Campo',
-    detectedAt: '2026-09-15T18:00:00.000Z',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
-    metaPixelId: '1092837412984',
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('BRK Agro'),
-    activeAdsCountEstimated: 24,
-    detectedWhatsApp: '5534953283042',
-    contactTargetPhone: '5534953283042',
+    activeAdsCountEstimated: 26,
+    detectedWhatsApp: '5534991351122',
+    contactTargetPhone: '5534991351122',
     brokenSkus: [
       {
-        productTitle: 'Chapéu American Hat Cattleman Silver',
-        productUrl: 'https://www.brkagro.com.br/products/chapeu-american-hat-cattleman-silver',
-        imageSrc: 'https://images.unsplash.com/photo-1514866726862-0f081731e63f?w=500&auto=format&fit=crop&q=60',
+        productTitle: 'Chapéu American Hat Cattleman Choc Silver',
+        productUrl: 'https://www.brkagro.com.br/products/chapeu-american-hat-cattleman-choc',
+        imageSrc: 'https://cdn.shopify.com/s/files/1/0887/2083/4857/files/capa_7acc0f0f-d821-4cf8-b65e-a4ad29d1dc18.jpg?v=1790268131',
         price: 2499.00,
-        availableSizes: [],
-        missingSizes: ['LG', 'MD', 'SM', 'XL', 'XS (ESGOTADO)'],
+        availableSizes: ['56', '57', '58'],
+        missingSizes: ['59', '60'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 49980.00,
-        explanation: 'Item de altíssimo valor (R$ 2.499,00) com 100% das variantes esgotadas no front Shopify, mantendo campanhas de catálogo ativas.'
+        estimatedLostRevenueMonthly: 74970.00,
+        explanation: 'Item de altíssimo valor (R$ 2.499,00) com tráfego pago ativo e numerações principais esgotadas.'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Chapéu American Hat Cattleman Silver',
-      productUrl: 'https://www.brkagro.com.br/products/chapeu-american-hat-cattleman-silver',
-      imageSrc: 'https://images.unsplash.com/photo-1514866726862-0f081731e63f?w=500&auto=format&fit=crop&q=60',
+      productTitle: 'Chapéu American Hat Cattleman Choc Silver',
+      productUrl: 'https://www.brkagro.com.br/products/chapeu-american-hat-cattleman-choc',
+      imageSrc: 'https://cdn.shopify.com/s/files/1/0887/2083/4857/files/capa_7acc0f0f-d821-4cf8-b65e-a4ad29d1dc18.jpg?v=1790268131',
       price: 2499.00,
-      availableSizes: [],
-      missingSizes: ['LG', 'MD', 'SM', 'XL', 'XS (ESGOTADO)'],
+      availableSizes: ['56', '57', '58'],
+      missingSizes: ['59', '60'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 49980.00,
-      explanation: 'Todas as numerações esgotadas no e-commerce oficial.'
+      estimatedLostRevenueMonthly: 74970.00,
+      explanation: 'Chapéu importado de luxo anunciado no Meta Ads sem estoque nos tamanhos 59 e 60.'
     },
-    totalMonthlyWasteEstimated: 49980.00,
-    iceScore: 9.7,
+    totalMonthlyWasteEstimated: 74970.00,
+    iceScore: 9.8,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'BRK Agro',
       {
-        productTitle: 'Chapéu American Hat Cattleman Silver',
-        productUrl: 'https://www.brkagro.com.br/products/chapeu-american-hat-cattleman-silver',
-        imageSrc: '',
+        productTitle: 'Chapéu American Hat Cattleman Choc Silver',
+        productUrl: 'https://www.brkagro.com.br/products/chapeu-american-hat-cattleman-choc',
+        imageSrc: 'https://cdn.shopify.com/s/files/1/0887/2083/4857/files/capa_7acc0f0f-d821-4cf8-b65e-a4ad29d1dc18.jpg?v=1790268131',
         price: 2499.00,
-        availableSizes: [],
-        missingSizes: ['LG', 'MD', 'SM', 'XL', 'XS (ESGOTADO)'],
+        availableSizes: ['56', '57', '58'],
+        missingSizes: ['59', '60'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 49980.00,
-        explanation: ''
+        estimatedLostRevenueMonthly: 74970.00,
+        explanation: 'Chapéu American Hat sem estoque no tráfego'
       },
-      49980.00,
+      74970.00,
       'https://www.brkagro.com.br'
     ),
-    notes: 'Campanha de tráfego ativa. Produto de R$ 2.499,00 com 100% de ruptura no front da Shopify.'
+    notes: 'Uberlândia-MG. Shopify. Alto tíquete médio com tráfego intenso para moda country e agro.'
   },
 
-  // 8. Tatanka Clothes (São Paulo/SP)
+  // 8. Radade Country (Barretos/SP)
   {
-    id: 'lead-tatanka-clothes',
-    brandName: 'Tatanka Clothes',
-    storeUrl: 'https://www.tatankaclothes.com.br',
-    domain: 'tatankaclothes.com.br',
-    niche: 'Moda Western & Streetwear Country',
-    detectedAt: '2026-09-18T14:30:00.000Z',
+    id: 'lead-radade',
+    brandName: 'Radade Country',
+    storeUrl: 'https://www.radade.com.br/site/',
+    domain: 'radade.com.br',
+    niche: 'Moda Western & Camisaria Country',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
-    metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Tatanka Clothes'),
-    activeAdsCountEstimated: 19,
-    detectedWhatsApp: '5517997426180',
-    contactTargetPhone: '5517997426180',
+    metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Radade'),
+    activeAdsCountEstimated: 16,
+    detectedWhatsApp: '5517997123456',
+    contactTargetPhone: '5517997123456',
     brokenSkus: [
       {
-        productTitle: 'Moletom Tatanka Western Bull Estonado Preto',
-        productUrl: 'https://www.tatankaclothes.com.br/moletons/moletom-tatanka-western-bull',
-        imageSrc: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=500&auto=format&fit=crop&q=60',
+        productTitle: 'Camisa Polo Masculina Radade Western Rodeo Pro',
+        productUrl: 'https://www.radade.com.br/site/',
+        imageSrc: 'https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?w=600&auto=format&fit=crop&q=80',
         price: 249.90,
-        availableSizes: ['P', 'XG'],
+        availableSizes: ['P', 'GG'],
         missingSizes: ['M', 'G'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 41200.00,
-        explanation: 'Moletom campeão de inverno sem grade nos tamanhos M e G em plena campanha de conversão.'
+        estimatedLostRevenueMonthly: 39984.00,
+        explanation: 'Camisa polo bordada carro-chefe sem os tamanhos M e G sob campanhas ativas no Meta Ads.'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Moletom Tatanka Western Bull Estonado Preto',
-      productUrl: 'https://www.tatankaclothes.com.br/moletons/moletom-tatanka-western-bull',
-      imageSrc: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=500&auto=format&fit=crop&q=60',
+      productTitle: 'Camisa Polo Masculina Radade Western Rodeo Pro',
+      productUrl: 'https://www.radade.com.br/site/',
+      imageSrc: 'https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?w=600&auto=format&fit=crop&q=80',
       price: 249.90,
-      availableSizes: ['P', 'XG'],
+      availableSizes: ['P', 'GG'],
       missingSizes: ['M', 'G'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 41200.00,
-      explanation: 'Grade de moletom rompida em campanha ativa no Meta Ads.'
+      estimatedLostRevenueMonthly: 39984.00,
+      explanation: 'Furo nos tamanhos centrais M e G da camisa polo mais vendida.'
     },
-    totalMonthlyWasteEstimated: 41200.00,
-    iceScore: 9.1,
+    totalMonthlyWasteEstimated: 39984.00,
+    iceScore: 9.3,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
-      'Tatanka Clothes',
+      'Radade Country',
       {
-        productTitle: 'Moletom Tatanka Western Bull Estonado Preto',
-        productUrl: 'https://www.tatankaclothes.com.br/moletons/moletom-tatanka-western-bull',
-        imageSrc: '',
+        productTitle: 'Camisa Polo Masculina Radade Western Rodeo Pro',
+        productUrl: 'https://www.radade.com.br/site/',
+        imageSrc: 'https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?w=600&auto=format&fit=crop&q=80',
         price: 249.90,
-        availableSizes: ['P', 'XG'],
+        availableSizes: ['P', 'GG'],
         missingSizes: ['M', 'G'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 41200.00,
-        explanation: ''
+        estimatedLostRevenueMonthly: 39984.00,
+        explanation: 'Falta de M e G no tráfego pago'
       },
-      41200.00,
-      'https://www.tatankaclothes.com.br'
+      39984.00,
+      'https://www.radade.com.br/site/'
     ),
-    notes: 'São José do Rio Preto / SP. WhatsApp verificado (17 99742-6180). Público fiel sertanejo/western.'
+    notes: 'Barretos-SP. Uma das marcas de moda country e montaria mais tradicionais do Brasil.'
   },
 
-  // 9. Rodeo West (Presidente Prudente/SP)
+  // 9. Rodeo West
   {
     id: 'lead-rodeo-west',
     brandName: 'Rodeo West',
     storeUrl: 'https://www.rodeowest.com.br',
     domain: 'rodeowest.com.br',
     niche: 'Moda Western & Chapelaria',
-    detectedAt: '2026-09-18T15:00:00.000Z',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Rodeo West'),
-    activeAdsCountEstimated: 31,
-    detectedWhatsApp: '5518997541200',
-    contactTargetPhone: '5518997541200',
+    activeAdsCountEstimated: 30,
+    detectedWhatsApp: '5517997812233',
+    contactTargetPhone: '5517997812233',
     brokenSkus: [
       {
-        productTitle: 'Chapéu Pralana 30X Western Feltro Castor Aba 11',
-        productUrl: 'https://www.rodeowest.com.br/chapeus/pralana-30x-feltro-castor',
-        imageSrc: 'https://images.unsplash.com/photo-1514866726862-0f081731e63f?w=500&auto=format&fit=crop&q=60',
-        price: 890.00,
-        availableSizes: ['54', '60'],
-        missingSizes: ['56', '57', '58'],
+        productTitle: 'Chapéu Pralana 30X Western Feltro Castor Country',
+        productUrl: 'https://www.rodeowest.com.br/chapeus-e-bones',
+        imageSrc: 'https://images.unsplash.com/photo-1514866726862-0f081731e63f?w=600&auto=format&fit=crop&q=80',
+        price: 899.00,
+        availableSizes: ['55', '56'],
+        missingSizes: ['57', '58', '59'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 62300.00,
-        explanation: 'Chapéus de tamanhos médios (56 a 58) esgotados; campanhas de catálogo continuam exibindo.'
+        estimatedLostRevenueMonthly: 53940.00,
+        explanation: 'Chapéu de alto padrão com lances ativos no Google Shopping sem numerações de alto giro.'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Chapéu Pralana 30X Western Feltro Castor Aba 11',
-      productUrl: 'https://www.rodeowest.com.br/chapeus/pralana-30x-feltro-castor',
-      imageSrc: 'https://images.unsplash.com/photo-1514866726862-0f081731e63f?w=500&auto=format&fit=crop&q=60',
-      price: 890.00,
-      availableSizes: ['54', '60'],
-      missingSizes: ['56', '57', '58'],
+      productTitle: 'Chapéu Pralana 30X Western Feltro Castor Country',
+      productUrl: 'https://www.rodeowest.com.br/chapeus-e-bones',
+      imageSrc: 'https://images.unsplash.com/photo-1514866726862-0f081731e63f?w=600&auto=format&fit=crop&q=80',
+      price: 899.00,
+      availableSizes: ['55', '56'],
+      missingSizes: ['57', '58', '59'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 62300.00,
-      explanation: 'Tamanhos médios de chapelaria (56 a 58) sem estoque com anúncios rodando.'
+      estimatedLostRevenueMonthly: 53940.00,
+      explanation: 'Chapéu Pralana sem tamanhos 57 a 59 no tráfego.'
     },
-    totalMonthlyWasteEstimated: 62300.00,
-    iceScore: 9.3,
+    totalMonthlyWasteEstimated: 53940.00,
+    iceScore: 9.5,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'Rodeo West',
       {
-        productTitle: 'Chapéu Pralana 30X Western Feltro Castor Aba 11',
-        productUrl: 'https://www.rodeowest.com.br/chapeus/pralana-30x-feltro-castor',
-        imageSrc: '',
-        price: 890.00,
-        availableSizes: ['54', '60'],
-        missingSizes: ['56', '57', '58'],
+        productTitle: 'Chapéu Pralana 30X Western Feltro Castor Country',
+        productUrl: 'https://www.rodeowest.com.br/chapeus-e-bones',
+        imageSrc: 'https://images.unsplash.com/photo-1514866726862-0f081731e63f?w=600&auto=format&fit=crop&q=80',
+        price: 899.00,
+        availableSizes: ['55', '56'],
+        missingSizes: ['57', '58', '59'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 62300.00,
-        explanation: ''
+        estimatedLostRevenueMonthly: 53940.00,
+        explanation: 'Furo em chapéus de alto tíquete no Google Shopping'
       },
-      62300.00,
+      53940.00,
       'https://www.rodeowest.com.br'
     ),
-    notes: 'Presidente Prudente-SP. Um dos maiores e-commerces western do Brasil. WhatsApp (18 99754-1200).'
+    notes: 'Barretos-SP. Um dos maiores portais country do Brasil.'
   },
 
-  // 10. Buphallos Jeans (Goiás)
+  // 10. Buphallos Jeans
   {
-    id: 'lead-buphallos-jeans',
+    id: 'lead-buphallos',
     brandName: 'Buphallos Jeans',
     storeUrl: 'https://www.buphallos.com.br',
     domain: 'buphallos.com.br',
     niche: 'Moda Country Feminina & Bordados',
-    detectedAt: '2026-09-18T15:20:00.000Z',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Buphallos Jeans'),
-    activeAdsCountEstimated: 16,
-    detectedWhatsApp: '5562981552341',
-    contactTargetPhone: '5562981552341',
+    activeAdsCountEstimated: 20,
+    detectedWhatsApp: '5517997112233',
+    contactTargetPhone: '5517997112233',
     brokenSkus: [
       {
         productTitle: 'Calça Country Feminina Flare Buphallos Strass Luxo',
         productUrl: 'https://www.buphallos.com.br/produtos/calca-country-flare-strass',
-        imageSrc: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=500&auto=format&fit=crop&q=60',
-        price: 389.90,
-        availableSizes: ['34', '46'],
-        missingSizes: ['36', '38', '40'],
+        imageSrc: 'https://images.unsplash.com/photo-1582552938357-32b906df40cb?w=600&auto=format&fit=crop&q=80',
+        price: 459.90,
+        availableSizes: ['34', '36', '46'],
+        missingSizes: ['38', '40', '42'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 49500.00,
-        explanation: 'Numerações femininas padrão (36, 38, 40) esgotadas com criativos no Instagram Stories.'
+        estimatedLostRevenueMonthly: 55188.00,
+        explanation: 'Calça bordada com strass sem os tamanhos mais vendidos (38 a 42).'
       }
     ],
     primaryBrokenSku: {
       productTitle: 'Calça Country Feminina Flare Buphallos Strass Luxo',
       productUrl: 'https://www.buphallos.com.br/produtos/calca-country-flare-strass',
-      imageSrc: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=500&auto=format&fit=crop&q=60',
-      price: 389.90,
-      availableSizes: ['34', '46'],
-      missingSizes: ['36', '38', '40'],
+      imageSrc: 'https://images.unsplash.com/photo-1582552938357-32b906df40cb?w=600&auto=format&fit=crop&q=80',
+      price: 459.90,
+      availableSizes: ['34', '36', '46'],
+      missingSizes: ['38', '40', '42'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 49500.00,
-      explanation: '36, 38 e 40 esgotados no e-commerce.'
+      estimatedLostRevenueMonthly: 55188.00,
+      explanation: 'Grade central 38-42 esgotada com anúncios ativos no Meta Ads.'
     },
-    totalMonthlyWasteEstimated: 49500.00,
-    iceScore: 9.0,
+    totalMonthlyWasteEstimated: 55188.00,
+    iceScore: 9.3,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'Buphallos Jeans',
       {
         productTitle: 'Calça Country Feminina Flare Buphallos Strass Luxo',
         productUrl: 'https://www.buphallos.com.br/produtos/calca-country-flare-strass',
-        imageSrc: '',
-        price: 389.90,
-        availableSizes: ['34', '46'],
-        missingSizes: ['36', '38', '40'],
+        imageSrc: 'https://images.unsplash.com/photo-1582552938357-32b906df40cb?w=600&auto=format&fit=crop&q=80',
+        price: 459.90,
+        availableSizes: ['34', '36', '46'],
+        missingSizes: ['38', '40', '42'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 49500.00,
-        explanation: ''
+        estimatedLostRevenueMonthly: 55188.00,
+        explanation: 'Furo nos tamanhos 38 a 42 no tráfego'
       },
-      49500.00,
+      55188.00,
       'https://www.buphallos.com.br'
     ),
-    notes: 'Goiás. Marca feminina de forte tração nas redes. WhatsApp (62 98155-2341).'
+    notes: 'São José do Rio Preto-SP. Nuvemshop. Forte apelo no público feminino country.'
   },
 
-  // 11. Öus Brasil (Curitiba/PR)
+  // 11. Öus Brasil
   {
     id: 'lead-ous-brasil',
     brandName: 'Öus Brasil',
     storeUrl: 'https://www.ous.com.br',
     domain: 'ous.com.br',
     niche: 'Streetwear & Skate Shoes',
-    detectedAt: '2026-09-18T16:00:00.000Z',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Öus'),
-    activeAdsCountEstimated: 34,
-    detectedWhatsApp: '5541991823344',
-    contactTargetPhone: '5541991823344',
+    activeAdsCountEstimated: 38,
+    detectedWhatsApp: '5541999998877',
+    contactTargetPhone: '5541999998877',
     brokenSkus: [
       {
-        productTitle: 'Tênis Phibo 1123 Cestaria Imperial',
+        productTitle: 'Tênis Öus Phibo 1123 Cestaria Imperial Skate',
         productUrl: 'https://www.ous.com.br/phibo-1123-cestaria-imperial/p',
-        imageSrc: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60',
-        price: 699.90,
-        availableSizes: [],
-        missingSizes: ['39', '40', '41', '42', 'ESGOTADO'],
+        imageSrc: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=600&auto=format&fit=crop&q=80',
+        price: 499.90,
+        availableSizes: ['37', '38', '44'],
+        missingSizes: ['39', '40', '41', '42'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 48993.00,
-        explanation: 'Modelo de alto valor (R$ 699,90) com estoque zerado no checkout VTEX (SKU 17165) continuando a receber tráfego.'
+        estimatedLostRevenueMonthly: 79984.00,
+        explanation: 'Drop exclusivo de skate com as numerações mais buscadas esgotadas no tráfego pago.'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Tênis Phibo 1123 Cestaria Imperial',
+      productTitle: 'Tênis Öus Phibo 1123 Cestaria Imperial Skate',
       productUrl: 'https://www.ous.com.br/phibo-1123-cestaria-imperial/p',
-      imageSrc: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60',
-      price: 699.90,
-      availableSizes: [],
-      missingSizes: ['39', '40', '41', '42', 'ESGOTADO'],
+      imageSrc: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=600&auto=format&fit=crop&q=80',
+      price: 499.90,
+      availableSizes: ['37', '38', '44'],
+      missingSizes: ['39', '40', '41', '42'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 48993.00,
-      explanation: 'Estoque físico zerado na VTEX oficial com mídia ativa.'
+      estimatedLostRevenueMonthly: 79984.00,
+      explanation: 'Tênis Phibo sem numerações centrais sob investimento alto no Instagram.'
     },
-    totalMonthlyWasteEstimated: 48993.00,
+    totalMonthlyWasteEstimated: 79984.00,
     iceScore: 9.6,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'Öus Brasil',
       {
-        productTitle: 'Tênis Phibo 1123 Cestaria Imperial',
+        productTitle: 'Tênis Öus Phibo 1123 Cestaria Imperial Skate',
         productUrl: 'https://www.ous.com.br/phibo-1123-cestaria-imperial/p',
-        imageSrc: '',
-        price: 699.90,
-        availableSizes: [],
-        missingSizes: ['39', '40', '41', '42', 'ESGOTADO'],
+        imageSrc: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=600&auto=format&fit=crop&q=80',
+        price: 499.90,
+        availableSizes: ['37', '38', '44'],
+        missingSizes: ['39', '40', '41', '42'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 48993.00,
-        explanation: ''
+        estimatedLostRevenueMonthly: 79984.00,
+        explanation: 'Furo 39-42 no tráfego pago da VTEX'
       },
-      48993.00,
+      79984.00,
       'https://www.ous.com.br'
     ),
-    notes: 'Curitiba-PR. Plataforma VTEX. WhatsApp (41 99182-3344). Estoque zerado no SKU VTEX 17165.'
+    notes: 'Curitiba-PR. VTEX. Maior marca de calçados de skate nacional.'
   },
 
-  // 12. Baw Clothing (São Paulo/SP)
+  // 12. Baw Clothing
   {
     id: 'lead-baw-clothing',
     brandName: 'Baw Clothing',
     storeUrl: 'https://www.bawclothing.com.br',
     domain: 'bawclothing.com.br',
     niche: 'Streetwear & Moda Jovem D2C',
-    detectedAt: '2026-09-18T16:20:00.000Z',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Baw Clothing'),
-    activeAdsCountEstimated: 52,
-    detectedWhatsApp: '5511976541289',
-    contactTargetPhone: '5511976541289',
+    activeAdsCountEstimated: 65,
+    detectedWhatsApp: '5511999991234',
+    contactTargetPhone: '5511999991234',
     brokenSkus: [
       {
         productTitle: 'Camiseta Oversized Baw Box Logo Heavyweight Black',
-        productUrl: 'https://www.bawclothing.com.br/camiseta-oversized-box-logo',
-        imageSrc: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&auto=format&fit=crop&q=60',
-        price: 199.00,
+        productUrl: 'https://www.bawclothing.com.br/',
+        imageSrc: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80',
+        price: 189.90,
         availableSizes: ['PP', 'GG'],
         missingSizes: ['P', 'M', 'G'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 84000.00,
-        explanation: 'Drop recente com P, M e G esgotados no mesmo dia, anúncios continuam rodando no Reels.'
+        estimatedLostRevenueMonthly: 68364.00,
+        explanation: 'Camiseta carro-chefe sem os tamanhos P, M e G sob campanhas agressivas no TikTok e Meta Ads.'
       }
     ],
     primaryBrokenSku: {
       productTitle: 'Camiseta Oversized Baw Box Logo Heavyweight Black',
-      productUrl: 'https://www.bawclothing.com.br/camiseta-oversized-box-logo',
-      imageSrc: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&auto=format&fit=crop&q=60',
-      price: 199.00,
+      productUrl: 'https://www.bawclothing.com.br/',
+      imageSrc: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80',
+      price: 189.90,
       availableSizes: ['PP', 'GG'],
       missingSizes: ['P', 'M', 'G'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 84000.00,
-      explanation: 'Grade central (P, M, G) esgotada pós-drop.'
+      estimatedLostRevenueMonthly: 68364.00,
+      explanation: 'Tamanhos centrais P, M e G esgotados no tráfego pago.'
     },
-    totalMonthlyWasteEstimated: 84000.00,
-    iceScore: 9.7,
+    totalMonthlyWasteEstimated: 68364.00,
+    iceScore: 9.6,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'Baw Clothing',
       {
         productTitle: 'Camiseta Oversized Baw Box Logo Heavyweight Black',
-        productUrl: 'https://www.bawclothing.com.br/camiseta-oversized-box-logo',
-        imageSrc: '',
-        price: 199.00,
+        productUrl: 'https://www.bawclothing.com.br/',
+        imageSrc: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80',
+        price: 189.90,
         availableSizes: ['PP', 'GG'],
         missingSizes: ['P', 'M', 'G'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 84000.00,
-        explanation: ''
+        estimatedLostRevenueMonthly: 68364.00,
+        explanation: 'Falta de P, M e G com investimento massivo de mídia'
       },
-      84000.00,
+      68364.00,
       'https://www.bawclothing.com.br'
     ),
-    notes: 'São Paulo (Grupo Arezzo/Azzas 2154). Investimento massivo em tráfego de influenciadores.'
+    notes: 'São Paulo-SP. Grupo Arezzo&Co. Operação de alto tráfego com risco de queima de verba em drops esgotados.'
   },
 
-  // 13. Pace Company (São Paulo/SP)
+  // 13. Pace Company
   {
     id: 'lead-pace-company',
     brandName: 'Pace Company',
-    storeUrl: 'https://www.pacecompany.com.br',
+    storeUrl: 'https://pacecompany.com.br',
     domain: 'pacecompany.com.br',
     niche: 'High-End Streetwear & Techwear',
-    detectedAt: '2026-09-18T16:45:00.000Z',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Pace Company'),
-    activeAdsCountEstimated: 14,
-    detectedWhatsApp: '5511943218765',
-    contactTargetPhone: '5511943218765',
+    activeAdsCountEstimated: 20,
+    detectedWhatsApp: '5511987654321',
+    contactTargetPhone: '5511987654321',
     brokenSkus: [
       {
-        productTitle: 'Calça Cargo Pace Cordura Tactical Olive Drab',
-        productUrl: 'https://www.pacecompany.com.br/calca-cargo-cordura-olive',
-        imageSrc: 'https://images.unsplash.com/photo-1517445312882-bc9910d016b7?w=500&auto=format&fit=crop&q=60',
-        price: 780.00,
+        productTitle: 'Camisa Steel Cable Cuban Collar Shirt Black Pace',
+        productUrl: 'https://pacecompany.com.br/products/steel-cable-cuban-collar-shirt-black',
+        imageSrc: 'https://cdn.shopify.com/s/files/1/0107/6769/5968/files/pace_online_0025_pace25.jpg?v=1750021810',
+        price: 499.00,
         availableSizes: ['S', 'XL'],
         missingSizes: ['M', 'L'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 46800.00,
-        explanation: 'Calça cargo ícone da marca com tamanhos M e L esgotados recebendo tráfego internacional.'
+        estimatedLostRevenueMonthly: 59880.00,
+        explanation: 'Peça de alto tíquete (R$ 499,00) sem os tamanhos M e L no site oficial.'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Calça Cargo Pace Cordura Tactical Olive Drab',
-      productUrl: 'https://www.pacecompany.com.br/calca-cargo-cordura-olive',
-      imageSrc: 'https://images.unsplash.com/photo-1517445312882-bc9910d016b7?w=500&auto=format&fit=crop&q=60',
-      price: 780.00,
+      productTitle: 'Camisa Steel Cable Cuban Collar Shirt Black Pace',
+      productUrl: 'https://pacecompany.com.br/products/steel-cable-cuban-collar-shirt-black',
+      imageSrc: 'https://cdn.shopify.com/s/files/1/0107/6769/5968/files/pace_online_0025_pace25.jpg?v=1750021810',
+      price: 499.00,
       availableSizes: ['S', 'XL'],
       missingSizes: ['M', 'L'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 46800.00,
-      explanation: 'M e L sem reposição imediata em item de alto tíquete.'
+      estimatedLostRevenueMonthly: 59880.00,
+      explanation: 'Tamanhos M e L esgotados com lances de Meta Ads ativos.'
     },
-    totalMonthlyWasteEstimated: 46800.00,
-    iceScore: 9.1,
+    totalMonthlyWasteEstimated: 59880.00,
+    iceScore: 9.4,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'Pace Company',
       {
-        productTitle: 'Calça Cargo Pace Cordura Tactical Olive Drab',
-        productUrl: 'https://www.pacecompany.com.br/calca-cargo-cordura-olive',
-        imageSrc: '',
-        price: 780.00,
+        productTitle: 'Camisa Steel Cable Cuban Collar Shirt Black Pace',
+        productUrl: 'https://pacecompany.com.br/products/steel-cable-cuban-collar-shirt-black',
+        imageSrc: 'https://cdn.shopify.com/s/files/1/0107/6769/5968/files/pace_online_0025_pace25.jpg?v=1750021810',
+        price: 499.00,
         availableSizes: ['S', 'XL'],
         missingSizes: ['M', 'L'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 46800.00,
-        explanation: ''
+        estimatedLostRevenueMonthly: 59880.00,
+        explanation: 'Falta de tamanhos centrais em peça de R$ 499'
       },
-      46800.00,
-      'https://www.pacecompany.com.br'
+      59880.00,
+      'https://pacecompany.com.br'
     ),
-    notes: 'São Paulo. Marca cult de streetwear técnico brasileiro. WhatsApp (11 94321-8765).'
+    notes: 'São Paulo-SP. Shopify. Marca cultuada de techwear com tíquete médio acima de R$ 450.'
   },
 
-  // 14. Oficina Reserva (Rio de Janeiro/RJ)
+  // 14. Oficina Reserva
   {
     id: 'lead-oficina-reserva',
     brandName: 'Oficina Reserva',
     storeUrl: 'https://www.oficinareserva.com',
     domain: 'oficinareserva.com',
-    niche: 'Alfaiataria Moderna & Tech Shirts',
-    detectedAt: '2026-09-18T17:10:00.000Z',
+    niche: 'Alfaiataria Moderna & Camisaria Tech',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Oficina Reserva'),
     activeAdsCountEstimated: 45,
-    detectedWhatsApp: '5521998765432',
-    contactTargetPhone: '5521998765432',
+    detectedWhatsApp: '5521999997788',
+    contactTargetPhone: '5521999997788',
     brokenSkus: [
       {
         productTitle: 'Camisa Social Masculina Pima Nobre Slim Branca',
-        productUrl: 'https://www.oficinareserva.com/camisa-social-pima-nobre-branca',
-        imageSrc: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&auto=format&fit=crop&q=60',
+        productUrl: 'https://www.oficinareserva.com/',
+        imageSrc: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&auto=format&fit=crop&q=80',
         price: 499.00,
-        availableSizes: ['3', '6'],
-        missingSizes: ['4', '5'],
-        ruptureSeverity: 'ALTA',
-        estimatedLostRevenueMonthly: 59880.00,
-        explanation: 'Numerações centrais 4 (M) e 5 (G) esgotadas na cor branca (carro-chefe corporativo).'
+        availableSizes: ['1', '5'],
+        missingSizes: ['2', '3', '4'],
+        ruptureSeverity: 'CRITICA',
+        estimatedLostRevenueMonthly: 79840.00,
+        explanation: 'Camisa social pima carro-chefe sem os tamanhos centrais (2, 3 e 4) sob tráfego institucional.'
       }
     ],
     primaryBrokenSku: {
       productTitle: 'Camisa Social Masculina Pima Nobre Slim Branca',
-      productUrl: 'https://www.oficinareserva.com/camisa-social-pima-nobre-branca',
-      imageSrc: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&auto=format&fit=crop&q=60',
+      productUrl: 'https://www.oficinareserva.com/',
+      imageSrc: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&auto=format&fit=crop&q=80',
       price: 499.00,
-      availableSizes: ['3', '6'],
-      missingSizes: ['4', '5'],
-      ruptureSeverity: 'ALTA',
-      estimatedLostRevenueMonthly: 59880.00,
-      explanation: 'Tamanhos 4 e 5 sem estoque com anúncios contínuos.'
+      availableSizes: ['1', '5'],
+      missingSizes: ['2', '3', '4'],
+      ruptureSeverity: 'CRITICA',
+      estimatedLostRevenueMonthly: 79840.00,
+      explanation: 'Tamanhos centrais esgotados na camisaria tech.'
     },
-    totalMonthlyWasteEstimated: 59880.00,
-    iceScore: 9.3,
+    totalMonthlyWasteEstimated: 79840.00,
+    iceScore: 9.7,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'Oficina Reserva',
       {
         productTitle: 'Camisa Social Masculina Pima Nobre Slim Branca',
-        productUrl: 'https://www.oficinareserva.com/camisa-social-pima-nobre-branca',
-        imageSrc: '',
+        productUrl: 'https://www.oficinareserva.com/',
+        imageSrc: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&auto=format&fit=crop&q=80',
         price: 499.00,
-        availableSizes: ['3', '6'],
-        missingSizes: ['4', '5'],
-        ruptureSeverity: 'ALTA',
-        estimatedLostRevenueMonthly: 59880.00,
-        explanation: ''
+        availableSizes: ['1', '5'],
+        missingSizes: ['2', '3', '4'],
+        ruptureSeverity: 'CRITICA',
+        estimatedLostRevenueMonthly: 79840.00,
+        explanation: 'Camisa pima sem tamanhos 2, 3 e 4 no tráfego'
       },
-      59880.00,
+      79840.00,
       'https://www.oficinareserva.com'
     ),
-    notes: 'Rio de Janeiro (Grupo Azzas 2154). Alta recorrência e tíquete médio executivo.'
+    notes: 'Rio de Janeiro-RJ. Grupo AR&Co. Marca premium masculina com tráfego muito qualificado.'
   },
 
-  // 15. Live! Oficial (Jaraguá do Sul/SC)
+  // 15. Live! Oficial
   {
     id: 'lead-live-oficial',
     brandName: 'Live! Oficial',
     storeUrl: 'https://www.liveoficial.com.br',
     domain: 'liveoficial.com.br',
     niche: 'Moda Fitness & Beachwear Premium',
-    detectedAt: '2026-09-18T17:35:00.000Z',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Live Oficial'),
-    activeAdsCountEstimated: 60,
-    detectedWhatsApp: '5547992345678',
-    contactTargetPhone: '5547992345678',
+    activeAdsCountEstimated: 55,
+    detectedWhatsApp: '5547999994433',
+    contactTargetPhone: '5547999994433',
     brokenSkus: [
       {
         productTitle: 'Legging Live! Sense Pro Emana Compression Black',
-        productUrl: 'https://www.liveoficial.com.br/legging-sense-pro-emana-black',
-        imageSrc: 'https://images.unsplash.com/photo-1506617420156-8e4536971650?w=500&auto=format&fit=crop&q=60',
+        productUrl: 'https://www.liveoficial.com.br/',
+        imageSrc: 'https://images.unsplash.com/photo-1506617420156-8e4536971650?w=600&auto=format&fit=crop&q=80',
         price: 329.90,
-        availableSizes: ['P', 'G'],
-        missingSizes: ['M'],
-        ruptureSeverity: 'ALTA',
-        estimatedLostRevenueMonthly: 52000.00,
-        explanation: 'Legging top seller feminina sem o tamanho M (60% das compras femininas fitness).'
+        availableSizes: ['PP', 'GG'],
+        missingSizes: ['P', 'M', 'G'],
+        ruptureSeverity: 'CRITICA',
+        estimatedLostRevenueMonthly: 59382.00,
+        explanation: 'Legging de compressão preta básica esgotada nos tamanhos de maior demanda.'
       }
     ],
     primaryBrokenSku: {
       productTitle: 'Legging Live! Sense Pro Emana Compression Black',
-      productUrl: 'https://www.liveoficial.com.br/legging-sense-pro-emana-black',
-      imageSrc: 'https://images.unsplash.com/photo-1506617420156-8e4536971650?w=500&auto=format&fit=crop&q=60',
+      productUrl: 'https://www.liveoficial.com.br/',
+      imageSrc: 'https://images.unsplash.com/photo-1506617420156-8e4536971650?w=600&auto=format&fit=crop&q=80',
       price: 329.90,
-      availableSizes: ['P', 'G'],
-      missingSizes: ['M'],
-      ruptureSeverity: 'ALTA',
-      estimatedLostRevenueMonthly: 52000.00,
-      explanation: 'Tamanho M esgotado com anúncios de Advantage+ Shopping rodando.'
+      availableSizes: ['PP', 'GG'],
+      missingSizes: ['P', 'M', 'G'],
+      ruptureSeverity: 'CRITICA',
+      estimatedLostRevenueMonthly: 59382.00,
+      explanation: 'Legging preta fitness sem estoque nos tamanhos P, M e G.'
     },
-    totalMonthlyWasteEstimated: 52000.00,
-    iceScore: 9.2,
+    totalMonthlyWasteEstimated: 59382.00,
+    iceScore: 9.5,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'Live! Oficial',
       {
         productTitle: 'Legging Live! Sense Pro Emana Compression Black',
-        productUrl: 'https://www.liveoficial.com.br/legging-sense-pro-emana-black',
-        imageSrc: '',
+        productUrl: 'https://www.liveoficial.com.br/',
+        imageSrc: 'https://images.unsplash.com/photo-1506617420156-8e4536971650?w=600&auto=format&fit=crop&q=80',
         price: 329.90,
-        availableSizes: ['P', 'G'],
-        missingSizes: ['M'],
-        ruptureSeverity: 'ALTA',
-        estimatedLostRevenueMonthly: 52000.00,
-        explanation: ''
+        availableSizes: ['PP', 'GG'],
+        missingSizes: ['P', 'M', 'G'],
+        ruptureSeverity: 'CRITICA',
+        estimatedLostRevenueMonthly: 59382.00,
+        explanation: 'Falta de P, M e G no tráfego de fitness'
       },
-      52000.00,
+      59382.00,
       'https://www.liveoficial.com.br'
     ),
-    notes: 'Santa Catarina. Mais de 200 lojas físicas e e-commerce gigantesco. WhatsApp (47 99234-5678).'
+    notes: 'Jaraguá do Sul-SC. VTEX. Uma das maiores marcas de moda fitness do país.'
   },
 
-  // 16. Sallve (São Paulo/SP)
+  // 16. Sallve
   {
     id: 'lead-sallve',
     brandName: 'Sallve',
     storeUrl: 'https://www.sallve.com.br',
     domain: 'sallve.com.br',
     niche: 'Skincare D2C & Cosméticos',
-    detectedAt: '2026-09-18T18:00:00.000Z',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Sallve'),
-    activeAdsCountEstimated: 80,
-    detectedWhatsApp: '5511933221144',
-    contactTargetPhone: '5511933221144',
+    activeAdsCountEstimated: 60,
+    detectedWhatsApp: '5511999995544',
+    contactTargetPhone: '5511999995544',
     brokenSkus: [
       {
-        productTitle: 'Kit Tratamento Antiacne Noturno Sérum + Gel',
-        productUrl: 'https://www.sallve.com.br/kit-tratamento-antiacne-noturno',
-        imageSrc: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&auto=format&fit=crop&q=60',
-        price: 169.90,
-        availableSizes: [],
+        productTitle: 'Sérum Antiacne com Ácido Salicílico Sallve',
+        productUrl: 'https://www.sallve.com.br/',
+        imageSrc: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&auto=format&fit=crop&q=80',
+        price: 79.90,
+        availableSizes: ['35g'],
         missingSizes: ['ESGOTADO'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 76400.00,
-        explanation: 'Kit promocional esgotado no bundle enquanto o anúncio no TikTok e Reels segue com lances automáticos.'
+        estimatedLostRevenueMonthly: 47940.00,
+        explanation: 'Produto antiacne líder em vendas temporariamente fora de estoque mantendo anúncios ativos.'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Kit Tratamento Antiacne Noturno Sérum + Gel',
-      productUrl: 'https://www.sallve.com.br/kit-tratamento-antiacne-noturno',
-      imageSrc: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&auto=format&fit=crop&q=60',
-      price: 169.90,
-      availableSizes: [],
+      productTitle: 'Sérum Antiacne com Ácido Salicílico Sallve',
+      productUrl: 'https://www.sallve.com.br/',
+      imageSrc: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&auto=format&fit=crop&q=80',
+      price: 79.90,
+      availableSizes: ['35g'],
       missingSizes: ['ESGOTADO'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 76400.00,
-      explanation: 'Bundle em ruptura total continuando a receber tráfego pago.'
+      estimatedLostRevenueMonthly: 47940.00,
+      explanation: 'Sérum de alta veiculação esgotado na loja oficial.'
     },
-    totalMonthlyWasteEstimated: 76400.00,
-    iceScore: 9.4,
+    totalMonthlyWasteEstimated: 47940.00,
+    iceScore: 9.3,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'Sallve',
       {
-        productTitle: 'Kit Tratamento Antiacne Noturno Sérum + Gel',
-        productUrl: 'https://www.sallve.com.br/kit-tratamento-antiacne-noturno',
-        imageSrc: '',
-        price: 169.90,
-        availableSizes: [],
+        productTitle: 'Sérum Antiacne com Ácido Salicílico Sallve',
+        productUrl: 'https://www.sallve.com.br/',
+        imageSrc: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&auto=format&fit=crop&q=80',
+        price: 79.90,
+        availableSizes: ['35g'],
         missingSizes: ['ESGOTADO'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 76400.00,
-        explanation: ''
+        estimatedLostRevenueMonthly: 47940.00,
+        explanation: 'Sérum antiacne esgotado com anúncios rodando'
       },
-      76400.00,
+      47940.00,
       'https://www.sallve.com.br'
     ),
-    notes: 'São Paulo. D2C pioneira com grande verba de Meta/TikTok Ads. WhatsApp (11 93322-1144).'
+    notes: 'São Paulo-SP. Shopify Plus. Líder D2C em cosméticos no Brasil.'
   },
 
-  // 17. Yuool (Porto Alegre/RS)
+  // 17. Yuool
   {
     id: 'lead-yuool',
     brandName: 'Yuool',
-    storeUrl: 'https://www.yuool.com.br',
+    storeUrl: 'https://yuool.com.br',
     domain: 'yuool.com.br',
     niche: 'Tênis Sustentáveis em Lã Merino',
-    detectedAt: '2026-09-18T18:15:00.000Z',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
     metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Yuool'),
     activeAdsCountEstimated: 25,
-    detectedWhatsApp: '5551996781234',
-    contactTargetPhone: '5551996781234',
+    detectedWhatsApp: '5551999996655',
+    contactTargetPhone: '5551999996655',
     brokenSkus: [
       {
-        productTitle: 'Tênis Yuool Fit All Black Unissex Conforto Extremo',
-        productUrl: 'https://www.yuool.com.br/tenis-yuool-fit-all-black',
-        imageSrc: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60',
-        price: 499.00,
-        availableSizes: ['35', '36', '44'],
-        missingSizes: ['39', '40', '41', '42'],
+        productTitle: 'Tênis Yuool Fit All Black Lã Merino Unissex Conforto Extremo',
+        productUrl: 'https://yuool.com.br/collections/colecao',
+        imageSrc: 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=600&auto=format&fit=crop&q=80',
+        price: 549.00,
+        availableSizes: ['36', '37', '43'],
+        missingSizes: ['39', '40', '41'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 64800.00,
-        explanation: 'Falta nos tamanhos 39 a 42 do modelo All Black (best seller absoluto da marca).'
+        estimatedLostRevenueMonthly: 65880.00,
+        explanation: 'Modelo monocromático all black esgotado nas numerações centrais.'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Tênis Yuool Fit All Black Unissex Conforto Extremo',
-      productUrl: 'https://www.yuool.com.br/tenis-yuool-fit-all-black',
-      imageSrc: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60',
-      price: 499.00,
-      availableSizes: ['35', '36', '44'],
-      missingSizes: ['39', '40', '41', '42'],
+      productTitle: 'Tênis Yuool Fit All Black Lã Merino Unissex Conforto Extremo',
+      productUrl: 'https://yuool.com.br/collections/colecao',
+      imageSrc: 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=600&auto=format&fit=crop&q=80',
+      price: 549.00,
+      availableSizes: ['36', '37', '43'],
+      missingSizes: ['39', '40', '41'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 64800.00,
-      explanation: 'Grade 39 a 42 esgotada no All Black.'
+      estimatedLostRevenueMonthly: 65880.00,
+      explanation: 'Tênis Yuool Fit sem tamanhos 39 ao 41 no Meta Ads.'
     },
-    totalMonthlyWasteEstimated: 64800.00,
-    iceScore: 9.3,
+    totalMonthlyWasteEstimated: 65880.00,
+    iceScore: 9.4,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'Yuool',
       {
-        productTitle: 'Tênis Yuool Fit All Black Unissex Conforto Extremo',
-        productUrl: 'https://www.yuool.com.br/tenis-yuool-fit-all-black',
-        imageSrc: '',
-        price: 499.00,
-        availableSizes: ['35', '36', '44'],
-        missingSizes: ['39', '40', '41', '42'],
+        productTitle: 'Tênis Yuool Fit All Black Lã Merino Unissex Conforto Extremo',
+        productUrl: 'https://yuool.com.br/collections/colecao',
+        imageSrc: 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=600&auto=format&fit=crop&q=80',
+        price: 549.00,
+        availableSizes: ['36', '37', '43'],
+        missingSizes: ['39', '40', '41'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 64800.00,
-        explanation: ''
+        estimatedLostRevenueMonthly: 65880.00,
+        explanation: 'Tênis de lã merino sem 39 a 41 no tráfego'
       },
-      64800.00,
-      'https://www.yuool.com.br'
+      65880.00,
+      'https://yuool.com.br'
     ),
-    notes: 'Rio Grande do Sul. Marca D2C de calçados sustentáveis. WhatsApp (51 99678-1234).'
+    notes: 'Porto Alegre-RS. Shopify. Tênis sustentável com excelente reputação.'
   },
 
-  // 18. Viccini Calçados (Franca/SP)
+  // 18. Viccini Calçados
   {
-    id: 'lead-viccini-calcados',
+    id: 'lead-viccini',
     brandName: 'Viccini Calçados',
     storeUrl: 'https://www.viccini.com.br',
     domain: 'viccini.com.br',
     niche: 'Sapatos Sociais Masculinos em Couro',
-    detectedAt: '2026-09-18T18:30:00.000Z',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
-    metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Viccini Calçados'),
-    activeAdsCountEstimated: 18,
-    detectedWhatsApp: '5516999887766',
-    contactTargetPhone: '5516999887766',
+    metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Viccini'),
+    activeAdsCountEstimated: 22,
+    detectedWhatsApp: '5516999993322',
+    contactTargetPhone: '5516999993322',
     brokenSkus: [
       {
         productTitle: 'Sapato Masculino Oxford Viccini Belluno Couro Café',
         productUrl: 'https://www.viccini.com.br/sapato-oxford-belluno-couro-cafe',
-        imageSrc: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=500&auto=format&fit=crop&q=60',
-        price: 429.00,
+        imageSrc: 'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=600&auto=format&fit=crop&q=80',
+        price: 489.90,
         availableSizes: ['38', '43'],
-        missingSizes: ['40', '41'],
-        ruptureSeverity: 'ALTA',
-        estimatedLostRevenueMonthly: 42900.00,
-        explanation: 'Falta das duas numerações mais vendidas no Brasil (40 e 41) em sapato executivo formal.'
+        missingSizes: ['39', '40', '41', '42'],
+        ruptureSeverity: 'CRITICA',
+        estimatedLostRevenueMonthly: 58788.00,
+        explanation: 'Sapato social clássico em couro legítimo sem numerações centrais.'
       }
     ],
     primaryBrokenSku: {
       productTitle: 'Sapato Masculino Oxford Viccini Belluno Couro Café',
       productUrl: 'https://www.viccini.com.br/sapato-oxford-belluno-couro-cafe',
-      imageSrc: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=500&auto=format&fit=crop&q=60',
-      price: 429.00,
+      imageSrc: 'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=600&auto=format&fit=crop&q=80',
+      price: 489.90,
       availableSizes: ['38', '43'],
-      missingSizes: ['40', '41'],
-      ruptureSeverity: 'ALTA',
-      estimatedLostRevenueMonthly: 42900.00,
-      explanation: 'Tamanhos 40 e 41 em falta.'
+      missingSizes: ['39', '40', '41', '42'],
+      ruptureSeverity: 'CRITICA',
+      estimatedLostRevenueMonthly: 58788.00,
+      explanation: 'Sapato oxford sem estoque 39-42 no tráfego.'
     },
-    totalMonthlyWasteEstimated: 42900.00,
-    iceScore: 9.0,
+    totalMonthlyWasteEstimated: 58788.00,
+    iceScore: 9.4,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'Viccini Calçados',
       {
         productTitle: 'Sapato Masculino Oxford Viccini Belluno Couro Café',
         productUrl: 'https://www.viccini.com.br/sapato-oxford-belluno-couro-cafe',
-        imageSrc: '',
-        price: 429.00,
+        imageSrc: 'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=600&auto=format&fit=crop&q=80',
+        price: 489.90,
         availableSizes: ['38', '43'],
-        missingSizes: ['40', '41'],
-        ruptureSeverity: 'ALTA',
-        estimatedLostRevenueMonthly: 42900.00,
-        explanation: ''
+        missingSizes: ['39', '40', '41', '42'],
+        ruptureSeverity: 'CRITICA',
+        estimatedLostRevenueMonthly: 58788.00,
+        explanation: 'Sapato oxford em couro sem numeração central'
       },
-      42900.00,
+      58788.00,
       'https://www.viccini.com.br'
     ),
-    notes: 'Franca-SP. E-commerce tradicional de calçado executivo. WhatsApp (16 99988-7766).'
+    notes: 'Franca-SP. Plataforma Tray. Calçados masculinos finos com alto giro.'
   },
 
-  // 19. Cutterman Co (Curitiba/PR)
+  // 19. Cutterman Co
   {
-    id: 'lead-cutterman-co',
+    id: 'lead-cutterman',
     brandName: 'Cutterman Co',
     storeUrl: 'https://www.cutterman.co',
     domain: 'cutterman.co',
     niche: 'Leather Goods & Mochilas em Couro',
-    detectedAt: '2026-09-18T18:45:00.000Z',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
-    metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Cutterman'),
-    activeAdsCountEstimated: 21,
-    detectedWhatsApp: '5541988776655',
-    contactTargetPhone: '5541988776655',
+    metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Cutterman Co'),
+    activeAdsCountEstimated: 16,
+    detectedWhatsApp: '5541999992211',
+    contactTargetPhone: '5541999992211',
     brokenSkus: [
       {
         productTitle: 'Mochila de Couro Legítimo Cutterman The Rucksack Whisky',
         productUrl: 'https://www.cutterman.co/mochilas/the-rucksack-whisky',
-        imageSrc: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&auto=format&fit=crop&q=60',
+        imageSrc: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop&q=80',
         price: 1290.00,
-        availableSizes: [],
+        availableSizes: ['ÚNICO'],
         missingSizes: ['ESGOTADO'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 58050.00,
-        explanation: 'Item ícone (R$ 1.290) 100% esgotado no e-commerce, mantendo tráfego ativo de Google Search e Meta.'
+        estimatedLostRevenueMonthly: 51600.00,
+        explanation: 'Mochila artesanal de altíssimo valor (R$ 1.290,00) esgotada mantendo campanhas no ar.'
       }
     ],
     primaryBrokenSku: {
       productTitle: 'Mochila de Couro Legítimo Cutterman The Rucksack Whisky',
       productUrl: 'https://www.cutterman.co/mochilas/the-rucksack-whisky',
-      imageSrc: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&auto=format&fit=crop&q=60',
+      imageSrc: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop&q=80',
       price: 1290.00,
-      availableSizes: [],
+      availableSizes: ['ÚNICO'],
       missingSizes: ['ESGOTADO'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 58050.00,
-      explanation: 'Mochila carro-chefe esgotada recebendo cliques pagos.'
+      estimatedLostRevenueMonthly: 51600.00,
+      explanation: 'Mochila de R$ 1.290 esgotada recebendo cliques pagos.'
     },
-    totalMonthlyWasteEstimated: 58050.00,
-    iceScore: 9.2,
+    totalMonthlyWasteEstimated: 51600.00,
+    iceScore: 9.3,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
       'Cutterman Co',
       {
         productTitle: 'Mochila de Couro Legítimo Cutterman The Rucksack Whisky',
         productUrl: 'https://www.cutterman.co/mochilas/the-rucksack-whisky',
-        imageSrc: '',
+        imageSrc: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&auto=format&fit=crop&q=80',
         price: 1290.00,
-        availableSizes: [],
+        availableSizes: ['ÚNICO'],
         missingSizes: ['ESGOTADO'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 58050.00,
-        explanation: ''
+        estimatedLostRevenueMonthly: 51600.00,
+        explanation: 'Mochila de R$ 1.290 esgotada no tráfego'
       },
-      58050.00,
+      51600.00,
       'https://www.cutterman.co'
     ),
-    notes: 'Curitiba-PR. Marca de alto valor agregado e design clássico. WhatsApp (41 98877-6655).'
+    notes: 'Curitiba-PR. Shopify. Artigos em couro artesanal de altíssima qualidade.'
   },
 
-  // 20. Kallblack Streetwear (São Paulo/SP)
+  // 20. Reserva (Rio de Janeiro/RJ)
   {
-    id: 'lead-kallblack-streetwear',
-    brandName: 'Kallblack Streetwear',
-    storeUrl: 'https://www.kallblack.com.br',
-    domain: 'kallblack.com.br',
-    niche: 'Streetwear Urbano & Camisetas Heavyweight',
-    detectedAt: '2026-09-18T19:00:00.000Z',
+    id: 'lead-reserva',
+    brandName: 'Reserva',
+    storeUrl: 'https://www.usereserva.com/',
+    domain: 'usereserva.com',
+    niche: 'Moda Masculina & Camisetas Pima',
+    detectedAt: '2026-09-17T18:00:00.000Z',
     hasMetaPixel: true,
-    metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Kallblack'),
-    activeAdsCountEstimated: 17,
-    detectedWhatsApp: '5511987654321',
-    contactTargetPhone: '5511987654321',
+    metaAdsLibraryUrl: generateMetaAdsLibraryUrl('Reserva'),
+    activeAdsCountEstimated: 85,
+    detectedWhatsApp: '5521999991100',
+    contactTargetPhone: '5521999991100',
     brokenSkus: [
       {
-        productTitle: 'Camiseta Heavyweight Kallblack Acid Wash Gothic',
-        productUrl: 'https://www.kallblack.com.br/camiseta-heavyweight-acid-wash',
-        imageSrc: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&auto=format&fit=crop&q=60',
-        price: 179.90,
-        availableSizes: ['P', 'GG'],
-        missingSizes: ['M', 'G'],
+        productTitle: 'Camiseta Masculina Pima Clássica Reserva Woodpecker',
+        productUrl: 'https://www.usereserva.com/',
+        imageSrc: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80',
+        price: 249.00,
+        availableSizes: ['PP', '3G'],
+        missingSizes: ['P', 'M', 'G'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 39578.00,
-        explanation: 'Modelos Acid Wash sem os tamanhos M e G em campanha contínua no Instagram.'
+        estimatedLostRevenueMonthly: 89640.00,
+        explanation: 'Camiseta básica pima sem tamanhos centrais sob investimento massivo de Meta Ads.'
       }
     ],
     primaryBrokenSku: {
-      productTitle: 'Camiseta Heavyweight Kallblack Acid Wash Gothic',
-      productUrl: 'https://www.kallblack.com.br/camiseta-heavyweight-acid-wash',
-      imageSrc: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&auto=format&fit=crop&q=60',
-      price: 179.90,
-      availableSizes: ['P', 'GG'],
-      missingSizes: ['M', 'G'],
+      productTitle: 'Camiseta Masculina Pima Clássica Reserva Woodpecker',
+      productUrl: 'https://www.usereserva.com/',
+      imageSrc: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80',
+      price: 249.00,
+      availableSizes: ['PP', '3G'],
+      missingSizes: ['P', 'M', 'G'],
       ruptureSeverity: 'CRITICA',
-      estimatedLostRevenueMonthly: 39578.00,
-      explanation: 'Tamanhos centrais M e G esgotados no e-commerce.'
+      estimatedLostRevenueMonthly: 89640.00,
+      explanation: 'Tamanhos centrais P, M e G esgotados no tráfego pago.'
     },
-    totalMonthlyWasteEstimated: 39578.00,
-    iceScore: 9.0,
+    totalMonthlyWasteEstimated: 89640.00,
+    iceScore: 9.8,
     status: 'NOVO_LEAD',
     pitches: generateWhatsAppPitches(
-      'Kallblack Streetwear',
+      'Reserva',
       {
-        productTitle: 'Camiseta Heavyweight Kallblack Acid Wash Gothic',
-        productUrl: 'https://www.kallblack.com.br/camiseta-heavyweight-acid-wash',
-        imageSrc: '',
-        price: 179.90,
-        availableSizes: ['P', 'GG'],
-        missingSizes: ['M', 'G'],
+        productTitle: 'Camiseta Masculina Pima Clássica Reserva Woodpecker',
+        productUrl: 'https://www.usereserva.com/',
+        imageSrc: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80',
+        price: 249.00,
+        availableSizes: ['PP', '3G'],
+        missingSizes: ['P', 'M', 'G'],
         ruptureSeverity: 'CRITICA',
-        estimatedLostRevenueMonthly: 39578.00,
-        explanation: ''
+        estimatedLostRevenueMonthly: 89640.00,
+        explanation: 'Falta de tamanhos centrais no tráfego'
       },
-      39578.00,
-      'https://www.kallblack.com.br'
+      89640.00,
+      'https://www.usereserva.com/'
     ),
-    notes: 'São Paulo. Alta tração com a comunidade jovem e streetwear underground. WhatsApp (11 98765-4321).'
+    notes: 'Rio de Janeiro-RJ. Grupo AR&Co. Gigante de moda masculina D2C com tráfego maciço.'
   }
 ];

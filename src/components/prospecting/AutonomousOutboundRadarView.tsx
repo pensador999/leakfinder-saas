@@ -32,6 +32,7 @@ import {
   FlaskConical
 } from 'lucide-react';
 import { TechReverseEngineeringInspectorModal } from '../reverseEngineering/TechReverseEngineeringInspectorModal';
+import { ProductImageWithFallback } from '../common/ProductImageWithFallback';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faFire, 
@@ -576,33 +577,65 @@ export const AutonomousOutboundRadarView: React.FC<AutonomousOutboundRadarViewPr
 
                     {/* Proof of Crime (Flagrante) */}
                     <div className="p-3.5 bg-rose-950/20 border border-rose-500/20 rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        {lead.primaryBrokenSku.imageSrc ? (
-                          <img 
-                            src={lead.primaryBrokenSku.imageSrc} 
-                            alt={lead.primaryBrokenSku.productTitle} 
-                            className="w-14 h-14 object-cover rounded-lg border border-rose-500/30 shrink-0"
-                          />
-                        ) : (
-                          <div className="w-14 h-14 bg-rose-500/10 border border-rose-500/20 rounded-lg flex items-center justify-center text-rose-400 shrink-0 font-bold text-xs">
-                            SKU
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <ProductImageWithFallback 
+                          src={lead.primaryBrokenSku.imageSrc} 
+                          alt={lead.primaryBrokenSku.productTitle} 
+                          category={lead.niche}
+                          className="w-16 h-16"
+                        />
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                            <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider">
+                              Flagrante de Ruptura
+                            </span>
+                            <span className="px-1.5 py-0.2 bg-rose-500/20 text-rose-300 text-[9px] font-mono font-bold rounded">
+                              Severidade: {lead.primaryBrokenSku.ruptureSeverity}
+                            </span>
                           </div>
-                        )}
-                        <div>
-                          <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider block">Furo Crítico de Grade</span>
-                          <p className="text-xs font-extrabold text-[#FFFCE1]">{lead.primaryBrokenSku.productTitle}</p>
-                          <p className="text-[11px] text-[#BBBAA6] mt-0.5">
-                            Tamanhos Esgotados: <span className="font-bold text-rose-400">{lead.primaryBrokenSku.missingSizes.join(', ')}</span> 
-                            {' '}(Disponíveis: {lead.primaryBrokenSku.availableSizes.join(', ')})
-                          </p>
+                          
+                          <a 
+                            href={lead.primaryBrokenSku.productUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-xs font-extrabold text-[#FFFCE1] hover:text-[#0AE448] transition-colors line-clamp-1 flex items-center gap-1 group"
+                            title="Abrir página oficial do produto na loja"
+                          >
+                            <span className="truncate">{lead.primaryBrokenSku.productTitle}</span>
+                            <ExternalLink className="w-3 h-3 text-[#BBBAA6] group-hover:text-[#0AE448] shrink-0" />
+                          </a>
+
+                          <div className="flex items-center gap-2 flex-wrap mt-1 text-[11px] text-[#BBBAA6]">
+                            <span>Preço: <strong className="text-white font-mono">R$ {lead.primaryBrokenSku.price.toFixed(2)}</strong></span>
+                            <span>•</span>
+                            <span>Esgotados: <span className="font-bold text-rose-400">{lead.primaryBrokenSku.missingSizes.join(', ') || 'Nenhum'}</span></span>
+                            {lead.primaryBrokenSku.availableSizes.length > 0 && (
+                              <>
+                                <span>•</span>
+                                <span className="text-[#0AE448]">Disponíveis: {lead.primaryBrokenSku.availableSizes.join(', ')}</span>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
 
-                      <div className="text-left md:text-right shrink-0">
-                        <span className="text-[10px] uppercase font-bold text-[#BBBAA6] block">WhatsApp de Contato</span>
-                        <span className="text-xs font-mono font-bold text-[#0AE448]">
-                          {lead.contactTargetPhone || lead.detectedWhatsApp || 'Não minerado'}
-                        </span>
+                      <div className="flex flex-col sm:flex-row md:flex-col items-start sm:items-center md:items-end justify-between gap-2 shrink-0">
+                        <div className="text-left md:text-right">
+                          <span className="text-[10px] uppercase font-bold text-[#BBBAA6] block">WhatsApp de Contato</span>
+                          <span className="text-xs font-mono font-bold text-[#0AE448]">
+                            {lead.contactTargetPhone || lead.detectedWhatsApp || 'Não minerado'}
+                          </span>
+                        </div>
+
+                        <a 
+                          href={lead.primaryBrokenSku.productUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2.5 py-1 bg-white/5 hover:bg-white/10 text-[#00BAE2] border border-white/10 rounded-lg text-[10px] font-bold flex items-center gap-1 transition-all"
+                        >
+                          <span>Ver Produto Oficial (200 OK)</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
                       </div>
                     </div>
 

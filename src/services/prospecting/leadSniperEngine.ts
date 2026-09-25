@@ -324,19 +324,30 @@ export async function scanTargetStoreForLeadSniper(rawUrl: string): Promise<Pros
     // Fallback contextualizado e sensível ao nicho
     const domLower = domain.toLowerCase();
     const isShoe = domLower.includes('shoes') || domLower.includes('tenis') || domLower.includes('calcados') || domLower.includes('sapato');
+    const isEyewear = domLower.includes('oculos') || domLower.includes('optica') || domLower.includes('eyewear');
     const isSupp = domLower.includes('suplemento') || domLower.includes('whey');
 
     const estimatedMonthlyLoss = 32400.00;
     const primarySku: BrokenSkuProof = {
-      productTitle: isShoe ? `Tênis Conforto Anatômico ${brandName}` : isSupp ? `Creatina Monohidratada Pura ${brandName}` : `Coleção Oficial ${brandName}`,
-      productUrl: `${cleanUrl}/products`,
-      imageSrc: isShoe ? 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60' : 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&auto=format&fit=crop&q=60',
-      price: isShoe ? 289.90 : 159.00,
-      availableSizes: isShoe ? ['38', '43'] : ['P'],
-      missingSizes: isShoe ? ['39', '40', '41'] : ['M', 'G', 'GG'],
+      productTitle: isShoe 
+        ? `Calçado Conforto Anatômico ${brandName}` 
+        : isEyewear 
+        ? `Óculos Polarizado Proteção UV ${brandName}`
+        : isSupp 
+        ? `Creatina Monohidratada Pura ${brandName}` 
+        : `Coleção Oficial ${brandName}`,
+      productUrl: cleanUrl,
+      imageSrc: '', // Deixa vazio para renderização semântica elegante via ProductImageWithFallback
+      price: isShoe ? 289.90 : isEyewear ? 399.00 : isSupp ? 159.00 : 189.90,
+      availableSizes: isShoe ? ['38', '43'] : isEyewear ? ['ÚNICO'] : ['P'],
+      missingSizes: isShoe ? ['39', '40', '41'] : isEyewear ? ['ESGOTADO'] : ['M', 'G', 'GG'],
       ruptureSeverity: 'CRITICA',
       estimatedLostRevenueMonthly: estimatedMonthlyLoss,
-      explanation: isShoe ? 'Numerações centrais 39 a 41 com estoque zerado e tráfego pago ativo.' : 'Grade furada nos tamanhos M e G identificada com campanhas ativas no Meta Ads.'
+      explanation: isShoe 
+        ? 'Numerações centrais 39 a 41 com estoque zerado e tráfego pago ativo.' 
+        : isEyewear
+        ? 'Modelo principal esgotado na vitrine sob tráfego pago ativo.'
+        : 'Grade furada nos tamanhos M e G identificada com campanhas ativas no Meta Ads.'
     };
 
     const tierAnalysis = calculateLeadHuntingTier({

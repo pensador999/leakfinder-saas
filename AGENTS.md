@@ -103,5 +103,22 @@ Em decorrência do caso auditado na loja **BRK Agro**, onde o **Boné Trucker Ye
    - **Camada C (Conformidade com Promessa de Entrega):** Verificar se o produto ostenta selos de *"Envio Imediato"* sem capacidade real de expedição em 24h (risco de PROCON/CDC).
    - **Camada D (Ação Automática de Stock-Shield):** Ao identificar tráfego pago ativo para SKU em ruptura operacional, disparar comando de pausa automática de anúncio via Meta Graph API / Google Ads API.
 
+---
+
+## 🖼️ 8. Protocolo de Fidelidade Visual, Grounding de Imagens & Diretriz Anti-Google Places
+Em consonância com o feedback crítico de vitrine e catálogo, fica formalmente estabelecida a regra:
+
+1. **Alinhamento Semântico Rigoroso Produto vs Imagem (Zero Descompasso):**
+   - É terminantemente proibido exibir imagens de produtos genéricos incompatíveis com o título e a categoria (ex: exibir foto de tênis esportivo quando o produto é um óculos de sol, bota texana, chapéu ou camisa de pesca).
+   - A imagem vinculada a qualquer SKU auditado DEVE ser a foto oficial de estúdio extraída diretamente do CDN da loja virtual (`cdn.shopify.com`, `images.tray.com.br`, `nuvemshop.com.br`, `vteximg.com.br`) ou de alta fidelidade semântica da categoria exata.
+2. **Proibição de Imagens de Fachadas do Google Places:**
+   - Para e-commerces e marcas D2C, **NUNCA** utilizar fotos de perfil do Google Places / Google Maps (fotos de fachadas prediais, calçadas, balcões ou imagens amadoras de clientes) como representação de produtos na vitrine de sangria e tráfego pago.
+   - Vitrines de e-commerce exigem fotos digitais de estúdio da página de produto (PDP) para preservar a credibilidade institucional e a percepção de alto padrão.
+3. **Salvaguarda de Erro & Fallback Semântico (`ProductImageWithFallback`):**
+   - Caso um CDN bloqueie hotlinking (HTTP 403) ou a imagem remota se torne indisponível, o sistema DEVE renderizar um card vetorial estilizado com o ícone semântico da categoria (óculos, calçados, vestuário, chapelaria, mochilas) e o nome do produto, sem jamais distorcer o layout nem substituir por fotos aleatórias.
+4. **Zero Links Quebrados (Regra HTTP 200 Obrigatória):**
+   - Todo link de produto exibido nos radares e vitrines de prospecção deve abrir a página real ativa com status 200 OK. Links fictícios ou com status 404 são terminantemente proibidos.
+
+
 
 
