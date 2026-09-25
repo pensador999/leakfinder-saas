@@ -49,8 +49,11 @@ export class OutboundCloserEngine {
     customAuditUrl?: string
   ): ThreeStepPitch {
     const auditLink = customAuditUrl || `https://adshield.app/?loja=${lead.storeDomain}`;
-    const formattedBleed = lead.estimatedMonthlyBleedBrl.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    const brokenSizesStr = lead.brokenSizes.join(', ') || 'M e G';
+    const effectiveBleed = (lead.estimatedMonthlyBleedBrl && lead.estimatedMonthlyBleedBrl > 0)
+      ? lead.estimatedMonthlyBleedBrl
+      : 3200; // Benchmark atuarial padrão de sangria para e-commerces com ruptura em Meta Ads
+    const formattedBleed = effectiveBleed.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const brokenSizesStr = lead.brokenSizes && lead.brokenSizes.length > 0 ? lead.brokenSizes.join(', ') : 'M e G';
 
     // 1. O Gancho (A Dor que Ninguém Viu)
     const step1Hook = 

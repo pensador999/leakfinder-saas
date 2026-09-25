@@ -83,43 +83,47 @@ const BatchProspectingAuditorModal = lazy(() => import('../components/agency/Bat
 const ChromeExtensionModal = lazy(() => import('../components/tools/ChromeExtensionModal').then(m => ({ default: m.ChromeExtensionModal })));
 const FloatingAiChatWidget = lazy(() => import('../components/FloatingAiChatWidget').then(m => ({ default: m.FloatingAiChatWidget })));
 
+export type ActiveModalId =
+  | 'audit'
+  | 'export'
+  | 'settings'
+  | 'adminDashboard'
+  | 'pricing'
+  | 'whatsappLead'
+  | 'leadsDrawer'
+  | 'storesManager'
+  | 'whatsappWatchdog'
+  | 'integrations'
+  | 'whiteLabel'
+  | 'metaAutoKill'
+  | 'batchAuditor'
+  | 'chromeExtension'
+  | 'mitigationHistory'
+  | 'founderAuth'
+  | null;
+
 export function HomePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [diagnostic, setDiagnostic] = useState<AgentDiagnosticResult | null>(null);
   const [activeTab, setActiveTab] = useState<string>('summary');
-  const [isAuditModalOpen, setIsAuditModalOpen] = useState<boolean>(false);
-  const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
-  const [isAdminDashboardOpen, setIsAdminDashboardOpen] = useState<boolean>(false);
-  const [isPricingModalOpen, setIsPricingModalOpen] = useState<boolean>(false);
-  const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState<boolean>(false);
-  const [isLeadsDrawerOpen, setIsLeadsDrawerOpen] = useState<boolean>(false);
-  const [isStoresManagerOpen, setIsStoresManagerOpen] = useState<boolean>(false);
-  const [isWhatsAppWatchdogOpen, setIsWhatsAppWatchdogOpen] = useState<boolean>(false);
-  const [isIntegrationsModalOpen, setIsIntegrationsModalOpen] = useState<boolean>(false);
-  const [isWhiteLabelModalOpen, setIsWhiteLabelModalOpen] = useState<boolean>(false);
-  const [isMetaAutoKillModalOpen, setIsMetaAutoKillModalOpen] = useState<boolean>(false);
-  const [isBatchAuditorOpen, setIsBatchAuditorOpen] = useState<boolean>(false);
-  const [isChromeExtensionOpen, setIsChromeExtensionOpen] = useState<boolean>(false);
+  const [activeModal, setActiveModal] = useState<ActiveModalId>(null);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analyzingUrl, setAnalyzingUrl] = useState<string>('');
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
   const [isPublicDossierMode, setIsPublicDossierMode] = useState<boolean>(false);
-  const [isMitigationHistoryOpen, setIsMitigationHistoryOpen] = useState<boolean>(false);
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState<boolean>(false);
 
   // 🔒 Master Founder Confidential Auth State
   const [isFounderAuthenticated, setIsFounderAuthenticated] = useState<boolean>(() => {
     return sessionStorage.getItem('adshield_founder_authenticated') === 'true';
   });
-  const [isFounderModalOpen, setIsFounderModalOpen] = useState<boolean>(false);
 
   // Auto trigger founder auth modal if URL param exists
   useEffect(() => {
     if (searchParams.get('founder') === 'true' || searchParams.get('mode') === 'founder' || window.location.hash.includes('founder')) {
       if (!isFounderAuthenticated) {
-        setIsFounderModalOpen(true);
+        setActiveModal('founderAuth');
       }
     }
   }, [searchParams, isFounderAuthenticated]);
@@ -154,7 +158,7 @@ export function HomePage() {
   }, [searchParams]);
 
   const handleStartRealAudit = async (input: AuditInput) => {
-    setIsAuditModalOpen(false);
+    setActiveModal(null);
     setIsAnalyzing(true);
     setAnalyzingUrl(input.siteUrl);
 
@@ -217,12 +221,12 @@ export function HomePage() {
       {/* Sticky Header */}
       <Header 
         diagnostic={diagnostic} 
-        onOpenAuditModal={() => setIsAuditModalOpen(true)} 
-        onExportReport={() => setIsExportModalOpen(true)}
-        onOpenSettings={() => setIsSettingsModalOpen(true)}
-        onOpenAdmin={() => setIsLeadsDrawerOpen(true)}
-        onOpenPricing={() => setIsPricingModalOpen(true)}
-        onOpenWhatsAppLeadModal={() => setIsWhatsAppModalOpen(true)}
+        onOpenAuditModal={() => setActiveModal('audit')} 
+        onExportReport={() => setActiveModal('export')}
+        onOpenSettings={() => setActiveModal('settings')}
+        onOpenAdmin={() => setActiveModal('leadsDrawer')}
+        onOpenPricing={() => setActiveModal('pricing')}
+        onOpenWhatsAppLeadModal={() => setActiveModal('whatsappLead')}
         onSelectStorePreset={(preset: StorePreset) => {
           handleStartRealAudit({
             siteUrl: preset.url,
@@ -237,7 +241,7 @@ export function HomePage() {
             competitorsUrl: 'https://concorrente.com.br'
           });
         }}
-        onOpenMitigationHistory={() => setIsMitigationHistoryOpen(true)}
+        onOpenMitigationHistory={() => setActiveModal('mitigationHistory')}
       />
 
       {/* Main Container */}
@@ -261,8 +265,8 @@ export function HomePage() {
             {/* 🚨 HIGH-CONVERTING PUBLIC DOSSIER MERCHANT BANNER */}
             <PublicDossierMerchantHeader
               diagnostic={diagnostic}
-              onOpenPricing={() => setIsPricingModalOpen(true)}
-              onOpenWhatsApp={() => setIsWhatsAppModalOpen(true)}
+              onOpenPricing={() => setActiveModal('pricing')}
+              onOpenWhatsApp={() => setActiveModal('whatsappLead')}
             />
 
             {/* 🎛️ EXECUTIVE CONTROL & MODE CENTER (PROGRESSIVE DISCLOSURE) */}
@@ -318,7 +322,7 @@ export function HomePage() {
 
                 {/* 📲 Vigia WhatsApp 24/7 (High Priority Status Button) */}
                 <button
-                  onClick={() => setIsWhatsAppWatchdogOpen(true)}
+                  onClick={() => setActiveModal('whatsappWatchdog')}
                   className="px-3 py-1.5 rounded-xl bg-[#101211] hover:bg-[#141716] text-[#0AE448] border border-[#0AE448]/30 hover:border-[#0AE448]/60 text-xs font-bold flex items-center gap-2 transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                   title="Configurar entrega diária dos relatórios executivos no WhatsApp"
                 >
@@ -328,7 +332,7 @@ export function HomePage() {
 
                 {/* 🔌 Conectar Loja (1-Click) */}
                 <button
-                  onClick={() => setIsIntegrationsModalOpen(true)}
+                  onClick={() => setActiveModal('integrations')}
                   className="px-3.5 py-1.5 rounded-xl bg-[#101211] hover:bg-[#191C1B] text-[#FFFCE1] border border-white/10 hover:border-white/20 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                   title="Conectar Shopify, Mercado Livre ou VTEX"
                 >
@@ -371,7 +375,7 @@ export function HomePage() {
 
                       <button
                         onClick={() => { 
-                          setIsMetaAutoKillModalOpen(true); 
+                          setActiveModal('metaAutoKill'); 
                           setIsToolsMenuOpen(false); 
                         }}
                         className="w-full px-3 py-2 text-left rounded-xl hover:bg-white/5 text-xs font-semibold text-rose-400 flex items-center gap-2.5 transition-colors cursor-pointer"
@@ -384,7 +388,7 @@ export function HomePage() {
                       </button>
 
                       <button
-                        onClick={() => { setIsStoresManagerOpen(true); setIsToolsMenuOpen(false); }}
+                        onClick={() => { setActiveModal('storesManager'); setIsToolsMenuOpen(false); }}
                         className="w-full px-3 py-2 text-left rounded-xl hover:bg-white/5 text-xs font-semibold text-[#BBBAA6] flex items-center gap-2.5 transition-colors cursor-pointer"
                       >
                         <Store className="w-4 h-4 text-blue-400 shrink-0" />
@@ -395,7 +399,7 @@ export function HomePage() {
                       </button>
 
                       <button
-                        onClick={() => { setIsBatchAuditorOpen(true); setIsToolsMenuOpen(false); }}
+                        onClick={() => { setActiveModal('batchAuditor'); setIsToolsMenuOpen(false); }}
                         className="w-full px-3 py-2 text-left rounded-xl hover:bg-white/5 text-xs font-semibold text-[#BBBAA6] flex items-center gap-2.5 transition-colors cursor-pointer"
                       >
                         <Layers className="w-4 h-4 text-indigo-400 shrink-0" />
@@ -406,7 +410,7 @@ export function HomePage() {
                       </button>
 
                       <button
-                        onClick={() => { setIsChromeExtensionOpen(true); setIsToolsMenuOpen(false); }}
+                        onClick={() => { setActiveModal('chromeExtension'); setIsToolsMenuOpen(false); }}
                         className="w-full px-3 py-2 text-left rounded-xl hover:bg-white/5 text-xs font-semibold text-[#BBBAA6] flex items-center gap-2.5 transition-colors cursor-pointer"
                       >
                         <Globe className="w-4 h-4 text-[#FF8709] shrink-0" />
@@ -417,7 +421,7 @@ export function HomePage() {
                       </button>
 
                       <button
-                        onClick={() => { setIsExportModalOpen(true); setIsToolsMenuOpen(false); }}
+                        onClick={() => { setActiveModal('export'); setIsToolsMenuOpen(false); }}
                         className="w-full px-3 py-2 text-left rounded-xl hover:bg-white/5 text-xs font-semibold text-[#BBBAA6] flex items-center gap-2.5 transition-colors cursor-pointer"
                       >
                         <FileText className="w-4 h-4 text-[#0AE448] shrink-0" />
@@ -428,7 +432,7 @@ export function HomePage() {
                       </button>
 
                       <button
-                        onClick={() => { setIsWhiteLabelModalOpen(true); setIsToolsMenuOpen(false); }}
+                        onClick={() => { setActiveModal('whiteLabel'); setIsToolsMenuOpen(false); }}
                         className="w-full px-3 py-2 text-left rounded-xl hover:bg-white/5 text-xs font-semibold text-[#BBBAA6] flex items-center gap-2.5 transition-colors cursor-pointer"
                       >
                         <Sparkles className="w-4 h-4 text-purple-400 shrink-0" />
@@ -443,7 +447,7 @@ export function HomePage() {
                       {/* Founder Access Section */}
                       {!isFounderAuthenticated ? (
                         <button
-                          onClick={() => { setIsFounderModalOpen(true); setIsToolsMenuOpen(false); }}
+                          onClick={() => { setActiveModal('founderAuth'); setIsToolsMenuOpen(false); }}
                           className="w-full px-3 py-2 text-left rounded-xl hover:bg-amber-500/10 text-xs font-semibold text-amber-400 flex items-center gap-2.5 transition-colors cursor-pointer"
                         >
                           <Lock className="w-4 h-4 text-amber-400 shrink-0" />
@@ -480,8 +484,8 @@ export function HomePage() {
               isMarketplaceStore={isMarketplaceStore}
               totalCatalogAlerts={totalCatalogAlerts}
               isFounderAuthenticated={isFounderAuthenticated}
-              onOpenMetaAutoKill={() => setIsMetaAutoKillModalOpen(true)}
-              onOpenWhatsAppWatchdog={() => setIsWhatsAppWatchdogOpen(true)}
+              onOpenMetaAutoKill={() => setActiveModal('metaAutoKill')}
+              onOpenWhatsAppWatchdog={() => setActiveModal('whatsappWatchdog')}
             />
 
             {/* Content Area Rendering */}
@@ -491,9 +495,9 @@ export function HomePage() {
                   viewMode === 'merchant' ? (
                     <MerchantTripleImpactDossier
                       diagnostic={diagnostic}
-                      onOpenPricing={() => setIsPricingModalOpen(true)}
-                      onOpenWhatsAppLead={() => setIsWhatsAppModalOpen(true)}
-                      onOpenMetaAutoKill={() => setIsMetaAutoKillModalOpen(true)}
+                      onOpenPricing={() => setActiveModal('pricing')}
+                      onOpenWhatsAppLead={() => setActiveModal('whatsappLead')}
+                      onOpenMetaAutoKill={() => setActiveModal('metaAutoKill')}
                       onSwitchToWarRoom={() => {
                         setViewMode('war_room');
                         setActiveTab('tree_of_thought');
@@ -662,132 +666,126 @@ export function HomePage() {
       <Suspense fallback={null}>
         {/* Audit Modal */}
         <AuditFormModal
-          isOpen={isAuditModalOpen}
-        onClose={() => setIsAuditModalOpen(false)}
-        onSubmit={handleStartRealAudit}
-        initialData={diagnostic?.input}
-      />
-
-      {/* Export Report Modal (White-Label PDF) */}
-      {isExportModalOpen && diagnostic && (
-        <ExecutivePdfExportModal
-          diagnostic={diagnostic}
-          isOpen={isExportModalOpen}
-          onClose={() => setIsExportModalOpen(false)}
+          isOpen={activeModal === 'audit'}
+          onClose={() => setActiveModal(null)}
+          onSubmit={handleStartRealAudit}
+          initialData={diagnostic?.input}
         />
-      )}
 
-      {isSettingsModalOpen && (
-        <SettingsModal onClose={() => setIsSettingsModalOpen(false)} />
-      )}
+        {/* Export Report Modal (White-Label PDF) */}
+        {activeModal === 'export' && diagnostic && (
+          <ExecutivePdfExportModal
+            diagnostic={diagnostic}
+            isOpen={true}
+            onClose={() => setActiveModal(null)}
+          />
+        )}
 
-      {isAdminDashboardOpen && (
-        <AdminLeadsDashboard onClose={() => setIsAdminDashboardOpen(false)} />
-      )}
+        {activeModal === 'settings' && (
+          <SettingsModal onClose={() => setActiveModal(null)} />
+        )}
 
-      {isPricingModalOpen && (
-        <TransparentCheckoutModal onClose={() => setIsPricingModalOpen(false)} />
-      )}
+        {activeModal === 'adminDashboard' && (
+          <AdminLeadsDashboard onClose={() => setActiveModal(null)} />
+        )}
 
-      {isMetaAutoKillModalOpen && diagnostic && (
-        <MetaAdsAutoKillSwitchModal
-          diagnostic={diagnostic}
-          onClose={() => setIsMetaAutoKillModalOpen(false)}
+        {activeModal === 'pricing' && (
+          <TransparentCheckoutModal onClose={() => setActiveModal(null)} />
+        )}
+
+        {activeModal === 'metaAutoKill' && diagnostic && (
+          <MetaAdsAutoKillSwitchModal
+            diagnostic={diagnostic}
+            onClose={() => setActiveModal(null)}
+          />
+        )}
+
+        {activeModal === 'batchAuditor' && (
+          <BatchProspectingAuditorModal
+            onClose={() => setActiveModal(null)}
+            onOpenStoreDossier={(domain) => {
+              setActiveModal(null);
+              const { cleanUrl, brandName } = extractCleanDomainAndBrand(domain);
+              handleStartRealAudit({
+                siteUrl: cleanUrl,
+                businessName: brandName,
+                businessType: 'ecommerce',
+                niche: cleanUrl.includes('agro') ? 'Agropecuária & Moda Campo' : 'Moda & Varejo E-commerce',
+                monthlyRevenue: 'R$ 50k a R$ 200k',
+                averageOrderValue: 180,
+                mainChallenge: 'low_conversion',
+                targetRegion: 'Brasil',
+                grossMargin: 45,
+                competitorsUrl: 'https://concorrente.com.br'
+              });
+            }}
+          />
+        )}
+
+        {activeModal === 'chromeExtension' && (
+          <ChromeExtensionModal
+            onClose={() => setActiveModal(null)}
+          />
+        )}
+
+        {diagnostic && (
+          <WhatsAppLeadCaptureModal
+            diagnostic={diagnostic}
+            isOpen={activeModal === 'whatsappLead'}
+            onClose={() => setActiveModal(null)}
+          />
+        )}
+
+        <AdminLeadsDrawer
+          isOpen={activeModal === 'leadsDrawer'}
+          onClose={() => setActiveModal(null)}
         />
-      )}
 
-      {isBatchAuditorOpen && (
-        <BatchProspectingAuditorModal
-          onClose={() => setIsBatchAuditorOpen(false)}
-          onOpenStoreDossier={(domain) => {
-            setIsBatchAuditorOpen(false);
-            const { cleanUrl, brandName } = extractCleanDomainAndBrand(domain);
-            handleStartRealAudit({
-              siteUrl: cleanUrl,
-              businessName: brandName,
-              businessType: 'ecommerce',
-              niche: cleanUrl.includes('agro') ? 'Agropecuária & Moda Campo' : 'Moda & Varejo E-commerce',
-              monthlyRevenue: 'R$ 50k a R$ 200k',
-              averageOrderValue: 180,
-              mainChallenge: 'low_conversion',
-              targetRegion: 'Brasil',
-              grossMargin: 45,
-              competitorsUrl: 'https://concorrente.com.br'
-            });
+        <MonitoredStoresManagerModal
+          isOpen={activeModal === 'storesManager'}
+          onClose={() => setActiveModal(null)}
+          onSelectStoreToAudit={(url) => {
+            setAnalyzingUrl(url);
+            setIsAnalyzing(true);
+            setActiveModal(null);
           }}
         />
-      )}
 
-      {isChromeExtensionOpen && (
-        <ChromeExtensionModal
-          onClose={() => setIsChromeExtensionOpen(false)}
+        <WhatsAppWatchdogSettingsModal
+          isOpen={activeModal === 'whatsappWatchdog'}
+          onClose={() => setActiveModal(null)}
         />
-      )}
 
-      {diagnostic && (
-        <WhatsAppLeadCaptureModal
-          diagnostic={diagnostic}
-          isOpen={isWhatsAppModalOpen}
-          onClose={() => setIsWhatsAppModalOpen(false)}
+        <EcommerceIntegrationsHubModal
+          isOpen={activeModal === 'integrations'}
+          onClose={() => setActiveModal(null)}
         />
-      )}
 
-      <AdminLeadsDrawer
-        isOpen={isLeadsDrawerOpen}
-        onClose={() => setIsLeadsDrawerOpen(false)}
-      />
+        {diagnostic && (
+          <AgencyWhiteLabelModal
+            isOpen={activeModal === 'whiteLabel'}
+            onClose={() => setActiveModal(null)}
+            diagnostic={diagnostic}
+          />
+        )}
 
-      <MonitoredStoresManagerModal
-        isOpen={isStoresManagerOpen}
-        onClose={() => setIsStoresManagerOpen(false)}
-        onSelectStoreToAudit={(url) => {
-          setAnalyzingUrl(url);
-          setIsAnalyzing(true);
-        }}
-      />
-
-      <WhatsAppWatchdogSettingsModal
-        isOpen={isWhatsAppWatchdogOpen}
-        onClose={() => setIsWhatsAppWatchdogOpen(false)}
-      />
-
-      <EcommerceIntegrationsHubModal
-        isOpen={isIntegrationsModalOpen}
-        onClose={() => setIsIntegrationsModalOpen(false)}
-      />
-
-      {diagnostic && (
-        <AgencyWhiteLabelModal
-          isOpen={isWhiteLabelModalOpen}
-          onClose={() => setIsWhiteLabelModalOpen(false)}
-          diagnostic={diagnostic}
+        {/* 🔒 Master Founder Auth Gate */}
+        <FounderAuthModal
+          isOpen={activeModal === 'founderAuth'}
+          onClose={() => setActiveModal(null)}
+          onSuccess={() => {
+            setIsFounderAuthenticated(true);
+            setActiveModal(null);
+            setActiveTab('founder_hq');
+          }}
         />
-      )}
 
-      {isMetaAutoKillModalOpen && diagnostic && (
-        <MetaAdsAutoKillSwitchModal
-          diagnostic={diagnostic}
-          onClose={() => setIsMetaAutoKillModalOpen(false)}
+        <MitigationHistoryDrawer
+          isOpen={activeModal === 'mitigationHistory'}
+          onClose={() => setActiveModal(null)}
         />
-      )}
 
-      {/* 🔒 Master Founder Auth Gate */}
-      <FounderAuthModal
-        isOpen={isFounderModalOpen}
-        onClose={() => setIsFounderModalOpen(false)}
-        onSuccess={() => {
-          setIsFounderAuthenticated(true);
-          setIsFounderModalOpen(false);
-          setActiveTab('founder_hq');
-        }}
-      />
-
-      <MitigationHistoryDrawer
-        isOpen={isMitigationHistoryOpen}
-        onClose={() => setIsMitigationHistoryOpen(false)}
-      />
-
-      <FloatingAiChatWidget />
+        <FloatingAiChatWidget />
       </Suspense>
 
       {/* Footer Legal & Institucional em Conformidade com Decreto 7.962/2013 */}

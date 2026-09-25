@@ -34,58 +34,7 @@ export async function runAgentDiagnostic(input: AuditInput, customWorkerResult?:
   if (customWorkerResult) {
     return generateDiagnosticFromWorker(input, customWorkerResult);
   }
-
-  const rawUrl = input.siteUrl || 'https://brkagro.com.br';
-  const siteData = await inspectRealWebsite(rawUrl, { operationMode: input.operationMode });
-
-  const defaultWorkerResult: WorkerInspectionResult = {
-    siteData,
-    copyNlp: analyzeCopyNLP(siteData),
-    visionAnalysis: await analyzeComputerVision(siteData.domain, siteData.rawHtmlSnippet || ''),
-    osintData: await analyzeOsint(siteData.rawHtmlSnippet || '', siteData.domain, input.manualCnpj),
-    security: auditSiteSecurity(siteData),
-    social: auditSocialConversion(siteData, input.instagramHandle),
-    blindspots: (() => {
-      const items = [];
-      if (!siteData.detectedCheckoutTerms.hasPix) {
-        items.push({
-          id: 'bs-1',
-          severity: 'CRÍTICO' as const,
-          title: `Ausência de Oferta Pix com Desconto Direto no Primeiro Scroll de ${siteData.domain}`,
-          description: `O site ${siteData.domain} não exibe caixa de aviso para pagamento Pix com desconto imediato.`,
-          impactOnSales: 'Perda de margem e abandono de carrinho no checkout mobile.',
-          fixAction: 'Ativar aviso de Pix com 5% OFF e QR Code dinâmico.'
-        });
-      }
-      const brokenCatalogSkus = (siteData.catalogAudit?.issues || []).filter(isCatalogProductBroken);
-      if (brokenCatalogSkus.length > 0) {
-        items.push({
-          id: 'bs-stockout',
-          severity: 'CRÍTICO' as const,
-          title: `Ruptura de Estoque na Curva ABC em ${brokenCatalogSkus.length} Produto(s)`,
-          description: `Identificados produtos com tráfego ou destaque que possuem variantes centrais esgotadas.`,
-          impactOnSales: 'Cliques perdidos e taxa de rejeição acelerada na página de produto.',
-          fixAction: 'Pausar conjuntos de anúncio ou substituir URL para coleção com grade completa.'
-        });
-      }
-      if (items.length === 0) {
-        items.push({
-          id: 'bs-healthy',
-          severity: 'MÉDIO' as const,
-          title: `Catálogo e Checkout com Indicadores Principais em Conformidade`,
-          description: `Não foram detectados vazamentos graves de grade ou checkout no fluxo auditado.`,
-          impactOnSales: 'Otimização contínua de taxa de conversão.',
-          fixAction: 'Executar testes A/B no título de produto e prova social.'
-        });
-      }
-      return items;
-    })(),
-    detectedNiche: input.niche || `${siteData.brandName} E-commerce D2C`,
-    inferredBrandName: siteData.brandName,
-    targetRegion: input.targetRegion
-  };
-
-  return generateDiagnosticFromWorker(input, defaultWorkerResult);
+  return runAgentDiagnosticAsync(input);
 }
 
 async function generateDiagnosticFromWorker(input: AuditInput, worker: WorkerInspectionResult): Promise<AgentDiagnosticResult> {
@@ -139,6 +88,14 @@ async function generateDiagnosticFromWorker(input: AuditInput, worker: WorkerIns
     calculatedLiftMax = Math.max(calculatedLiftMin + 10, Math.min(75, calculatedLiftMax));
   }
 
+  const [croSkill, seoSkill, adsSkill, salesCopySkill, pmGrowthSkill] = await Promise.all([
+    buildCroAgentSkill(worker, input),
+    buildSeoAgentSkill(worker, input),
+    buildAdsAgentSkill(worker, input),
+    buildCopyAgentSkill(worker, input),
+    buildPmGrowthAgentSkill(worker, input)
+  ]);
+
   let initialDiagnostic: AgentDiagnosticResult = {
     growthScore: calculatedScore,
     estimatedRevenueLiftMin: calculatedLiftMin,
@@ -161,11 +118,11 @@ async function generateDiagnosticFromWorker(input: AuditInput, worker: WorkerIns
     },
     visionAnalysis: visionAnalysis,
     osintData: osintData,
-    cro: await buildCroAgentSkill(worker, input),
-    seo: await buildSeoAgentSkill(worker, input),
-    ads: await buildAdsAgentSkill(worker, input),
-    salesCopy: await buildCopyAgentSkill(worker, input),
-    pmGrowth: await buildPmGrowthAgentSkill(worker, input),
+    cro: croSkill,
+    seo: seoSkill,
+    ads: adsSkill,
+    salesCopy: salesCopySkill,
+    pmGrowth: pmGrowthSkill,
     competitorGap: [
       {
         metric: 'Tempo de Carregamento (LCP)',

@@ -57,17 +57,13 @@ export async function executeMasterAutonomous24hPipeline(
 
   console.log(`\n👑 [ADSHIELD MASTER SYMPHONY] Iniciando Pipeline Unificado 24/7 (ID: ${executionId})...`);
 
-  // FASE 1: Caçador de Mercado & Prospecção (Market Hunter)
-  console.log(`🦅 [Fase 1/6: Market Hunter] Varrendo Google Trends, Meta Ads e tendências de CRO...`);
-  const marketHunterReport = await runMarketHunterScan();
-
-  // FASE 2: Engenharia de Auto-Evolução do AdShield (Product Evolution)
-  console.log(`🛠️ [Fase 2/6: Product Evolution] Auto-inspecionando bundle JS, índices Supabase e funil...`);
-  const productEvolutionDossier = await runProductEvolutionAudit();
-
-  // FASE 3: Análise de Clientes, Dúvidas e Preços (VoC Analyst)
-  console.log(`📊 [Fase 3/6: VoC Analyst] Analisando objeções e calibrando base do Chatbot Concierge...`);
-  const vocDossier = await runCustomerSuccessVocAudit();
+  // FASES 1, 2 e 3 (Paralelizadas para Resiliência Serverless Vercel): Caçador de Mercado, Product Evolution e VoC Analyst
+  console.log(`⚡ [Fases 1-3/6] Disparando em paralelo: Market Hunter, Product Evolution e VoC Analyst...`);
+  const [marketHunterReport, productEvolutionDossier, vocDossier] = await Promise.all([
+    runMarketHunterScan(),
+    runProductEvolutionAudit(),
+    runCustomerSuccessVocAudit()
+  ]);
 
   // FASE 4: Julgamento & Decisões do CEO (CEO Orchestrator via ICE Score)
   console.log(`👑 [Fase 4/6: CEO Orchestrator] Avaliando propostas via matriz ICE Score >= 8.0...`);
@@ -160,11 +156,9 @@ export async function executeMasterAutonomous24hPipeline(
   // FASE 7: Telemetria DevOps & Auto-Cura (Agentes 11 & 12)
   console.log(`🛠️ [Fase 7/7: DevOps Sentinel & Auto-Coder] Auto-inspecionando integridade de código e runtime...`);
   const devopsIncidents = await fetchDevOpsIncidents();
-  const autoPatches: CodePatchProposal[] = [];
-  for (const inc of devopsIncidents.slice(0, 3)) {
-    const patch = await generateAutoCodePatch(inc);
-    autoPatches.push(patch);
-  }
+  const autoPatches: CodePatchProposal[] = await Promise.all(
+    devopsIncidents.slice(0, 3).map(inc => generateAutoCodePatch(inc))
+  );
 
   const totalLatencyMs = Date.now() - startTime;
   console.log(`✅ [MASTER PIPELINE CONCLUÍDO] 100% dos 12 agentes executados com sucesso em ${totalLatencyMs}ms!\n`);

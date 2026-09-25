@@ -38,11 +38,16 @@ export async function runSiteInspectorWorker(
   operationMode?: StoreOperationMode
 ): Promise<WorkerInspectionResult> {
   const siteData = await inspectRealWebsite(inputUrl, { operationMode });
+  
+  // ⚡ Concorrência de Alta Performance: Análise de Visão e OSINT executadas em paralelo
+  const [visionAnalysis, osintData] = await Promise.all([
+    analyzeComputerVision(siteData.domain, siteData.rawHtmlSnippet || ''),
+    analyzeOsint(siteData.rawHtmlSnippet || '', siteData.domain, manualCnpj)
+  ]);
+
   const security = auditSiteSecurity(siteData);
   const social = auditSocialConversion(siteData, instagramHandle);
   const copyNlp = analyzeCopyNLP(siteData);
-  const visionAnalysis = await analyzeComputerVision(siteData.domain, siteData.rawHtmlSnippet || '');
-  const osintData = await analyzeOsint(siteData.rawHtmlSnippet || '', siteData.domain, manualCnpj);
 
   const domainParts = siteData.domain.split('.');
   let rawBrand = domainParts[0] || 'MARCA';

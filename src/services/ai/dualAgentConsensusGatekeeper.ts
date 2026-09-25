@@ -95,7 +95,9 @@ export function executeDualAgentCrossVerification(
       consensusStatus: 'APROVADO_DUPLO_CONSENSO',
       consensusScorePct: 98.5,
       rawEvidenceVerified: `${brokenCount} produto(s) com variantes centrais [${firstBroken?.missingSizes?.slice(0, 3).join(', ')}] esgotadas`,
-      financialImpactMonthly: realSiteData.catalogAudit?.monthlyLossEstimateBRL || Math.round(estimatedRevenueLiftMin * 240)
+      financialImpactMonthly: (realSiteData.catalogAudit?.monthlyLossEstimateBRL !== undefined && realSiteData.catalogAudit.monthlyLossEstimateBRL > 0)
+        ? realSiteData.catalogAudit.monthlyLossEstimateBRL
+        : Math.round(estimatedRevenueLiftMin * 240)
     });
   } else {
     verifiedFindings.push({
