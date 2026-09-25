@@ -128,6 +128,40 @@ export function HomePage() {
     }
   }, [searchParams, isFounderAuthenticated]);
 
+  // 🔗 Deep Linking para Modais via URL (?modal=pricing, ?modal=audit, etc.)
+  useEffect(() => {
+    const modalParam = searchParams.get('modal') as ActiveModalId;
+    const validModals: ActiveModalId[] = [
+      'audit', 'export', 'settings', 'adminDashboard', 'pricing',
+      'whatsappLead', 'leadsDrawer', 'storesManager', 'whatsappWatchdog',
+      'integrations', 'whiteLabel', 'metaAutoKill', 'batchAuditor',
+      'chromeExtension', 'mitigationHistory', 'founderAuth'
+    ];
+    if (modalParam && validModals.includes(modalParam)) {
+      setActiveModal(modalParam);
+    }
+  }, [searchParams]);
+
+  // ⌨️ Acessibilidade & Ergonomia: Fecha modal ao pressionar ESC e bloqueia scroll de fundo
+  useEffect(() => {
+    if (!activeModal) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setActiveModal(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [activeModal]);
+
   // Initial load: dynamically check if a specific store was requested via query param
   useEffect(() => {
     const targetQueryUrl = searchParams.get('loja') || searchParams.get('url') || searchParams.get('dossier') || searchParams.get('store');

@@ -52,9 +52,10 @@ export interface DualAgentConsensusReport {
 export function executeDualAgentCrossVerification(
   diagnostic: AgentDiagnosticResult
 ): DualAgentConsensusReport {
-  const { realSiteData, estimatedRevenueLiftMin } = diagnostic;
-  const domain = realSiteData.domain || 'sualoja.com.br';
-  const brand = realSiteData.brandName || 'Sua Loja';
+  const realSiteData = diagnostic?.realSiteData || ({} as any);
+  const estimatedRevenueLiftMin = diagnostic?.estimatedRevenueLiftMin || 10;
+  const domain = realSiteData.domain || diagnostic?.input?.siteUrl || 'sualoja.com.br';
+  const brand = realSiteData.brandName || diagnostic?.input?.businessName || 'Sua Loja';
   const issues = realSiteData.catalogAudit?.issues || [];
   const brokenIssues = issues.filter(isCatalogProductBroken);
   const brokenCount = brokenIssues.length;
