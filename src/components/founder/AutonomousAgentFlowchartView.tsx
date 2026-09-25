@@ -84,10 +84,13 @@ export const AutonomousAgentFlowchartView: React.FC = () => {
 
   // Live real-time ticker simulating continuous 24/7 autonomous swarm work
   useEffect(() => {
-    const timer = setInterval(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
       setGlobalCycles(prev => prev + Math.floor(Math.random() * 3) + 1);
     }, 2500);
-    return () => clearInterval(timer);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
   }, []);
 
   const selectedAgent = pipelineData.find(a => a.id === selectedAgentId) || pipelineData[0];
@@ -110,7 +113,8 @@ export const AutonomousAgentFlowchartView: React.FC = () => {
   const handleForceGlobalCycle = () => {
     setIsTriggeringAll(true);
     setGlobalCycles(prev => prev + 18);
-    setTimeout(() => {
+    if (forceCycleTimerRef.current) clearTimeout(forceCycleTimerRef.current);
+    forceCycleTimerRef.current = setTimeout(() => {
       setIsTriggeringAll(false);
     }, 1200);
   };
