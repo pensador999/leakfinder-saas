@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowRight, ShieldCheck, Globe, Sparkles, Zap, Factory, Boxes, Tag, Bot, Info } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Globe, Sparkles, Zap, Factory, Boxes, Tag, Bot, Info, X } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFish, faWheatAwn, faFire, faGlobe, faArrowRight as faArrowRightSolid, faSliders } from '@fortawesome/free-solid-svg-icons';
 import gsap from 'gsap';
@@ -189,6 +189,17 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
             onChange={(e) => setUrlInput(e.target.value)}
             className="flex-1 px-2 py-3 bg-transparent text-sm font-semibold text-[#FFFCE1] placeholder-slate-500 outline-none w-full font-mono tracking-tight"
           />
+
+          {urlInput && !isAnalyzing && (
+            <button
+              type="button"
+              onClick={() => setUrlInput('')}
+              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors mr-1 cursor-pointer shrink-0"
+              title="Limpar link da loja para digitar outro"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
 
           <GSAPMagneticButton
             type="submit"

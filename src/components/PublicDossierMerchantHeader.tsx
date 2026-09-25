@@ -158,7 +158,7 @@ export const PublicDossierMerchantHeader: React.FC<PublicDossierMerchantHeaderPr
               onClick={onOpenPricing}
               className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-all border border-slate-600 cursor-pointer w-full sm:w-auto text-center"
             >
-              <span>Ver Planos AdShield (a partir de R$ 197)</span>
+              <span>Ver Planos AdShield (a partir de R$ 297/mês)</span>
             </button>
 
             <a

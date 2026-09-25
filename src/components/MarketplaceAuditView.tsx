@@ -16,7 +16,8 @@ import {
   Zap, 
   HelpCircle, 
   Download, 
-  TableProperties 
+  TableProperties,
+  X 
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { generateMarketplaceListingAudit, MarketplaceListingAuditResult } from '../services/marketplaceInspector';
@@ -30,6 +31,7 @@ export const MarketplaceAuditView: React.FC<MarketplaceAuditViewProps> = ({ diag
   const { realSiteData } = diagnostic;
   const shield = realSiteData.marketplaceShieldData;
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [exportFeedback, setExportFeedback] = useState<string | null>(null);
 
   const audit: MarketplaceListingAuditResult = generateMarketplaceListingAudit(
     realSiteData.url,
@@ -43,6 +45,12 @@ export const MarketplaceAuditView: React.FC<MarketplaceAuditViewProps> = ({ diag
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleExportShopeeCsv = () => {
+    SpreadsheetExporter.exportShopeeMassUpdateCsv(realSiteData);
+    setExportFeedback('📥 Planilha Shopee (120 Caracteres SEO) exportada com sucesso (Excel / Google Sheets)!');
+    setTimeout(() => setExportFeedback(null), 5000);
   };
 
   const isMeli = audit.marketplaceType === 'MERCADO_LIVRE';
@@ -291,7 +299,7 @@ export const MarketplaceAuditView: React.FC<MarketplaceAuditViewProps> = ({ diag
           </div>
 
           <button
-            onClick={() => SpreadsheetExporter.exportShopeeMassUpdateCsv(realSiteData)}
+            onClick={handleExportShopeeCsv}
             className="px-4 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 hover:scale-105 active:scale-95 cursor-pointer shrink-0"
             title="Baixar planilha CSV pronta para importar na Shopee"
           >
@@ -563,6 +571,17 @@ export const MarketplaceAuditView: React.FC<MarketplaceAuditViewProps> = ({ diag
           })}
         </div>
       </div>
+
+      {/* 📥 Action Success Toast Banner */}
+      {exportFeedback && (
+        <div className="fixed bottom-6 right-6 z-50 p-4 rounded-xl bg-[#101211] border border-orange-500/40 text-[#FFFCE1] shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom duration-300">
+          <div className="w-2 h-2 rounded-full bg-orange-400 animate-ping" />
+          <span className="text-xs font-semibold text-orange-300">{exportFeedback}</span>
+          <button onClick={() => setExportFeedback(null)} className="text-[#BBBAA6] hover:text-[#FFFCE1] ml-2 cursor-pointer">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
     </div>
   );
