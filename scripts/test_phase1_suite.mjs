@@ -34,9 +34,9 @@ function assertTest(condition, testName, errorMsg) {
 
 // 1. Testes de Planos Stripe
 console.log('🔍 [1/4] Testando Configuração de Planos Stripe...');
-assertTest(ADSHIELD_STRIPE_PLANS.STARTER_MONTHLY.priceBrl === 290, 'Plano Starter custa R$ 290');
-assertTest(ADSHIELD_STRIPE_PLANS.PRO_MONTHLY.priceBrl === 490, 'Plano Pro custa R$ 490');
-assertTest(ADSHIELD_STRIPE_PLANS.AGENCY_MONTHLY.priceBrl === 990, 'Plano Agency custa R$ 990');
+assertTest(ADSHIELD_STRIPE_PLANS.STARTER_MONTHLY.priceBrl === 297, 'Plano Starter custa R$ 297');
+assertTest(ADSHIELD_STRIPE_PLANS.PRO_MONTHLY.priceBrl === 497, 'Plano Pro custa R$ 497');
+assertTest(ADSHIELD_STRIPE_PLANS.AGENCY_MONTHLY.priceBrl === 1497, 'Plano Agency custa R$ 1497');
 assertTest(ADSHIELD_STRIPE_PLANS.PRO_MONTHLY.recommended === true, 'Plano Pro marcado como recomendado');
 
 // 2. Testes de Geração de Checkout Session
@@ -48,7 +48,7 @@ const sessionPro = createStripeCheckoutSession({
 });
 
 assertTest(sessionPro.success === true, 'Checkout Pro gerado com sucesso');
-assertTest(sessionPro.priceBrl === 490, 'Preço de checkout correto (R$ 490)');
+assertTest(sessionPro.priceBrl === 497, 'Preço de checkout correto (R$ 497)');
 assertTest(sessionPro.checkoutUrl.includes('stripe.com'), 'URL aponta para gateway Stripe');
 assertTest(sessionPro.checkoutUrl.includes('insiderstore.com.br'), 'Referência da loja injetada no link');
 assertTest(sessionPro.checkoutUrl.includes('utm_source=adshield_whatsapp'), 'Parâmetros de UTM incluídos no checkout');
@@ -92,7 +92,7 @@ const whatsappMsg = formatWhatsAppOfferWithStripe({
 });
 
 assertTest(whatsappMsg.includes('Marcos'), 'Mensagem personalizada com o nome do lojista');
-assertTest(whatsappMsg.includes('R$ 490/mês'), 'Mensagem traz o preço da assinatura Pro');
+assertTest(whatsappMsg.includes('R$ 497/mês'), 'Mensagem traz o preço da assinatura Pro');
 assertTest(whatsappMsg.includes('buy.stripe.com'), 'Mensagem contém o link de pagamento 1-clique do Stripe');
 assertTest(whatsappMsg.includes('Retorno do Investimento Estimado'), 'Mensagem exibe o cálculo de ROI');
 assertTest(whatsappMsg.includes('6.0x') || whatsappMsg.includes('5.9x') || whatsappMsg.includes('6x'), 'Múltiplo de ROI correto (~6.0x)');

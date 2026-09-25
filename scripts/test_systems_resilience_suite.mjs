@@ -10,6 +10,7 @@
 
 import { OutboundCloserEngine } from '../src/services/outbound/outboundCloserEngine.ts';
 import { executeDualAgentCrossVerification } from '../src/services/ai/dualAgentConsensusGatekeeper.ts';
+import { SpreadsheetExporter } from '../src/services/export/spreadsheetExporter.ts';
 
 let passed = 0;
 let failed = 0;
@@ -131,6 +132,102 @@ const canonicalModals = [
 
 assert(canonicalModals.length === 16, 'Contém exatamente 16 modais mapeados sob ActiveModalId');
 assert(canonicalModals.includes('pricing') && canonicalModals.includes('metaAutoKill'), 'Contém modais de checkout e kill-switch no radar');
+
+// --------------------------------------------------------------------------
+// 4. AUDITORIA DE RESILIÊNCIA DA EXPORTAÇÃO DE PLANILHAS & SÍNTESE DE SKUS
+// --------------------------------------------------------------------------
+console.log(`\n📌 4. AUDITORIA DE RESILIÊNCIA: PLANILHAS & SÍNTESE DE SKUS`);
+
+const brokenIssueData = {
+  domain: 'insiderstore.com.br',
+  brandName: 'Insider Store',
+  catalogAudit: {
+    issues: [
+      {
+        id: 'insider-item-1',
+        sku: 'TECH-TSHIRT',
+        productTitle: 'Tech T-Shirt Anti-Suor',
+        productUrl: 'https://insiderstore.com.br/products/tech-t-shirt',
+        availableSizes: ['P', 'M', 'GG'],
+        missingSizes: ['G', 'ESTOQUE_FANTASMA_SUSPEITO'],
+        isFullPrintExempt: false,
+        recommendedAction: 'Repor tamanho G urgente',
+        manufacturingType: 'FABRICACAO_PROPRIA'
+      },
+      {
+        id: 'insider-item-2',
+        // Testando robustez contra propriedades nulas/indefinidas
+        sku: undefined,
+        productTitle: undefined,
+        productUrl: undefined,
+        availableSizes: undefined,
+        missingSizes: undefined,
+        isFullPrintExempt: true,
+        recommendedAction: undefined
+      }
+    ]
+  }
+};
+
+let exportAuditNoError = false;
+let exportSkusNoError = false;
+let generatedAuditCsv = '';
+let generatedSkusCsv = '';
+
+try {
+  const originalWindow = global.window;
+  const originalDocument = global.document;
+  const originalBlob = global.Blob;
+  const originalUrl = global.URL;
+
+  global.window = {};
+  global.document = {
+    createElement: () => ({
+      setAttribute: () => {},
+      style: {},
+      click: () => {}
+    }),
+    body: {
+      appendChild: () => {},
+      removeChild: () => {}
+    }
+  };
+
+  global.Blob = class {
+    constructor(content) {
+      this.content = Array.isArray(content) ? content.join('') : String(content);
+      if (this.content.includes('Código SKU')) {
+        generatedAuditCsv = this.content;
+      }
+      if (this.content.includes('ID da Variante')) {
+        generatedSkusCsv = this.content;
+      }
+    }
+  };
+
+  global.URL = {
+    createObjectURL: () => 'blob:mock-url',
+    revokeObjectURL: () => {}
+  };
+
+  SpreadsheetExporter.exportCatalogAudit(brokenIssueData);
+  exportAuditNoError = true;
+
+  SpreadsheetExporter.exportAllSkusCsv(brokenIssueData);
+  exportSkusNoError = true;
+
+  global.window = originalWindow;
+  global.document = originalDocument;
+  global.Blob = originalBlob;
+  global.URL = originalUrl;
+} catch (err) {
+  console.error('Falha na exportação de planilhas:', err);
+}
+
+assert(exportAuditNoError, 'SpreadsheetExporter.exportCatalogAudit é 100% blindado contra dados incompletos');
+assert(exportSkusNoError, 'SpreadsheetExporter.exportAllSkusCsv sintetiza variantes sem quebrar com dados nulos');
+assert(generatedSkusCsv.includes('Tamanho P') && generatedSkusCsv.includes('Tamanho G'), 'Variantes sintetizadas incluem tamanhos disponíveis e em falta');
+assert(generatedSkusCsv.includes('EM ESTOQUE') && generatedSkusCsv.includes('🚨 RUPTURA CRÍTICA'), 'Variantes refletem situação precisa de estoque no padrão brasileiro');
 
 console.log(`\n============================================================`);
 console.log(`📊 RESULTADO DA AUDITORIA: ${passed}/${passed + failed} TESTES PASSARAM`);
