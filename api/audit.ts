@@ -354,7 +354,8 @@ export default async function handler(request: any, response: any) {
         visibleProductsCount: productCards.length,
         sampleProducts,
         marketplaceSellerName,
-        marketplaceItemTitle
+        marketplaceItemTitle,
+        rawHtmlSnippet: (document.documentElement ? document.documentElement.outerHTML : document.body.innerHTML || '').slice(0, 50000)
       };
     });
 
@@ -385,6 +386,7 @@ export default async function handler(request: any, response: any) {
         marketplaceItemTitle: rawAudit.marketplaceItemTitle,
         loadTimeMs,
         httpStatus,
+        rawHtmlSnippet: rawAudit.rawHtmlSnippet || '',
         headTags: {
           hasMetaPixel: rawAudit.hasMetaPixel,
           metaPixelId: rawAudit.metaPixelId,

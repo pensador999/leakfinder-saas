@@ -83,8 +83,8 @@ export const SubscriberPortalHub: React.FC<SubscriberPortalHubProps> = ({
   const maxStores = currentPlan.id === 'AGENCY_ENTERPRISE' ? 15 : currentPlan.id === 'GROWTH_PRO' ? 3 : 1;
   const isAgency = currentPlan.id === 'AGENCY_ENTERPRISE';
 
-  // Calculate total bleed protected
-  const totalBleedProtected = stores.reduce((acc, s) => acc + (s.currentEstimatedLoss || 12400), 0);
+  // Calculate total bleed protected (grounding rigoroso: se 0, mantém 0)
+  const totalBleedProtected = stores.reduce((acc, s) => acc + (s.currentEstimatedLoss !== undefined ? s.currentEstimatedLoss : 0), 0);
 
   const handleDelete = async (storeId: string, storeUrl: string) => {
     if (confirm(`Deseja remover ${storeUrl} do monitoramento contínuo?`)) {
@@ -319,8 +319,8 @@ export const SubscriberPortalHub: React.FC<SubscriberPortalHubProps> = ({
                       </span>
                     </td>
 
-                    <td className="py-3.5 px-4 font-bold text-[#FF4757]">
-                      {formatBRL(s.currentEstimatedLoss || 12400)}
+                    <td className={`py-3.5 px-4 font-bold ${(s.currentEstimatedLoss || 0) > 0 ? 'text-[#FF4757]' : 'text-[#0AE448]'}`}>
+                      {(s.currentEstimatedLoss || 0) > 0 ? formatBRL(s.currentEstimatedLoss || 0) : 'R$ 0,00 (Blindado)'}
                     </td>
 
                     <td className="py-3.5 px-4 text-right">

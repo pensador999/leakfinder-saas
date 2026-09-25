@@ -388,9 +388,10 @@ export const Header: React.FC<HeaderProps> = ({
                   >
                     <FontAwesomeIcon icon={preset.icon} className="w-3.5 h-3.5" />
                     <span>{preset.name}</span>
-                    {isActive ? (
+                    {isActive && (
                       <span className="w-1.5 h-1.5 rounded-full bg-white inline-block ml-0.5 animate-pulse" />
-                    ) : (
+                    )}
+                    {!isActive && preset.slug && (
                       <span className="text-[10px] text-[#7C7C6F] font-mono font-normal">({preset.slug})</span>
                     )}
                   </button>

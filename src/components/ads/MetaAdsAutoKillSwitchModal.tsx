@@ -310,6 +310,26 @@ export const MetaAdsAutoKillSwitchModal: React.FC<MetaAdsAutoKillSwitchModalProp
                 </div>
               </div>
 
+              {!config.accessToken || !config.accessToken.startsWith('EAA') ? (
+                <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2.5">
+                    <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 font-mono font-bold text-[10px] rounded border border-amber-500/30 shrink-0">
+                      MODO SIMULAÇÃO • GROUNDING
+                    </span>
+                    <span className="text-[#BBBAA6]">
+                      Mapeamento projetado a partir dos SKUs auditados na vitrine pública. Para sincronizar e pausar campanhas reais, conecte seu token oficial.
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('SETTINGS')}
+                    className="shrink-0 px-3 py-1 bg-[#00BAE2]/15 text-[#00BAE2] hover:bg-[#00BAE2]/25 font-bold rounded-lg border border-[#00BAE2]/30 text-[11px] transition-colors cursor-pointer text-center"
+                  >
+                    Conectar Token Meta Ads
+                  </button>
+                </div>
+              ) : null}
+
               <div className="border border-white/10 rounded-2xl overflow-hidden bg-[#141716]">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>

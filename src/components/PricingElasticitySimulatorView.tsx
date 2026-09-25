@@ -23,11 +23,12 @@ export const PricingElasticitySimulatorView: React.FC<PricingElasticitySimulator
 
   const finances = calculateStoreFinancialGrounding(realSiteData, input, social);
 
-  // Sliders State grounded in store's real average ticket
-  const [productPrice, setProductPrice] = useState<number>(
-    Number(input.averageOrderValue) || finances.groundedAverageTicket || 165
-  );
-  const [monthlyOrders, setMonthlyOrders] = useState<number>(450);
+  // Sliders State grounded in store's real average ticket and revenue tier
+  const groundedTicket = Number(input.averageOrderValue) || finances.groundedAverageTicket || 165;
+  const initialMonthlyOrders = Math.max(40, Math.round(finances.estimatedMonthlyRevenue.min / Math.max(50, groundedTicket)));
+
+  const [productPrice, setProductPrice] = useState<number>(groundedTicket);
+  const [monthlyOrders, setMonthlyOrders] = useState<number>(initialMonthlyOrders);
   const [pixDiscount, setPixDiscount] = useState<number>(10);
   const [creditCardMdr] = useState<number>(4.49);
   const [cogsPercent] = useState<number>(35);

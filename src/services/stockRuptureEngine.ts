@@ -21,15 +21,37 @@ export interface StockRuptureAnalysisResult {
   whatsAppAlertPreview: string;
 }
 
-// Distribuição estatística de demanda de vestuário no Brasil (E-Commerce D2C Benchmark)
+// Distribuição estatística de demanda de vestuário e calçados no Brasil (ABICALÇADOS & E-Commerce D2C Benchmark)
 const SIZE_DEMAND_DISTRIBUTION: Record<string, number> = {
+  // Vestuário Confecção
   'PP': 5,
   'P': 15,
   'M': 25,
   'G': 30,
   'GG': 18,
   'G1': 5,
-  'G2': 2
+  'G2': 2,
+  'XG': 5,
+  'XXG': 3,
+  // Calçados / Botas / Tênis (ABICALÇADOS Benchmark Brasil)
+  '35': 3,
+  '36': 5,
+  '37': 8,
+  '38': 12,
+  '39': 22,
+  '40': 26,
+  '41': 24,
+  '42': 14,
+  '43': 6,
+  '44': 3,
+  '45': 1,
+  // Casos Críticos de Ruptura Total / Estoque Fantasma / Acessório
+  'ESGOTADO': 90,
+  'ESTOQUE_FANTASMA_SUSPEITO': 85,
+  'ESTOQUE_FANTASMA': 85,
+  'ÚNICO (ESGOTADO)': 90,
+  'ÚNICO': 90,
+  'UNICO': 90
 };
 
 export function analyzeStockRupture(input: StockRuptureInput): StockRuptureAnalysisResult {
@@ -46,8 +68,8 @@ export function analyzeStockRupture(input: StockRuptureInput): StockRuptureAnaly
     }
   }
 
-  // Teto de perda
-  demandLossPercent = Math.min(90, Math.max(0, demandLossPercent));
+  // Teto de perda (até 95% para contemplar ruptura total/esgotado)
+  demandLossPercent = Math.min(95, Math.max(0, demandLossPercent));
 
   // Dinheiro de anúncio desperdiçado (tráfego pago que chega no site e não encontra o tamanho)
   const dailyWastedAdSpend = Math.round(dailyAdSpend * (demandLossPercent / 100));

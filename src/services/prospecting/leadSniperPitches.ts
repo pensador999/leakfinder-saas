@@ -47,11 +47,34 @@ export function generateWhatsAppPitches(
 
   const formattedWaste = (totalWasteMonthly || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const formattedPrice = (primarySku?.price || 159.90).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const sUrl = storeUrl || '';
 
-  // 1. Gancho Direto para o Dono/Fundador (Baseado em 4 Arquétipos Reais)
+  // 🛡️ Grounding Guard: Se não houver sangria comprovada ou grade íntegra, NUNCA gerar pitch com "R$ 0,00 de sangria"
+  const isHealthyCatalog = (totalWasteMonthly || 0) <= 0 || !primarySku?.missingSizes || primarySku.missingSizes.length === 0;
+  if (isHealthyCatalog) {
+    const vertical = resolveDynamicVertical(`${primarySku?.productTitle || ''} ${sUrl} ${brandName}`);
+    const directFounder = `Fala, tudo bem? 👊 Passamos nosso scanner de auditoria na vitrine da *${brandName}* [${vertical.label}]:
+
+Primeiramente, parabéns: o catálogo e a grade dos produtos auditados estão 100% íntegros (zero rupturas centrais identificadas).
+
+Porém, identificamos uma oportunidade imediata de retenção de margem: a loja pode estar deixando entre 2,5% e 4% de receita líquida na mesa por não incentivar o Pix Dinâmico frente às taxas de cartão de crédito no checkout.
+
+Geramos um dossiê executivo com a simulação atuarial dessa recuperação para o seu nicho. Posso te enviar o link confidencial aqui no WhatsApp? É só responder *"QUERO"*.`;
+
+    const technicalMediaBuyer = `Opa, tudo bem? Mensagem rápida para o time de tráfego/growth da *${brandName}* 🎯
+
+Auditamos os criativos e a vitrine de vocês: a sincronia de catálogo está excelente (zero rupturas críticas identificadas nos principais anúncios). 
+Notamos, contudo, oportunidades no checkout e retenção de margem líquida via Pix Dinâmico no segmento [${vertical.label}].
+Tenho o laudo técnico com esse estudo de caso. Posso te encaminhar aqui?`;
+
+    const audioScript45s = `Fala pessoal da ${brandName}, tudo certo? Passei nosso scanner de performance na loja de vocês e queria parabenizar a equipe: a grade de produtos anunciados tá muito bem gerenciada, sem rupturas nos tamanhos centrais. O motivo do meu contato é uma alavanca de margem no checkout: a operação pode reter bastante lucro trocando taxas de cartão por Pix com desconto calibrado. No benchmark do segmento de vocês, isso gera um ganho relevante. Se quiserem que eu envie o estudo rápido, me dá um toque aqui!`;
+
+    return { directFounder, technicalMediaBuyer, audioScript45s };
+  }
+
+  // 1. Gancho Direto para o Dono/Fundador (Baseado em 4 Arquétipos Reais com Sangria Comprovada)
   let directFounder = '';
   const explanation = primarySku?.explanation || '';
-  const sUrl = storeUrl || '';
   const isSchemaIssue = sUrl.includes('7mboots') || explanation.includes('Schema') || explanation.includes('Nuvemshop');
   const isTraySitemapIssue = sUrl.includes('texascenter') || explanation.includes('Tray') || explanation.includes('sitemap');
   const isGhostInventoryIssue = (primarySku?.missingSizes || []).some(s => s.includes('ESTOQUE_FANTASMA')) || explanation.includes('Yellowstone');

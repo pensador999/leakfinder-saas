@@ -62,7 +62,23 @@ export const StockRuptureMonitorView: React.FC<StockRuptureMonitorViewProps> = (
 
   const brokenCatalogProducts = (realSiteData.catalogAudit?.issues || []).filter(isCatalogProductBroken);
 
-  const availableSizes = ['PP', 'P', 'M', 'G', 'GG', 'G1', 'G2'];
+  // Detecção inteligente de categoria (Calçados vs Vestuário vs Acessórios)
+  const allDetectedSizes = (realSiteData.catalogAudit?.issues || []).flatMap(i => [...(i.availableSizes || []), ...(i.missingSizes || [])]);
+  const hasShoeSizes = allDetectedSizes.some(s => /^(3[5-9]|4[0-6])$/.test(s.trim())) || 
+                        realSiteData.domain.toLowerCase().includes('boots') || 
+                        realSiteData.domain.toLowerCase().includes('calcado') || 
+                        realSiteData.domain.toLowerCase().includes('sapato') || 
+                        realSiteData.domain.toLowerCase().includes('democrata') ||
+                        (input.niche || '').toLowerCase().includes('calçado');
+
+  const baseSizes = hasShoeSizes
+    ? ['37', '38', '39', '40', '41', '42', '43', '44']
+    : ['PP', 'P', 'M', 'G', 'GG', 'G1', 'G2'];
+
+  const hasSpecialRupture = realBrokenSizesFromCatalog.some(s => ['ESGOTADO', 'ESTOQUE_FANTASMA_SUSPEITO', 'ÚNICO (ESGOTADO)'].includes(s));
+  const availableSizes = hasSpecialRupture 
+    ? [...baseSizes, 'ESGOTADO'] 
+    : baseSizes;
 
   const toggleSize = (size: string) => {
     if (rupturedSizes.includes(size)) {

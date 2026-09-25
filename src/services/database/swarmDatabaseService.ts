@@ -12,7 +12,8 @@ const LOCAL_JOB_LOGS_KEY = 'adshield_local_swarm_job_logs';
  * 1. Busca todas as lojas ativas para o Enxame auditar (Merge Supabase + LocalStorage + Default Stores)
  */
 export async function getMonitoredStores(): Promise<MonitoredStore[]> {
-  const defaultStores: MonitoredStore[] = [
+  // Lojas padrão apenas para seed de primeira inicialização
+  const seedStores: MonitoredStore[] = [
     {
       id: 'store-brk-agro',
       storeUrl: 'https://www.brkagro.com.br',
@@ -33,7 +34,7 @@ export async function getMonitoredStores(): Promise<MonitoredStore[]> {
       isActive: true,
       checkIntervalHours: 24,
       currentScore: 84,
-      currentEstimatedLoss: 620
+      currentEstimatedLoss: 0
     },
     {
       id: 'store-brk-motors',
@@ -45,28 +46,6 @@ export async function getMonitoredStores(): Promise<MonitoredStore[]> {
       checkIntervalHours: 24,
       currentScore: 72,
       currentEstimatedLoss: 1250
-    },
-    {
-      id: 'store-country-life',
-      storeUrl: 'https://www.countrylifestore.com.br',
-      brandName: 'Country Life Store',
-      niche: 'Moda Country & Calçados',
-      targetPhone: '5511999999999',
-      isActive: true,
-      checkIntervalHours: 24,
-      currentScore: 68,
-      currentEstimatedLoss: 14500
-    },
-    {
-      id: 'store-bella-donna',
-      storeUrl: 'https://www.belladonnacalcados.com.br',
-      brandName: 'Bella Donna Calçados',
-      niche: 'Calçados Femininos & Saltos',
-      targetPhone: '5511999999999',
-      isActive: true,
-      checkIntervalHours: 24,
-      currentScore: 62,
-      currentEstimatedLoss: 18200
     }
   ];
 
@@ -98,25 +77,28 @@ export async function getMonitoredStores(): Promise<MonitoredStore[]> {
     }
   }
 
-  // Local Storage Stores
+  // Local Storage Stores (Respeita exclusões manuais feitas pelo usuário)
   let localStores: MonitoredStore[] = [];
-  const local = localStorage.getItem(LOCAL_MONITORED_STORES_KEY);
-  if (local) {
+  const local = typeof localStorage !== 'undefined' ? localStorage.getItem(LOCAL_MONITORED_STORES_KEY) : null;
+  if (local !== null) {
     try {
       localStores = JSON.parse(local);
     } catch {
-      // fallback
+      localStores = seedStores;
     }
+  } else {
+    localStores = seedStores;
   }
 
-  // Merge map by normalized URL
+  // Merge map by normalized URL (Prioriza Supabase + Lojas do Usuário)
   const map = new Map<string, MonitoredStore>();
-  defaultStores.forEach(s => map.set(s.storeUrl.toLowerCase().replace(/\/$/, ''), s));
   localStores.forEach(s => map.set(s.storeUrl.toLowerCase().replace(/\/$/, ''), s));
   supabaseStores.forEach(s => map.set(s.storeUrl.toLowerCase().replace(/\/$/, ''), s));
 
   const allMerged = Array.from(map.values());
-  localStorage.setItem(LOCAL_MONITORED_STORES_KEY, JSON.stringify(allMerged));
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem(LOCAL_MONITORED_STORES_KEY, JSON.stringify(allMerged));
+  }
   return allMerged;
 }
 

@@ -258,9 +258,16 @@ export async function scanTargetStoreForLeadSniper(rawUrl: string): Promise<Pros
     const productUrl = primaryItem?.url || `${cleanUrl}/products`;
     const imageSrc = primaryItem?.imageSrc || '';
 
-    // Cálculo da perda mensal estimada (estimativa baseada em R$ 1.500/dia de tráfego e 65% de conversão no miolo)
-    const estimatedDailyLoss = missingSizes.length > 0 ? Math.round(price * 14 * 0.65) : 0;
-    const estimatedMonthlyLoss = estimatedDailyLoss * 30;
+    const resolvedVertical = resolveDynamicVertical(`${title} ${cleanUrl} ${brandName}`);
+    const hasPixel = Boolean(evidence.headTags?.hasMetaPixel ?? false);
+    const activeAdsCount = hasPixel ? Math.max(3, Math.min(25, Math.round((catalogItems.length || 12) * 0.35))) : 0;
+
+    // Cálculo da perda mensal proporcional (com base no preço do SKU e taxa de ruptura detectada)
+    const brokenRatio = catalogItems.length > 0 ? (brokenCatalogItems.length / catalogItems.length) : 0.25;
+    const estimatedDailyLoss = (missingSizes.length > 0 && hasPixel) 
+      ? Number((price * 3.5 * Math.min(0.70, brokenRatio + 0.30)).toFixed(2)) 
+      : 0;
+    const estimatedMonthlyLoss = Number((estimatedDailyLoss * 30).toFixed(2));
 
     const primarySku: BrokenSkuProof = {
       productTitle: title,
@@ -279,8 +286,8 @@ export async function scanTargetStoreForLeadSniper(rawUrl: string): Promise<Pros
     const detectedWhatsApp = evidence.ui?.whatsAppNumberFound || '';
 
     const tierAnalysis = calculateLeadHuntingTier({
-      hasMetaPixel: evidence.headTags?.hasMetaPixel ?? true,
-      activeAdsCountEstimated: 12,
+      hasMetaPixel: hasPixel,
+      activeAdsCountEstimated: activeAdsCount,
       totalMonthlyWasteEstimated: estimatedMonthlyLoss,
       detectedWhatsApp: detectedWhatsApp || undefined,
       contactTargetPhone: detectedWhatsApp || '',
@@ -292,12 +299,12 @@ export async function scanTargetStoreForLeadSniper(rawUrl: string): Promise<Pros
       brandName: evidence.targetBrand || brandName,
       storeUrl: cleanUrl,
       domain,
-      niche: 'E-commerce & Moda',
+      niche: resolvedVertical.label,
       detectedAt: new Date().toISOString(),
-      hasMetaPixel: evidence.headTags?.hasMetaPixel ?? true,
+      hasMetaPixel: hasPixel,
       metaPixelId: evidence.headTags?.metaPixelId,
       metaAdsLibraryUrl: generateMetaAdsLibraryUrl(evidence.targetBrand || brandName),
-      activeAdsCountEstimated: 12,
+      activeAdsCountEstimated: activeAdsCount,
       detectedWhatsApp: detectedWhatsApp || undefined,
       contactTargetPhone: detectedWhatsApp || '',
       brokenSkus: [primarySku],
