@@ -63,6 +63,10 @@ export const CustomerSuccessVocAgentView: React.FC = () => {
 
   return (
     <div className="space-y-6 font-sans">
+      <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-400 text-xs font-mono rounded-lg border border-amber-500/20 mb-4">
+        <AlertTriangle className="w-3.5 h-3.5" />
+        <span>[Dados de Demonstração — Sem Scraping de Reviews]</span>
+      </div>
       
       {/* Top Banner */}
       <div className="p-6 rounded-3xl bg-[#101211] border border-white/10 shadow-2xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">

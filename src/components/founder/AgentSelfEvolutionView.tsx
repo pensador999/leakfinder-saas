@@ -9,7 +9,8 @@ import {
   Sliders, 
   Cpu, 
   FileText, 
-  Award 
+  Award,
+  AlertTriangle
 } from 'lucide-react';
 import { 
   fetchAgenticSelfLearningState, 
@@ -65,6 +66,10 @@ export const AgentSelfEvolutionView: React.FC = () => {
 
   return (
     <div className="space-y-8 font-sans text-[#FFFCE1]">
+      <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-400 text-xs font-mono rounded-lg border border-amber-500/20 mb-4">
+        <AlertTriangle className="w-3.5 h-3.5" />
+        <span>[Templates de Patch — Sem Execução Automática]</span>
+      </div>
       
       {/* Top Header */}
       <div className="p-6 rounded-3xl bg-[#101211] text-[#FFFCE1] border border-white/10 shadow-2xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">

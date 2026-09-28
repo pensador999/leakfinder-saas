@@ -46,6 +46,12 @@ export const SupplyChainDiscrepancyView: React.FC<SupplyChainDiscrepancyViewProp
   return (
     <div className="space-y-8 font-sans">
 
+      {/* 🏷️ Rótulo de Transparência: Stub sem conexão ERP real */}
+      <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-400 text-xs font-mono rounded-lg border border-amber-500/20 mb-4">
+        <AlertTriangle className="w-3.5 h-3.5" />
+        <span>[Requer Conexão ERP — Dados Ilustrativos]</span>
+      </div>
+
       {/* Sub-Navigation: Reposição de Revenda vs Descompasso ERP */}
       <div className="flex items-center justify-between p-1.5 bg-[#101211] rounded-2xl border border-white/10 shadow-lg">
         <div className="flex items-center gap-1.5 w-full">

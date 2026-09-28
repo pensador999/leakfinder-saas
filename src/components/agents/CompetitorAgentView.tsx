@@ -83,6 +83,10 @@ export const CompetitorAgentView: React.FC<CompetitorAgentViewProps> = ({ diagno
 
   return (
     <div className="space-y-6 font-sans">
+      <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-400 text-xs font-mono rounded-lg border border-amber-500/20 mb-4">
+        <AlertTriangle className="w-3.5 h-3.5" />
+        <span>[Benchmark Estimado — Sem Dados Reais de Concorrentes]</span>
+      </div>
       
       {/* Sub-Tab Navigation Switcher */}
       <div className="flex items-center justify-between bg-[#101211] p-1.5 rounded-2xl border border-white/10 shadow-xl">

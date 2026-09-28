@@ -59,7 +59,7 @@ import {
 } from '../../services/founder/founderHqService';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { AgentSelfEvolutionView } from './AgentSelfEvolutionView';
-import { DevOpsSelfHealingControlCenterView } from './DevOpsSelfHealingControlCenterView';
+// 🔀 DevOpsSelfHealingControlCenterView consolidado no InfrastructureFourPillarsMonitor (Fase 2 Verticalização)
 import { InfrastructureFourPillarsMonitor } from './InfrastructureFourPillarsMonitor';
 import { BatchLeadExportModal } from '../export/BatchLeadExportModal';
 import { AutonomousOutboundRadarView } from '../prospecting/AutonomousOutboundRadarView';
@@ -1173,9 +1173,9 @@ export const FounderMasterHqView: React.FC = () => {
         <AgentSelfEvolutionView />
       )}
 
-      {/* TAB 7: AUTONOMOUS DEVOPS & SELF-HEALING (AGENTS 11 & 12) */}
+      {/* TAB 7: AUTONOMOUS DEVOPS & SELF-HEALING — consolidado no InfrastructureFourPillarsMonitor */}
       {activeTab === 'DEVOPS_AUTO_HEAL' && (
-        <DevOpsSelfHealingControlCenterView />
+        <InfrastructureFourPillarsMonitor />
       )}
 
       {/* TAB 8: FOUNDER DIRECTIVES & AI RULES */}

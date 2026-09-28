@@ -362,3 +362,16 @@ export function getSwarmAgentById(agentId: string): SwarmAgentDefinition | undef
 export function getAllSwarmAgents(): SwarmAgentDefinition[] {
   return MASTER_SWARM_AGENTS;
 }
+
+/**
+ * Gera o system prompt de um agente com contexto vertical injetado.
+ * Usado pelo VerticalContextInjector para calibrar cada agente ao nicho da loja.
+ */
+export function getAgentSystemPromptWithVertical(
+  agentId: string, 
+  verticalContextBlock: string
+): string | null {
+  const agent = MASTER_SWARM_AGENTS.find(a => a.id === agentId || a.id === `agent-${agentId}`);
+  if (!agent) return null;
+  return agent.systemPrompt + '\n' + verticalContextBlock;
+}

@@ -50,6 +50,10 @@ export const ComputerVisionInspectionView: React.FC<ComputerVisionInspectionView
 
   return (
     <div className="space-y-6 font-sans">
+      <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-400 text-xs font-mono rounded-lg border border-amber-500/20 mb-4">
+        <AlertTriangle className="w-3.5 h-3.5" />
+        <span>[Simulação Heurística — Sem Visão Computacional Real]</span>
+      </div>
       {/* Header Banner */}
       <div className="p-6 rounded-3xl bg-[#101211] border border-white/10 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">

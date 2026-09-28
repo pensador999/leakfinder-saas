@@ -1,7 +1,7 @@
 # 🤖 DOSSIÊ ARQUITETURAL & COMPÊNDIO DO ENXAME DE AGENTES (ADSHIELD)
 
-> **Versão:** 3.0 • **Arquitetura:** Swarm Autônomo Multi-Agente • **Grounding:** 100% Real-Time Live Data  
-> **Status:** 18 Agentes Ativos e Homologados em Produção
+> **Versão:** 4.0 • **Arquitetura:** Swarm Autônomo Multi-Agente Verticalizado • **Grounding:** 100% Real-Time Live Data  
+> **Status:** 18 Agentes Ativos | 2 Reais + 7 Mistos + 9 Stubs Rotulados | 9 Verticais | 5 Merges Consolidados
 
 ---
 
@@ -288,3 +288,73 @@ Em decorrência da auditoria profunda das operações e das diretrizes executiva
   - O modelo de atendimento e fechamento é **100% digital, documentado e assíncrono**, operando exclusivamente através de Chat com IA Concierge e WhatsApp Oficial (Click-to-Chat com texto auditado).
   - Garante rastreabilidade, histórico gravado por escrito de diagnósticos e elimina filas de espera telefônicas.
 
+---
+
+## 🔬 6. Mapa de Realidade dos Agentes (Auditoria Forense v4.0 — Setembro 2026)
+
+> **Resultado da Auditoria:** Dos 18 agentes, apenas **2 são reais** (Catalog Doctor + Truth Auditor), **7 são mistos** (usam dados reais como input mas processam via regras/LLM) e **9 são STUBS puros** com dados hardcoded.
+
+| Status | Agentes |
+|:--|:--|
+| 🟢 **Real (Scraping ao Vivo)** | 03 (Truth Auditor), 09 (Catalog Doctor) |
+| 🟡 **Misto (Dados Reais + Processamento por Regras)** | 02 (Niche), 04 (Tribunal), 05 (Media Buyer), 08 (Copy), 10 (CRO), 12 (SEO), 18 (WhatsApp) |
+| 🔴 **Stub (Dados Hardcoded)** | 01 (CEO), 06 (Market Hunter), 07 (Competitor), 11 (Vision), 13 (ERP), 14 (VoC), 15 (Product Evolution), 16 (DevOps), 17 (Code Patch) |
+
+### Rótulos de Transparência na UI (Conforme AGENTS.md Camada 2)
+Cada componente stub exibe um badge `AlertTriangle` com o rótulo correspondente:
+- 01: `[Decisões Baseadas em Regras Estáticas]`
+- 06: `[Simulação — Sem Scraping Real de Anúncios]`
+- 07: `[Benchmark Estimado — Sem Dados Reais de Concorrentes]`
+- 11: `[Simulação Heurística — Sem Visão Computacional Real]`
+- 13: `[Requer Conexão ERP — Dados Ilustrativos]`
+- 14: `[Dados de Demonstração — Sem Scraping de Reviews]`
+- 15: `[Roadmap Estático de Demonstração]`
+- 16: `[Telemetria Simulada via localStorage]`
+- 17: `[Templates de Patch — Sem Execução Automática]`
+
+---
+
+## 🌐 7. Motor de Verticalização Dinâmica
+
+### Arquitetura de Injeção de Contexto Vertical
+O motor de verticalização injeta automaticamente contexto de nicho nos prompts de sistema dos 18 agentes:
+
+```
+dynamicVerticalContext.ts → resolveDynamicVertical() → DynamicVerticalProfile
+                                          ↓
+verticalContextInjector.ts → getVerticalizedSystemPrompt() → System Prompt + Bloco Vertical
+                                          ↓
+masterSwarmPrompts.ts → getAgentSystemPromptWithVertical() → Prompt Final Calibrado
+```
+
+### 9 Verticais Suportadas
+| ID | Label | Ticket Médio | CPC Meta | CVR Baseline |
+|:--|:--|:--|:--|:--|
+| `CALCADOS_COURO` | Calçados, Couro & Artefatos | R$ 319,90 | R$ 1,45 | 1,30% |
+| `AGRO_CAMPO_OUTDOOR` | Agro, Campo & Outdoor | R$ 189,90 | R$ 0,95 | 1,80% |
+| `STREETWEAR_MODA_URBANA` | Streetwear & Moda Urbana | R$ 249,90 | R$ 1,10 | 1,60% |
+| `FITNESS_BEACHWEAR` | Fitness & Beachwear | R$ 159,90 | R$ 0,75 | 2,20% |
+| `COSMETICOS_BEAUTY` | Cosméticos & Beauty | R$ 129,90 | R$ 0,65 | 2,50% |
+| `PET_SHOP_VETERINARIA` | Pet Shop & Veterinária | R$ 149,00 | R$ 0,85 | 2,80% |
+| `CASA_DECORACAO_MOVEIS` | Casa, Decoração & Móveis | R$ 489,00 | R$ 1,85 | 0,95% |
+| `ELETRONICOS_INFORMATICA` | Eletrônicos & Informática | R$ 599,00 | R$ 2,10 | 1,10% |
+| `VAREJO_GERAL` | E-commerce & Varejo Geral (fallback) | R$ 199,00 | R$ 1,20 | 1,50% |
+
+### Arquivos do Motor
+| Arquivo | Função |
+|:--|:--|
+| `src/services/ai/dynamicVerticalContext.ts` | 9 perfis verticais + `resolveDynamicVertical()` |
+| `src/services/ai/verticalContextInjector.ts` | Injeção de contexto nos 18 prompts |
+| `src/services/ai/prompts/masterSwarmPrompts.ts` | 18 definições de agentes + `getAgentSystemPromptWithVertical()` |
+
+---
+
+## 🔀 8. Mapa de Consolidação de Componentes (Fase 2 Merges)
+
+| Sobreposição | Componente Removido/Redirecionado | Componente Canônico |
+|:--|:--|:--|
+| Agent 07 (Competitor) | `CompetitorAgentView.tsx` → lazy import removido | `VectorMemoryCompetitorRadarView.tsx` |
+| Agent 12 (SEO) | `CoreWebVitalsAuditView.tsx` → consolidado na tab `code_security` | `SeoAgentView.tsx` + `CoreWebVitalsAuditView.tsx` juntos |
+| Agent 08 (Copy vs Growth) | `PmGrowthAgentView.tsx` → movido para tab `cro_copy` | `SalesCopyAgentView.tsx` + `PmGrowthAgentView.tsx` juntos |
+| Agent 16 (DevOps) | `DevOpsSelfHealingControlCenterView.tsx` → import removido | `InfrastructureFourPillarsMonitor.tsx` |
+| Agent 10 (CRO vs Catalog) | Responsabilidades separadas | CRO = UI/UX heurísticas; Catalog = SKUs/Grade |

@@ -35,7 +35,8 @@ const SeoAgentView = lazy(() => import('../components/agents/SeoAgentView').then
 const AdsAgentView = lazy(() => import('../components/agents/AdsAgentView').then(m => ({ default: m.AdsAgentView })));
 const SalesCopyAgentView = lazy(() => import('../components/agents/SalesCopyAgentView').then(m => ({ default: m.SalesCopyAgentView })));
 const PmGrowthAgentView = lazy(() => import('../components/agents/PmGrowthAgentView').then(m => ({ default: m.PmGrowthAgentView })));
-const CompetitorAgentView = lazy(() => import('../components/agents/CompetitorAgentView').then(m => ({ default: m.CompetitorAgentView })));
+// 🔀 CompetitorAgentView substituído por VectorMemoryCompetitorRadarView (Fase 2 Verticalização)
+// const CompetitorAgentView = lazy(() => import('../components/agents/CompetitorAgentView').then(m => ({ default: m.CompetitorAgentView })));
 const ActionPlanKanban = lazy(() => import('../components/agents/ActionPlanKanban').then(m => ({ default: m.ActionPlanKanban })));
 const AgentChatView = lazy(() => import('../components/agents/AgentChatView').then(m => ({ default: m.AgentChatView })));
 const RoasCalculator = lazy(() => import('../components/tools/RoasCalculator').then(m => ({ default: m.RoasCalculator })));
@@ -611,8 +612,12 @@ export function HomePage() {
                   <MarketplaceAuditView diagnostic={diagnostic} />
                 )}
 
+                {/* 🔀 Tab 'vitals' consolidada na tab 'code_security' (SEO + Security + Core Web Vitals) */}
                 {activeTab === 'vitals' && (
-                  <CoreWebVitalsAuditView diagnostic={diagnostic} />
+                  <div className="space-y-6">
+                    <SeoAgentView diagnostic={diagnostic} />
+                    <CoreWebVitalsAuditView diagnostic={diagnostic} />
+                  </div>
                 )}
 
                 {activeTab === 'supply_chain_discrepancy' && diagnostic && (
@@ -651,8 +656,8 @@ export function HomePage() {
                   <ComputerVisionInspectionView diagnostic={diagnostic} />
                 )}
 
-                {activeTab === 'competitor' && (
-                  <CompetitorAgentView diagnostic={diagnostic} />
+                {activeTab === 'competitor' && diagnostic && (
+                  <VectorMemoryCompetitorRadarView diagnostic={diagnostic} />
                 )}
 
                 {activeTab === 'kanban' && (
@@ -663,6 +668,7 @@ export function HomePage() {
                   <div className="space-y-6">
                     <SecurityAgentView diagnostic={diagnostic} />
                     <SeoAgentView diagnostic={diagnostic} />
+                    <CoreWebVitalsAuditView diagnostic={diagnostic} />
                   </div>
                 )}
 
@@ -671,14 +677,13 @@ export function HomePage() {
                     <CroAgentView diagnostic={diagnostic} />
                     <SalesCopyAgentView diagnostic={diagnostic} />
                     <AdsAgentView diagnostic={diagnostic} />
+                    <PmGrowthAgentView diagnostic={diagnostic} />
                   </div>
                 )}
 
+                {/* 🔀 PmGrowthAgentView movido para tab 'cro_copy' (consolidação de overlaps) */}
                 {activeTab === 'social_pm' && (
-                  <div className="space-y-6">
-                    <SocialAgentView diagnostic={diagnostic} />
-                    <PmGrowthAgentView diagnostic={diagnostic} />
-                  </div>
+                  <SocialAgentView diagnostic={diagnostic} />
                 )}
 
                 {activeTab === 'tools' && (

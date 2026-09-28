@@ -162,6 +162,10 @@ export const MarketHunterAgentView: React.FC<MarketHunterAgentViewProps> = ({ di
 
   return (
     <div className="space-y-6 font-sans animate-fadeIn">
+      <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-400 text-xs font-mono rounded-lg border border-amber-500/20 mb-4">
+        <AlertTriangle className="w-3.5 h-3.5" />
+        <span>[Simulação — Sem Scraping Real de Anúncios]</span>
+      </div>
       
       {/* 🦅 Top Executive Command Header */}
       <div className="p-6 rounded-3xl bg-[#101211] text-white border border-white/10 shadow-2xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative overflow-hidden">
