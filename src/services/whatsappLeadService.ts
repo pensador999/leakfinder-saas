@@ -1,3 +1,5 @@
+import { supabase } from '../lib/supabase';
+
 export interface CapturedLead {
   id: string;
   merchantName: string;
@@ -33,6 +35,25 @@ export function saveLead(lead: Omit<CapturedLead, 'id' | 'capturedAt' | 'status'
 
   const updated = [newLead, ...existing];
   localStorage.setItem(PRIMARY_STORAGE_KEY, JSON.stringify(updated));
+
+  // Persist to Supabase (non-blocking)
+  let storeDomain = lead.storeUrl;
+  try {
+    storeDomain = new URL(lead.storeUrl.startsWith('http') ? lead.storeUrl : `https://${lead.storeUrl}`).hostname;
+  } catch {}
+
+  supabase.from('leads').insert({
+    store_url: lead.storeUrl,
+    store_domain: storeDomain,
+    contact_name: lead.merchantName,
+    contact_phone: lead.whatsappNumber,
+    contact_email: '', 
+    source: 'manual',
+    notes: `Brand: ${lead.brandName} | Score: ${lead.growthScore} | Loss: ${lead.estimatedLossRevenue}`,
+  }).then(({ error }: { error: any }) => {
+    if (error) console.warn('[LeadService] Supabase save failed:', error.message);
+  });
+
   return newLead;
 }
 

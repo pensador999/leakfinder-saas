@@ -163,7 +163,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
           className="inline-flex items-center gap-1.5 px-3 py-1 border border-[#0AE448]/30 bg-[#0AE448]/10 text-[#0AE448] rounded-full text-[11px] font-mono font-bold uppercase tracking-wider shadow-sm"
         >
           <Sparkles className="w-3.5 h-3.5 text-[#0AE448]" />
-          <span>ADSHIELD NEURAL SCANNER • 18 AGENTES 24/7</span>
+          <span>AUDITORIA INTELIGENTE DE E-COMMERCE</span>
         </div>
         <h1 className="text-2xl sm:text-4xl font-extrabold text-[#FFFCE1] tracking-tight leading-tight">
           Auditoria Autônoma de Conversão & Rupturas no Meta Ads
@@ -212,7 +212,19 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
           </GSAPMagneticButton>
         </div>
 
+        {/* Toggle to show operation mode selector */}
+        <button
+          type="button"
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="flex items-center gap-1.5 mx-auto px-3 py-1.5 text-[11px] font-medium text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
+        >
+          <Factory className="w-3 h-3" />
+          <span>{showAdvanced ? 'Ocultar calibração' : 'Calibrar tipo da loja (opcional)'}</span>
+        </button>
+
         {/* 🏭 Seletor de Modelo Operacional da Loja (Calibração Anti-Falso-Positivo) */}
+        {showAdvanced && (
+        <>
         <div className="p-3 bg-[#101211] border border-white/10 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs">
           <div className="flex items-center gap-1.5 text-slate-400 font-semibold text-[11px] uppercase tracking-wider font-mono">
             <Factory className="w-3.5 h-3.5 text-[#0AE448]" />
@@ -296,6 +308,8 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
             <Info className="w-4 h-4 text-[#F100CB] shrink-0" />
             <span><strong>Modo Revenda Ativo:</strong> O motor focará em margem, competitividade de Buy Box e produtos de tamanho único.</span>
           </div>
+        )}
+        </>
         )}
 
         {/* Sleek Preset Chips & Advanced Controls Trigger */}

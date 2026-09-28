@@ -8,6 +8,7 @@ import { MerchantTripleImpactDossier } from '../components/merchant/MerchantTrip
 import { AnalysisLoadingState } from '../components/AnalysisLoadingState';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { CookieBanner } from '../components/CookieBanner';
+import { OnboardingWizard } from '../components/OnboardingWizard';
 import { TabLoadingSkeleton } from '../components/TabLoadingSkeleton';
 import { PublicDossierMerchantHeader } from '../components/PublicDossierMerchantHeader';
 import { runAgentDiagnosticAsync } from '../services/agentEngine';
@@ -115,6 +116,9 @@ export function HomePage() {
   const [auditError, setAuditError] = useState<string | null>(null);
   const [isPublicDossierMode, setIsPublicDossierMode] = useState<boolean>(false);
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState<boolean>(false);
+  const [showOnboarding, setShowOnboarding] = useState<boolean>(() => {
+    return !localStorage.getItem('adshield_onboarding_complete');
+  });
 
   // 🔒 Master Founder Confidential Auth State
   const [isFounderAuthenticated, setIsFounderAuthenticated] = useState<boolean>(() => {
@@ -905,6 +909,13 @@ export function HomePage() {
           <button onClick={() => navigate('/privacy')} className="hover:text-[#0AE448] font-semibold transition-colors cursor-pointer">Política de Privacidade & LGPD</button>
         </div>
       </footer>
+
+      {showOnboarding && (
+        <OnboardingWizard onComplete={() => {
+          setShowOnboarding(false);
+          localStorage.setItem('adshield_onboarding_complete', 'true');
+        }} />
+      )}
 
       <CookieBanner />
     </div>

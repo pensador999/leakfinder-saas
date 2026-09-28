@@ -62,36 +62,8 @@ export async function saveAuditToDatabase(result: AgentDiagnosticResult): Promis
     created_at: new Date().toISOString()
   };
 
-  // 1. Persist to LocalStorage for instant zero-latency retrieval
-  try {
-    const existingLocal = getLocalStoreHistory(domain);
-    const updatedHistory: AuditHistoryEntry[] = [
-      {
-        id: auditRecord.id,
-        domain: domain,
-        brandName: auditRecord.brand_name,
-        growthScore: auditRecord.growth_score,
-        brokenSkusCount: brokenCount,
-        monthlyLossBRL: monthlyLoss,
-        auditedAt: auditRecord.created_at
-      },
-      ...existingLocal.filter(e => {
-        // deduplicate audits run in the same minute
-        const entryTime = new Date(e.auditedAt).getTime();
-        const curTime = new Date(auditRecord.created_at).getTime();
-        return Math.abs(curTime - entryTime) > 60000;
-      })
-    ].slice(0, 15); // keep last 15 audits
-
-    localStorage.setItem(
-      `${LOCAL_STORAGE_HISTORY_PREFIX}${domain}`,
-      JSON.stringify(updatedHistory)
-    );
-  } catch (err) {
-    console.warn('[storeAuditHistoryService] LocalStorage write error:', err);
-  }
-
-  // 2. Persist to Supabase if configured and circuit is closed
+  // 1. Try to persist to Supabase if configured and circuit is closed
+  let savedToDb = false;
   if (isSupabaseConfigured && !circuitBreaker.isCircuitOpen()) {
     try {
       const { data, error } = await supabase
@@ -109,10 +81,41 @@ export async function saveAuditToDatabase(result: AgentDiagnosticResult): Promis
         .single();
 
       if (!error && data?.id) {
-        return data.id;
+        savedToDb = true;
       }
     } catch (dbErr) {
-      console.warn('[storeAuditHistoryService] Supabase insert fallback to local:', dbErr);
+      console.warn('[storeAuditHistoryService] Supabase insert failed:', dbErr);
+    }
+  }
+
+  // 2. Fallback to LocalStorage if Supabase failed or offline
+  if (!savedToDb) {
+    try {
+      const existingLocal = getLocalStoreHistory(domain);
+      const updatedHistory: AuditHistoryEntry[] = [
+        {
+          id: auditRecord.id,
+          domain: domain,
+          brandName: auditRecord.brand_name,
+          growthScore: auditRecord.growth_score,
+          brokenSkusCount: brokenCount,
+          monthlyLossBRL: monthlyLoss,
+          auditedAt: auditRecord.created_at
+        },
+        ...existingLocal.filter(e => {
+          // deduplicate audits run in the same minute
+          const entryTime = new Date(e.auditedAt).getTime();
+          const curTime = new Date(auditRecord.created_at).getTime();
+          return Math.abs(curTime - entryTime) > 60000;
+        })
+      ].slice(0, 15); // keep last 15 audits
+
+      localStorage.setItem(
+        `${LOCAL_STORAGE_HISTORY_PREFIX}${domain}`,
+        JSON.stringify(updatedHistory)
+      );
+    } catch (err) {
+      console.warn('[storeAuditHistoryService] LocalStorage write error:', err);
     }
   }
 

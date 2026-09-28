@@ -130,6 +130,28 @@ export default async function handler(request: any, response: any) {
   } else {
     rateLimitMap.set(clientIp, { count: 1, resetAt: now + 3600000 }); // 1 hour
   }
+  // Free tier rate limit: 3 per day for unauthenticated users
+  // Authenticated subscribers: unlimited (bypass rate limit)
+  const authHeader = request.headers?.['authorization'] || '';
+  const isAuthenticated = authHeader.startsWith('Bearer ') && authHeader.length > 20;
+  
+  if (!isAuthenticated) {
+    // Unauthenticated users get stricter rate limiting (3/day for free demo)
+    const freeLimitKey = `free_${clientIp}`;
+    const freeState = rateLimitMap.get(freeLimitKey);
+    if (freeState && now < freeState.resetAt) {
+      if (freeState.count >= 3) {
+        return sendResponse(response, 403, { 
+          error: 'Limite gratuito atingido. Faça login ou assine um plano para continuar auditando.', 
+          success: false,
+          upgradeRequired: true 
+        });
+      }
+      freeState.count++;
+    } else {
+      rateLimitMap.set(freeLimitKey, { count: 1, resetAt: now + 86400000 }); // 24 hours
+    }
+  }
 
   // 1. CORS Preflight
   const method = (request.method || (typeof request.headers?.get === 'function' ? 'GET' : 'GET')).toUpperCase();
