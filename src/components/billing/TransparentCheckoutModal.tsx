@@ -31,6 +31,7 @@ import {
   processCreditCardPayment,
   saveActiveLicense
 } from '../../services/billing/checkoutService';
+import { redirectToStripeCheckout, StripePlanId } from '../../services/billing/stripeRealCheckoutService';
 import { formatBRL } from '../../services/ai/storeFinancialGroundingEngine';
 
 interface TransparentCheckoutModalProps {
@@ -96,7 +97,23 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
       return;
     }
     setErrorMessage('');
-    setIsProcessing(true);
+    // Map local plan ID to Stripe plan ID
+    const stripePlanMap: Record<PlanTierId, StripePlanId> = {
+      STARTER: 'STARTER',
+      GROWTH_PRO: 'PRO',
+      AGENCY_ENTERPRISE: 'AGENCY'
+    };
+    const targetStripePlan = stripePlanMap[selectedPlanId] || 'PRO';
+
+    try {
+      // 💳 Tentativa 1: Stripe Checkout Real Oficial (Seguro, PCI-Compliant)
+      const redirected = await redirectToStripeCheckout(targetStripePlan, buyer.email);
+      if (redirected) {
+        return; // Navegador redirecionado para a Stripe
+      }
+    } catch (stripeErr) {
+      console.warn('[CheckoutModal] Stripe Real indisponível, caindo para processamento local:', stripeErr);
+    }
 
     try {
       const result = await processCreditCardPayment(selectedPlan, billingCycle, buyer, card);

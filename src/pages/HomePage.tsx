@@ -16,6 +16,7 @@ import { extractCleanDomainAndBrand } from '../services/siteInspector';
 import { AuditInput, AgentDiagnosticResult } from '../types';
 import { detectMarketplace } from '../services/marketplaceInspector';
 import { saveAuditToDatabase } from '../services/history/storeAuditHistoryService';
+import { useAuditStore } from '../store/auditStore';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, 
@@ -107,14 +108,29 @@ export type ActiveModalId =
 export function HomePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [diagnostic, setDiagnostic] = useState<AgentDiagnosticResult | null>(null);
-  const [activeTab, setActiveTab] = useState<string>('summary');
+  // 🗄️ Hydrate state from Zustand auditStore (survives F5 / page reloads)
+  const [diagnostic, setDiagnosticState] = useState<AgentDiagnosticResult | null>(() => useAuditStore.getState().diagnostic);
+  const [activeTab, setActiveTabState] = useState<string>(() => useAuditStore.getState().activeTab || 'summary');
   const [activeModal, setActiveModal] = useState<ActiveModalId>(null);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analyzingUrl, setAnalyzingUrl] = useState<string>('');
-  const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
+  const [isAdvancedMode, setIsAdvancedModeState] = useState<boolean>(() => useAuditStore.getState().isAdvancedMode || false);
   const [auditError, setAuditError] = useState<string | null>(null);
   const [isPublicDossierMode, setIsPublicDossierMode] = useState<boolean>(false);
+
+  // Sync helpers to keep Zustand store and local state identical
+  const setDiagnostic = (val: AgentDiagnosticResult | null) => {
+    setDiagnosticState(val);
+    useAuditStore.getState().setDiagnostic(val);
+  };
+  const setActiveTab = (tab: string) => {
+    setActiveTabState(tab);
+    useAuditStore.getState().setActiveTab(tab);
+  };
+  const setIsAdvancedMode = (val: boolean) => {
+    setIsAdvancedModeState(val);
+    useAuditStore.getState().setIsAdvancedMode(val);
+  };
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState<boolean>(false);
   const [showOnboarding, setShowOnboarding] = useState<boolean>(() => {
     return !localStorage.getItem('adshield_onboarding_complete');
