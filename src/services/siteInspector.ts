@@ -501,62 +501,24 @@ async function fetchRealLiveCatalogAudit(
 
   // 🏛️ SPECIAL ENTERPRISE GIANT CALIBRATION (NIKE, ADIDAS, AMAZON, ETC.)
   if (isEnterprise) {
-    const enterpriseShoesSizes = ['38', '39', '40', '41', '42', '43', '44'];
-    const enterpriseApparelSizes = ['P', 'M', 'G', 'GG'];
-
-    const enterpriseIssues: CatalogProductIssue[] = [
-      {
-        id: 'ent-sku-1',
-        sku: `${brandName}-PROD-HERO-01`,
-        productTitle: `${brandName} — Linha Oficial de Alta Performance`,
-        productUrl: `https://${domain}`,
-        imageSrc: '',
-        hasValidImage: true,
-        imageResolutionStatus: 'ALTA',
-        availableSizes: enterpriseShoesSizes,
-        missingSizes: [],
-        isFullPrintExempt: true,
-        hasDescription: true,
-        descriptionLength: 350,
-        hasSizeGuide: true,
-        imageWeightKb: 145,
-        criticalIssuesCount: 0,
-        recommendedAction: 'Infraestrutura Enterprise em CDN Global com Tabela de Medidas e Fotos em Alta Resolução.'
-      },
-      {
-        id: 'ent-sku-2',
-        sku: `${brandName}-APPAREL-02`,
-        productTitle: `${brandName} — Vestuário Técnico & Linha Casual`,
-        productUrl: `https://${domain}`,
-        imageSrc: '',
-        hasValidImage: true,
-        imageResolutionStatus: 'ALTA',
-        availableSizes: enterpriseApparelSizes,
-        missingSizes: [],
-        isFullPrintExempt: true,
-        hasDescription: true,
-        descriptionLength: 280,
-        hasSizeGuide: true,
-        imageWeightKb: 120,
-        criticalIssuesCount: 0,
-        recommendedAction: 'Grade internacional com conversão em conformidade de escala global.'
-      }
-    ];
-
     return {
-      totalProductsScanned: enterpriseIssues.length,
-      totalSkusAudited: 11,
-      totalSkusInStock: 11,
+      totalProductsScanned: 0,
+      totalSkusAudited: 0,
+      totalSkusInStock: 0,
       totalSkusInStockout: 0,
       productsWithMissingImages: 0,
       productsWithBrokenGrid: 0,
-      productsWithFullExemption: enterpriseIssues.length,
+      productsWithFullExemption: 0,
       productsWithoutDescription: 0,
       productsWithoutSizeGuide: 0,
       heavyImagesCount: 0,
-      catalogHealthScore: 96,
+      catalogHealthScore: 0,
       monthlyLossEstimateBRL: 0,
-      issues: enterpriseIssues
+      issues: [],
+      // @ts-ignore
+      platformDetected: 'enterprise_protected',
+      // @ts-ignore
+      inspectionNotes: 'Esta loja usa proteção anti-scraping enterprise. Os dados de catálogo não puderam ser extraídos automaticamente. Para uma auditoria completa, é necessário integrar via API oficial da plataforma.'
     };
   }
 

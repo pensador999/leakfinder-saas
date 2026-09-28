@@ -363,6 +363,10 @@ export function calculateStoreFinancialGrounding(
         marginAdvantageBRL: formatBRLDecimals(pixMarginLiftPerOrder)
       }
     },
-    groundingConfidenceScore: 98.6
+    groundingConfidenceScore: 98.6,
+    // @ts-ignore
+    _isSimulated: true,
+    // @ts-ignore
+    _simulationLabel: '[Simulador Dinâmico — Baseado em Benchmarks do Nicho]'
   };
 }

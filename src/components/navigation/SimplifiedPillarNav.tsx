@@ -30,7 +30,9 @@ import {
   Search,
   CheckCircle2,
   SlidersHorizontal,
-  Bot
+  Bot,
+  LayoutDashboard,
+  ShoppingCart
 } from 'lucide-react';
 
 export type MainNavPillar = 'PROFIT_DIAGNOSTIC' | 'CATALOG_STOCK' | 'ACTIONS_SHIELD' | 'SWARM_LAB';
@@ -45,6 +47,7 @@ export interface SimplifiedPillarNavProps {
   isFounderAuthenticated?: boolean;
   onOpenMetaAutoKill: () => void;
   onOpenWhatsAppWatchdog: () => void;
+  isAdvancedMode?: boolean;
 }
 
 export const SimplifiedPillarNav: React.FC<SimplifiedPillarNavProps> = ({
@@ -56,7 +59,8 @@ export const SimplifiedPillarNav: React.FC<SimplifiedPillarNavProps> = ({
   totalCatalogAlerts = 0,
   isFounderAuthenticated = false,
   onOpenMetaAutoKill,
-  onOpenWhatsAppWatchdog
+  onOpenWhatsAppWatchdog,
+  isAdvancedMode = false
 }) => {
   const [isSwarmDrawerOpen, setIsSwarmDrawerOpen] = useState(false);
 
@@ -123,6 +127,41 @@ export const SimplifiedPillarNav: React.FC<SimplifiedPillarNavProps> = ({
       ]
     }
   ];
+
+  if (!isAdvancedMode) {
+    const essentialTabs = [
+      { id: 'summary', label: 'Resumo Executivo', icon: LayoutDashboard },
+      { id: 'catalog', label: 'Catálogo & SKUs', icon: ShoppingCart },
+      { id: 'ads', label: 'Tráfego & Ads', icon: Target },
+      { id: 'kanban', label: 'Plano de Ação', icon: KanbanSquare },
+      { id: 'calculator', label: 'Calculadora', icon: Calculator }
+    ];
+
+    return (
+      <div className="flex flex-wrap items-center justify-center gap-3 bg-[#101211] p-3 rounded-2xl border border-white/10 shadow-lg font-sans">
+        {essentialTabs.map(tab => {
+          const TabIcon = tab.icon;
+          const isTabActive = activeTab === tab.id;
+          
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => onChangeTab(tab.id)}
+              className={`px-4 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 transition-all cursor-pointer border ${
+                isTabActive
+                  ? 'bg-[#0AE448] text-slate-950 border-[#0AE448] shadow-md shadow-[#0AE448]/20'
+                  : 'bg-[#141716] text-[#BBBAA6] border-white/10 hover:border-white/20 hover:text-[#FFFCE1] hover:bg-[#191C1B]'
+              }`}
+            >
+              <TabIcon className={`w-4 h-4 shrink-0 ${isTabActive ? 'text-slate-950' : 'text-[#0AE448]'}`} />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3 font-sans">

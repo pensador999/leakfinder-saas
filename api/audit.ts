@@ -111,7 +111,26 @@ function validateAndSanitizeUrl(rawUrl: string): { isValid: boolean; sanitizedUr
   return { isValid: true, sanitizedUrl: formatted };
 }
 
+// Rate limiter state
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+
 export default async function handler(request: any, response: any) {
+  // Rate Limiting Logic
+  let clientIp = request.headers?.['x-forwarded-for'] || request.headers?.['x-real-ip'] || 'unknown-ip';
+  if (Array.isArray(clientIp)) clientIp = clientIp[0];
+  clientIp = clientIp?.split(',')[0].trim();
+  
+  const now = Date.now();
+  const rlState = rateLimitMap.get(clientIp);
+  if (rlState && now < rlState.resetAt) {
+    if (rlState.count >= 5) {
+      return sendResponse(response, 429, { error: 'Too Many Requests', success: false });
+    }
+    rlState.count++;
+  } else {
+    rateLimitMap.set(clientIp, { count: 1, resetAt: now + 3600000 }); // 1 hour
+  }
+
   // 1. CORS Preflight
   const method = (request.method || (typeof request.headers?.get === 'function' ? 'GET' : 'GET')).toUpperCase();
   if (method === 'OPTIONS') {

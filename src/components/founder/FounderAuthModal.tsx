@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Lock, KeyRound, ShieldAlert, X, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Lock, KeyRound, X, ArrowRight } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface FounderAuthModalProps {
   isOpen: boolean;
@@ -8,20 +10,47 @@ interface FounderAuthModalProps {
 }
 
 export const FounderAuthModal: React.FC<FounderAuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
-  const [pinCode, setPinCode] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [errorMsg, setErrorMsg] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
 
   if (!isOpen) return null;
 
-  const handleUnlock = (e: React.FormEvent) => {
+  const handleUnlock = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Master PIN definition (Default: 2026 or ADSHIELD2026)
-    if (pinCode.trim() === '2026' || pinCode.trim().toUpperCase() === 'ADSHIELD' || pinCode.trim() === '777') {
-      sessionStorage.setItem('adshield_founder_authenticated', 'true');
-      setErrorMsg('');
-      onSuccess();
-    } else {
-      setErrorMsg('Senha Master do Fundador incorreta. Acesso restrito e sigiloso.');
+    setIsLoading(true);
+    setErrorMsg('');
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        // Check if user has admin role
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single();
+
+        if (profileError || !profileData || profileData.role !== 'admin') {
+          // Revert sign in if not admin
+          await supabase.auth.signOut();
+          setErrorMsg('Acesso restrito a administradores.');
+        } else {
+          onSuccess();
+        }
+      }
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Credenciais inválidas.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -51,23 +80,40 @@ export const FounderAuthModal: React.FC<FounderAuthModalProps> = ({ isOpen, onCl
         </div>
 
         <p className="text-xs text-slate-300 leading-relaxed bg-slate-800/60 p-3.5 rounded-2xl border border-slate-700/50">
-          🔒 Esta área contém dados financeiros confidenciais, CRM de prospecção de clientes e controle mestre dos 10 agentes. Digite sua Senha Master para desbloquear.
+          🔒 Esta área contém dados financeiros confidenciais, CRM de prospecção de clientes e controle mestre dos 10 agentes. Digite suas credenciais para desbloquear.
         </p>
 
         {/* Form */}
         <form onSubmit={handleUnlock} className="space-y-4">
           <div>
             <label className="text-[11px] font-mono font-bold text-slate-400 uppercase block mb-1.5">
-              Senha Master / PIN do Fundador:
+              E-mail do Administrador:
+            </label>
+            <div className="relative">
+              <input
+                type="email"
+                autoFocus
+                placeholder="admin@exemplo.com"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setErrorMsg(''); }}
+                className="w-full pl-4 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-[11px] font-mono font-bold text-slate-400 uppercase block mb-1.5">
+              Senha:
             </label>
             <div className="relative">
               <input
                 type="password"
-                autoFocus
-                placeholder="Digite a senha (padrão: 2026)"
-                value={pinCode}
-                onChange={(e) => { setPinCode(e.target.value); setErrorMsg(''); }}
+                placeholder="Digite a senha"
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setErrorMsg(''); }}
                 className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-amber-500"
+                disabled={isLoading}
               />
               <KeyRound className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
             </div>
@@ -83,15 +129,17 @@ export const FounderAuthModal: React.FC<FounderAuthModalProps> = ({ isOpen, onCl
               type="button"
               onClick={onClose}
               className="px-4 py-2 hover:bg-slate-800 text-slate-400 hover:text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
+              disabled={isLoading}
             >
               Cancelar
             </button>
 
             <button
               type="submit"
-              className="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-lg shadow-amber-500/20"
+              disabled={isLoading}
+              className="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-lg shadow-amber-500/20 disabled:opacity-50"
             >
-              <span>Desbloquear Painel</span>
+              <span>{isLoading ? 'Verificando...' : 'Desbloquear Painel'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>

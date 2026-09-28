@@ -92,48 +92,63 @@ async function generateDiagnosticFromWorker(input: AuditInput, worker: WorkerIns
     buildCroAgentSkill(worker, input).catch(err => {
       console.warn('[AgentEngine] Falha em CRO skill, aplicando fallback atômico:', err);
       return {
-        score: 80,
+        status: 'unavailable',
+        reason: 'Módulo temporariamente indisponível',
+        _isFallback: true,
+        score: 0,
         findings: [],
-        mobileSpeedMs: 2500,
-        checkoutFrictionScore: 20,
-        quickWins: ['Auditoria de checkout concluída']
-      };
+        mobileSpeedMs: 0,
+        checkoutFrictionScore: 0,
+        quickWins: []
+      } as any;
     }),
     buildSeoAgentSkill(worker, input).catch(err => {
       console.warn('[AgentEngine] Falha em SEO skill, aplicando fallback atômico:', err);
       return {
-        score: 78,
-        healthStatus: 'BOM',
+        status: 'unavailable',
+        reason: 'Módulo temporariamente indisponível',
+        _isFallback: true,
+        score: 0,
+        healthStatus: 'INDISPONIVEL',
         topKeywords: [],
-        schemaMarkupRecommendation: 'Implementar Schema.org Organization e Product',
-        onPageFixes: ['Revisão periódica de tags alt e meta-tags']
-      };
+        schemaMarkupRecommendation: '',
+        onPageFixes: []
+      } as any;
     }),
     buildAdsAgentSkill(worker, input).catch(err => {
       console.warn('[AgentEngine] Falha em Ads skill, aplicando fallback atômico:', err);
       return {
-        targetRoas: 3.5,
-        maxCacAllowed: 55,
-        monthlyAdBudgetSuggested: 3000,
-        budgetAllocation: { coldProspecting: 60, retargeting: 25, testing: 15 },
+        status: 'unavailable',
+        reason: 'Módulo temporariamente indisponível',
+        _isFallback: true,
+        targetRoas: 0,
+        maxCacAllowed: 0,
+        monthlyAdBudgetSuggested: 0,
+        budgetAllocation: { coldProspecting: 0, retargeting: 0, testing: 0 },
         creatives: []
-      };
+      } as any;
     }),
     buildCopyAgentSkill(worker, input).catch(err => {
       console.warn('[AgentEngine] Falha em Copy skill, aplicando fallback atômico:', err);
       return {
+        status: 'unavailable',
+        reason: 'Módulo temporariamente indisponível',
+        _isFallback: true,
         headlineFrameworks: [],
         offers: [],
         objections: []
-      };
+      } as any;
     }),
     buildPmGrowthAgentSkill(worker, input).catch(err => {
       console.warn('[AgentEngine] Falha em PM Growth skill, aplicando fallback atômico:', err);
       return {
+        status: 'unavailable',
+        reason: 'Módulo temporariamente indisponível',
+        _isFallback: true,
         iceMatrix: [],
         funnelGaps: [],
         automationWorkflows: []
-      };
+      } as any;
     })
   ]);
 

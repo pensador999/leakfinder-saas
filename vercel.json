@@ -67,6 +67,12 @@
     "api/audit.ts": {
       "maxDuration": 60
     },
+    "api/create-checkout-session.ts": {
+      "maxDuration": 10
+    },
+    "api/webhook-stripe.ts": {
+      "maxDuration": 10
+    },
     "api/shopify/sync.ts": {
       "maxDuration": 60
     },

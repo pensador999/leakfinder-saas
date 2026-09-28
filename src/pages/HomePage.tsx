@@ -112,6 +112,7 @@ export function HomePage() {
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analyzingUrl, setAnalyzingUrl] = useState<string>('');
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
+  const [auditError, setAuditError] = useState<string | null>(null);
   const [isPublicDossierMode, setIsPublicDossierMode] = useState<boolean>(false);
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState<boolean>(false);
 
@@ -166,36 +167,36 @@ export function HomePage() {
   // Initial load: dynamically check if a specific store was requested via query param
   useEffect(() => {
     const targetQueryUrl = searchParams.get('loja') || searchParams.get('url') || searchParams.get('dossier') || searchParams.get('store');
-    const storeToScan = targetQueryUrl ? (targetQueryUrl.startsWith('http') ? targetQueryUrl : `https://${targetQueryUrl}`) : 'https://www.brkagro.com.br';
     
     if (targetQueryUrl) {
       setIsPublicDossierMode(true);
+      const storeToScan = targetQueryUrl.startsWith('http') ? targetQueryUrl : `https://${targetQueryUrl}`;
+      const { cleanUrl, brandName } = extractCleanDomainAndBrand(storeToScan);
+
+      const initialInput: AuditInput = {
+        siteUrl: cleanUrl,
+        businessName: brandName,
+        businessType: 'ecommerce',
+        niche: cleanUrl.includes('agro') ? 'Agropecuária & Moda Campo' : 'Moda & Varejo E-commerce',
+        monthlyRevenue: 'R$ 50k a R$ 200k',
+        averageOrderValue: 180,
+        mainChallenge: 'low_conversion',
+        targetRegion: 'Brasil',
+        grossMargin: 45,
+        competitorsUrl: 'https://concorrente.com.br'
+      };
+      runAgentDiagnosticAsync(initialInput).then(res => {
+        setDiagnostic(res);
+        saveAuditToDatabase(res).catch(e => console.warn('[Supabase Auto-Save] Initial audit save error:', e));
+      });
     }
-
-    const { cleanUrl, brandName } = extractCleanDomainAndBrand(storeToScan);
-
-    const initialInput: AuditInput = {
-      siteUrl: cleanUrl,
-      businessName: brandName,
-      businessType: 'ecommerce',
-      niche: cleanUrl.includes('agro') ? 'Agropecuária & Moda Campo' : 'Moda & Varejo E-commerce',
-      monthlyRevenue: 'R$ 50k a R$ 200k',
-      averageOrderValue: 180,
-      mainChallenge: 'low_conversion',
-      targetRegion: 'Brasil',
-      grossMargin: 45,
-      competitorsUrl: 'https://concorrente.com.br'
-    };
-    runAgentDiagnosticAsync(initialInput).then(res => {
-      setDiagnostic(res);
-      saveAuditToDatabase(res).catch(e => console.warn('[Supabase Auto-Save] Initial audit save error:', e));
-    });
   }, [searchParams]);
 
   const handleStartRealAudit = async (input: AuditInput) => {
     setActiveModal(null);
     setIsAnalyzing(true);
     setAnalyzingUrl(input.siteUrl);
+    setAuditError(null);
 
     try {
       const { cleanUrl, brandName } = extractCleanDomainAndBrand(input.siteUrl);
@@ -223,6 +224,7 @@ export function HomePage() {
     } catch (err) {
       console.error('Audit execution error:', err);
       setIsAnalyzing(false);
+      setAuditError('Não foi possível auditar esta loja. Verifique a URL e tente novamente.');
     }
   };
 
@@ -288,6 +290,12 @@ export function HomePage() {
           isAnalyzing={isAnalyzing}
           currentUrl={diagnostic?.input.siteUrl}
         />
+
+        {auditError && (
+          <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded-xl text-sm font-medium text-center">
+            {auditError}
+          </div>
+        )}
 
         {isAnalyzing ? (
           <AnalysisLoadingState
@@ -521,13 +529,55 @@ export function HomePage() {
               isFounderAuthenticated={isFounderAuthenticated}
               onOpenMetaAutoKill={() => setActiveModal('metaAutoKill')}
               onOpenWhatsAppWatchdog={() => setActiveModal('whatsappWatchdog')}
+              isAdvancedMode={isAdvancedMode}
             />
+
+            {/* BOTÃO TOGGLE MODO AVANÇADO (MVP) */}
+            <div className="flex justify-center mt-2">
+              <button
+                onClick={() => setIsAdvancedMode(!isAdvancedMode)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-sm ${
+                  isAdvancedMode 
+                    ? 'bg-[#191C1B] text-[#0AE448] border border-[#0AE448]/30 hover:bg-[#202422]' 
+                    : 'bg-[#141716] text-[#BBBAA6] border border-white/10 hover:text-white hover:bg-[#191C1B]'
+                }`}
+              >
+                {isAdvancedMode ? <ChevronDown className="w-4 h-4 rotate-180 transition-transform" /> : <Sparkles className="w-4 h-4 text-[#00BAE2]" />}
+                🔬 Modo Avançado (33 agentes)
+              </button>
+            </div>
 
             {/* Content Area Rendering */}
             <div className="animate-in fade-in duration-200">
               <ErrorBoundary>
-                {activeTab === 'summary' && (
-                  viewMode === 'merchant' ? (
+                {!isAdvancedMode ? (
+                  <Suspense fallback={<TabLoadingSkeleton />}>
+                    {activeTab === 'summary' && (
+                      <div className="space-y-6">
+                        <ExecutiveSummary
+                          diagnostic={diagnostic}
+                          onSelectAgentTab={(tab) => setActiveTab(tab)}
+                        />
+                        {diagnostic && <BlindspotAuditView diagnostic={diagnostic} />}
+                      </div>
+                    )}
+                    {activeTab === 'catalog' && diagnostic && (
+                      <CollectionDeepAuditView diagnostic={diagnostic} />
+                    )}
+                    {activeTab === 'ads' && diagnostic && (
+                      <AdsAgentView diagnostic={diagnostic} />
+                    )}
+                    {activeTab === 'kanban' && diagnostic && (
+                      <ActionPlanKanban diagnostic={diagnostic} />
+                    )}
+                    {activeTab === 'calculator' && (
+                      <RoasCalculator />
+                    )}
+                  </Suspense>
+                ) : (
+                  <>
+                    {activeTab === 'summary' && (
+                      viewMode === 'merchant' ? (
                     <MerchantTripleImpactDossier
                       diagnostic={diagnostic}
                       onOpenPricing={() => setActiveModal('pricing')}
@@ -693,6 +743,8 @@ export function HomePage() {
                   </div>
                 )}
                 </Suspense>
+              </>
+            )}
               </ErrorBoundary>
             </div>
 

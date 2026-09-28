@@ -3,10 +3,14 @@ import { circuitBreaker } from './circuitBreaker';
 
 const isConfigured = !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://mock.supabase.co';
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'mock-key';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://not-configured-yet.supabase.co';
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'not-configured-yet';
 
 export const isSupabaseConfigured = isConfigured;
+
+if (!isConfigured) {
+  console.warn('⚠️ Supabase environment variables missing! Local dev only.');
+}
 
 // ⚡ Custom Resilient Fetch with Circuit Breaker
 const resilientFetch: typeof fetch = async (input, init) => {
