@@ -103,4 +103,33 @@ describe('MVP Core Flow Validation', () => {
     expect(typeof stripeService.redirectToStripeCheckout).toBe('function');
     expect(typeof stripeService.isStripeConfigured).toBe('function');
   });
+
+  // Test 7: SKU deduplication in deepSkuAuditEngine
+  it('deduplicates variants and products with identical codes', async () => {
+    const { auditDeepCatalog } = await import('../services/catalog/deepSkuAuditEngine');
+    
+    // Loja com duas variantes com o mesmo código SKU "BON-TRK-01"
+    const mockProductWithDuplicateSkus = {
+      id: 'prod-123',
+      title: 'Boné Trucker Teste',
+      handle: 'bone-trucker-teste',
+      product_type: 'Boné',
+      tags: ['Acessório'],
+      variants: [
+        { id: 'var-1', title: 'Preto', sku: 'BON-TRK-01', price: '129.90', available: true },
+        { id: 'var-2', title: 'Preto Réplica', sku: 'BON-TRK-01', price: '129.90', available: true }, // Duplicata do mesmo código
+        { id: 'var-3', title: 'Azul', sku: 'BON-TRK-02', price: '129.90', available: true }
+      ]
+    };
+
+    const summary = auditDeepCatalog([mockProductWithDuplicateSkus, mockProductWithDuplicateSkus]); // Produto duplicado também
+
+    // Apenas 1 produto deve ser auditado
+    expect(summary.totalProductsAudited).toBe(1);
+    // Das 3 variantes, apenas as 2 com SKUs distintos devem ser auditadas (var-1 e var-3)
+    expect(summary.totalSkusAudited).toBe(2);
+    expect(summary.allProducts[0].skus.length).toBe(2);
+    expect(summary.allProducts[0].skus.map(s => s.skuCode)).toEqual(['BON-TRK-01', 'BON-TRK-02']);
+  });
 });
+

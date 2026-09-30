@@ -150,11 +150,25 @@ export function auditProductDeepSkus(
   let activeSkus = 0;
   let rupturedSkus = 0;
   let productDailyBleed = 0;
+  const seenVariantSkus = new Set<string>();
 
-  const auditedSkus: AuditedProductSkuItem[] = rawVariants.map((v: any) => {
+  const auditedSkus: AuditedProductSkuItem[] = [];
+
+  for (const v of rawVariants) {
+    const rawSku = String(v.sku || '').trim();
+    const cleanVariantSkuKey = rawSku.toUpperCase();
+
+    // 🔍 DEDUPLICAÇÃO DE CÓDIGO SKU: Se duas variantes tiverem o mesmo código SKU, valida apenas uma
+    if (cleanVariantSkuKey && seenVariantSkus.has(cleanVariantSkuKey)) {
+      continue; // Pula duplicata
+    }
+    if (cleanVariantSkuKey) {
+      seenVariantSkus.add(cleanVariantSkuKey);
+    }
+
     totalSkus++;
     const variantTitle = String(v.title || '').trim() || 'Padrão';
-    const skuCode = String(v.sku || '').trim() || `SKU-${v.id || totalSkus}`;
+    const skuCode = rawSku || `SKU-${v.id || totalSkus}`;
     const price = typeof v.price === 'string' ? parseFloat(v.price) || 169.90 : v.price || 169.90;
     const compareAtPrice = v.compare_at_price ? parseFloat(String(v.compare_at_price)) : undefined;
     const available = Boolean(v.available);
@@ -189,7 +203,7 @@ export function auditProductDeepSkus(
       }
     }
 
-    return {
+    auditedSkus.push({
       skuId: String(v.id || `var-${totalSkus}`),
       skuCode,
       variantTitle,
@@ -202,8 +216,8 @@ export function auditProductDeepSkus(
       estimatedWastedAdSpendDay: wastedAdSpendDay,
       manufacturingType,
       operationalAction
-    };
-  });
+    });
+  }
 
   // Calculate Product Health Score (0-100)
   let healthScore = 100;
@@ -260,23 +274,34 @@ export function auditDeepCatalog(
   let totalRuptured = 0;
   let totalFullExempt = 0;
   let totalMonthlyBleed = 0;
+  const seenProductKeys = new Set<string>();
 
-  const auditedProducts: AuditedProductWithSkus[] = products.map(p => {
+  const auditedProducts: AuditedProductWithSkus[] = [];
+
+  for (const p of products) {
+    const rawKey = String(p.handle || p.id || '').trim().toLowerCase();
+    if (rawKey && seenProductKeys.has(rawKey)) {
+      continue; // Ignora produto duplicado
+    }
+    if (rawKey) {
+      seenProductKeys.add(rawKey);
+    }
+
     const audited = auditProductDeepSkus(p, options, dailyAdSpend);
     totalSkus += audited.totalSkusCount;
     totalInStock += audited.activeSkusCount;
     totalRuptured += audited.rupturedSkusCount;
     totalFullExempt += audited.skus.filter(s => s.isFullExempt).length;
     totalMonthlyBleed += audited.criticalBleedBrlMonth;
-    return audited;
-  });
+    auditedProducts.push(audited);
+  }
 
   const criticalProducts = auditedProducts.filter(p => p.criticalBleedBrlDay > 0);
 
   const globalHealthScore = totalSkus > 0 ? Math.round((totalInStock / totalSkus) * 100) : 100;
 
   return {
-    totalProductsAudited: products.length,
+    totalProductsAudited: auditedProducts.length,
     totalSkusAudited: totalSkus,
     totalInStockSkus: totalInStock,
     totalRupturedSkus: totalRuptured,

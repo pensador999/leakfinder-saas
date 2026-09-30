@@ -498,6 +498,7 @@ async function fetchRealLiveCatalogAudit(
 ): Promise<CatalogAuditSummary> {
   const standardLineSizes = ['PP', 'P', 'M', 'G', 'GG', 'G1', 'G2'];
   const issues: CatalogProductIssue[] = [];
+  const seenSkus = new Set<string>();
 
   // 🏛️ SPECIAL ENTERPRISE GIANT CALIBRATION (NIKE, ADIDAS, AMAZON, ETC.)
   if (isEnterprise) {
@@ -775,6 +776,15 @@ async function fetchRealLiveCatalogAudit(
             recommendedAction = 'Ativar widget ou inserir Tabela de Medidas na descrição.';
           }
 
+          // 🔍 DEDUPLICAÇÃO DE CÓDIGOS SKU: Valida apenas uma ocorrência para evitar duplicidade de estoque e furos de grade
+          const cleanSkuKey = (mainSku || '').trim().toUpperCase();
+          if (cleanSkuKey && seenSkus.has(cleanSkuKey)) {
+            continue; // Já validado anteriormente, descarta réplica
+          }
+          if (cleanSkuKey) {
+            seenSkus.add(cleanSkuKey);
+          }
+
           issues.push({
             id: `real-sku-${p.id || i}`,
             sku: mainSku,
@@ -836,6 +846,14 @@ async function fetchRealLiveCatalogAudit(
               const pUrl = rawUrl.startsWith('http') ? rawUrl : `https://${domain}${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`;
               const pImg = Array.isArray(prod.image) ? prod.image[0] : (typeof prod.image === 'object' ? prod.image?.url : (prod.image || ''));
               
+              const cleanSchemaSku = String(pSku).trim().toUpperCase();
+              if (cleanSchemaSku && seenSkus.has(cleanSchemaSku)) {
+                continue; // Descarta réplica de SKU já processada
+              }
+              if (cleanSchemaSku) {
+                seenSkus.add(cleanSchemaSku);
+              }
+
               issues.push({
                 id: `schema-sku-${issues.length}`,
                 sku: pSku,
