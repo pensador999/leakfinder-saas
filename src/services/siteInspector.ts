@@ -1119,9 +1119,11 @@ async function fetchRealLiveCatalogAudit(
   }
 
   const totalProductsScanned = issues.length;
-  const totalSkusAudited = deepSkuAudit?.totalSkusAudited || (totalProductsScanned * 4);
-  const totalSkusInStock = deepSkuAudit?.totalInStockSkus || Math.round(totalSkusAudited * 0.85);
-  const totalSkusInStockout = deepSkuAudit?.totalRupturedSkus || (totalSkusAudited - totalSkusInStock);
+  const fallbackInStockCount = issues.reduce((acc, i) => acc + Math.max(1, i.availableSizes?.length || 0), 0);
+  const fallbackStockoutCount = issues.reduce((acc, i) => acc + (i.missingSizes?.length || 0), 0);
+  const totalSkusInStock = deepSkuAudit?.totalInStockSkus !== undefined ? deepSkuAudit.totalInStockSkus : fallbackInStockCount;
+  const totalSkusInStockout = deepSkuAudit?.totalRupturedSkus !== undefined ? deepSkuAudit.totalRupturedSkus : fallbackStockoutCount;
+  const totalSkusAudited = deepSkuAudit?.totalSkusAudited !== undefined ? deepSkuAudit.totalSkusAudited : (totalSkusInStock + totalSkusInStockout);
   const brokenCatalogItems = issues.filter(isCatalogProductBroken);
   const productsWithBrokenGrid = brokenCatalogItems.length;
   const productsWithMissingImages = issues.filter(i => !i.hasValidImage).length;
@@ -1268,7 +1270,13 @@ export async function inspectRealWebsite(
     : `${domain}_${options?.operationMode || 'AUTO'}`;
 
   const cached = inspectionCache.get(cacheKey);
-  if (cached && (Date.now() - cached.timestamp < CACHE_TTL_MS)) {
+  const isCachedValidCatalog =
+    cached &&
+    (Date.now() - cached.timestamp < CACHE_TTL_MS) &&
+    (cached.data.isMarketplaceSeller ||
+      ((cached.data.catalogAudit?.totalProductsScanned || 0) > 1 &&
+        cached.data.catalogAudit?.issues?.[0]?.id !== 'real-catalog-verified'));
+  if (isCachedValidCatalog && cached) {
     return cached.data;
   }
 
@@ -1822,6 +1830,12 @@ export async function inspectRealWebsite(
   // 🧠 Sincroniza catálogo com a memória episódica Mem0
   syncInspectionToEpisodicMemory(result);
 
-  inspectionCache.set(cacheKey, { data: result, timestamp: Date.now() });
+  if (
+    result.isMarketplaceSeller ||
+    ((result.catalogAudit?.totalProductsScanned || 0) > 1 &&
+      result.catalogAudit?.issues?.[0]?.id !== 'real-catalog-verified')
+  ) {
+    inspectionCache.set(cacheKey, { data: result, timestamp: Date.now() });
+  }
   return result;
 }

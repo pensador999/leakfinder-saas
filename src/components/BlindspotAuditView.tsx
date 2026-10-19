@@ -13,6 +13,7 @@ import { OneClickMitigationService } from '../services/actions/oneClickMitigatio
 import { ProductSkuDetailModal } from './catalog/ProductSkuDetailModal';
 import { auditProductDeepSkus, AuditedProductWithSkus, AuditedProductSkuItem } from '../services/catalog/deepSkuAuditEngine';
 import { sweepStoreFullCatalog, CatalogAuditSummary } from '../services/siteInspector';
+import { useAuditStore } from '../store/auditStore';
 
 interface BlindspotAuditViewProps {
   diagnostic: AgentDiagnosticResult;
@@ -40,6 +41,19 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
 
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const successMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setCurrentCatalogAudit(realSiteData.catalogAudit);
+    // Se o catálogo veio de cache antigo com apenas 1 item genérico ou <= 8 SKUs, dispara varredura 100% automaticamente
+    if (
+      !realSiteData.isMarketplaceSeller &&
+      realSiteData.url &&
+      ((realSiteData.catalogAudit?.totalProductsScanned || 0) <= 1 ||
+        (realSiteData.catalogAudit?.totalSkusAudited || 0) <= 8)
+    ) {
+      handleSweepFullCatalog();
+    }
+  }, [realSiteData.url, realSiteData.domain]);
 
   useEffect(() => {
     return () => {
@@ -214,6 +228,15 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
     try {
       const fullAudit = await sweepStoreFullCatalog(realSiteData.url, 25);
       setCurrentCatalogAudit(fullAudit);
+      if (fullAudit.totalProductsScanned > 1) {
+        useAuditStore.getState().setDiagnostic({
+          ...diagnostic,
+          realSiteData: {
+            ...realSiteData,
+            catalogAudit: fullAudit
+          }
+        });
+      }
       setViewMode('SKUS_EXAUSTIVO');
       setActionSuccessMessage(`Varredura 100% Concluída: ${fullAudit.totalProductsScanned} produtos e ${fullAudit.totalSkusAudited} SKUs auditados!`);
       if (successMessageTimerRef.current) clearTimeout(successMessageTimerRef.current);

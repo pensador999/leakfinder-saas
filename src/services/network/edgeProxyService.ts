@@ -42,82 +42,126 @@ export class EdgeProxyService {
   }
 
   /**
-   * Executa uma requisição HTTP resiliente com corrida de 4 níveis de contingência anti-bloqueio.
+   * Executa uma requisição HTTP resiliente com corrida de 5 níveis de contingência anti-bloqueio.
+   * No navegador, prioriza o proxy serverless oficial (/api/catalog-proxy) e protege endpoints .json contra corrupção Markdown do Jina AI.
    */
   public static async fetchResilient(rawUrl: string, timeoutMs = 4500): Promise<ProxyFetchResult> {
     const startTime = Date.now();
     const url = this.normalizeTargetUrl(rawUrl);
     const userAgent = this.getRandomUserAgent();
+    const isBrowser = typeof window !== 'undefined';
+    const isJsonEndpoint = /\.json(\?|$)/i.test(url) || url.includes('/api/catalog_system/');
 
-    // TIER 1: Requisição Direta com AbortController
+    const isValidExpectedPayload = (text: string): boolean => {
+      if (!text) return false;
+      if (isJsonEndpoint) {
+        const trimmed = text.trim();
+        return trimmed.startsWith('{') || trimmed.startsWith('[');
+      }
+      return true;
+    };
+
+    // TIER 0 (Browser): Proxy Serverless Oficial (/api/catalog-proxy) — Zero CORS, JSON/HTML 100% puro
+    if (isBrowser) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), Math.max(5500, timeoutMs));
+        const serverProxyUrl = `/api/catalog-proxy?url=${encodeURIComponent(url)}`;
+        const response = await fetch(serverProxyUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          const text = await response.text();
+          if (isValidExpectedPayload(text)) {
+            return {
+              ok: true,
+              status: response.status,
+              data: text,
+              source: 'DIRECT_FETCH',
+              latencyMs: Date.now() - startTime
+            };
+          }
+        }
+      } catch {
+        // Continua para os próximos tiers caso /api/catalog-proxy não esteja ativo no ambiente
+      }
+    }
+
+    // TIER 1: Requisição Direta com AbortController (Sem headers de preflight CORS no navegador)
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), Math.min(2500, timeoutMs));
+      const timeoutId = setTimeout(() => controller.abort(), Math.min(3500, timeoutMs));
 
-      const response = await fetch(url, {
-        signal: controller.signal,
-        headers: {
+      const fetchInit: RequestInit = {
+        signal: controller.signal
+      };
+
+      if (!isBrowser) {
+        fetchInit.headers = {
           'User-Agent': userAgent,
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,application/json,*/*;q=0.8',
-          'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
-          'Cache-Control': 'no-cache'
-        }
-      });
+          'Accept': 'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7'
+        };
+      }
 
+      const response = await fetch(url, fetchInit);
       clearTimeout(timeoutId);
 
       if (response.ok) {
         const text = await response.text();
-        return {
-          ok: true,
-          status: response.status,
-          data: text,
-          source: 'DIRECT_FETCH',
-          latencyMs: Date.now() - startTime
-        };
-      }
-    } catch {
-      // Ignora erro e avança para Tier 2 (Jina AI)
-    }
-
-    // TIER 2: Jina AI Edge Reader (Bypass de Cloudflare WAF, Akamai e CORS)
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-      const jinaUrl = `https://r.jina.ai/${url}`;
-      const jinaResponse = await fetch(jinaUrl, {
-        signal: controller.signal,
-        headers: {
-          'Accept': 'text/plain',
-          'X-With-Images-Summary': 'true',
-          'X-No-Cache': 'true',
-          'User-Agent': userAgent
-        }
-      });
-
-      clearTimeout(timeoutId);
-
-      if (jinaResponse.ok) {
-        const text = await jinaResponse.text();
-        if (text && text.length > 200) {
+        if (isValidExpectedPayload(text)) {
           return {
             ok: true,
-            status: 200,
+            status: response.status,
             data: text,
-            source: 'JINA_AI_EDGE_READER',
+            source: 'DIRECT_FETCH',
             latencyMs: Date.now() - startTime
           };
         }
       }
     } catch {
-      // Ignora e cai para Tier 3
+      // Ignora erro e avança para os próximos tiers
+    }
+
+    // TIER 2: Jina AI Edge Reader (Apenas para páginas HTML — NUNCA para .json pois o Jina converte para Markdown)
+    if (!isJsonEndpoint) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+        const jinaUrl = `https://r.jina.ai/${url}`;
+        const jinaResponse = await fetch(jinaUrl, {
+          signal: controller.signal,
+          headers: {
+            'Accept': 'text/plain',
+            'X-With-Images-Summary': 'true',
+            'X-No-Cache': 'true'
+          }
+        });
+
+        clearTimeout(timeoutId);
+
+        if (jinaResponse.ok) {
+          const text = await jinaResponse.text();
+          if (text && text.length > 200) {
+            return {
+              ok: true,
+              status: 200,
+              data: text,
+              source: 'JINA_AI_EDGE_READER',
+              latencyMs: Date.now() - startTime
+            };
+          }
+        }
+      } catch {
+        // Ignora e cai para Tier 3
+      }
     }
 
     // TIER 3: Proxy AllOrigins (CORS & Header Bypass)
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), Math.min(2500, timeoutMs));
+      const timeoutId = setTimeout(() => controller.abort(), Math.max(4000, timeoutMs));
 
       const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
       const response = await fetch(proxyUrl, { signal: controller.signal });
@@ -125,13 +169,15 @@ export class EdgeProxyService {
 
       if (response.ok) {
         const text = await response.text();
-        return {
-          ok: true,
-          status: response.status,
-          data: text,
-          source: 'ALLORIGINS_PROXY',
-          latencyMs: Date.now() - startTime
-        };
+        if (isValidExpectedPayload(text)) {
+          return {
+            ok: true,
+            status: response.status,
+            data: text,
+            source: 'ALLORIGINS_PROXY',
+            latencyMs: Date.now() - startTime
+          };
+        }
       }
     } catch {
       // Ignora e cai para Tier 4
@@ -140,7 +186,7 @@ export class EdgeProxyService {
     // TIER 4: Proxy CorsProxy.io Fallback
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), Math.min(2500, timeoutMs));
+      const timeoutId = setTimeout(() => controller.abort(), Math.max(4000, timeoutMs));
 
       const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
       const response = await fetch(corsProxyUrl, { signal: controller.signal });
@@ -148,13 +194,15 @@ export class EdgeProxyService {
 
       if (response.ok) {
         const text = await response.text();
-        return {
-          ok: true,
-          status: response.status,
-          data: text,
-          source: 'CORSPROXY_FALLBACK',
-          latencyMs: Date.now() - startTime
-        };
+        if (isValidExpectedPayload(text)) {
+          return {
+            ok: true,
+            status: response.status,
+            data: text,
+            source: 'CORSPROXY_FALLBACK',
+            latencyMs: Date.now() - startTime
+          };
+        }
       }
     } catch {
       // Fallback final

@@ -1,0 +1,113 @@
+/// <reference types="node" />
+// ==============================================================================
+// ⚡ VERCEL SERVERLESS FUNCTION: /api/catalog-proxy
+// Server-Side High-Speed Proxy for Public E-Commerce Feeds (/products.json, /collections.json, HTML)
+// Eliminates Browser CORS blocks & Jina Markdown corruption for 100% SKU/Collection mapping
+// ==============================================================================
+
+export const config = {
+  maxDuration: 60,
+};
+
+function sendJsonOrText(response: any, statusCode: number, body: string, contentType: string = 'application/json; charset=utf-8') {
+  if (response?.status && typeof response.status === 'function') {
+    response.setHeader('Access-Control-Allow-Origin', '*');
+    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    response.setHeader('Content-Type', contentType);
+    response.setHeader('Cache-Control', 's-maxage=120, stale-while-revalidate=300');
+    return response.status(statusCode).send(body);
+  }
+  return new Response(body, {
+    status: statusCode,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Content-Type': contentType,
+      'Cache-Control': 's-maxage=120, stale-while-revalidate=300'
+    }
+  });
+}
+
+function isSafePublicUrl(rawUrl: string): { valid: boolean; cleanUrl: string; error?: string } {
+  if (!rawUrl || typeof rawUrl !== 'string') {
+    return { valid: false, cleanUrl: '', error: 'Missing url parameter' };
+  }
+  let formatted = rawUrl.trim();
+  if (!formatted.startsWith('http://') && !formatted.startsWith('https://')) {
+    formatted = `https://${formatted}`;
+  }
+  try {
+    const parsed = new URL(formatted);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return { valid: false, cleanUrl: '', error: 'Invalid protocol' };
+    }
+    const host = parsed.hostname.toLowerCase();
+    if (
+      host === 'localhost' ||
+      host.endsWith('.localhost') ||
+      host === '127.0.0.1' ||
+      host === '0.0.0.0' ||
+      host === '::1' ||
+      host.startsWith('10.') ||
+      host.startsWith('192.168.') ||
+      host.startsWith('169.254.') ||
+      host.includes('metadata.google')
+    ) {
+      return { valid: false, cleanUrl: '', error: 'Private host blocked' };
+    }
+    return { valid: true, cleanUrl: parsed.toString() };
+  } catch {
+    return { valid: false, cleanUrl: '', error: 'Malformed URL' };
+  }
+}
+
+export default async function handler(request: any, response: any) {
+  const method = (request.method || 'GET').toUpperCase();
+  if (method === 'OPTIONS') {
+    return sendJsonOrText(response, 204, '');
+  }
+
+  let targetUrl = '';
+  if ( request.query && typeof request.query.url === 'string') {
+    targetUrl = request.query.url;
+  } else {
+    try {
+      const urlObj = new URL(request.url || 'http://localhost', 'http://localhost');
+      targetUrl = urlObj.searchParams.get('url') || '';
+    } catch {
+      targetUrl = '';
+    }
+  }
+
+  const check = isSafePublicUrl(targetUrl);
+  if (!check.valid) {
+    return sendJsonOrText(response, 400, JSON.stringify({ error: check.error }), 'application/json');
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+  try {
+    const upstream = await fetch(check.cleanUrl, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+        'Accept': 'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7'
+      }
+    });
+    clearTimeout(timeoutId);
+
+    const text = await upstream.text();
+    const contentType = upstream.headers.get('content-type') || 'application/json; charset=utf-8';
+    return sendJsonOrText(response, upstream.status, text, contentType);
+  } catch (err: any) {
+    clearTimeout(timeoutId);
+    return sendJsonOrText(
+      response,
+      502,
+      JSON.stringify({ error: err?.message || 'Upstream fetch failed' }),
+      'application/json'
+    );
+  }
+}

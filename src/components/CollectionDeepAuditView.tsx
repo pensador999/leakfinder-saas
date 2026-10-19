@@ -34,7 +34,7 @@ export const CollectionDeepAuditView: React.FC<CollectionDeepAuditViewProps> = (
   const { realSiteData } = diagnostic;
 
   const [auditData, setAuditData] = useState<CollectionAuditResult | null>(null);
-  const [selectedHandle, setSelectedHandle] = useState<string>('camisas-work');
+  const [selectedHandle, setSelectedHandle] = useState<string>('');
   const [customUrlInput, setCustomUrlInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [successFeedback, setSuccessFeedback] = useState<string>('');
@@ -42,23 +42,23 @@ export const CollectionDeepAuditView: React.FC<CollectionDeepAuditViewProps> = (
   const loadCollectionData = async (handleOrUrl?: string) => {
     setIsLoading(true);
     try {
+      const targetHandle = handleOrUrl !== undefined ? handleOrUrl : selectedHandle;
       const data = await auditSpecificCollection(
         realSiteData.url || `https://${realSiteData.domain}`,
-        handleOrUrl || selectedHandle,
+        targetHandle || undefined,
         realSiteData.catalogAudit?.issues || []
       );
       setAuditData(data);
-      if (handleOrUrl) {
-        setSelectedHandle(data.selectedCollection.collectionHandle);
-      }
+      setSelectedHandle(data.selectedCollection.collectionHandle);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    loadCollectionData();
-  }, [diagnostic]);
+    setSelectedHandle('');
+    loadCollectionData('');
+  }, [realSiteData.domain, realSiteData.url]);
 
   const handleCustomUrlSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -153,7 +153,7 @@ export const CollectionDeepAuditView: React.FC<CollectionDeepAuditViewProps> = (
       {/* Collection Selector Chips */}
       <div className="space-y-2">
         <span className="text-xs font-bold text-[#BBBAA6] block uppercase font-mono tracking-wider">
-          Coleções Detectadas no Radar / Exemplos de Campanhas:
+          Coleções Reais Mapeadas em /collections.json ({auditData.totalCollectionsInStore || allDetectedCollections.length} coleções na loja):
         </span>
         <div className="flex flex-wrap gap-2">
           {allDetectedCollections.map((col) => {
@@ -171,6 +171,13 @@ export const CollectionDeepAuditView: React.FC<CollectionDeepAuditViewProps> = (
               >
                 <Tag className={`w-3.5 h-3.5 ${isSelected ? 'text-slate-950' : 'text-[#0AE448]'}`} />
                 <span>{col.title}</span>
+                {col.productsCount !== undefined && (
+                  <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold ${
+                    isSelected ? 'bg-black/20 text-slate-950' : 'bg-white/5 text-[#BBBAA6]'
+                  }`}>
+                    {col.productsCount} itens
+                  </span>
+                )}
                 {col.heroBannerLinked && (
                   <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono font-extrabold ${
                     isSelected ? 'bg-black/20 text-slate-950' : 'bg-[#0AE448]/10 text-[#0AE448] border border-[#0AE448]/30'
@@ -191,8 +198,10 @@ export const CollectionDeepAuditView: React.FC<CollectionDeepAuditViewProps> = (
             <LayoutGrid className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] uppercase font-bold text-[#BBBAA6] font-mono block">Produtos na Coleção</span>
-            <span className="text-xl font-black text-[#FFFCE1] font-mono">{selectedCollection.totalProductsInCollection} SKUs</span>
+            <span className="text-[10px] uppercase font-bold text-[#BBBAA6] font-mono block">Produtos / SKUs na Coleção</span>
+            <span className="text-xl font-black text-[#FFFCE1] font-mono">
+              {selectedCollection.totalProductsInCollection} Prods ({selectedCollection.totalSkusInCollection || selectedCollection.totalProductsInCollection} SKUs)
+            </span>
           </div>
         </div>
 

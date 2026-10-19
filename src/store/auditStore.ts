@@ -57,6 +57,7 @@ export const useAuditStore = create<AuditStoreState>()(
     }),
     {
       name: 'adshield-audit-store',
+      version: 2,
       // Only persist diagnostic data and tab state, NOT transient UI states
       partialize: (state) => ({
         diagnostic: state.diagnostic,
