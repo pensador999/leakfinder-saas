@@ -93,7 +93,7 @@ export const StockRuptureMonitorView: React.FC<StockRuptureMonitorViewProps> = (
     productPrice,
     grossMarginPercent: grossMargin,
     rupturedSizes,
-    totalSkusMonitored: realSiteData.catalogAudit?.issues.length || 24
+    totalSkusMonitored: realSiteData.catalogAudit?.totalSkusAudited || realSiteData.catalogAudit?.issues.length || 24
   });
 
   const handleCopyAlert = () => {

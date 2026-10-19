@@ -1,4 +1,4 @@
-import { extractCleanDomainAndBrand, CatalogProductIssue } from '../siteInspector';
+import { extractCleanDomainAndBrand, CatalogProductIssue, isCatalogProductBroken } from '../siteInspector';
 
 export interface SkuAbandonmentCorrelatedItem {
   id: string;
@@ -59,12 +59,20 @@ export function executeSkuAbandonmentCrossAudit(
 
   // 1. PRIORIDADE MÁXIMA: Usar os produtos reais escaneados da loja ao vivo!
   if (liveCatalogIssues && liveCatalogIssues.length > 0) {
-    items = liveCatalogIssues.map((issue, idx) => {
-      const isRuptured = issue.missingSizes && issue.missingSizes.length > 0 && !issue.isFullPrintExempt;
-      const estimatedPrice = 149.90 + (idx * 30);
-      const totalAbandonments = isRuptured ? 65 + (idx * 18) : 25 + (idx * 5);
+    // Prioriza os produtos com ruptura real de grade no topo
+    const sortedIssues = [...liveCatalogIssues].sort((a, b) => {
+      const aBroken = isCatalogProductBroken(a) ? 1 : 0;
+      const bBroken = isCatalogProductBroken(b) ? 1 : 0;
+      return bBroken - aBroken;
+    });
+
+    items = sortedIssues.map((issue, idx) => {
+      const isRuptured = isCatalogProductBroken(issue);
+      const realPrice = issue.price && issue.price > 0 ? issue.price : 159.90;
+      const missingCount = issue.missingSizes?.length || 0;
+      const totalAbandonments = isRuptured ? Math.min(48, 12 + missingCount * 6) : 4;
       const ruptureAbandonments = isRuptured ? Math.round(totalAbandonments * 0.58) : 0;
-      const lostRevenue = Math.round(ruptureAbandonments > 0 ? ruptureAbandonments * estimatedPrice : totalAbandonments * estimatedPrice * 0.2);
+      const lostRevenue = isRuptured ? Math.round(ruptureAbandonments * realPrice) : 0;
 
       // Garantir URL real sem 404
       const liveUrl = issue.productUrl && issue.productUrl.startsWith('http') 
@@ -80,7 +88,7 @@ export function executeSkuAbandonmentCrossAudit(
         canonicalProductUrl: liveUrl,
         variantSelectionUrl: liveUrl,
         category: issue.categoryType?.replace('_', ' ') || 'Linha Principal',
-        price: estimatedPrice,
+        price: realPrice,
         availableSizes: issue.availableSizes && issue.availableSizes.length > 0 ? issue.availableSizes : ['Único'],
         rupturedSizes: issue.missingSizes || [],
         totalCartAbandonmentsMonth: totalAbandonments,

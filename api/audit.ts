@@ -262,14 +262,15 @@ export default async function handler(request: any, response: any) {
 
     // 4. Executa auditoria aprofundada do DOM hidratado
     const rawAudit = await page.evaluate(() => {
-      const scripts = Array.from(document.querySelectorAll('script')).map(s => s.src || s.innerHTML).join(' ');
-      const hasMetaPixel = scripts.includes('connect.facebook.net') || scripts.includes('fbq(') || !!(window as any).fbq;
-      const hasGoogleTagManager = scripts.includes('googletagmanager.com') || !!(window as any).dataLayer;
-      const hasTikTokPixel = scripts.includes('analytics.tiktok.com') || !!(window as any).ttq;
-      const hasGoogleAnalytics4 = scripts.includes('gtag(') || scripts.includes('G-');
+      const scripts = Array.from(document.querySelectorAll('script')).map(s => `${s.src || ''} ${s.innerHTML || ''}`).join(' ');
+      const scriptsLower = scripts.toLowerCase();
+      const hasMetaPixel = scriptsLower.includes('connect.facebook.net') || scriptsLower.includes('fbevents.js') || scriptsLower.includes('fbq(') || scriptsLower.includes('facebook_pixel') || scriptsLower.includes('pixel_id') || !!(window as any).fbq;
+      const hasGoogleTagManager = scriptsLower.includes('googletagmanager.com') || scriptsLower.includes('google_tag_ids') || scriptsLower.includes('gtag_events') || !!(window as any).dataLayer;
+      const hasTikTokPixel = scriptsLower.includes('analytics.tiktok.com') || scriptsLower.includes('tiktok_pixel') || !!(window as any).ttq;
+      const hasGoogleAnalytics4 = scriptsLower.includes('gtag(') || scripts.includes('G-') || scriptsLower.includes('google_tag_ids');
 
       let metaPixelId: string | undefined;
-      const pixelMatch = scripts.match(/fbq\s*\(\s*['"]init['"]\s*,\s*['"](\d+)['"]/);
+      const pixelMatch = scripts.match(/fbq\s*\(\s*['"]init['"]\s*,\s*['"](\d+)['"]/) || scripts.match(/pixel_id\\?["']\s*:\s*\\?["'](\d+)\\?["']/);
       if (pixelMatch) {
         metaPixelId = pixelMatch[1];
       }
@@ -379,6 +380,11 @@ export default async function handler(request: any, response: any) {
         marketplaceItemTitle = itemTitleEl.textContent?.trim();
       }
 
+      const fullHtml = document.documentElement ? document.documentElement.outerHTML : (document.body.innerHTML || '');
+      const preservedHtmlSnippet = fullHtml.length <= 120000
+        ? fullHtml
+        : `${fullHtml.slice(0, 70000)}\n<!-- [MIDDLE_HTML_TRUNCATED] -->\n${fullHtml.slice(-50000)}`;
+
       return {
         hasMetaPixel,
         metaPixelId,
@@ -396,7 +402,7 @@ export default async function handler(request: any, response: any) {
         sampleProducts,
         marketplaceSellerName,
         marketplaceItemTitle,
-        rawHtmlSnippet: (document.documentElement ? document.documentElement.outerHTML : document.body.innerHTML || '').slice(0, 50000)
+        rawHtmlSnippet: preservedHtmlSnippet
       };
     });
 

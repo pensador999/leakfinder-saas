@@ -30,6 +30,8 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
   const [skuStatusFilter, setSkuStatusFilter] = useState<'TODOS' | 'RUPTURA' | 'ESTOQUE' | 'ISENTOS_FULL' | 'PCP' | 'REVENDA'>('TODOS');
   const [skuCurrentPage, setSkuCurrentPage] = useState<number>(1);
   const skusPerPage = 20;
+  const [productCurrentPage, setProductCurrentPage] = useState<number>(1);
+  const productsPerPage = 20;
 
   const catalogAudit = currentCatalogAudit || realSiteData.catalogAudit;
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -222,6 +224,12 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
     const start = (skuCurrentPage - 1) * skusPerPage;
     return filteredSkus.slice(start, start + skusPerPage);
   }, [filteredSkus, skuCurrentPage, skusPerPage]);
+
+  const totalProductPages = Math.max(1, Math.ceil(filteredIssues.length / productsPerPage));
+  const paginatedProducts = useMemo(() => {
+    const start = (productCurrentPage - 1) * productsPerPage;
+    return filteredIssues.slice(start, start + productsPerPage);
+  }, [filteredIssues, productCurrentPage, productsPerPage]);
 
   const handleSweepFullCatalog = async () => {
     setIsSweepingFull(true);
@@ -782,7 +790,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
           <Filter className="w-3.5 h-3.5 text-[#0AE448]" /> Filtrar:
         </span>
         <button
-          onClick={() => setActiveFilter('TODOS')}
+          onClick={() => { setActiveFilter('TODOS'); setProductCurrentPage(1); }}
           className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
             activeFilter === 'TODOS' ? 'bg-[#0AE448] text-slate-950 font-black shadow-lg shadow-[#0AE448]/20' : 'bg-white/5 border border-white/10 text-[#BBBAA6] hover:bg-white/10 hover:text-[#FFFCE1]'
           }`}
@@ -790,7 +798,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
           Todos ({catalogAudit?.issues.length || 0})
         </button>
         <button
-          onClick={() => setActiveFilter('GRADE_FURADA')}
+          onClick={() => { setActiveFilter('GRADE_FURADA'); setProductCurrentPage(1); }}
           className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
             activeFilter === 'GRADE_FURADA' ? 'bg-rose-500 text-white font-black shadow-lg shadow-rose-500/20' : 'bg-rose-500/10 border border-rose-500/20 text-rose-300 hover:bg-rose-500/20'
           }`}
@@ -799,7 +807,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
           <span>Grades Furadas ({catalogAudit?.productsWithBrokenGrid || 0})</span>
         </button>
         <button
-          onClick={() => setActiveFilter('REVENDA')}
+          onClick={() => { setActiveFilter('REVENDA'); setProductCurrentPage(1); }}
           className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
             activeFilter === 'REVENDA' ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/20' : 'bg-amber-500/10 border border-amber-500/20 text-amber-300 hover:bg-amber-500/20'
           }`}
@@ -808,7 +816,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
           <span>Revenda / Fornecedores ({resaleCount})</span>
         </button>
         <button
-          onClick={() => setActiveFilter('FABRICACAO_PROPRIA')}
+          onClick={() => { setActiveFilter('FABRICACAO_PROPRIA'); setProductCurrentPage(1); }}
           className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
             activeFilter === 'FABRICACAO_PROPRIA' ? 'bg-indigo-600 text-white font-black shadow-lg shadow-indigo-600/20' : 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 hover:bg-indigo-500/20'
           }`}
@@ -817,7 +825,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
           <span>Fabricação Própria PCP ({inHouseCount})</span>
         </button>
         <button
-          onClick={() => setActiveFilter('ISENTOS_FULL')}
+          onClick={() => { setActiveFilter('ISENTOS_FULL'); setProductCurrentPage(1); }}
           className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
             activeFilter === 'ISENTOS_FULL' ? 'bg-[#0AE448] text-slate-950 font-black shadow-lg shadow-[#0AE448]/20' : 'bg-[#0AE448]/10 border border-[#0AE448]/20 text-[#0AE448] hover:bg-[#0AE448]/20'
           }`}
@@ -826,7 +834,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
           <span>Isentos _FULL ({catalogAudit?.productsWithFullExemption || 0})</span>
         </button>
         <button
-          onClick={() => setActiveFilter('SEM_FOTO')}
+          onClick={() => { setActiveFilter('SEM_FOTO'); setProductCurrentPage(1); }}
           className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
             activeFilter === 'SEM_FOTO' ? 'bg-white/20 text-[#FFFCE1] font-black' : 'bg-white/5 border border-white/10 text-[#BBBAA6] hover:bg-white/10'
           }`}
@@ -834,7 +842,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
           Sem Foto ({catalogAudit?.productsWithMissingImages || 0})
         </button>
         <button
-          onClick={() => setActiveFilter('IMAGENS_PESADAS')}
+          onClick={() => { setActiveFilter('IMAGENS_PESADAS'); setProductCurrentPage(1); }}
           className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
             activeFilter === 'IMAGENS_PESADAS' ? 'bg-amber-600 text-white font-black' : 'bg-white/5 border border-white/10 text-[#BBBAA6] hover:bg-white/10'
           }`}
@@ -845,7 +853,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
 
       {/* Catalog SKU Cards */}
       <div className="space-y-3">
-        {filteredIssues.map((issue) => {
+        {paginatedProducts.map((issue) => {
           const productDirectUrl = issue.productUrl || `https://${realSiteData.domain}/produto/${issue.sku.toLowerCase()}`;
 
           return (
@@ -1018,6 +1026,14 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                   {/* 🔬 Raio-X Detalhado de Cada SKU & Variante */}
                   <button
                     onClick={() => {
+                      const existingDeep = catalogAudit?.deepSkuAudit?.allProducts?.find(
+                        p => String(p.id) === String(issue.id) || p.url === productDirectUrl || p.title === issue.productTitle
+                      );
+                      if (existingDeep) {
+                        setSelectedSkuDetailProduct(existingDeep);
+                        return;
+                      }
+                      const realUnitPrice = issue.price && issue.price > 0 ? issue.price : 159.90;
                       const cleanAvail = Array.isArray(issue.availableSizes) ? issue.availableSizes : [];
                       const cleanMiss = (Array.isArray(issue.missingSizes) ? issue.missingSizes : []).filter(
                         sz => !['ESGOTADO', 'ESTOQUE_FANTASMA_SUSPEITO', 'ESTOQUE_FANTASMA', 'ÚNICO (ESGOTADO)'].includes(sz)
@@ -1027,7 +1043,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                           id: `var-avail-${sz}-${issue.id}`,
                           title: sz,
                           sku: `${issue.sku}-${sz}`,
-                          price: 189.90,
+                          price: realUnitPrice,
                           available: true,
                           barcode: issue.barcode
                         })),
@@ -1035,7 +1051,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                           id: `var-miss-${sz}-${issue.id}`,
                           title: sz,
                           sku: `${issue.sku}-${sz}`,
-                          price: 189.90,
+                          price: realUnitPrice,
                           available: false,
                           barcode: issue.barcode
                         }))
@@ -1050,7 +1066,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                         tags: issue.isFullPrintExempt ? ['Full'] : [],
                         images: [issue.imageSrc],
                         variants: simulatedVariants.length > 0 ? simulatedVariants : [
-                          { id: '1', title: 'Padrão', sku: issue.sku, price: 189.90, available: true, barcode: issue.barcode }
+                          { id: '1', title: 'Padrão', sku: issue.sku, price: realUnitPrice, available: true, barcode: issue.barcode }
                         ]
                       }, realSiteData.domain);
 
@@ -1060,7 +1076,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                     title="Inspecionar todos os SKUs, tamanhos e barcodes desta peça individualmente"
                   >
                     <Layers className="w-3.5 h-3.5 text-[#00BAE2]" />
-                    <span>Raio-X de SKUs</span>
+                    <span>Raio-X de SKUs ({issue.detailedSkus?.length || (issue.availableSizes.length + issue.missingSizes.length)})</span>
                   </button>
 
                   <button
@@ -1192,6 +1208,34 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
           );
         })}
       </div>
+
+      {/* Product Pagination Controls */}
+      {totalProductPages > 1 && (
+        <div className="p-4 bg-[#141716] border border-white/10 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <p className="text-[#BBBAA6]">
+            Página <strong className="text-[#FFFCE1]">{productCurrentPage}</strong> de{' '}
+            <strong className="text-[#FFFCE1]">{totalProductPages}</strong> ({filteredIssues.length} produtos no filtro atual)
+          </p>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setProductCurrentPage(p => Math.max(1, p - 1))}
+              disabled={productCurrentPage === 1}
+              className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg font-bold text-[#FFFCE1] hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4" /> Anterior
+            </button>
+
+            <button
+              onClick={() => setProductCurrentPage(p => Math.min(totalProductPages, p + 1))}
+              disabled={productCurrentPage === totalProductPages}
+              className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg font-bold text-[#FFFCE1] hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
+            >
+              Próxima <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </>
   )}
 

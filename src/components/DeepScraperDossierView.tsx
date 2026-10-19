@@ -55,12 +55,12 @@ export const DeepScraperDossierView: React.FC<DeepScraperDossierViewProps> = ({ 
         issuesFound: []
       },
       deepCatalog: {
-        status: (realSiteData.catalogAudit?.issues.length || 0) > 0 ? 'CRÍTICO' : 'OTIMIZADO',
+        status: (realSiteData.catalogAudit?.productsWithBrokenGrid || 0) > 0 ? 'CRÍTICO' : 'OTIMIZADO',
         totalProductsScanned: realSiteData.catalogAudit?.totalProductsScanned || 24,
-        totalVariantsAudited: (realSiteData.catalogAudit?.totalProductsScanned || 24) * 4,
-        brokenSkusCount: realSiteData.catalogAudit ? realSiteData.catalogAudit.issues.filter(isCatalogProductBroken).length : 0,
-        heavyImagesCount: realSiteData.catalogAudit?.heavyImagesCount || 2,
-        missingAltTagsCount: realSiteData.imagesWithoutAlt || 1,
+        totalVariantsAudited: realSiteData.catalogAudit?.totalSkusAudited || realSiteData.catalogAudit?.deepSkuAudit?.totalSkusAudited || (realSiteData.catalogAudit?.totalProductsScanned || 24) * 4,
+        brokenSkusCount: realSiteData.catalogAudit?.totalSkusInStockout ?? (realSiteData.catalogAudit ? realSiteData.catalogAudit.issues.filter(isCatalogProductBroken).length : 0),
+        heavyImagesCount: realSiteData.catalogAudit?.heavyImagesCount || 0,
+        missingAltTagsCount: realSiteData.imagesWithoutAlt || 0,
         productsWithoutSizeGuideCount: realSiteData.catalogAudit?.productsWithoutSizeGuide || 0,
         items: (realSiteData.catalogAudit?.issues || []).map((issue, idx) => ({
           id: `dossier-item-${idx}`,
@@ -68,18 +68,18 @@ export const DeepScraperDossierView: React.FC<DeepScraperDossierViewProps> = ({ 
           title: issue.productTitle,
           url: issue.productUrl,
           mainSku: issue.sku,
-          price: 189.90,
+          price: issue.price && issue.price > 0 ? issue.price : 159.90,
           availableSizes: issue.availableSizes,
           outOfStockSizes: issue.missingSizes,
           hasMainImage: issue.hasValidImage,
-          imageCount: 4,
+          imageCount: issue.detailedSkus?.length || 4,
           imageSrc: issue.imageSrc,
           tags: [issue.categoryType || 'VESTUARIO_TECNICO'],
           productType: 'Catálogo Oficial',
           rawDescriptionSnippet: issue.recommendedAction,
           hasSizeGuideInBody: issue.hasSizeGuide
         })),
-        issuesFound: (realSiteData.catalogAudit?.issues || []).map(i => `${i.productTitle} (SKU: ${i.sku}) com tamanhos ${i.missingSizes.join(', ')} esgotados`)
+        issuesFound: (realSiteData.catalogAudit?.issues || []).filter(isCatalogProductBroken).map(i => `${i.productTitle} (SKU: ${i.sku}) com tamanhos ${i.missingSizes.join(', ')} esgotados`)
       },
       productPagePdp: {
         status: 'ALERTA',
