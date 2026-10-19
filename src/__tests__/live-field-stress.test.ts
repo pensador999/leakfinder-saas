@@ -159,4 +159,29 @@ describe('🔥 TESTE DE CAMPO MÁXIMO E2E (LIVE MULTI-STORE STRESS TEST)', () =>
       }
     }
   }, 60000);
+
+  it('Mapeia 100% dos produtos e SKUs nos 3 sites da BRK (Agro > 16k, Fishing > 11.8k, Motors > 9k)', async () => {
+    const { sweepStoreFullCatalog } = await import('../services/siteInspector');
+
+    const brkStores = [
+      { name: 'BRK Agro', url: 'https://www.brkagro.com.br', minProducts: 2500, minSkus: 16000 },
+      { name: 'BRK Fishing', url: 'https://www.brkfishing.com.br', minProducts: 2100, minSkus: 11800 },
+      { name: 'BRK Motors', url: 'https://www.brkmotors.com.br', minProducts: 1400, minSkus: 9000 }
+    ];
+
+    for (const store of brkStores) {
+      const start = Date.now();
+      const summary = await sweepStoreFullCatalog(store.url, 25);
+      const elapsed = Date.now() - start;
+
+      console.log(
+        `📊 [${store.name}] Páginas: ${summary.paginationInfo?.pagesCrawled} | Produtos Auditados: ${summary.totalProductsScanned} | Total SKUs Mapeados: ${summary.totalSkusAudited} | Em Estoque: ${summary.totalSkusInStock} | Rompidos: ${summary.totalSkusInStockout} (${elapsed}ms)`
+      );
+
+      expect(summary.totalProductsScanned).toBeGreaterThanOrEqual(store.minProducts);
+      expect(summary.totalSkusAudited).toBeGreaterThanOrEqual(store.minSkus);
+      expect(summary.paginationInfo?.hasMorePages).toBe(false);
+    }
+  }, 90000);
 });
+

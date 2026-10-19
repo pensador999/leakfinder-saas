@@ -407,8 +407,8 @@ async function fetchShopifyCatalogWithPagination(
     directProductHandle?: string;
   }
 ): Promise<ShopifyCatalogPaginationResult> {
-  const isFullSweep = options?.crawlDepth === 'COMPLETA_100_PORCENTO';
-  const maxPages = options?.maxPages || (isFullSweep ? 10 : 2);
+  const isFullSweep = options?.crawlDepth !== 'RAPIDA_50';
+  const maxPages = options?.maxPages || (isFullSweep ? 25 : 2);
   const limit = 250; // Native Shopify batch size: 250 items per page
 
   const allProducts: any[] = [];
@@ -418,7 +418,7 @@ async function fetchShopifyCatalogWithPagination(
   if (options?.directProductHandle) {
     try {
       const singleProductUrl = `https://${domain}/products/${options.directProductHandle}.json`;
-      const singleRaw = await fetchHtmlWithTimeout(singleProductUrl, 3000);
+      const singleRaw = await fetchHtmlWithTimeout(singleProductUrl, 3500);
       if (singleRaw) {
         const singleParsed = JSON.parse(singleRaw);
         const directProd = singleParsed?.product;
@@ -432,50 +432,85 @@ async function fetchShopifyCatalogWithPagination(
     }
   }
 
-  let page = 1;
+  let pagesCrawled = 0;
   let hasMore = false;
 
-  while (page <= maxPages) {
-    const jsonUrl = `https://${domain}/products.json?limit=${limit}&page=${page}`;
-    const raw = await fetchHtmlWithTimeout(jsonUrl, isFullSweep ? 5500 : 3500);
-    if (!raw) break;
+  const appendPageProducts = (prods: any[]) => {
+    for (const p of prods) {
+      const h = (p.handle || '').toLowerCase();
+      if (!h || !seenHandles.has(h)) {
+        if (h) seenHandles.add(h);
+        allProducts.push(p);
+      }
+    }
+  };
 
+  // Página 1: verifica se a loja expõe /products.json e se há múltiplas páginas
+  const firstPageUrl = `https://${domain}/products.json?limit=${limit}&page=1`;
+  const firstRaw = await fetchHtmlWithTimeout(firstPageUrl, isFullSweep ? 6000 : 3500);
+  if (firstRaw) {
     try {
-      const parsed = JSON.parse(raw);
-      const prods = parsed?.products;
-      if (!Array.isArray(prods) || prods.length === 0) {
-        hasMore = false;
-        break;
-      }
-
-      for (const p of prods) {
-        const h = (p.handle || '').toLowerCase();
-        if (!h || !seenHandles.has(h)) {
-          if (h) seenHandles.add(h);
-          allProducts.push(p);
-        }
-      }
-
-      if (prods.length < limit) {
-        hasMore = false;
-        break;
-      } else {
-        hasMore = true;
-      }
-
-      page++;
-
-      if (isFullSweep && page <= maxPages) {
-        await new Promise(resolve => setTimeout(resolve, 150));
+      const firstParsed = JSON.parse(firstRaw);
+      const firstProds = firstParsed?.products;
+      if (Array.isArray(firstProds) && firstProds.length > 0) {
+        pagesCrawled = 1;
+        appendPageProducts(firstProds);
+        hasMore = firstProds.length === limit;
       }
     } catch {
+      hasMore = false;
+    }
+  }
+
+  // Páginas 2..maxPages: busca em ondas paralelas de 4 páginas para mapear 100% dos SKUs com baixa latência
+  let nextPage = 2;
+  const waveSize = 4;
+  while (hasMore && nextPage <= maxPages) {
+    const wavePages: number[] = [];
+    for (let i = 0; i < waveSize && (nextPage + i) <= maxPages; i++) {
+      wavePages.push(nextPage + i);
+    }
+
+    const waveResults = await Promise.all(
+      wavePages.map(async (pNum) => {
+        const jsonUrl = `https://${domain}/products.json?limit=${limit}&page=${pNum}`;
+        const raw = await fetchHtmlWithTimeout(jsonUrl, 6000);
+        if (!raw) return { pNum, prods: null };
+        try {
+          const parsed = JSON.parse(raw);
+          return { pNum, prods: Array.isArray(parsed?.products) ? parsed.products : null };
+        } catch {
+          return { pNum, prods: null };
+        }
+      })
+    );
+
+    let reachedEndInWave = false;
+    for (const res of waveResults) {
+      if (!res.prods || res.prods.length === 0) {
+        hasMore = false;
+        reachedEndInWave = true;
+        break;
+      }
+      pagesCrawled = res.pNum;
+      appendPageProducts(res.prods);
+      if (res.prods.length < limit) {
+        hasMore = false;
+        reachedEndInWave = true;
+        break;
+      }
+    }
+
+    if (reachedEndInWave) {
       break;
     }
+
+    nextPage += waveSize;
   }
 
   return {
     products: allProducts,
-    pagesCrawled: page > 1 ? page - 1 : 1,
+    pagesCrawled: Math.max(1, pagesCrawled),
     hasMorePages: hasMore,
     crawlDepth: isFullSweep ? 'COMPLETA_100_PORCENTO' : 'RAPIDA_50'
   };
@@ -565,6 +600,13 @@ async function fetchRealLiveCatalogAudit(
         isAdRunning: hasAdTrackingInHtml,
         operationMode: options?.operationMode
       });
+
+      const auditedProdById = new Map<string, AuditedProductWithSkus>();
+      if (deepSkuAudit?.allProducts) {
+        for (const item of deepSkuAudit.allProducts) {
+          auditedProdById.set(String(item.id), item);
+        }
+      }
 
       for (let i = 0; i < parsedProducts.length; i++) {
         const p = parsedProducts[i];
@@ -826,7 +868,7 @@ async function fetchRealLiveCatalogAudit(
           if (!hasSizeGuide) criticalIssuesCount += 1;
           if (imageWeightKb > 350) criticalIssuesCount += 1;
 
-          const auditedProd = deepSkuAudit?.allProducts.find(item => String(item.id) === String(p.id));
+          const auditedProd = auditedProdById.get(String(p.id));
           const detailedSkus = auditedProd?.skus || [];
           const ghostRisk = auditedProd?.ghostInventoryRisk;
           const isGhostSuspect = Boolean(ghostRisk?.isGhostInventorySuspect || (ghostRisk?.riskScore && ghostRisk.riskScore >= 35));
@@ -861,10 +903,10 @@ async function fetchRealLiveCatalogAudit(
             recommendedAction = 'Ativar widget ou inserir Tabela de Medidas na descrição.';
           }
 
-          // 🔍 DEDUPLICAÇÃO DE CÓDIGOS SKU: Valida apenas uma ocorrência para evitar duplicidade de estoque e furos de grade
-          const cleanSkuKey = (mainSku || '').trim().toUpperCase();
+          // 🔍 DEDUPLICAÇÃO DE PRODUTOS: Garante que 100% dos produtos únicos por handle/ID sejam preservados sem descartar cores/modelos distintos
+          const cleanSkuKey = `${(realHandle || p.id || i).toString().toUpperCase()}::${(mainSku || '').trim().toUpperCase()}`;
           if (cleanSkuKey && seenSkus.has(cleanSkuKey)) {
-            continue; // Já validado anteriormente, descarta réplica
+            continue;
           }
           if (cleanSkuKey) {
             seenSkus.add(cleanSkuKey);
@@ -1127,7 +1169,7 @@ async function fetchRealLiveCatalogAudit(
  */
 export async function sweepStoreFullCatalog(
   targetUrl: string, 
-  maxPages: number = 10
+  maxPages: number = 25
 ): Promise<CatalogAuditSummary> {
   const { cleanUrl, domain, brandName, productHandle } = extractCleanDomainAndBrand(targetUrl);
   const htmlText = await fetchHtmlWithTimeout(cleanUrl, 3000);
@@ -1360,6 +1402,36 @@ export async function inspectRealWebsite(
       }
     }
 
+    // 🔍 SEMPRE executa o mapeamento completo 100% de produtos e SKUs reais (/products.json, Schema.org ou DOM)
+    // Nunca trunca para 8 SKUs sintéticos quando a loja possui milhares de SKUs reais!
+    let docFromHeadless: Document | undefined = undefined;
+    if (headlessData.rawHtmlSnippet && typeof DOMParser !== 'undefined') {
+      try {
+        docFromHeadless = new DOMParser().parseFromString(headlessData.rawHtmlSnippet, 'text/html');
+      } catch {
+        docFromHeadless = undefined;
+      }
+    }
+
+    const realLiveCatalogAudit = await fetchRealLiveCatalogAudit(
+      cleanUrl,
+      domain,
+      brandName,
+      isEnterprise,
+      docFromHeadless,
+      headlessData.rawHtmlSnippet || '',
+      {
+        crawlDepth: 'COMPLETA_100_PORCENTO',
+        maxPages: 25,
+        directProductHandle: productHandle,
+        operationMode: options?.operationMode
+      }
+    );
+
+    const hasRealExtractedCatalog =
+      realLiveCatalogAudit.totalProductsScanned > 0 &&
+      realLiveCatalogAudit.issues[0]?.id !== 'real-catalog-verified';
+
     const rawProducts = Array.isArray(snapshot.sampleProducts) ? snapshot.sampleProducts : [];
     const headlessIssues: CatalogProductIssue[] = rawProducts.map((p: any, idx: number) => {
       const pTitle = p.title || `${brandName} Produto Oficial #${idx + 1}`;
@@ -1389,40 +1461,23 @@ export async function inspectRealWebsite(
     });
 
     const brokenCount = headlessIssues.filter(i => i.missingSizes.length > 0).length;
-    const headlessCatalogAudit: CatalogAuditSummary = {
-      totalProductsScanned: Math.max(headlessIssues.length, snapshot.visibleProductsCount || 1),
-      totalSkusAudited: Math.max(headlessIssues.length * 4, 8),
-      totalSkusInStock: Math.max(headlessIssues.length * 3, 6),
-      totalSkusInStockout: brokenCount * 2,
-      productsWithMissingImages: 0,
-      productsWithBrokenGrid: brokenCount,
-      productsWithFullExemption: 0,
-      productsWithoutDescription: 0,
-      productsWithoutSizeGuide: conv.ctaCount > 0 ? 0 : 1,
-      heavyImagesCount: 1,
-      catalogHealthScore: brokenCount > 0 ? Math.max(50, 92 - brokenCount * 12) : 94,
-      monthlyLossEstimateBRL: Number((brokenCount * (rawProducts[0]?.price || 199.90) * 14.5).toFixed(2)),
-      issues: headlessIssues.length > 0 ? headlessIssues : [
-        {
-          id: 'live-prod-1',
-          sku: `${brandName}-PROD-01`,
-          productTitle: `${brandName} — ${resolvedTitle}`,
-          productUrl: cleanUrl,
-          imageSrc: '',
-          hasValidImage: true,
-          imageResolutionStatus: 'ALTA',
-          availableSizes: ['38', '39', '40', '41', '42'],
-          missingSizes: [],
-          isFullPrintExempt: true,
-          hasDescription: true,
-          descriptionLength: 200,
-          hasSizeGuide: true,
-          imageWeightKb: 160,
-          criticalIssuesCount: 0,
-          recommendedAction: 'Vitrine inspecionada via Chromium Serverless.'
-        }
-      ]
-    };
+    const effectiveCatalogAudit: CatalogAuditSummary = hasRealExtractedCatalog
+      ? realLiveCatalogAudit
+      : {
+          totalProductsScanned: Math.max(headlessIssues.length, 1),
+          totalSkusAudited: Math.max(headlessIssues.length * 4, 1),
+          totalSkusInStock: Math.max(headlessIssues.length * 3, 1),
+          totalSkusInStockout: brokenCount * 2,
+          productsWithMissingImages: 0,
+          productsWithBrokenGrid: brokenCount,
+          productsWithFullExemption: 0,
+          productsWithoutDescription: 0,
+          productsWithoutSizeGuide: conv.ctaCount > 0 ? 0 : 1,
+          heavyImagesCount: 0,
+          catalogHealthScore: brokenCount > 0 ? Math.max(50, 92 - brokenCount * 12) : 94,
+          monthlyLossEstimateBRL: Number((brokenCount * (rawProducts[0]?.price || 199.90) * 14.5).toFixed(2)),
+          issues: headlessIssues.length > 0 ? headlessIssues : realLiveCatalogAudit.issues
+        };
 
     const hasWa = Boolean(contact.detectedWhatsApp || contact.whatsAppLink);
     const result: RealSiteData = {
@@ -1446,7 +1501,7 @@ export async function inspectRealWebsite(
       imagesWithoutAlt: 2,
       brokenProductImages: [],
       typoAlerts: [],
-      catalogAudit: headlessCatalogAudit,
+      catalogAudit: effectiveCatalogAudit,
       hasSchemaJsonLd: true,
       hasViewportMeta: true,
       hasOgTags: true,
@@ -1473,7 +1528,7 @@ export async function inspectRealWebsite(
       screenshotUrl: headlessData.screenshotBase64,
       legalCompliance: auditBrazilianLegalCompliance(headlessData.rawHtmlSnippet || '', isMarketplaceSeller),
       googleShoppingShield: auditGoogleShoppingShield(
-        (headlessCatalogAudit?.issues || []).map(iss => ({
+        (effectiveCatalogAudit?.issues || []).map(iss => ({
           title: iss.productTitle,
           url: iss.productUrl,
           price: iss.price || 159.90,

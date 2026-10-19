@@ -212,7 +212,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
   const handleSweepFullCatalog = async () => {
     setIsSweepingFull(true);
     try {
-      const fullAudit = await sweepStoreFullCatalog(realSiteData.url, 10);
+      const fullAudit = await sweepStoreFullCatalog(realSiteData.url, 25);
       setCurrentCatalogAudit(fullAudit);
       setViewMode('SKUS_EXAUSTIVO');
       setActionSuccessMessage(`Varredura 100% Concluída: ${fullAudit.totalProductsScanned} produtos e ${fullAudit.totalSkusAudited} SKUs auditados!`);
@@ -385,7 +385,7 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
         <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 shadow-xs">
           <p className="text-[11px] font-bold text-amber-300 uppercase">Grades Furadas</p>
           <p className="text-xl font-black text-amber-200 mt-1">{catalogAudit?.productsWithBrokenGrid || 0}</p>
-          <p className="text-[10px] text-amber-400 mt-0.5">Falta PP, G1 ou G2</p>
+          <p className="text-[10px] text-amber-400 mt-0.5">Ruptura na Curva Central</p>
         </div>
 
         <div className="p-4 rounded-2xl bg-[#141716] border border-white/10 shadow-xs">
