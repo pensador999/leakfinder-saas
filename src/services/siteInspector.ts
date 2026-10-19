@@ -630,6 +630,8 @@ async function fetchRealLiveCatalogAudit(
           const firstVariantPrice = variants[0]?.price ? parseBRLPrice(variants[0].price) : 0;
           const firstVariantCompareAt = variants[0]?.compare_at_price ? parseBRLPrice(variants[0].compare_at_price) : undefined;
 
+          const isOwnManufacturingOnDemand = options?.operationMode === 'OWN_MANUFACTURING_ON_DEMAND';
+
           const allVariantsUnavailable = variants.length > 0 && variants.every((v: any) => {
             const isZeroQuantity = v.inventory_quantity !== undefined && v.inventory_quantity <= 0;
             // Se for estoque físico / revenda e quantidade for 0, está indisponível mesmo com backorder
@@ -639,12 +641,16 @@ async function fetchRealLiveCatalogAudit(
             return !v.available && v.inventory_policy !== 'continue';
           });
 
+          const unavailableVariantTitles: string[] = [];
           if (variants.length > 0) {
             mainSku = variants[0].sku || mainSku;
             variants.forEach((v: any) => {
               const szTitle = (v.title || v.option1 || '').toUpperCase().trim();
-              if (v.available && szTitle && szTitle !== 'DEFAULT TITLE') {
-                availableSizes.push(szTitle);
+              if (!szTitle || szTitle === 'DEFAULT TITLE') return;
+              if (v.available) {
+                if (!availableSizes.includes(szTitle)) availableSizes.push(szTitle);
+              } else {
+                if (!unavailableVariantTitles.includes(szTitle)) unavailableVariantTitles.push(szTitle);
               }
             });
           }
@@ -665,10 +671,15 @@ async function fetchRealLiveCatalogAudit(
             tagsUpper.some((t: string) => t.includes('APC') || t.includes('ALGODAO') || t.includes('ALGODÃO') || t.includes('CASUAL'))
           );
 
-          const isOneSizeVariant = availableSizes.length === 0 || 
+          const isOneSizeVariant = (availableSizes.length === 0 && unavailableVariantTitles.length === 0) || 
             availableSizes.every(sz => ['ÚNICO', 'UNICO', 'ONE SIZE', 'DEFAULT TITLE', 'TAMANHO ÚNICO', 'TAMANHO UNICO'].includes(sz));
 
-          const isOwnManufacturingOnDemand = options?.operationMode === 'OWN_MANUFACTURING_ON_DEMAND';
+          // Verifica se o produto utiliza grade alfabética de vestuário (PP, P, M, G, GG, XG, G1, G2, G3)
+          const allVariantLabels = [...availableSizes, ...unavailableVariantTitles];
+          const usesApparelLetterGrid = allVariantLabels.some(sz =>
+            ['PP', 'P', 'M', 'G', 'GG', 'XG', 'G1', 'G2', 'G3'].includes(sz)
+          );
+
           const isFullPrintProduct = handleUpper.includes('_FULL') || 
                                      titleUpper.includes('_FULL') || 
                                      tagsUpper.some((t: string) => t.includes('FULL'));
@@ -686,7 +697,9 @@ async function fetchRealLiveCatalogAudit(
             : 'VESTUARIO_LINHA';
 
           // Calculate missing sizes:
-          // Acessórios e tamanho único são isentos de grade P/M/G, mas NUNCA de esgotamento total!
+          // 1. Se todas as variantes estiverem indisponíveis -> ESGOTADO
+          // 2. Se for grade de vestuário (PP-G2) não isenta -> audita curva padrão PP-G2 + variantes indisponíveis
+          // 3. Se for outra vertical (tons de cosméticos, numeração de calçado, sabores, ml, voltagem) -> audita exatamente as variantes reais indisponíveis no JSON!
           if (allVariantsUnavailable) {
             missingSizes.push('ESGOTADO');
           } else if (isAccessoryOrResale || isOneSizeVariant) {
@@ -699,11 +712,19 @@ async function fetchRealLiveCatalogAudit(
               missingSizes.push('ÚNICO (ESGOTADO)');
             }
           } else if (!isFullPrintExempt) {
-            standardLineSizes.forEach(std => {
-              if (!availableSizes.includes(std)) {
-                missingSizes.push(std);
-              }
-            });
+            if (usesApparelLetterGrid) {
+              standardLineSizes.forEach(std => {
+                if (!availableSizes.includes(std)) {
+                  missingSizes.push(std);
+                }
+              });
+            } else {
+              unavailableVariantTitles.forEach(unav => {
+                if (!missingSizes.includes(unav)) {
+                  missingSizes.push(unav);
+                }
+              });
+            }
           }
 
           // Description & Size Guide analysis

@@ -4,11 +4,24 @@ import { AuditInput } from '../types';
 export const GEMINI_LOCAL_STORAGE_KEY = 'AGENTS_GEMINI_API_KEY';
 
 export function getGeminiApiKey(): string | null {
-  return localStorage.getItem(GEMINI_LOCAL_STORAGE_KEY);
+  try {
+    if (typeof localStorage !== 'undefined' && typeof localStorage?.getItem === 'function') {
+      return localStorage.getItem(GEMINI_LOCAL_STORAGE_KEY);
+    }
+  } catch {
+    // Ignore storage access errors in SSR/Node/strict privacy browsers
+  }
+  return null;
 }
 
 export function setGeminiApiKey(key: string) {
-  localStorage.setItem(GEMINI_LOCAL_STORAGE_KEY, key);
+  try {
+    if (typeof localStorage !== 'undefined' && typeof localStorage?.setItem === 'function') {
+      localStorage.setItem(GEMINI_LOCAL_STORAGE_KEY, key);
+    }
+  } catch {
+    // Ignore storage access errors
+  }
 }
 
 let hasWarnedNoApiKey = false;

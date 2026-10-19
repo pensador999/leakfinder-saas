@@ -214,7 +214,8 @@ export const UNIVERSAL_NICHE_PROFILES: Record<UniversalNicheCategory, NicheAdapt
  * Universal Classifier: Scans HTML, Meta Tags and Domain to categorize ANY e-commerce
  */
 export function classifyUniversalNiche(realSiteData: RealSiteData): UniversalNicheAnalysisResult {
-  const textCorpus = `${realSiteData.title} ${realSiteData.metaDescription} ${realSiteData.h1List.join(' ')} ${realSiteData.domain} ${realSiteData.detectedKeywords.join(' ')}`.toLowerCase();
+  const catalogTitles = (realSiteData.catalogAudit?.issues || []).map(i => i.productTitle).join(' ');
+  const textCorpus = `${realSiteData.title} ${realSiteData.metaDescription} ${realSiteData.h1List.join(' ')} ${realSiteData.domain} ${(realSiteData.detectedKeywords || []).join(' ')} ${catalogTitles}`.toLowerCase();
 
   let detectedNiche: UniversalNicheCategory = 'VAREJO_GERAL_MULTI';
   let highestScore = 0;
@@ -225,10 +226,10 @@ export function classifyUniversalNiche(realSiteData: RealSiteData): UniversalNic
     MODA_VESTUARIO: ['roupa', 'vestido', 'camisa', 'camiseta', 'calça', 'moda', 'fashion', 'jeans', 'casaco', 'tamanho', 'tabela de medidas', 'look', 'cropped', 'manga'],
     CALCADOS_CALCADISTA: ['sapato', 'tênis', 'bota', 'sandália', 'chinelo', 'calçado', 'sneaker', 'salto', 'mocassim', 'numeração', 'coturno', 'botina', 'calce'],
     AUTOPECAS_FERRAMENTAS: ['autopeças', 'carro', 'moto', 'veículo', 'motor', 'farol', 'freio', 'parafuso', 'ferramenta', 'óleo', 'bateria', 'suspensão', 'oem', 'peça', 'motors', 'racing', 'kart', 'track day', 'motocross', 'automotivo', 'balaclava'],
-    BELEZA_COSMETICOS: ['cosmético', 'maquiagem', 'skincare', 'perfume', 'batom', 'cabelo', 'shampoo', 'creme', 'sérum', 'facial', 'beleza', 'dermatológico'],
+    BELEZA_COSMETICOS: ['cosmético', 'maquiagem', 'skincare', 'perfume', 'batom', 'cabelo', 'shampoo', 'creme', 'sérum', 'serum', 'facial', 'beleza', 'dermatológico', 'hidratante', 'limpador', 'antiacne', 'protetor solar', 'sallve'],
     CASA_MOVEIS_DECORACAO: ['móvel', 'sofá', 'mesa', 'cadeira', 'cama', 'colchão', 'decoração', 'tapete', 'luminária', 'cozinha', 'quarto', 'sala', 'armário'],
     ELETRONICOS_INFORMATICA: ['celular', 'smartphone', 'notebook', 'computador', 'fone', 'gamer', 'placa', 'eletrônico', 'teclado', 'monitor', 'tv', '110v', '220v'],
-    SUPLEMENTOS_FARMACIA: ['suplemento', 'whey', 'creatina', 'proteína', 'vitamina', 'farmácia', 'saúde', 'termogênico', 'cápsula', 'nutrição', 'anvisa'],
+    SUPLEMENTOS_FARMACIA: ['suplemento', 'whey', 'creatina', 'proteína isolada', 'pré-treino', 'farmácia', 'termogênico', 'nutrição esportiva', 'bcaa', 'glutamina'],
     AGROPECUARIA_PET: ['agro', 'campo', 'fazenda', 'pecuária', 'pet', 'ração', 'cão', 'gato', 'bovino', 'cavalo', 'agrícola', 'veterinário', 'sementes'],
     PESCA_CAMPING_OUTDOOR: ['pesca', 'fishing', 'isca', 'anzol', 'carretilha', 'molinete', 'vara de pescar', 'linha de pesca', 'multifilamento', 'fluorocarbon', 'camping', 'outdoor', 'peixe', 'tucunaré'],
     JOIAS_ACESSORIOS: ['joia', 'anel', 'colar', 'brinco', 'prata 925', 'ouro 18k', 'aliança', 'pingente', 'pulseira', 'relojaria', 'semijoia'],
@@ -236,6 +237,7 @@ export function classifyUniversalNiche(realSiteData: RealSiteData): UniversalNic
   };
 
   for (const [niche, keywords] of Object.entries(NICHE_KEYWORDS) as [UniversalNicheCategory, string[]][]) {
+    if (niche === 'VAREJO_GERAL_MULTI') continue;
     let score = 0;
     const currentMatched: string[] = [];
 

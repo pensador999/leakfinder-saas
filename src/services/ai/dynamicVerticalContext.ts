@@ -531,50 +531,49 @@ export const DYNAMIC_VERTICAL_REGISTRY: Record<SupportedVerticalId, DynamicVerti
 const DEFAULT_FALLBACK_VERTICAL: DynamicVerticalProfile = DYNAMIC_VERTICAL_REGISTRY.VAREJO_GERAL;
 
 /**
- * Identifica a vertical correspondente a partir de palavras-chave, nicho, domínio ou título
+ * Identifica a vertical correspondente a partir de palavras-chave, nicho, domínio ou catálogo
+ * utilizando pontuação ponderada multi-sinal (evita falso-positivo por palavra isolada como "Vitamina C" em Skincare).
  */
 export function resolveDynamicVertical(rawInput: string): DynamicVerticalProfile {
   const norm = (rawInput || '').toLowerCase();
-
   const reg = DYNAMIC_VERTICAL_REGISTRY;
-  if (reg) {
-    if (reg.CALCADOS_COURO && (norm.includes('sapato') || norm.includes('bota') || norm.includes('botina') || norm.includes('calçado') || norm.includes('calcado') || norm.includes('tênis') || norm.includes('tenis') || norm.includes('couro') || norm.includes('coturno') || norm.includes('sandália') || norm.includes('sandalia') || norm.includes('shoes') || norm.includes('sneaker'))) {
-      return reg.CALCADOS_COURO;
+  if (!reg || !norm.trim()) {
+    return DEFAULT_FALLBACK_VERTICAL;
+  }
+
+  const VERTICAL_SIGNALS: Record<Exclude<SupportedVerticalId, 'VAREJO_GERAL'>, string[]> = {
+    CALCADOS_COURO: ['sapato', 'bota', 'botina', 'calçado', 'calcado', 'tênis', 'tenis', 'couro', 'coturno', 'sandália', 'sandalia', 'shoes', 'sneaker', 'palmilha', 'solado', 'mocassim'],
+    COSMETICOS_BEAUTY: ['cosmético', 'cosmetico', 'skincare', 'beleza', 'sérum', 'serum', 'creme', 'maquiagem', 'perfume', 'shampoo', 'hidratante', 'limpador facial', 'antiacne', 'protetor solar', 'esfoliante', 'batom', 'dermocosmético', 'sallve', 'ácido hialurônico', 'niacinamida'],
+    SUPLEMENTOS_SAUDE: ['suplemento', 'whey', 'creatina', 'nutrição esportiva', 'nutricao esportiva', 'pré-treino', 'pre-treino', 'hipercalórico', 'bcaa', 'glutamina', 'aminoácido', 'coqueteleira', 'proteína isolada', 'termogênico'],
+    AUTOPECAS_FERRAMENTAS: ['autopeça', 'autopeca', 'ferramenta', 'motociclismo', 'motocross', 'racing', 'motors', 'automotivo', 'oficina', 'veículo', 'veiculo', 'amortecedor', 'pastilha de freio', 'farol'],
+    AGRO_CAMPO_OUTDOOR: ['agro', 'campo', 'country', 'western', 'pesca', 'fishing', 'chapeu', 'chapéu', 'camper', 'fazenda', 'rodeio', 'pecuária', 'uv50+', 'tucunaré', 'anzol', 'carretilha', 'brk'],
+    STREETWEAR_MODA_URBANA: ['streetwear', 'oversized', 'urban', 'tech apparel', 'drop', 'skate', 'insider', 'moletom', 'camiseta', 'hoodie', 'calça cargo'],
+    FITNESS_BEACHWEAR: ['fitness', 'beachwear', 'legging', 'biquíni', 'biquini', 'academia', 'treino', 'activewear', 'moda praia', 'top fitness', 'maiô'],
+    PET_SHOP_VETERINARIA: ['pet shop', 'petshop', 'ração', 'racao', 'cachorro', 'cães', 'gato', 'veterinári', 'veterinari', 'antipulgas', 'coleira', 'comedouro', 'pet'],
+    CASA_DECORACAO_MOVEIS: ['móvel', 'movel', 'móveis', 'moveis', 'sofá', 'sofa', 'decoração', 'decoracao', 'cama', 'mesa', 'rack', 'estante', 'poltrona', 'colchão'],
+    ELETRONICOS_INFORMATICA: ['eletrônico', 'eletronico', 'informática', 'informatica', 'notebook', 'monitor', 'placa de vídeo', 'processador', 'gamer', 'smartphone', 'celular', 'ssd', 'teclado']
+  };
+
+  let bestVerticalId: SupportedVerticalId = 'VAREJO_GERAL';
+  let bestScore = 0;
+
+  for (const [verticalId, keywords] of Object.entries(VERTICAL_SIGNALS) as [Exclude<SupportedVerticalId, 'VAREJO_GERAL'>, string[]][]) {
+    let score = 0;
+    for (const kw of keywords) {
+      if (norm.includes(kw)) {
+        // Peso base por palavra-chave distinta encontrada + bônus para termos compostos específicos
+        score += kw.length >= 7 ? 3 : 2;
+      }
     }
-    if (reg.SUPLEMENTOS_SAUDE && (norm.includes('suplemento') || norm.includes('whey') || norm.includes('creatina') || norm.includes('nutrição') || norm.includes('nutricao') || norm.includes('pré-treino') || norm.includes('pre-treino') || norm.includes('vitamina') || norm.includes('proteína') || norm.includes('proteina'))) {
-      return reg.SUPLEMENTOS_SAUDE;
-    }
-    if (reg.AUTOPECAS_FERRAMENTAS && (norm.includes('autopeça') || norm.includes('autopeca') || norm.includes('ferramenta') || norm.includes('motociclismo') || norm.includes('motocross') || norm.includes('racing') || norm.includes('motors') || norm.includes('automotivo') || norm.includes('oficina') || norm.includes('veículo') || norm.includes('veiculo'))) {
-      return reg.AUTOPECAS_FERRAMENTAS;
-    }
-    if (reg.AGRO_CAMPO_OUTDOOR && (norm.includes('agro') || norm.includes('campo') || norm.includes('country') || norm.includes('western') || norm.includes('pesca') || norm.includes('fishing') || norm.includes('chapeu') || norm.includes('chapéu') || norm.includes('camper') || norm.includes('fazenda') || norm.includes('rodeio'))) {
-      return reg.AGRO_CAMPO_OUTDOOR;
-    }
-    if (reg.STREETWEAR_MODA_URBANA && (norm.includes('streetwear') || norm.includes('oversized') || norm.includes('urban') || norm.includes('tech apparel') || norm.includes('drop') || norm.includes('skate') || norm.includes('insider') || norm.includes('moletom') || norm.includes('camiseta'))) {
-      return reg.STREETWEAR_MODA_URBANA;
-    }
-    if (reg.FITNESS_BEACHWEAR && (norm.includes('fitness') || norm.includes('beachwear') || norm.includes('legging') || norm.includes('biquíni') || norm.includes('biquini') || norm.includes('academia') || norm.includes('treino') || norm.includes('activewear') || norm.includes('moda praia'))) {
-      return reg.FITNESS_BEACHWEAR;
-    }
-    if (reg.COSMETICOS_BEAUTY && (norm.includes('cosmético') || norm.includes('cosmetico') || norm.includes('skincare') || norm.includes('beleza') || norm.includes('sérum') || norm.includes('serum') || norm.includes('creme') || norm.includes('maquiagem') || norm.includes('perfume') || norm.includes('shampoo'))) {
-      return reg.COSMETICOS_BEAUTY;
-    }
-    if (reg.PET_SHOP_VETERINARIA && (norm.includes('pet') || norm.includes('ração') || norm.includes('racao') || norm.includes('cachorro') || norm.includes('gato') || norm.includes('veterinári') || norm.includes('veterinari') || norm.includes('antipulgas') || norm.includes('coleira'))) {
-      return reg.PET_SHOP_VETERINARIA;
-    }
-    if (reg.CASA_DECORACAO_MOVEIS && (norm.includes('móvel') || norm.includes('movel') || norm.includes('móveis') || norm.includes('moveis') || norm.includes('sofá') || norm.includes('sofa') || norm.includes('decoração') || norm.includes('decoracao') || norm.includes('cama') || norm.includes('mesa') || norm.includes('rack') || norm.includes('estante'))) {
-      return reg.CASA_DECORACAO_MOVEIS;
-    }
-    if (reg.ELETRONICOS_INFORMATICA && (norm.includes('eletrônico') || norm.includes('eletronico') || norm.includes('informática') || norm.includes('informatica') || norm.includes('notebook') || norm.includes('monitor') || norm.includes('placa') || norm.includes('processador') || norm.includes('gamer') || norm.includes('smartphone') || norm.includes('celular'))) {
-      return reg.ELETRONICOS_INFORMATICA;
-    }
-    if (reg.VAREJO_GERAL) {
-      return reg.VAREJO_GERAL;
+    if (score > bestScore) {
+      bestScore = score;
+      bestVerticalId = verticalId;
     }
   }
 
-  return DEFAULT_FALLBACK_VERTICAL;
+  return reg[bestVerticalId] || DEFAULT_FALLBACK_VERTICAL;
 }
 
 export const detectStoreVertical = resolveDynamicVertical;
+
 
