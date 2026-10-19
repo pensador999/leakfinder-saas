@@ -81,6 +81,7 @@ const APPAREL_SIZE_WEIGHTS: Record<string, number> = {
 function classifyManufacturing(title: string, skuCode: string, tags: string[], productType: string): 'FABRICACAO_PROPRIA' | 'REVENDA' {
   const upper = `${title} ${skuCode} ${productType} ${tags.join(' ')}`.toUpperCase();
 
+  // Nota Crítica (Regra BRK): "ENVIO IMEDIATO" e "PRONTA ENTREGA" são promessas logísticas (usadas também em fabricação própria), NUNCA indicadores de revenda!
   const isResale = 
     upper.includes('BOTÃO') || 
     upper.includes('BOTAO') ||
@@ -89,26 +90,23 @@ function classifyManufacturing(title: string, skuCode: string, tags: string[], p
     upper.includes('BOTA') ||
     upper.includes('CALÇADO') ||
     upper.includes('CALCADO') ||
-    upper.includes('BONÉ') ||
-    upper.includes('BONE') ||
-    upper.includes('BANDANA') ||
-    upper.includes('MANGUITO') ||
-    upper.includes('ÓCULOS') ||
-    upper.includes('OCULOS') ||
     upper.includes('REVENDA') ||
+    upper.includes('FORNECEDOR') ||
+    upper.includes('MULTIMARCA') ||
     upper.includes('WORK') ||
     upper.includes('SAFARI') ||
     upper.includes('ALGODÃO') ||
     upper.includes('ALGODAO') ||
     upper.includes('CASUAL') ||
-    upper.includes('ENVIO IMEDIATO') ||
-    upper.includes('PRONTA ENTREGA') ||
-    skuCode.startsWith('APC') ||
-    skuCode.startsWith('CMB') ||
-    skuCode.startsWith('CBT') ||
-    skuCode.startsWith('BT') ||
-    skuCode.startsWith('OC') ||
-    /^\d{13}$/.test(skuCode);
+    upper.includes('ISCA') ||
+    upper.includes('CARRETILHA') ||
+    upper.includes('MOLINETE') ||
+    skuCode.toUpperCase().startsWith('APC') ||
+    skuCode.toUpperCase().includes('APC') ||
+    skuCode.toUpperCase().startsWith('CMB') ||
+    skuCode.toUpperCase().startsWith('CBT') ||
+    skuCode.toUpperCase().startsWith('BT') ||
+    skuCode.toUpperCase().startsWith('BOT');
 
   return isResale ? 'REVENDA' : 'FABRICACAO_PROPRIA';
 }
@@ -140,10 +138,23 @@ export function auditProductDeepSkus(
   const tags: string[] = Array.isArray(product.tags) ? product.tags : [];
   const productType = product.product_type || product.productType || '';
 
+  const upperCorpus = `${title} ${handle} ${productType} ${tags.join(' ')}`.toUpperCase();
   const isProductLevelFull = 
-    title.toUpperCase().includes('FULL') || 
-    handle.toUpperCase().includes('FULL') ||
-    tags.some(t => t.toUpperCase().includes('FULL'));
+    upperCorpus.includes('FULL') ||
+    rawVariants.some((v: any) => String(v.sku || '').toUpperCase().includes('_FULL'));
+
+  const isCottonOrFishingExempt =
+    upperCorpus.includes('ALGODÃO') ||
+    upperCorpus.includes('ALGODAO') ||
+    upperCorpus.includes('CASUAL') ||
+    upperCorpus.includes('APC') ||
+    upperCorpus.includes('ISCA') ||
+    upperCorpus.includes('CARRETILHA') ||
+    upperCorpus.includes('MOLINETE') ||
+    upperCorpus.includes('ANZOL') ||
+    rawVariants.some((v: any) => String(v.sku || '').toUpperCase().startsWith('APC'));
+
+  const allVariantsOut = rawVariants.length > 0 && rawVariants.every((v: any) => !v.available);
 
   const vertical = resolveDynamicVertical(`${title} ${productType} ${tags.join(' ')} ${storeDomain}`);
   const primaryErpName = vertical.dominantTechStack.primaryErp.split('/')[0].trim();
@@ -176,15 +187,29 @@ export function auditProductDeepSkus(
     const compareAtPrice = v.compare_at_price ? parseFloat(String(v.compare_at_price)) : undefined;
     const available = Boolean(v.available);
 
-    const isSkuLevelFull = isProductLevelFull || skuCode.toUpperCase().includes('FULL') || variantTitle.toUpperCase().includes('FULL');
+    const isSkuLevelFull =
+      isProductLevelFull ||
+      skuCode.toUpperCase().includes('FULL') ||
+      variantTitle.toUpperCase().includes('FULL') ||
+      (isCottonOrFishingExempt && !allVariantsOut);
 
-    // Demand weight based on vertical Gaussian curve first, then general apparel/footwear map
+    // Extrai o token de tamanho real mesmo em variantes compostas (ex: "GG / Azul Escuro" -> "GG")
     const upperSize = variantTitle.toUpperCase();
+    const sizeTokens = [
+      String(v.option1 || '').toUpperCase().trim(),
+      String(v.option2 || '').toUpperCase().trim(),
+      ...upperSize.split(/[\/\-|]/).map(s => s.trim())
+    ].filter(Boolean);
+
+    const matchedSizeKey =
+      sizeTokens.find(tok => vertical.gaussianDemandDistribution[tok] !== undefined || APPAREL_SIZE_WEIGHTS[tok] !== undefined) ||
+      upperSize;
+
     const demandWeight =
-      vertical.gaussianDemandDistribution[upperSize] !== undefined
-        ? vertical.gaussianDemandDistribution[upperSize]
-        : APPAREL_SIZE_WEIGHTS[upperSize] !== undefined
-        ? APPAREL_SIZE_WEIGHTS[upperSize]
+      vertical.gaussianDemandDistribution[matchedSizeKey] !== undefined
+        ? vertical.gaussianDemandDistribution[matchedSizeKey]
+        : APPAREL_SIZE_WEIGHTS[matchedSizeKey] !== undefined
+        ? APPAREL_SIZE_WEIGHTS[matchedSizeKey]
         : 10;
 
     let wastedAdSpendDay = 0;
@@ -195,7 +220,7 @@ export function auditProductDeepSkus(
     } else {
       rupturedSkus++;
       if (isSkuLevelFull) {
-        operationalAction = 'Estoque Fulfillment: Saldo gerenciado no CD Mercado Livre/Shopee Full.';
+        operationalAction = 'Estoque Fulfillment / Isento de Grade: Saldo gerenciado por lote ou CD Full.';
       } else {
         // Daily wasted ad spend proportioned by size importance with 2-decimal precision (se anúncio confirmado)
         wastedAdSpendDay = isAdConfirmedRunning 

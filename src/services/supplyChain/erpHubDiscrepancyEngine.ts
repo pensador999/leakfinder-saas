@@ -122,17 +122,16 @@ export function auditSupplyChainDiscrepancy(
       const isGrau1 = realSiteData.hasMetaPixel && isCriticalSizes;
       const severity: DiscrepancySeverity = isGrau1 ? 'GRAU_1_ANUNCIO_FANTASMA' : 'GRAU_2_VENDA_FANTASMA';
       
-      const price = finances.groundedAverageTicket;
+      const price = skuItem.price && skuItem.price > 0 ? skuItem.price : finances.groundedAverageTicket;
 
-      const skuMonthlyAdAllocation = (finances.estimatedAdSpend.monthly * 0.60) / Math.max(1, brokenSkus.length);
-      const adWaste = Math.round(skuMonthlyAdAllocation * 0.65);
+      const basePoolAdWaste = Math.max(finances.financialRisk.adWasteMonthly, finances.estimatedAdSpend.monthly * 0.25);
+      const adWaste = Math.round(basePoolAdWaste / Math.max(1, brokenSkus.length));
       
       const gatewayLoss = price * 0.035;
-      const sacCost = 45.0;
-      const chargebackPenalty = price * 0.20;
+      const sacCost = 35.0;
+      const chargebackPenalty = price * 0.15;
       const costPerGhostSale = Math.round(gatewayLoss + sacCost + chargebackPenalty);
-      const estimatedGhostSalesMonthly = isGrau1 ? 3 : 2;
-      const cancellationRisk = costPerGhostSale * estimatedGhostSalesMonthly;
+      const cancellationRisk = Math.round((costPerGhostSale * (isGrau1 ? 2.5 : 1.5)) / Math.max(1, Math.sqrt(brokenSkus.length)));
 
       totalAdWaste += adWaste;
       totalCancellationRisk += cancellationRisk;

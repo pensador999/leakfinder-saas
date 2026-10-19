@@ -22,28 +22,36 @@ function buildDynamicOmnichannelItemsFromStore(executeKillSwitch: boolean = fals
   const hubName = vertical.dominantTechStack.primaryHub.split('/')[0].trim();
   const aov = diagnostic?.input?.averageOrderValue || vertical.averageTicketBRL || 179.90;
 
-  const items: OmnichannelAuditItem[] = issues.slice(0, 5).map((issue: any, idx: number) => {
+  // Prioriza os SKUs realmente em ruptura para que a Matriz Omnichannel reflita os gargalos reais da loja
+  const sortedIssues = [...issues].sort((a: any, b: any) => {
+    const aBroken = Boolean(a.isGhostInventorySuspect) || (!a.isFullPrintExempt && a.missingSizes?.length > 0) || a.missingSizes?.includes('ESGOTADO');
+    const bBroken = Boolean(b.isGhostInventorySuspect) || (!b.isFullPrintExempt && b.missingSizes?.length > 0) || b.missingSizes?.includes('ESGOTADO');
+    return Number(bBroken) - Number(aBroken);
+  });
+
+  const items: OmnichannelAuditItem[] = sortedIssues.slice(0, 5).map((issue: any, idx: number) => {
     const isCritical = Boolean(issue.isGhostInventorySuspect) || issue.missingSizes.includes('ESGOTADO') || (!issue.isFullPrintExempt && issue.missingSizes.length >= 2);
     const isAlert = !isCritical && !issue.isFullPrintExempt && issue.missingSizes.length > 0;
-    const dailySpend = isCritical ? 350 : isAlert ? 200 : 250;
-    const dailyWaste = isCritical ? dailySpend : isAlert ? Math.round(dailySpend * 0.35) : 0;
+    const dailySpend = isCritical ? 250 : isAlert ? 180 : 200;
+    const dailyWaste = isCritical ? Math.round(dailySpend * 0.65) : isAlert ? Math.round(dailySpend * 0.30) : 0;
+    const realPrice = issue.price && issue.price > 0 ? issue.price : aov;
 
     return {
       sku: issue.sku || `SKU-${idx + 1}`,
       nome: issue.productTitle,
       handle: issue.productUrl.split('/products/')[1] || `item-${idx + 1}`,
-      preco: aov,
+      preco: realPrice,
       shopifyStatus: {
-        disponivelFront: true,
-        inventoryPolicy: isCritical ? 'continue' : 'deny',
+        disponivelFront: !issue.missingSizes.includes('ESGOTADO'),
+        inventoryPolicy: issue.isGhostInventorySuspect ? 'continue' : 'deny',
         tracked: true,
-        estoqueFront: isCritical ? 0 : isAlert ? 12 : 85
+        estoqueFront: isCritical ? 0 : isAlert ? 2 : 10
       },
       sankhyaStatus: {
-        estoqueFisicoGalpao: isCritical ? 0 : isAlert ? 15 : 110,
-        reservado: isCritical ? 2 : 3,
-        disponivelReal: isCritical ? -2 : isAlert ? 12 : 107,
-        emCortePcp: isAlert,
+        estoqueFisicoGalpao: isCritical ? 0 : isAlert ? 2 : 10,
+        reservado: isCritical ? 1 : 0,
+        disponivelReal: isCritical ? 0 : isAlert ? 2 : 10,
+        emCortePcp: isAlert && issue.manufacturingType !== 'REVENDA',
         leadTimeDias: issue.manufacturingType === 'REVENDA' ? 18 : 4
       },
       magis5Status: {
@@ -62,10 +70,10 @@ function buildDynamicOmnichannelItemsFromStore(executeKillSwitch: boolean = fals
         temEstoqueFantasma: isCritical,
         nivelRisco: isCritical ? 'CRITICO' : isAlert ? 'ALERTA' : 'SEGURO',
         motivoDiscrepancia: isCritical
-          ? `${hubName} pausou nos marketplaces e ${erpName} acusa ruptura nas opções [${issue.missingSizes.join(', ')}], mas a vitrine continua ativa queimando R$ ${dailyWaste}/dia!`
+          ? `Ruptura verificada na vitrine nas opções [${issue.missingSizes.join(', ')}] (${erpName} / ${hubName}) com pixel de tráfego ativo (~R$ ${dailyWaste}/dia em risco). [Projeção via Vitrine Pública — Conecte API ${erpName} para Saldo Físico Exato]`
           : isAlert
-          ? `Atenção parcial na grade (${issue.missingSizes.join(', ')}). Recomendado ajuste de criativo no Meta Ads.`
-          : `Alinhamento operacional saudável entre ${erpName}, ${hubName}, Loja e Meta Ads.`,
+          ? `Ruptura parcial na grade (${issue.missingSizes.join(', ')}). Recomendado ajuste de criativo no Meta Ads.`
+          : `Alinhamento operacional saudável verificado na vitrine pública (${erpName} / ${hubName}).`,
         desperdicioDiarioEstimado: siteData.hasMetaPixel ? dailyWaste : 0,
         desperdicioMensalProjetado: siteData.hasMetaPixel ? dailyWaste * 30 : 0,
         acaoKillSwitchRecomendada: isCritical && Boolean(siteData.hasMetaPixel),

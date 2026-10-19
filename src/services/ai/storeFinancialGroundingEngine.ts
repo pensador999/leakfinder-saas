@@ -109,16 +109,29 @@ export function calculateStoreFinancialGrounding(
   // Se for seller de marketplace, NÃO é a matriz Enterprise multinacional!
   const isEnterprise = realSiteData.isEnterpriseBrand && !isMarketplace;
 
-  // 2. TICKET MÉDIO REAL / GROUNDED AVERAGE TICKET (Com centavos orgânicos)
+  // 2. CATALOG AND BROKEN SKUS METRICS — GROUNDING RIGOROSO
+  const catalogIssues = realSiteData.catalogAudit?.issues || [];
+  // Apenas considera quebrado se comprovado pelo protocolo universal (Grade ativa, Esgotado ou Estoque Fantasma)
+  const realBrokenIssues = catalogIssues.filter(isCatalogProductBroken);
+  const catalogVolumeCount = realSiteData.catalogAudit?.totalProductsScanned || catalogIssues.length || 24;
+  // NUNCA inventar SKUs rompidos se a inspeção encontrou 0!
+  const brokenSkusCount = realBrokenIssues.length;
+
+  // 3. TICKET MÉDIO REAL / GROUNDED AVERAGE TICKET (Extraído diretamente dos preços reais do /products.json!)
+  const validCatalogPrices = catalogIssues
+    .map(i => Number(i.price || 0))
+    .filter(p => p > 5 && p < 50000 && p !== 159.90);
+
   let groundedAverageTicket: number;
   if (input?.averageOrderValue && input.averageOrderValue > 0) {
     groundedAverageTicket = Number(input.averageOrderValue.toFixed(2));
+  } else if (validCatalogPrices.length > 0) {
+    const sumPrices = validCatalogPrices.reduce((acc, p) => acc + p, 0);
+    groundedAverageTicket = Number((sumPrices / validCatalogPrices.length).toFixed(2));
   } else if (isMarketplace) {
     if (isShopee) {
-      // Benchmark Shopee Brasil: ticket médio de R$ 68,40 a R$ 89,90 com centavos orgânicos
       groundedAverageTicket = Number((68.40 + ((domainHash % 180) / 10)).toFixed(2));
     } else {
-      // Benchmark Mercado Livre: ticket médio de R$ 98,50 a R$ 138,50
       groundedAverageTicket = Number((98.50 + ((domainHash % 320) / 10)).toFixed(2));
     }
   } else if (isEnterprise) {
@@ -132,14 +145,6 @@ export function calculateStoreFinancialGrounding(
   } else {
     groundedAverageTicket = Number((164.75 + ((domainHash % 110) / 10)).toFixed(2));
   }
-
-  // 3. CATALOG AND BROKEN SKUS METRICS — GROUNDING RIGOROSO
-  const catalogIssues = realSiteData.catalogAudit?.issues || [];
-  // Apenas considera quebrado se comprovado pelo protocolo universal (Grade ativa, Esgotado ou Estoque Fantasma)
-  const realBrokenIssues = catalogIssues.filter(isCatalogProductBroken);
-  const catalogVolumeCount = realSiteData.catalogAudit?.totalProductsScanned || catalogIssues.length || 24;
-  // NUNCA inventar SKUs rompidos se a inspeção encontrou 0!
-  const brokenSkusCount = realBrokenIssues.length;
 
   // 4. MARTECH & OMNICHANNEL CHANNELS
   const hasMeta = !!(realSiteData.hasMetaPixel || socialAudit?.hasMetaPixel || realSiteData.rawHtmlSnippet?.toLowerCase().includes('fbevents.js'));

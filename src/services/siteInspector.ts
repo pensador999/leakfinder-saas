@@ -81,6 +81,7 @@ export function isCatalogProductBroken(item?: {
   if (!item) return false;
   if (item.isGhostInventorySuspect) return true;
   const missing = item.missingSizes || [];
+  if (missing.length === 0) return false;
   if (
     missing.includes('ESGOTADO') || 
     missing.includes('ESTOQUE_FANTASMA_SUSPEITO') || 
@@ -89,16 +90,18 @@ export function isCatalogProductBroken(item?: {
   ) {
     return true;
   }
-  // Se for isento de grade (ex: _FULL, sublimação total, tamanho único, revenda), NÃO quebra por falta de tamanhos
+  // Se for isento de grade (ex: _FULL, sublimação total, tamanho único, revenda, casual APC, pesca), NÃO quebra por falta de tamanhos
   if (item.isFullPrintExempt) {
     return false;
   }
-  // 🇧🇷 Ruptura de Tamanhos Âncora: M/G em confecção ou 39/40/41/42 em calçados (concentram >65% das vendas no Brasil)
-  const hasCoreAnchorRupture = missing.some(s => ['M', 'G', '39', '40', '41', '42'].includes(s.toUpperCase()));
-  if (hasCoreAnchorRupture) {
-    return true;
+  // 🇧🇷 Se faltarem APENAS tamanhos periféricos de ponta de grade (ex: PP, XG, G1, G2, G3, 33, 34, 45)
+  // enquanto a curva central (P, M, G, GG ou 36-44) está 100% em estoque, o produto NÃO está com grade quebrada!
+  const peripheralSizesOnly = ['PP', 'XG', 'EG', 'XGG', 'G1', 'G2', 'G3', 'G4', '33', '34', '35', '45', '46'];
+  const isOnlyPeripheralMissing = missing.every(s => peripheralSizesOnly.includes(s.toUpperCase().trim()));
+  if (isOnlyPeripheralMissing) {
+    return false;
   }
-  return missing.length > 0;
+  return true;
 }
 
 export interface CatalogAuditSummary {
@@ -523,8 +526,11 @@ async function fetchRealLiveCatalogAudit(
   }
 
   // Theme Level Size Guide Addon Check (Universal e-commerce inspection: <product-addons>, Sizebay, Kiwi Sizing, VFR, Clean Size Chart)
+  // Salvaguarda anti-timeout: Se o HTML não carregou via proxy mas o /products.json respondeu, não acusamos ausência de widget do tema
   const rawHtml = (htmlText || '').toLowerCase();
-  const themeHasSizeGuideAddon = rawHtml.includes('guia de tamanhos') || 
+  const isHtmlUnavailableByTimeout = rawHtml.length < 200;
+  const themeHasSizeGuideAddon = isHtmlUnavailableByTimeout ||
+                                 rawHtml.includes('guia de tamanhos') || 
                                  rawHtml.includes('size_chart') || 
                                  rawHtml.includes('size-chart') || 
                                  rawHtml.includes('product-addons') || 
@@ -547,9 +553,17 @@ async function fetchRealLiveCatalogAudit(
 
   if (parsedProducts.length > 0) {
     try {
+      const hasAdTrackingInHtml = isHtmlUnavailableByTimeout ||
+        rawHtml.includes('fbevents.js') ||
+        rawHtml.includes('fbq(') ||
+        rawHtml.includes('googletagmanager.com') ||
+        rawHtml.includes('gtag(');
+
       deepSkuAudit = auditDeepCatalog(parsedProducts, {
         storeDomain: domain,
-        dailyAdSpend: 250
+        dailyAdSpend: 250,
+        isAdRunning: hasAdTrackingInHtml,
+        operationMode: options?.operationMode
       });
 
       for (let i = 0; i < parsedProducts.length; i++) {
