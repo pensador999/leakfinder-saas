@@ -5,6 +5,7 @@ import { analyzeCopyNLP, type CopyNlpResult } from './copyNLPInspector.ts';
 import { analyzeComputerVision, type VisionAnalysisResult } from './visionCoreEngine.ts';
 import { analyzeOsint, type OsintAnalysisResult } from './osintEngine.ts';
 import type { TargetRegion, StoreOperationMode } from '../types/index.ts';
+import { resolveDynamicVertical } from './ai/dynamicVerticalContext.ts';
 
 export interface BlindspotItem {
   id: string;
@@ -69,31 +70,10 @@ export async function runSiteInspectorWorker(
     ? siteData.brandName
     : rawBrand.toUpperCase();
 
-  let detectedNiche = customNiche || 'Geral & E-commerce';
   const catalogTitles = (siteData.catalogAudit?.issues || []).map(i => i.productTitle).join(' ').toLowerCase();
-  const combinedText = `${siteData.title} ${siteData.metaDescription} ${siteData.h1List.join(' ')} ${catalogTitles}`.toLowerCase();
-  const domainLower = siteData.domain.toLowerCase();
-
-  const shoeKeywords = ['calçado', 'calcado', 'calçados', 'calcados', 'tênis', 'tenis', 'sapato', 'sapatos', 'sandália', 'sandalia', 'bota', 'botas', 'mule', 'mocassim', 'sneaker', 'sneakers', 'coturno', 'scarpin', 'chinelo', 'chinelos', 'rasteira', 'rasteirinha', 'sapatilha', 'shoes', 'footwear'];
-  const hasShoeSignal = shoeKeywords.some(w => combinedText.includes(w) || domainLower.includes(w));
-
-  if (hasShoeSignal) {
-    detectedNiche = 'Calçados, Tênis & Sapatos';
-  } else if (combinedText.includes('suplemento') || combinedText.includes('whey') || combinedText.includes('creatina') || domainLower.includes('suplemento')) {
-    detectedNiche = 'Saúde, Suplementos & Nutrição';
-  } else if (combinedText.includes('pesca') || combinedText.includes('fishing') || domainLower.includes('fishing') || domainLower.includes('pesca')) {
-    detectedNiche = 'Pesca Esportiva & Aventura';
-  } else if (combinedText.includes('agro') || combinedText.includes('campo') || domainLower.includes('agro')) {
-    detectedNiche = 'Agropecuária & Campo';
-  } else if (combinedText.includes('motor') || combinedText.includes('moto') || domainLower.includes('motors')) {
-    detectedNiche = 'Motociclismo & Off-Road';
-  } else if (combinedText.includes('moda') || combinedText.includes('roupa') || combinedText.includes('vestido') || combinedText.includes('camisa') || combinedText.includes('calça')) {
-    detectedNiche = 'Moda, Roupas & Vestuário';
-  } else if (combinedText.includes('eletrônico') || combinedText.includes('tech') || combinedText.includes('gadget') || combinedText.includes('fone')) {
-    detectedNiche = 'Eletrônicos & Tecnologia';
-  } else if (combinedText.includes('beleza') || combinedText.includes('cosmético') || combinedText.includes('skincare') || combinedText.includes('maquiagem')) {
-    detectedNiche = 'Beleza & Cosméticos';
-  }
+  const combinedText = `${customNiche || ''} ${siteData.title} ${siteData.metaDescription} ${siteData.h1List.join(' ')} ${catalogTitles} ${siteData.domain}`.toLowerCase();
+  const resolvedVertical = resolveDynamicVertical(combinedText);
+  const detectedNiche = customNiche || resolvedVertical.label;
 
   const blindspots: BlindspotItem[] = [];
 

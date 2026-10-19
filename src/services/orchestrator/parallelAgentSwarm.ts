@@ -56,15 +56,18 @@ export class ParallelAgentSwarmEngine {
     onProgress?.('Disparando Enxame de Especialistas em Paralelo...', 35);
 
     // FASE 2: Disparo Concorrente de 5 Especialistas (Promise.allSettled)
+    // ⚡ OTIMIZAÇÃO DE REDE: Compartilha a mesma Promise de inspectRealWebsite entre os workers para evitar duplo scraping!
+    const sharedSiteDataPromise = inspectRealWebsite(targetUrl);
+
     const workerPromises = [
       // Worker 1: Doctor de Catálogo & SKUs
       this.runWorker('CATALOG_DOCTOR', 'Doctor de Catálogo & SKUs', async () => {
-        return await inspectRealWebsite(targetUrl);
+        return await sharedSiteDataPromise;
       }),
 
       // Worker 2: Auditor de Segurança & Conformidade Legal
       this.runWorker('SECURITY_LEGAL', 'Auditor de Segurança & Conformidade', async () => {
-        const tempSiteData: RealSiteData = await inspectRealWebsite(targetUrl);
+        const tempSiteData: RealSiteData = await sharedSiteDataPromise;
         return auditSiteSecurity(tempSiteData);
       }),
 

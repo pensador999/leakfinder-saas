@@ -5,6 +5,7 @@
 // ==============================================================================
 
 import { assessGhostInventoryRisk, type GhostInventoryRiskAssessment } from './ghostInventoryShieldEngine.ts';
+import { resolveDynamicVertical } from '../ai/dynamicVerticalContext.ts';
 
 export interface AuditedProductSkuItem {
   skuId: string;
@@ -144,6 +145,8 @@ export function auditProductDeepSkus(
     handle.toUpperCase().includes('FULL') ||
     tags.some(t => t.toUpperCase().includes('FULL'));
 
+  const vertical = resolveDynamicVertical(`${title} ${productType} ${tags.join(' ')} ${storeDomain}`);
+  const primaryErpName = vertical.dominantTechStack.primaryErp.split('/')[0].trim();
   const manufacturingType = classifyManufacturing(title, rawVariants[0]?.sku || '', tags, productType);
 
   let totalSkus = 0;
@@ -175,9 +178,14 @@ export function auditProductDeepSkus(
 
     const isSkuLevelFull = isProductLevelFull || skuCode.toUpperCase().includes('FULL') || variantTitle.toUpperCase().includes('FULL');
 
-    // Demand weight based on size
+    // Demand weight based on vertical Gaussian curve first, then general apparel/footwear map
     const upperSize = variantTitle.toUpperCase();
-    const demandWeight = APPAREL_SIZE_WEIGHTS[upperSize] !== undefined ? APPAREL_SIZE_WEIGHTS[upperSize] : 10;
+    const demandWeight =
+      vertical.gaussianDemandDistribution[upperSize] !== undefined
+        ? vertical.gaussianDemandDistribution[upperSize]
+        : APPAREL_SIZE_WEIGHTS[upperSize] !== undefined
+        ? APPAREL_SIZE_WEIGHTS[upperSize]
+        : 10;
 
     let wastedAdSpendDay = 0;
     let operationalAction = 'Estoque Saudável';
@@ -196,9 +204,9 @@ export function auditProductDeepSkus(
         productDailyBleed = Number((productDailyBleed + wastedAdSpendDay).toFixed(2));
 
         if (manufacturingType === 'FABRICACAO_PROPRIA') {
-          operationalAction = `Abrir Ordem de Produção (OP corte/sublimação) no Sankhya PCP para grade [${variantTitle}].`;
+          operationalAction = `Abrir Ordem de Produção (OP) prioritária no ${primaryErpName} para reposição da variante [${variantTitle}].`;
         } else {
-          operationalAction = `Emitir Pedido de Compra (PO) urgente ao fornecedor homologado para reposição [${variantTitle}].`;
+          operationalAction = `Emitir Pedido de Compra (PO) urgente ao fornecedor homologado no ${primaryErpName} para reposição [${variantTitle}].`;
         }
       }
     }
@@ -224,8 +232,11 @@ export function auditProductDeepSkus(
   if (totalSkus > 0) {
     const activePercent = (activeSkus / totalSkus) * 100;
     healthScore = Math.round(activePercent);
-    // Extra penalty if middle high-demand sizes (M, G, GG) are missing
-    const criticalMissing = auditedSkus.some(s => !s.available && !s.isFullExempt && (s.variantTitle === 'M' || s.variantTitle === 'G' || s.variantTitle === 'GG'));
+    // Extra penalty if high-demand sizes of the detected vertical are missing
+    const coreSizesUpper = vertical.coreDemandSizes.map(s => s.toUpperCase());
+    const criticalMissing = auditedSkus.some(
+      s => !s.available && !s.isFullExempt && (coreSizesUpper.includes(s.variantTitle.toUpperCase()) || s.variantTitle === 'M' || s.variantTitle === 'G')
+    );
     if (criticalMissing) {
       healthScore = Math.min(healthScore, 65);
     }

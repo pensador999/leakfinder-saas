@@ -1,37 +1,32 @@
-import croAgentPrompt from './prompts/cro_agent.md?raw';
-import copyAgentPrompt from './prompts/copy_agent.md?raw';
-import adsAgentPrompt from './prompts/ads_agent.md?raw';
-import pmGrowthAgentPrompt from './prompts/pm_growth_agent.md?raw';
-import seoAgentPrompt from './prompts/seo_agent.md?raw';
-
 import { 
   MASTER_SWARM_AGENTS, 
   getSwarmAgentById, 
   getAllSwarmAgents, 
   type SwarmAgentDefinition 
 } from '../services/ai/prompts/masterSwarmPrompts.ts';
+import { getVerticalizedPromptById } from '../services/ai/verticalContextInjector.ts';
 
 // Knowledge Bases unificadas com os prompts maximizados dos 18 agentes no modo Conselheiro de Negócios
 export const agentKnowledgeBases = {
   cro: {
     name: 'Arquiteto de Conversão (CRO)',
-    systemPrompt: getSwarmAgentById('agent-10')?.systemPrompt || croAgentPrompt,
+    systemPrompt: getSwarmAgentById('agent-10')?.systemPrompt || '',
   },
   copywriter: {
     name: 'Persuasor de Vendas & Copywriting',
-    systemPrompt: getSwarmAgentById('agent-08')?.systemPrompt || copyAgentPrompt,
+    systemPrompt: getSwarmAgentById('agent-08')?.systemPrompt || '',
   },
   ads: {
     name: 'Media Buyer Sênior & Ads Risk',
-    systemPrompt: getSwarmAgentById('agent-05')?.systemPrompt || adsAgentPrompt,
+    systemPrompt: getSwarmAgentById('agent-05')?.systemPrompt || '',
   },
   pmGrowth: {
     name: 'Estrategista Chefe (CEO do Enxame)',
-    systemPrompt: getSwarmAgentById('agent-01')?.systemPrompt || pmGrowthAgentPrompt,
+    systemPrompt: getSwarmAgentById('agent-01')?.systemPrompt || '',
   },
   seo: {
     name: 'Engenheiro Orgânico & Core Web Vitals',
-    systemPrompt: getSwarmAgentById('agent-12')?.systemPrompt || seoAgentPrompt,
+    systemPrompt: getSwarmAgentById('agent-12')?.systemPrompt || '',
   },
   catalogDoctor: {
     name: 'Doutor de Catálogo Universal',
@@ -47,4 +42,9 @@ export const agentKnowledgeBases = {
   }
 };
 
+export function getVerticalizedAgentPrompt(agentId: string, nicheRawInput: string, fallbackPrompt: string = ''): string {
+  return getVerticalizedPromptById(agentId, nicheRawInput) || getSwarmAgentById(agentId)?.systemPrompt || fallbackPrompt;
+}
+
 export { MASTER_SWARM_AGENTS, getSwarmAgentById, getAllSwarmAgents, type SwarmAgentDefinition };
+

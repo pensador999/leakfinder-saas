@@ -5,6 +5,7 @@
 // ==============================================================================
 
 import type { RealSiteData } from '../siteInspector.ts';
+import { resolveDynamicVertical, type SupportedVerticalId } from '../ai/dynamicVerticalContext.ts';
 
 export type UniversalNicheCategory = 
   | 'MODA_VESTUARIO'
@@ -267,6 +268,22 @@ export function classifyUniversalNiche(realSiteData: RealSiteData): UniversalNic
     highestScore = Math.max(highestScore, 9);
   }
 
+  const dynamicVertical = resolveDynamicVertical(textCorpus);
+  const verticalMap: Partial<Record<SupportedVerticalId, UniversalNicheCategory>> = {
+    CALCADOS_COURO: 'CALCADOS_CALCADISTA',
+    SUPLEMENTOS_SAUDE: 'SUPLEMENTOS_FARMACIA',
+    AUTOPECAS_FERRAMENTAS: 'AUTOPECAS_FERRAMENTAS',
+    COSMETICOS_BEAUTY: 'BELEZA_COSMETICOS',
+    CASA_DECORACAO_MOVEIS: 'CASA_MOVEIS_DECORACAO',
+    ELETRONICOS_INFORMATICA: 'ELETRONICOS_INFORMATICA',
+    PET_SHOP_VETERINARIA: 'AGROPECUARIA_PET',
+    FITNESS_BEACHWEAR: 'MODA_VESTUARIO',
+    STREETWEAR_MODA_URBANA: 'MODA_VESTUARIO'
+  };
+  if (detectedNiche === 'VAREJO_GERAL_MULTI' && dynamicVertical.verticalId !== 'VAREJO_GERAL') {
+    detectedNiche = verticalMap[dynamicVertical.verticalId] || detectedNiche;
+  }
+
   const confidenceScore = Math.min(99, Math.max(75, highestScore * 12));
   const profile = UNIVERSAL_NICHE_PROFILES[detectedNiche];
 
@@ -276,7 +293,7 @@ export function classifyUniversalNiche(realSiteData: RealSiteData): UniversalNic
     nicheProfile: profile,
     detectedKeywords: matchedKeywords.slice(0, 8),
     navigationStructureType: 'MEGA_MENU',
-    adaptedRulesSummary: `O motor AdShield calibrou as regras de auditoria para o nicho de "${profile.nicheLabel}". Os diagnósticos agora avaliam especificamente ${profile.primaryVariantTypes.join(', ')} e verificam a presença de ${profile.mandatoryAddonWidget}.`,
+    adaptedRulesSummary: `O motor AdShield calibrou as regras de auditoria para o nicho de "${profile.nicheLabel}" (ERP Dominante: ${dynamicVertical.dominantTechStack.primaryErp}). Os diagnósticos agora avaliam especificamente ${profile.primaryVariantTypes.join(', ')} e verificam a presença de ${profile.mandatoryAddonWidget}.`,
     allAvailableNiches: Object.values(UNIVERSAL_NICHE_PROFILES)
   };
 }

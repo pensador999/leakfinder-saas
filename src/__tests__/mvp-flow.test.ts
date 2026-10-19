@@ -131,5 +131,60 @@ describe('MVP Core Flow Validation', () => {
     expect(summary.allProducts[0].skus.length).toBe(2);
     expect(summary.allProducts[0].skus.map(s => s.skuCode)).toEqual(['BON-TRK-01', 'BON-TRK-02']);
   });
+
+  // Test 8: Multi-Vertical Calibration, Prompt Injection & Zero-Hallucination Supply Chain
+  it('resolves all 11 verticals, injects vertical context into prompts, and respects zero-error catalogs', async () => {
+    const { resolveDynamicVertical, detectStoreVertical } = await import('../services/ai/dynamicVerticalContext');
+    const { getVerticalizedAgentPrompt } = await import('../agents');
+    const { auditSupplyChainDiscrepancy } = await import('../services/supplyChain/erpHubDiscrepancyEngine');
+    const { auditProductDeepSkus } = await import('../services/catalog/deepSkuAuditEngine');
+
+    // 1. Verifica detecção unificada das novas verticais
+    expect(resolveDynamicVertical('whey protein creatina pura').verticalId).toBe('SUPLEMENTOS_SAUDE');
+    expect(detectStoreVertical('autopeças farol automotivo').verticalId).toBe('AUTOPECAS_FERRAMENTAS');
+    expect(resolveDynamicVertical('sérum ácido hialurônico skincare').verticalId).toBe('COSMETICOS_BEAUTY');
+
+    // 2. Verifica injeção real do contexto vertical no prompt do agente
+    const croPrompt = getVerticalizedAgentPrompt('agent-10', 'sérum ácido hialurônico skincare');
+    expect(croPrompt).toContain('CONTEXTO VERTICAL ATIVO: Beleza, Skincare & Cosméticos D2C');
+    expect(croPrompt).toContain('COSMETICOS_BEAUTY');
+
+    // 3. Verifica que loja saudável (0 erros) NÃO gera SKU fictício SKU-PRODUCAO-01 e adapta o ERP ao nicho
+    const cleanCosmeticsStore: any = {
+      url: 'https://sallve.com.br',
+      domain: 'sallve.com.br',
+      brandName: 'Sallve',
+      title: 'Sallve Skincare & Cosméticos',
+      hasMetaPixel: true,
+      catalogAudit: {
+        totalProductsScanned: 10,
+        productsWithBrokenGrid: 0,
+        heavyImagesCount: 0,
+        productsWithoutSizeGuide: 0,
+        catalogHealthScore: 100,
+        issues: []
+      }
+    };
+    const supplyAudit = auditSupplyChainDiscrepancy(cleanCosmeticsStore, { niche: 'Cosméticos & Skincare' });
+    expect(supplyAudit.discrepancyAlerts.length).toBe(0);
+    expect(supplyAudit.pipelineFlowMetrics.storefrontBrokenSkusCount).toBe(0);
+    expect(supplyAudit.stackOverview.erpDetectedOrConfigured).toBe('BLING');
+
+    // 4. Verifica que deepSkuAuditEngine aplica a curva Gaussiana da vertical (ex: 900G = 45% em Suplementos)
+    const supplementProduct = {
+      id: 'supp-1',
+      title: 'Whey Protein Isolado Puro',
+      handle: 'whey-protein-isolado',
+      product_type: 'Suplemento',
+      tags: ['Whey'],
+      variants: [
+        { id: 'v1', title: '900G', sku: 'WHEY-900', price: '229.00', available: false }
+      ]
+    };
+    const auditedSupp = auditProductDeepSkus(supplementProduct, { storeDomain: 'growth.com.br', isAdRunning: true });
+    expect(auditedSupp.skus[0].sizeDemandWeight).toBe(45);
+    expect(auditedSupp.skus[0].operationalAction).toContain('Bling ERP');
+  });
 });
+
 

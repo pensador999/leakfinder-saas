@@ -12,9 +12,11 @@ export type SupportedVerticalId =
   | 'STREETWEAR_MODA_URBANA'
   | 'FITNESS_BEACHWEAR'
   | 'COSMETICOS_BEAUTY'
+  | 'SUPLEMENTOS_SAUDE'
   | 'PET_SHOP_VETERINARIA'
   | 'CASA_DECORACAO_MOVEIS'
   | 'ELETRONICOS_INFORMATICA'
+  | 'AUTOPECAS_FERRAMENTAS'
   | 'VAREJO_GERAL';
 
 export interface DominantErpStackProfile {
@@ -400,7 +402,94 @@ export const DYNAMIC_VERTICAL_REGISTRY: Record<SupportedVerticalId, DynamicVerti
     mandatoryProductFeatures: ['Especificações Técnicas Completas', 'Garantia do Fabricante', 'Compatibilidade com Outros Dispositivos']
   },
 
-  VAREJO_GERAL: {    verticalId: 'VAREJO_GERAL',
+  SUPLEMENTOS_SAUDE: {
+    verticalId: 'SUPLEMENTOS_SAUDE',
+    label: 'Suplementos, Nutrição Esportiva & Saúde',
+    icon: 'HeartPulse',
+    targetDemographics: 'Praticantes de musculação, atletas amadores e consumidores de longevidade 18-50 anos',
+    geographicPoles: ['São Paulo', 'Sul (SC/PR)', 'Goiânia/GO', 'Nacional D2C'],
+    averageTicketBRL: 229.00,
+    benchmarkMetaAdsCpcBRL: 1.30,
+    baselineCvrPct: 2.15,
+    averageReturnRatePct: 2.5,
+    gaussianDemandDistribution: {
+      '900G': 45,
+      '300G': 25,
+      '1KG': 15,
+      'KIT_COMBO': 15
+    },
+    coreDemandSizes: ['900G', '300G', 'UNITARIO'],
+    secondaryDemandSizes: ['1KG', 'KIT_COMBO'],
+    dominantTechStack: {
+      primaryErp: 'Bling ERP / Tiny ERP / Omie',
+      primaryHub: 'Shopify / VTEX / Nuvemshop',
+      typicalSyncLatencyMinutes: 10,
+      inventoryPolicyBehavior: 'Ruptura nos sabores campeões (Chocolate/Baunilha/Limão) trava a conversão mesmo com sabores exóticos em estoque.',
+      logisticsHubNotes: 'Controle rigoroso de lote, validade e integridade do lacre térmico.'
+    },
+    vocabulary: {
+      industryTerms: ['laudo laboratorial aprovado', 'matéria-prima importada 100% pura', 'custo por dose', 'zero adição de açúcares', 'alta biodisponibilidade', 'selo ANVISA'],
+      lossPainHooks: [
+        'Seu sabor mais vendido (Chocolate/Baunilha) esgotou, mas o anúncio segue rodando e levando o cliente para sabores de baixo giro.',
+        'Falta de tabela nutricional legível e destaque para laudo de pureza derruba a conversão de novos clientes em até 35%.',
+        'Não mostrar o cálculo de custo por dose faz o pote parecer caro diante de concorrentes inferiores.'
+      ],
+      urgencyTriggers: ['Sabor campeão esgotado em campanha ativa', 'Ausência de selo de pureza/laudo no PDP', 'Ruptura de Creatina/Whey carro-chefe'],
+      closingPunchlines: [
+        'Pausar anúncios de sabores esgotados e destacar o custo por dose eleva o ROAS da conta imediatamente.',
+        'No mercado de suplementos, proteger a primeira compra garante LTV de recompra a cada 30 dias.'
+      ]
+    },
+    catalogExemptionPatterns: ['coqueteleira', 'shaker', 'colher dosadora', 'scoop', 'adesivo', 'sacochila', '_FULL'],
+    allowBackorderKeywords: ['lote novo', 'pre-venda'],
+    mandatoryProductFeatures: ['Tabela Nutricional Legível', 'Laudo Laboratorial de Pureza / ANVISA', 'Cálculo de Custo por Dose']
+  },
+
+  AUTOPECAS_FERRAMENTAS: {
+    verticalId: 'AUTOPECAS_FERRAMENTAS',
+    label: 'Autopeças, Motociclismo & Ferramentas',
+    icon: 'Wrench',
+    targetDemographics: 'Proprietários de veículos, oficinas mecânicas, motociclistas e profissionais técnicos 22-60 anos',
+    geographicPoles: ['São Paulo', 'ABC Paulista', 'Curitiba/PR', 'Campinas/SP'],
+    averageTicketBRL: 389.00,
+    benchmarkMetaAdsCpcBRL: 1.55,
+    baselineCvrPct: 1.25,
+    averageReturnRatePct: 9.5,
+    gaussianDemandDistribution: {
+      'PADRAO_OEM': 50,
+      'BIVOLT': 20,
+      '220V': 15,
+      '110V': 15
+    },
+    coreDemandSizes: ['PADRAO_OEM', 'BIVOLT', '220V', '110V'],
+    secondaryDemandSizes: ['KIT_PAR'],
+    dominantTechStack: {
+      primaryErp: 'Tiny ERP / Bling ERP / TOTVS Protheus',
+      primaryHub: 'Plugg.to / AnyMarket / Mercado Livre Full',
+      typicalSyncLatencyMinutes: 20,
+      inventoryPolicyBehavior: 'Catálogo extenso de SKUs técnicos por ano/modelo/código OEM.',
+      logisticsHubNotes: 'Despacho pesado via transportadoras rodoviárias (Braspress, Jamef, Jadlog) e Correios.'
+    },
+    vocabulary: {
+      industryTerms: ['código original OEM', 'aplicação ano/modelo exato', 'peça de reposição homologada', 'garantia de fábrica', 'encaixe plug and play', 'certificação INMETRO'],
+      lossPainHooks: [
+        'O cliente clica no anúncio da peça ou ferramenta, não encontra a tabela clara de aplicação (Ano/Modelo/Motor) e abandona por medo de comprar errado.',
+        'Devoluções por incompatibilidade técnica destroem a margem líquida com frete reverso pesado.',
+        'Anúncios ativos para modelos ou voltagens esgotadas queimam orçamento de Google Shopping e Meta Ads.'
+      ],
+      urgencyTriggers: ['Falta de tabela de compatibilidade Ano/Modelo', 'Voltagem 110V/220V esgotada em anúncio ativo', 'Ausência de código OEM'],
+      closingPunchlines: [
+        'Exibir a tabela de compatibilidade veicular reduz devoluções técnicas em até 60%.',
+        'Travar anúncios de peças sem estoque físico protege a reputação da loja nos marketplaces e no D2C.'
+      ]
+    },
+    catalogExemptionPatterns: ['parafuso', 'arruela', 'abraçadeira', 'fita isolante', 'adesivo', 'chaveiro', '_FULL'],
+    allowBackorderKeywords: ['encomenda fabrica', 'importacao direta'],
+    mandatoryProductFeatures: ['Tabela de Compatibilidade (Marca / Modelo / Ano)', 'Código OEM / Referência Cruzada', 'Selo INMETRO e Garantia']
+  },
+
+  VAREJO_GERAL: {
+    verticalId: 'VAREJO_GERAL',
     label: 'E-commerce & Varejo Geral',
     icon: 'ShoppingBag',
     targetDemographics: 'Consumidores de compras recorrentes online',
@@ -439,75 +528,44 @@ export const DYNAMIC_VERTICAL_REGISTRY: Record<SupportedVerticalId, DynamicVerti
   }
 };
 
-const DEFAULT_FALLBACK_VERTICAL: DynamicVerticalProfile = {
-  verticalId: 'VAREJO_GERAL',
-  label: 'Varejo Geral & Multicategorias',
-  icon: 'Store',
-  targetDemographics: 'Consumidores de compras recorrentes online',
-  geographicPoles: ['Nacional'],
-  averageTicketBRL: 199.00,
-  benchmarkMetaAdsCpcBRL: 1.20,
-  baselineCvrPct: 1.50,
-  averageReturnRatePct: 10.0,
-  gaussianDemandDistribution: {
-    'P': 20,
-    'M': 35,
-    'G': 30,
-    'GG': 15
-  },
-  coreDemandSizes: ['M', 'G'],
-  secondaryDemandSizes: ['P', 'GG'],
-  dominantTechStack: {
-    primaryErp: 'Bling / Tiny / Sankhya',
-    primaryHub: 'Plugg.to / Magis5 / AnyMarket',
-    typicalSyncLatencyMinutes: 20,
-    inventoryPolicyBehavior: 'Auditoria de variantes e estoque físico.',
-    logisticsHubNotes: 'Fulfillment padrão.'
-  },
-  vocabulary: {
-    industryTerms: ['pronta entrega', 'envio em 24h', 'nota fiscal eletrônica', 'garantia oficial'],
-    lossPainHooks: [
-      'Anúncios rodando com variantes centrais em falta queimam o orçamento de marketing.',
-      'O cliente abandona a compra se não encontrar a opção desejada de imediato.'
-    ],
-    urgencyTriggers: ['Ruptura de estoque', 'Tráfego sem conversão'],
-    closingPunchlines: ['O AdShield estanca o desperdício em anúncios em tempo real.']
-  },
-  catalogExemptionPatterns: ['tamanho unico', '_FULL'],
-  allowBackorderKeywords: ['sob encomenda'],
-  mandatoryProductFeatures: ['Tabela de Medidas / Especificações', 'Calculador de Frete']
-};
+const DEFAULT_FALLBACK_VERTICAL: DynamicVerticalProfile = DYNAMIC_VERTICAL_REGISTRY.VAREJO_GERAL;
 
 /**
- * Identifica a vertical correspondente a partir de palavras-chave, nicho ou título
+ * Identifica a vertical correspondente a partir de palavras-chave, nicho, domínio ou título
  */
 export function resolveDynamicVertical(rawInput: string): DynamicVerticalProfile {
   const norm = (rawInput || '').toLowerCase();
 
   const reg = DYNAMIC_VERTICAL_REGISTRY;
   if (reg) {
-    if (reg.CALCADOS_COURO && (norm.includes('sapato') || norm.includes('bota') || norm.includes('calçado') || norm.includes('calcado') || norm.includes('tênis') || norm.includes('tenis') || norm.includes('couro') || norm.includes('coturno'))) {
+    if (reg.CALCADOS_COURO && (norm.includes('sapato') || norm.includes('bota') || norm.includes('botina') || norm.includes('calçado') || norm.includes('calcado') || norm.includes('tênis') || norm.includes('tenis') || norm.includes('couro') || norm.includes('coturno') || norm.includes('sandália') || norm.includes('sandalia') || norm.includes('shoes') || norm.includes('sneaker'))) {
       return reg.CALCADOS_COURO;
     }
-    if (reg.AGRO_CAMPO_OUTDOOR && (norm.includes('agro') || norm.includes('campo') || norm.includes('country') || norm.includes('western') || norm.includes('pesca') || norm.includes('chapeu') || norm.includes('chapéu') || norm.includes('camper'))) {
+    if (reg.SUPLEMENTOS_SAUDE && (norm.includes('suplemento') || norm.includes('whey') || norm.includes('creatina') || norm.includes('nutrição') || norm.includes('nutricao') || norm.includes('pré-treino') || norm.includes('pre-treino') || norm.includes('vitamina') || norm.includes('proteína') || norm.includes('proteina'))) {
+      return reg.SUPLEMENTOS_SAUDE;
+    }
+    if (reg.AUTOPECAS_FERRAMENTAS && (norm.includes('autopeça') || norm.includes('autopeca') || norm.includes('ferramenta') || norm.includes('motociclismo') || norm.includes('motocross') || norm.includes('racing') || norm.includes('motors') || norm.includes('automotivo') || norm.includes('oficina') || norm.includes('veículo') || norm.includes('veiculo'))) {
+      return reg.AUTOPECAS_FERRAMENTAS;
+    }
+    if (reg.AGRO_CAMPO_OUTDOOR && (norm.includes('agro') || norm.includes('campo') || norm.includes('country') || norm.includes('western') || norm.includes('pesca') || norm.includes('fishing') || norm.includes('chapeu') || norm.includes('chapéu') || norm.includes('camper') || norm.includes('fazenda') || norm.includes('rodeio'))) {
       return reg.AGRO_CAMPO_OUTDOOR;
     }
-    if (reg.STREETWEAR_MODA_URBANA && (norm.includes('streetwear') || norm.includes('oversized') || norm.includes('urban') || norm.includes('tech apparel') || norm.includes('drop') || norm.includes('skate') || norm.includes('insider'))) {
+    if (reg.STREETWEAR_MODA_URBANA && (norm.includes('streetwear') || norm.includes('oversized') || norm.includes('urban') || norm.includes('tech apparel') || norm.includes('drop') || norm.includes('skate') || norm.includes('insider') || norm.includes('moletom') || norm.includes('camiseta'))) {
       return reg.STREETWEAR_MODA_URBANA;
     }
-    if (reg.FITNESS_BEACHWEAR && (norm.includes('fitness') || norm.includes('beachwear') || norm.includes('legging') || norm.includes('biquíni') || norm.includes('biquini') || norm.includes('academia') || norm.includes('treino'))) {
+    if (reg.FITNESS_BEACHWEAR && (norm.includes('fitness') || norm.includes('beachwear') || norm.includes('legging') || norm.includes('biquíni') || norm.includes('biquini') || norm.includes('academia') || norm.includes('treino') || norm.includes('activewear') || norm.includes('moda praia'))) {
       return reg.FITNESS_BEACHWEAR;
     }
-    if (reg.COSMETICOS_BEAUTY && (norm.includes('cosmético') || norm.includes('cosmetico') || norm.includes('skincare') || norm.includes('beleza') || norm.includes('sérum') || norm.includes('serum') || norm.includes('creme') || norm.includes('maquiagem'))) {
+    if (reg.COSMETICOS_BEAUTY && (norm.includes('cosmético') || norm.includes('cosmetico') || norm.includes('skincare') || norm.includes('beleza') || norm.includes('sérum') || norm.includes('serum') || norm.includes('creme') || norm.includes('maquiagem') || norm.includes('perfume') || norm.includes('shampoo'))) {
       return reg.COSMETICOS_BEAUTY;
     }
     if (reg.PET_SHOP_VETERINARIA && (norm.includes('pet') || norm.includes('ração') || norm.includes('racao') || norm.includes('cachorro') || norm.includes('gato') || norm.includes('veterinári') || norm.includes('veterinari') || norm.includes('antipulgas') || norm.includes('coleira'))) {
       return reg.PET_SHOP_VETERINARIA;
     }
-    if (reg.CASA_DECORACAO_MOVEIS && (norm.includes('móvel') || norm.includes('movel') || norm.includes('sofá') || norm.includes('sofa') || norm.includes('decoração') || norm.includes('decoracao') || norm.includes('cama') || norm.includes('mesa') || norm.includes('rack') || norm.includes('estante'))) {
+    if (reg.CASA_DECORACAO_MOVEIS && (norm.includes('móvel') || norm.includes('movel') || norm.includes('móveis') || norm.includes('moveis') || norm.includes('sofá') || norm.includes('sofa') || norm.includes('decoração') || norm.includes('decoracao') || norm.includes('cama') || norm.includes('mesa') || norm.includes('rack') || norm.includes('estante'))) {
       return reg.CASA_DECORACAO_MOVEIS;
     }
-    if (reg.ELETRONICOS_INFORMATICA && (norm.includes('eletrônico') || norm.includes('eletronico') || norm.includes('informática') || norm.includes('informatica') || norm.includes('notebook') || norm.includes('monitor') || norm.includes('placa') || norm.includes('processador') || norm.includes('gamer') || norm.includes('smartphone'))) {
+    if (reg.ELETRONICOS_INFORMATICA && (norm.includes('eletrônico') || norm.includes('eletronico') || norm.includes('informática') || norm.includes('informatica') || norm.includes('notebook') || norm.includes('monitor') || norm.includes('placa') || norm.includes('processador') || norm.includes('gamer') || norm.includes('smartphone') || norm.includes('celular'))) {
       return reg.ELETRONICOS_INFORMATICA;
     }
     if (reg.VAREJO_GERAL) {
@@ -517,3 +575,6 @@ export function resolveDynamicVertical(rawInput: string): DynamicVerticalProfile
 
   return DEFAULT_FALLBACK_VERTICAL;
 }
+
+export const detectStoreVertical = resolveDynamicVertical;
+

@@ -17,6 +17,9 @@ export const config = {
 export interface OmnichannelCrossAuditRequestBody {
   executeKillSwitch?: boolean;
   targetSku?: string;
+  storeName?: string;
+  recipientPhone?: string;
+  customItems?: OmnichannelAuditItem[];
 }
 
 interface MinimalServerlessRequest {
@@ -107,10 +110,10 @@ export default async function handler(req: MinimalServerlessRequest, res: Minima
     body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
   }
 
-  const { executeKillSwitch = false, targetSku } = body;
+  const { executeKillSwitch = false, targetSku, storeName = 'Loja Auditada', recipientPhone = '', customItems } = body;
 
-  // Catálogo Auditado pelo Cruzamento Quádruplo (BRK Agro Live Grounding)
-  const auditedItems: OmnichannelAuditItem[] = [
+  // Catálogo Auditado pelo Cruzamento Quádruplo (Dinâmico da Loja Auditada ou Caso de Referência Yellowstone)
+  const defaultReferenceItems: OmnichannelAuditItem[] = [
     {
       sku: "BN-YELLOW-001",
       nome: "Boné Trucker Yellowstone Dutton Ranch Original - Preto Sarja",
@@ -166,7 +169,7 @@ export default async function handler(req: MinimalServerlessRequest, res: Minima
         estoqueFisicoGalpao: 95,
         reservado: 28,
         disponivelReal: 73,
-        emCortePcp: true, // Grades G1 e G2 em corte
+        emCortePcp: true,
         leadTimeDias: 3
       },
       magis5Status: {
@@ -184,7 +187,7 @@ export default async function handler(req: MinimalServerlessRequest, res: Minima
       veredito: {
         temEstoqueFantasma: false,
         nivelRisco: 'ALERTA',
-        motivoDiscrepancia: "Estoque saudável nas grades centrais (P ao GG). Alerta apenas para exclusão de anúncios direcionados aos tamanhos G1 e G2 que estão zerados no Sankhya.",
+        motivoDiscrepancia: "Estoque saudável nas grades centrais (P ao GG). Alerta apenas para exclusão de anúncios direcionados aos tamanhos G1 e G2 que estão zerados no ERP.",
         desperdicioDiarioEstimado: 75.00,
         desperdicioMensalProjetado: 2250.00,
         acaoKillSwitchRecomendada: false,
@@ -224,7 +227,7 @@ export default async function handler(req: MinimalServerlessRequest, res: Minima
       veredito: {
         temEstoqueFantasma: false,
         nivelRisco: 'SEGURO',
-        motivoDiscrepancia: "Alinhamento 100% perfeito entre Sankhya, Magis5, Shopify e Meta Ads. Capacidade de expedição imediata (D+0).",
+        motivoDiscrepancia: "Alinhamento 100% perfeito entre ERP, Hub, Loja e Meta Ads. Capacidade de expedição imediata (D+0).",
         desperdicioDiarioEstimado: 0.00,
         desperdicioMensalProjetado: 0.00,
         acaoKillSwitchRecomendada: false,
@@ -233,24 +236,35 @@ export default async function handler(req: MinimalServerlessRequest, res: Minima
     }
   ];
 
+  const sourceItems = Array.isArray(customItems) && customItems.length > 0
+    ? customItems.map(item => ({
+        ...item,
+        veredito: {
+          ...item.veredito,
+          statusKillSwitch: item.veredito.acaoKillSwitchRecomendada
+            ? (executeKillSwitch ? 'EXECUTADO' as const : 'PENDENTE' as const)
+            : 'NAO_NECESSARIO' as const
+        }
+      }))
+    : defaultReferenceItems;
+
   // Filtra por SKU se solicitado
-  const filtered = targetSku ? auditedItems.filter(i => i.sku === targetSku) : auditedItems;
+  const filtered = targetSku ? sourceItems.filter(i => i.sku === targetSku) : sourceItems;
 
   const totalDesperdicioDiario = filtered.reduce((acc, curr) => acc + curr.veredito.desperdicioDiarioEstimado, 0);
   const totalDesperdicioMensal = filtered.reduce((acc, curr) => acc + curr.veredito.desperdicioMensalProjetado, 0);
   const itensCriticos = filtered.filter(i => i.veredito.nivelRisco === 'CRITICO');
 
-  // Payload de alerta formatado para WhatsApp do Fundador (5534991351122)
   const whatsappAlertMessage = `🚨 *ALERTA ADSHIELD: STOP-LOSS ATIVADO*
-*Empresa:* BRK Agro
-*SKU Crítico:* ${itensCriticos[0]?.sku || 'BN-YELLOW-001'} - ${itensCriticos[0]?.nome || 'Boné Trucker Yellowstone'}
+*Empresa:* ${storeName}
+*SKU Crítico:* ${itensCriticos[0]?.sku || filtered[0]?.sku || 'SKU-MONITORADO'} - ${itensCriticos[0]?.nome || filtered[0]?.nome || 'Catálogo Monitorado'}
 
-❌ *Sankhya ERP:* Estoque Físico = 0
-❌ *Magis5 Hub:* Anúncio Pausado no Mercado Livre (Ruptura)
-⚠️ *Shopify:* Botão Ativo (Backorder)
-🔥 *Meta Ads:* Queimando R$ ${itensCriticos[0]?.metaAdsStatus.verbaDiariaReais || 450}/dia!
+❌ *ERP Físico:* Estoque = ${itensCriticos[0]?.sankhyaStatus.estoqueFisicoGalpao ?? 0}
+❌ *Hub Integrador:* ${itensCriticos[0]?.magis5Status.pausadoPorEstoque ? 'Anúncio Pausado (Ruptura)' : 'Em Monitoramento'}
+⚠️ *Vitrine D2C:* Botão Ativo (Backorder)
+🔥 *Meta Ads:* Queimando R$ ${itensCriticos[0]?.metaAdsStatus.verbaDiariaReais || 0}/dia!
 
-🛑 *Ação do AdShield:* Conjunto de anúncios pausado automaticamente via Meta Graph API para evitar queima de R$ ${(itensCriticos[0]?.veredito.desperdicioMensalProjetado || 13500).toLocaleString('pt-BR')} no mês.`;
+🛑 *Ação do AdShield:* Conjunto de anúncios pausado automaticamente via Meta Graph API para evitar queima de R$ ${(itensCriticos[0]?.veredito.desperdicioMensalProjetado || 0).toLocaleString('pt-BR')} no mês.`;
 
   return sendResponse(res, 200, {
     ok: true,
@@ -264,7 +278,7 @@ export default async function handler(req: MinimalServerlessRequest, res: Minima
       killSwitchAutoTriggered: executeKillSwitch
     },
     whatsappNotification: {
-      recipient: "5534991351122",
+      recipient: recipientPhone,
       message: whatsappAlertMessage
     },
     items: filtered

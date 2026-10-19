@@ -1,7 +1,8 @@
 import type { RealSiteData } from '../siteInspector.ts';
 import { isCatalogProductBroken } from '../siteInspector.ts';
 import type { AuditInput } from '../../types/index.ts';
-import { calculateStoreFinancialGrounding, formatBRL, formatBRLDecimals } from '../ai/storeFinancialGroundingEngine.ts';
+import { calculateStoreFinancialGrounding, formatBRL } from '../ai/storeFinancialGroundingEngine.ts';
+import { resolveDynamicVertical } from '../ai/dynamicVerticalContext.ts';
 
 export type DiscrepancySeverity = 'GRAU_1_ANUNCIO_FANTASMA' | 'GRAU_2_VENDA_FANTASMA' | 'GRAU_3_DIVERGENCIA_ASSETS' | 'GRAU_4_RUNWAY_CRITICO';
 
@@ -70,7 +71,8 @@ export interface SupplyChainSyncAuditResult {
 
 /**
  * 🏭 SUPPLY CHAIN & ADS DISCREPANCY AUDIT ENGINE
- * Inspeciona e calcula o descompasso operacional entre Sankhya ERP, Magis5 Hub, Vitrine e Tráfego Pago.
+ * Inspeciona e calcula o descompasso operacional entre ERP, Hub, Vitrine e Tráfego Pago,
+ * calibrado dinamicamente para a vertical da loja auditada.
  */
 export function auditSupplyChainDiscrepancy(
   realSiteData: RealSiteData,
@@ -81,24 +83,40 @@ export function auditSupplyChainDiscrepancy(
   const finances = calculateStoreFinancialGrounding(realSiteData, input);
 
   const catalogIssues = realSiteData.catalogAudit?.issues || [];
+  const catalogTitles = catalogIssues.map(i => i.productTitle).join(' ');
+  const vertical = resolveDynamicVertical(`${input?.niche || ''} ${realSiteData.title || ''} ${domain} ${catalogTitles}`);
+
+  const erpRawUpper = vertical.dominantTechStack.primaryErp.toUpperCase();
+  const erpCode: SupplyChainSyncAuditResult['stackOverview']['erpDetectedOrConfigured'] =
+    erpRawUpper.includes('SANKHYA') ? 'SANKHYA_ERP' :
+    erpRawUpper.includes('BLING') ? 'BLING' :
+    erpRawUpper.includes('TINY') ? 'TINY' :
+    erpRawUpper.includes('TOTVS') ? 'TOTVS' : 'OUTRO_ERP';
+
+  const hubRawUpper = vertical.dominantTechStack.primaryHub.toUpperCase();
+  const hubCode: SupplyChainSyncAuditResult['stackOverview']['hubDetectedOrConfigured'] =
+    hubRawUpper.includes('MAGIS5') ? 'MAGIS5_HUB' :
+    hubRawUpper.includes('PLUGG') ? 'PLUGG_TO' :
+    hubRawUpper.includes('ANYMARKET') ? 'ANYMARKET' : 'NATIVO';
+
+  const erpDisplayName = vertical.dominantTechStack.primaryErp.split('/')[0].trim();
+  const hubDisplayName = vertical.dominantTechStack.primaryHub.split('/')[0].trim();
+
   const brokenSkus = catalogIssues.filter(isCatalogProductBroken);
 
   const discrepancyAlerts: SkuDiscrepancyAlert[] = [];
   let totalAdWaste = 0;
   let totalCancellationRisk = 0;
 
-  // 1. Process broken SKUs with strict ABC size curve weighting
+  // 1. Process broken SKUs with strict vertical ABC curve weighting
   if (brokenSkus.length > 0) {
     brokenSkus.forEach((skuItem, idx) => {
-      // Curve ABC central sizes in Brazil:
-      // Apparel: P, M, G, GG (M+G represent ~65% of sales)
-      // Footwear: 39, 40, 41, 42, 43
-      const apparelCriticalSizes = ['P', 'M', 'G', 'GG'];
-      const footwearCriticalSizes = ['39', '40', '41', '42', '43'];
-      
-      const isApparelCritical = skuItem.missingSizes.some(s => apparelCriticalSizes.includes(s.toUpperCase()));
-      const isFootwearCritical = skuItem.missingSizes.some(s => footwearCriticalSizes.includes(s.toUpperCase()));
-      const isCriticalSizes = isApparelCritical || isFootwearCritical;
+      const verticalCoreSizes = vertical.coreDemandSizes.map(s => s.toUpperCase());
+      const defaultCriticalSizes = ['P', 'M', 'G', 'GG', '39', '40', '41', '42', 'UNITARIO', 'ESGOTADO'];
+      const isCriticalSizes = skuItem.missingSizes.some(s => {
+        const up = s.toUpperCase();
+        return verticalCoreSizes.includes(up) || defaultCriticalSizes.includes(up);
+      });
       
       // If store has active ad pixels and critical sizes are broken -> GRAU 1 ANÚNCIO FANTASMA
       const isGrau1 = realSiteData.hasMetaPixel && isCriticalSizes;
@@ -106,17 +124,9 @@ export function auditSupplyChainDiscrepancy(
       
       const price = finances.groundedAverageTicket;
 
-      // Mathematical Ad Waste Grounding:
-      // SKU monthly ad budget allocation (~20% of total budget distributed among active promoted SKUs)
-      // Multiplied by 0.65 (percentage of traffic landing on out-of-stock sizes M & G)
       const skuMonthlyAdAllocation = (finances.estimatedAdSpend.monthly * 0.60) / Math.max(1, brokenSkus.length);
       const adWaste = Math.round(skuMonthlyAdAllocation * 0.65);
       
-      // Mathematical Cancellation & Ghost Sale Risk Grounding:
-      // When a customer buys an item out of physical stock in Sankhya:
-      // 1. Gateway non-refundable processing fee (~3.5% of AOV)
-      // 2. Customer service & SAC friction cost (~R$ 45.00/incident)
-      // 3. Marketplace penalty / Chargeback risk (~20% of order value)
       const gatewayLoss = price * 0.035;
       const sacCost = 45.0;
       const chargebackPenalty = price * 0.20;
@@ -142,83 +152,84 @@ export function auditSupplyChainDiscrepancy(
           ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' 
           : 'bg-amber-500/20 text-amber-300 border-amber-500/40',
         symptom: isGrau1 
-          ? `Produto ativo recebendo tráfego com ruptura na curva ABC de tamanhos: ${skuItem.missingSizes.join(', ')}.`
-          : `Saldo virtual de ${skuItem.sku} está em nível limítrofe (≤ 2 un), com risco iminente de venda concorrente sem peça física no Sankhya.`,
+          ? `Produto ativo recebendo tráfego com ruptura nas opções de alto giro (${vertical.label}): ${skuItem.missingSizes.join(', ')}.`
+          : `Saldo virtual de ${skuItem.sku} está em nível limítrofe (≤ 2 un), com risco iminente de venda concorrente sem peça física no ${erpDisplayName}.`,
         operationalCause: isGrau1
-          ? 'A ordem de corte no Sankhya finalizou apenas parte da grade, ou a fila da Magis5 não atualizou o estoque na vitrine antes do tráfego disparar os cliques.'
-          : 'Delay de 45 a 120 segundos no webhook de baixa da Magis5 para o Sankhya, permitindo compra simultânea no site e marketplaces.',
+          ? `O lote de reposição no ${erpDisplayName} finalizou apenas parte da grade, ou a fila de sincronização (${hubDisplayName}) não atualizou o estoque na vitrine antes do tráfego disparar os cliques.`
+          : `Latência de sincronização (~${vertical.dominantTechStack.typicalSyncLatencyMinutes} min) no webhook de baixa do ${hubDisplayName} para o ${erpDisplayName}, permitindo compra simultânea no site e marketplaces.`,
         adWasteEstimatedMonthly: adWaste,
         cancellationRiskEstimatedMonthly: cancellationRisk,
         totalFinancialRiskMonthly: adWaste + cancellationRisk,
         recommendedAction: isGrau1
-          ? 'Pausar o criativo no Meta Ads ou sincronizar imediatamente o lote de reposição no Sankhya via Magis5.'
-          : 'Ativar trava de Buffer de Segurança (mínimo 2 unidades) na Magis5 para evitar venda sem estoque.',
+          ? `Pausar o criativo no Meta Ads ou sincronizar imediatamente o lote de reposição no ${erpDisplayName} via ${hubDisplayName}.`
+          : `Ativar trava de Buffer de Segurança (mínimo 2 unidades) no ${hubDisplayName} para evitar venda sem estoque.`,
         playbookScript: {
-          trafficManagerWhatsApp: `🚨 *ALERTA DE TRÁFEGO & ESTOQUE • ADSHIELD INTEL*\n\nFala Gestor! O produto *${skuItem.productTitle}* (SKU: ${skuItem.sku}) está com ${isGrau1 ? `os tamanhos de maior giro (*${skuItem.missingSizes.join(', ')}*) esgotados` : 'estoque crítico (≤ 2 unidades)'} na vitrine de ${domain}.\n\n💸 *Risco Estimado:* ${isGrau1 ? `~${formatBRL(adWaste)}/mês em cliques perdidos` : `~${formatBRL(cancellationRisk)}/mês em estornos e cancelamentos`}.\n👉 *Ação:* ${isGrau1 ? 'Pausar campanha no Meta Ads ou trocar URL de destino' : 'Não escalar orçamento neste criativo até o lote ser faturado no Sankhya'}.`,
-          magis5OperatorAction: `🔄 *CHECKLIST DO OPERADOR MAGIS5 / E-COMMERCE:*\n1. Acessar tela de Catálogo / Anúncios na Magis5.\n2. Localizar SKU: *${skuItem.sku}*.\n3. Aplicar *Trava de Saldo Mínimo de Segurança = 2 unidades*.\n4. Forçar reindexação de saldo e atualizar foto principal para WebP otimizado.\n5. Confirmar se a fila de sincronização com o Sankhya ERP está com delay < 60s.`,
-          sankhyaPcpProductionNote: `🏭 *PROGRAMAÇÃO DE PCP • SANKHYA ERP:*\nProduto: *${skuItem.productTitle}* (SKU: ${skuItem.sku})\nDemanda Digital: Ativa no tráfego pago.\nStatus de Estoque Físico: ${isGrau1 ? `Ruptura na curva ABC (${skuItem.missingSizes.join(', ')})` : 'Estoque em nível de esgotamento'}.\nRecomendação PCP: Programar ordem de corte prioritária para reabastecimento de grade.`
+          trafficManagerWhatsApp: `🚨 *ALERTA DE TRÁFEGO & ESTOQUE • ADSHIELD INTEL*\n\nFala Gestor! O produto *${skuItem.productTitle}* (SKU: ${skuItem.sku}) está com ${isGrau1 ? `as opções de maior giro (*${skuItem.missingSizes.join(', ')}*) esgotadas` : 'estoque crítico (≤ 2 unidades)'} na vitrine de ${domain}.\n\n💸 *Risco Estimado:* ${isGrau1 ? `~${formatBRL(adWaste)}/mês em cliques perdidos` : `~${formatBRL(cancellationRisk)}/mês em estornos e cancelamentos`}.\n👉 *Ação:* ${isGrau1 ? 'Pausar campanha no Meta Ads ou trocar URL de destino' : `Não escalar orçamento neste criativo até o lote ser atualizado no ${erpDisplayName}`}.`,
+          magis5OperatorAction: `🔄 *CHECKLIST DO OPERADOR DE HUB (${hubDisplayName}):*\n1. Acessar painel de Catálogo / Integração no ${hubDisplayName}.\n2. Localizar SKU: *${skuItem.sku}*.\n3. Aplicar *Trava de Saldo Mínimo de Segurança = 2 unidades*.\n4. Forçar reindexação de saldo e atualizar foto principal para WebP otimizado.\n5. Confirmar se a fila de sincronização com o ${erpDisplayName} está saudável.`,
+          sankhyaPcpProductionNote: `🏭 *PROGRAMAÇÃO DE REPOSIÇÃO • ${erpDisplayName.toUpperCase()}:*\nProduto: *${skuItem.productTitle}* (SKU: ${skuItem.sku})\nDemanda Digital: Ativa no tráfego pago.\nStatus de Estoque Físico: ${isGrau1 ? `Ruptura na curva ABC (${skuItem.missingSizes.join(', ')})` : 'Estoque em nível de esgotamento'}.\nRecomendação: Priorizar ordem de reposição/produção para reabastecimento imediato.`
         }
       });
     });
   }
 
-  // 2. Process GRAU 3: Descompasso de Assets, Fotos Pesadas & Tabela de Medidas
+  // 2. Process GRAU 3: Descompasso de Assets, Fotos Pesadas & Especificações Obrigatórias
   const heavyImages = realSiteData.catalogAudit?.heavyImagesCount || 0;
   const withoutSizeGuide = realSiteData.catalogAudit?.productsWithoutSizeGuide || 0;
+  const mandatoryFeature = vertical.mandatoryProductFeatures[0] || 'Tabela de Medidas / Especificações';
 
   if (withoutSizeGuide > 0 || heavyImages > 0) {
-    const visualFrictionLoss = Math.round(finances.groundedAverageTicket * 8.5); // Perda por queda de 22% na conversão da PDP
+    const visualFrictionLoss = Math.round(finances.groundedAverageTicket * 8.5);
     totalCancellationRisk += visualFrictionLoss;
 
     discrepancyAlerts.push({
       id: `disc-asset-grau3`,
       sku: 'SKU-ASSETS-SYNC',
-      productTitle: `Catálogo & Páginas de Produto (${withoutSizeGuide} itens sem Tabela de Medidas)`,
+      productTitle: `Catálogo & Páginas de Produto (${withoutSizeGuide} itens sem ${mandatoryFeature})`,
       productUrl: `https://${domain}`,
       imageSrc: '',
       price: finances.groundedAverageTicket,
       severity: 'GRAU_3_DIVERGENCIA_ASSETS',
-      severityLabel: '🟡 Grau 3: Descompasso de Fotos, Título & Guia de Medidas',
+      severityLabel: `🟡 Grau 3: Descompasso de Fotos, Peso Visual & ${mandatoryFeature}`,
       badgeColor: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40',
-      symptom: 'A vitrine exibe fotos pesadas (>350KB) ou não renderiza o widget de Tabela de Medidas cadastrado na Magis5.',
-      operationalCause: 'Template do tema da loja não mapeou o webhook de atributos ou o script <product-addons> não foi injetado no DOM.',
+      symptom: `A vitrine exibe fotos pesadas (>350KB) ou não renderiza o widget de ${mandatoryFeature}.`,
+      operationalCause: `Template do tema da loja não mapeou os atributos técnicos cadastrados no ${hubDisplayName}.`,
       adWasteEstimatedMonthly: Math.round(finances.financialRisk.checkoutFrictionMonthly * 0.5),
       cancellationRiskEstimatedMonthly: visualFrictionLoss,
       totalFinancialRiskMonthly: Math.round(finances.financialRisk.checkoutFrictionMonthly * 0.5) + visualFrictionLoss,
-      recommendedAction: 'Forçar reindexação de imagens em WebP e injetar tag de size chart no tema.',
+      recommendedAction: `Forçar reindexação de imagens em WebP e exibir ${mandatoryFeature} na primeira dobra.`,
       playbookScript: {
-        trafficManagerWhatsApp: `⚠️ *AVISO DE CRO & MÍDIA:* O tráfego pago está caindo em produtos sem Guia de Medidas em ${domain}. Queda estimada de 22% na conversão.`,
-        magis5OperatorAction: `🖼️ *AÇÃO DE ASSETS NA MAGIS5:*\n1. Exportar fotos em formato WebP comprimido (<350KB).\n2. Garantir que o campo "Guia de Tamanhos" esteja preenchido em todos os anúncios.\n3. Sincronizar atributos de variação com o e-commerce.`,
-        sankhyaPcpProductionNote: `📏 *ENGENHARIA DE PRODUTO / SANKHYA:*\nFornecer tabela de medidas exata (comprimento, tórax, cintura) da modelagem para a equipe de e-commerce.`
+        trafficManagerWhatsApp: `⚠️ *AVISO DE CRO & MÍDIA:* O tráfego pago está caindo em produtos sem ${mandatoryFeature} em ${domain}. Queda estimada de 22% na conversão.`,
+        magis5OperatorAction: `🖼️ *AÇÃO DE ASSETS NO ${hubDisplayName.toUpperCase()}:*\n1. Exportar fotos em formato WebP comprimido (<350KB).\n2. Garantir que o atributo "${mandatoryFeature}" esteja preenchido em todos os SKUs.\n3. Sincronizar atributos de variação com o e-commerce.`,
+        sankhyaPcpProductionNote: `📏 *CADASTRO TÉCNICO • ${erpDisplayName.toUpperCase()}:*\nFornecer especificação completa (${mandatoryFeature}) para sincronização imediata com a loja virtual.`
       }
     });
   }
 
-  // 3. Process GRAU 4: Descompasso de Lote & Previsão de PCP (Runway de Estoque)
-  if (realSiteData.hasMetaPixel) {
+  // 3. Process GRAU 4: Descompasso de Lote & Runway de Estoque (apenas se já houver ruptura detectada e Meta Pixel ativo)
+  if (realSiteData.hasMetaPixel && brokenSkus.length > 0) {
     const estimatedDailyVelocity = Math.max(2, Math.round(finances.groundedAverageTicket > 300 ? 3 : 6));
-    const estimatedStockRunwayDays = 4.5; // Dias restantes até a ruptura total do produto-estrela
+    const estimatedStockRunwayDays = 4.5;
 
     discrepancyAlerts.push({
       id: `disc-pcp-grau4`,
       sku: 'SKU-PCP-RUNWAY',
-      productTitle: `Lote de Produção & Giro Rápido (${brandName} Carro-Chefe)`,
+      productTitle: `Giro Rápido & Runway de Reposição (${brandName} — ${vertical.label})`,
       productUrl: `https://${domain}`,
       imageSrc: '',
       price: finances.groundedAverageTicket,
       severity: 'GRAU_4_RUNWAY_CRITICO',
-      severityLabel: '🟢 Grau 4: Descompasso de Lote & Runway de Produção no PCP',
+      severityLabel: '🟢 Grau 4: Descompasso de Lote & Runway de Reposição no ERP',
       badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
-      symptom: `A aceleração do tráfego pago está consumindo o estoque mais rápido que o tempo de reposição da fábrica (${estimatedStockRunwayDays} dias restantes de runway).`,
-      operationalCause: 'Lead time de corte e costura no Sankhya ERP (7 a 15 dias) superior ao ritmo de vendas digitais da campanha.',
+      symptom: `A aceleração do tráfego pago está consumindo o estoque das opções [${vertical.coreDemandSizes.join(', ')}] mais rápido que o tempo de reposição (${estimatedStockRunwayDays} dias restantes de runway).`,
+      operationalCause: `Lead time de reposição no ${erpDisplayName} superior ao ritmo de vendas digitais da campanha ativa.`,
       adWasteEstimatedMonthly: 0,
       cancellationRiskEstimatedMonthly: Math.round(finances.groundedAverageTicket * estimatedDailyVelocity * 4),
       totalFinancialRiskMonthly: Math.round(finances.groundedAverageTicket * estimatedDailyVelocity * 4),
-      recommendedAction: 'Antecipar ordem de produção de novo lote no Sankhya antes do estoque zerar completamente.',
+      recommendedAction: `Antecipar pedido de reposição/produção no ${erpDisplayName} antes do estoque zerar completamente.`,
       playbookScript: {
-        trafficManagerWhatsApp: `📈 *AVISO DE TRÁFEGO:* O produto-estrela de ${domain} tem ~${estimatedStockRunwayDays} dias de estoque restante no ritmo atual. Programar transição suave de criativos.`,
-        magis5OperatorAction: `🔄 *AÇÃO DE HUB:* Monitorar entrada de novas notas de produção no Sankhya para liberar saldo adicional no e-commerce.`,
-        sankhyaPcpProductionNote: `🏭 *ORDEM DE PCP • SANKHYA ERP:*\nItem: Carro-Chefe de Alta Demanda (Fabricação Própria).\nVelocidade Atual de Vendas: ~${estimatedDailyVelocity} un/dia no digital.\nRunway Restante: ${estimatedStockRunwayDays} dias.\nAção PCP: Abrir e aprovar nova Ordem de Produção (OP) para início imediato do corte.`
+        trafficManagerWhatsApp: `📈 *AVISO DE TRÁFEGO:* Os produtos carro-chefe de ${domain} têm ~${estimatedStockRunwayDays} dias de estoque restante nas opções ${vertical.coreDemandSizes.join(', ')}. Programar transição preventiva de criativos.`,
+        magis5OperatorAction: `🔄 *AÇÃO DE HUB (${hubDisplayName}):* Monitorar entrada de novas notas no ${erpDisplayName} para liberar saldo adicional no e-commerce.`,
+        sankhyaPcpProductionNote: `🏭 *REABASTECIMENTO • ${erpDisplayName.toUpperCase()}:*\nItem: Carro-Chefe de Alta Demanda (${vertical.label}).\nVelocidade Estimada: ~${estimatedDailyVelocity} un/dia no digital.\nRunway Restante: ${estimatedStockRunwayDays} dias.\nAção: Priorizar entrada de novo lote para as opções ${vertical.coreDemandSizes.join(', ')}.`
       }
     });
   }
@@ -241,7 +252,7 @@ export function auditSupplyChainDiscrepancy(
       severity: 'GRAU_2_VENDA_FANTASMA',
       severityLabel: '🛍️ Revenda Externa: Ruptura de Lote com Fornecedor Parceiro',
       badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
-      symptom: `Produto de revenda externa com tamanhos centrais [${resaleItem.missingSizes.join(', ')}] esgotados. Reposição não depende de confecção interna.`,
+      symptom: `Produto de revenda externa com opções centrais [${resaleItem.missingSizes.join(', ')}] esgotadas.`,
       operationalCause: 'Reposição vinculada a pedido de compra (PO), pedido mínimo (MOQ) e lead time de distribuidor externo.',
       adWasteEstimatedMonthly: Math.round(resaleLoss * 0.7),
       cancellationRiskEstimatedMonthly: Math.round(resaleLoss * 0.3),
@@ -249,45 +260,17 @@ export function auditSupplyChainDiscrepancy(
       recommendedAction: 'Pausar imediatamente criativos de mídia paga direcionados a itens de revenda sem grade e emitir pedido de compras ao fornecedor.',
       playbookScript: {
         trafficManagerWhatsApp: `🚨 *PAUSA DE ADS (REVENDA):* O produto "${resaleItem.productTitle}" é revenda externa e está sem [${resaleItem.missingSizes.join(', ')}]. Pausar anúncios para estancar o desperdício de verba.`,
-        magis5OperatorAction: `🔄 *AÇÃO DE HUB:* Pausar anúncio correspondente nos canais integrados se o saldo estiver zerado no ERP.`,
-        sankhyaPcpProductionNote: `📦 *SETOR DE COMPRAS • ERP:*\nItem: ${resaleItem.productTitle} (Revenda Externa).\nAção Compras: Emitir Pedido de Compra (PO) ao fornecedor parceiro. Fábrica interna isenta desta reposição.`
+        magis5OperatorAction: `🔄 *AÇÃO DE HUB (${hubDisplayName}):* Pausar anúncio correspondente nos canais integrados se o saldo estiver zerado no ${erpDisplayName}.`,
+        sankhyaPcpProductionNote: `📦 *SETOR DE COMPRAS • ${erpDisplayName.toUpperCase()}:*\nItem: ${resaleItem.productTitle} (Revenda Externa).\nAção Compras: Emitir Pedido de Compra (PO) ao fornecedor parceiro.`
       }
     });
   }
 
-  if (discrepancyAlerts.length === 0) {
-    // Fallback benchmark synthesis for clean demonstration
-    const fallbackAdWaste = Math.round(finances.financialRisk.adWasteMonthly * 0.4);
-    const fallbackCancelRisk = Math.round(finances.groundedAverageTicket * 3.8 * 2);
-    totalAdWaste = fallbackAdWaste;
-    totalCancellationRisk = fallbackCancelRisk;
-
-    discrepancyAlerts.push({
-      id: 'disc-sku-demo',
-      sku: 'SKU-PRODUCAO-01',
-      productTitle: `Linha Premium ${brandName} (Grade em Monitoramento)`,
-      productUrl: `https://${domain}`,
-      imageSrc: '',
-      price: finances.groundedAverageTicket,
-      severity: 'GRAU_2_VENDA_FANTASMA',
-      severityLabel: '🟠 Grau 2: Risco de Venda Fantasma (Estoque Limítrofe ≤ 2 un)',
-      badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
-      symptom: 'Estoque limítrofe no canal online. Risco de venda concorrente entre Loja e Marketplaces antes da baixa no Sankhya.',
-      operationalCause: 'Fila de sincronização do hub sem buffer de segurança configurado.',
-      adWasteEstimatedMonthly: fallbackAdWaste,
-      cancellationRiskEstimatedMonthly: fallbackCancelRisk,
-      totalFinancialRiskMonthly: fallbackAdWaste + fallbackCancelRisk,
-      recommendedAction: 'Definir trava de estoque mínimo de 2 unidades na Magis5.',
-      playbookScript: {
-        trafficManagerWhatsApp: `ℹ️ Monitoramento ativo: estoque do produto principal em nível de atenção em ${domain}. Evitar escala agressiva de tráfego.`,
-        magis5OperatorAction: 'Configurar trava de estoque de segurança de 2 unidades no integrador Magis5.',
-        sankhyaPcpProductionNote: 'Manter programação de lote conforme o plano de vendas.'
-      }
-    });
-  }
-
+  // 🛡️ GROUNDING ABSOLUTO (AGENTS.md Regra 1): Se discrepancyAlerts.length === 0, NÃO inventar SKU fictício!
   const totalMonthlyRisk = totalAdWaste + totalCancellationRisk;
-  const operationalSyncScore = Math.max(45, Math.min(96, 100 - (discrepancyAlerts.length * 14)));
+  const operationalSyncScore = discrepancyAlerts.length === 0
+    ? 98
+    : Math.max(45, Math.min(96, 100 - (discrepancyAlerts.length * 14)));
 
   return {
     storeDomain: domain,
@@ -305,41 +288,44 @@ export function auditSupplyChainDiscrepancy(
     },
 
     stackOverview: {
-      erpDetectedOrConfigured: 'SANKHYA_ERP',
-      hubDetectedOrConfigured: 'MAGIS5_HUB',
+      erpDetectedOrConfigured: erpCode,
+      hubDetectedOrConfigured: hubCode,
       storefrontPlatform: realSiteData.ecommercePlatform || 'Shopify / VTEX / Nuvemshop',
       adsChannelActive: !!realSiteData.hasMetaPixel
     },
 
     pipelineFlowMetrics: {
-      sankhyaProductionBatchesAudited: Math.max(3, discrepancyAlerts.length * 2),
-      magis5QueueDelaySecondsEstimated: 45, // média de delay de fila de sincronização
-      storefrontBrokenSkusCount: brokenSkus.length || 1,
-      activeAdCampaignsAtRiskCount: Math.max(1, brokenSkus.length)
+      sankhyaProductionBatchesAudited: discrepancyAlerts.length * 2,
+      magis5QueueDelaySecondsEstimated: vertical.dominantTechStack.typicalSyncLatencyMinutes * 2,
+      storefrontBrokenSkusCount: brokenSkus.length,
+      activeAdCampaignsAtRiskCount: realSiteData.hasMetaPixel ? brokenSkus.length : 0
     },
 
     discrepancyAlerts,
 
-    suggestedSafetyBufferUnits: 2, // Buffer recomendado na Magis5 para blindar o Sankhya
+    suggestedSafetyBufferUnits: 2,
     suggestedActionPlaybooks: [
       {
         title: 'Pausa Imediata de Criativos em Anúncios com Grade Furada',
         targetRole: 'GESTOR_DE_TRAFEGO',
         priority: 'URGENTE',
-        messageBody: `Pausar conjuntos de anúncios direcionados para os SKUs com tamanhos de alto giro indisponíveis (${discrepancyAlerts.map(a => a.sku).join(', ')}). Economia imediata de verba de mídia.`
+        messageBody: brokenSkus.length > 0
+          ? `Pausar conjuntos de anúncios direcionados para os SKUs com opções de alto giro indisponíveis (${discrepancyAlerts.map(a => a.sku).join(', ')}). Economia imediata de verba de mídia.`
+          : `Catálogo auditado sem rupturas críticas no momento. Manter monitoramento ativo das opções de alto giro (${vertical.coreDemandSizes.join(', ')}).`
       },
       {
-        title: 'Ativação do Buffer de Segurança na Magis5 (Trava Anti-Estoque Negativo)',
+        title: `Ativação do Buffer de Segurança no ${hubDisplayName} (Trava Anti-Estoque Negativo)`,
         targetRole: 'OPERADOR_MAGIS5',
         priority: 'ALTA',
-        messageBody: 'Definir regra de saldo mínimo = 2 unidades no hub Magis5 para os canais de e-commerce e marketplaces, eliminando cancelamentos por delay de faturamento no Sankhya.'
+        messageBody: `Definir regra de saldo mínimo = 2 unidades no integrador ${hubDisplayName} para os canais de e-commerce e marketplaces, eliminando cancelamentos por latência de sincronização com o ${erpDisplayName}.`
       },
       {
-        title: 'Alinhamento de Ordem de Produção com Demanda do Tráfego Pago',
+        title: `Alinhamento de Reposição no ${erpDisplayName} com Demanda do Tráfego Pago`,
         targetRole: 'PCP_SANKHYA',
         priority: 'MÉDIA',
-        messageBody: 'Priorizar ordem de corte e costura para os tamanhos centrais (P, M, G, 41, 42) dos produtos com campanhas ativas no Meta Ads.'
+        messageBody: `Priorizar reposição de estoque para as opções centrais (${vertical.coreDemandSizes.join(', ')}) dos produtos de ${vertical.label} com campanhas ativas no Meta Ads.`
       }
     ]
   };
 }
+
