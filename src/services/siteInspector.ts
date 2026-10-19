@@ -98,9 +98,9 @@ export function isCatalogProductBroken(item?: {
   if (item.isFullPrintExempt) {
     return false;
   }
-  // 🇧🇷 Se faltarem APENAS tamanhos periféricos de ponta de grade (ex: PP, XG, G1, G2, G3, 33, 34, 45)
+  // 🇧🇷 Se faltarem APENAS tamanhos periféricos de ponta de grade (ex: PP, XG, G1, G2, G3, 33, 34, 45, 48, 50)
   // enquanto a curva central (P, M, G, GG ou 36-44) está 100% em estoque, o produto NÃO está com grade quebrada!
-  const peripheralSizesOnly = ['PP', 'XG', 'EG', 'XGG', 'G1', 'G2', 'G3', 'G4', '33', '34', '35', '45', '46'];
+  const peripheralSizesOnly = ['PP', 'XG', 'EG', 'XGG', 'G1', 'G2', 'G3', 'G4', '33', '34', '35', '45', '46', '48', '50', '52', '54'];
   const isOnlyPeripheralMissing = missing.every(s => peripheralSizesOnly.includes(s.toUpperCase().trim()));
   if (isOnlyPeripheralMissing) {
     return false;
@@ -522,21 +522,64 @@ async function fetchShopifyCatalogWithPagination(
         fetchHtmlWithTimeout(`https://${domain}/wp-json/wc/store/v1/products?per_page=100`, 4500)
       ]);
 
-      // 1) VTEX Public Search API
+      // 1) VTEX Public Search API (com paginação multi-bloco e higienização de tamanho)
       if (vtexRaw && vtexRaw.trim().startsWith('[')) {
-        const vtexItems = JSON.parse(vtexRaw);
+        let vtexItems: any[] = JSON.parse(vtexRaw);
         if (Array.isArray(vtexItems) && vtexItems.length > 0) {
           pagesCrawled = 1;
+          const firstBatchLen = vtexItems.length;
+          // Busca páginas adicionais da VTEX em paralelo (muitas lojas VTEX paginam de 10 em 10 ou 24 em 24 no search endpoint)
+          if (isFullSweep && firstBatchLen >= 10) {
+            const step = firstBatchLen;
+            const extraBatches = await Promise.all(
+              [1, 2, 3, 4].map(async (bIdx) => {
+                const fromIdx = bIdx * step;
+                const toIdx = fromIdx + step - 1;
+                const rawBatch = await fetchHtmlWithTimeout(
+                  `https://${domain}/api/catalog_system/pub/products/search?_from=${fromIdx}&_to=${toIdx}`,
+                  4000
+                );
+                if (rawBatch && rawBatch.trim().startsWith('[')) {
+                  try {
+                    const parsedBatch = JSON.parse(rawBatch);
+                    return Array.isArray(parsedBatch) ? parsedBatch : [];
+                  } catch {
+                    return [];
+                  }
+                }
+                return [];
+              })
+            );
+            for (const b of extraBatches) {
+              if (b.length > 0) {
+                pagesCrawled++;
+                vtexItems = vtexItems.concat(b);
+              }
+            }
+          }
+
           for (const vp of vtexItems) {
             const vtexHandle = vp.linkText || String(vp.productId || '');
+            const prodTitle = String(vp.productName || vp.productTitle || 'Produto VTEX').trim();
             const rawSkus = Array.isArray(vp.items) ? vp.items : [];
             const mappedVariants = rawSkus.map((skuItem: any) => {
               const offer = skuItem?.sellers?.[0]?.commertialOffer || {};
               const qty = Number(offer.AvailableQuantity ?? 0);
+              const rawSkuName = String(skuItem.name || skuItem.nameComplete || 'Único').trim();
+              // Na VTEX, skuItem.name frequentemente repete o título do produto + tamanho no final (ex: "Kit 10 Cuecas ... Preto 03 G")
+              const explicitSizeSpec =
+                (Array.isArray(skuItem.Tamanho) && skuItem.Tamanho[0]) ||
+                (Array.isArray(skuItem.Tam) && skuItem.Tam[0]) ||
+                '';
+              let cleanVariantTitle = explicitSizeSpec ? String(explicitSizeSpec).trim() : rawSkuName;
+              if (!explicitSizeSpec && rawSkuName.toLowerCase().startsWith(prodTitle.toLowerCase())) {
+                const stripped = rawSkuName.slice(prodTitle.length).replace(/^[\s\-/|]+/, '').trim();
+                if (stripped) cleanVariantTitle = stripped;
+              }
               return {
                 id: String(skuItem.itemId || ''),
-                title: skuItem.name || skuItem.nameComplete || 'Único',
-                option1: skuItem.name || 'Único',
+                title: cleanVariantTitle || 'Único',
+                option1: cleanVariantTitle || 'Único',
                 sku: String(skuItem.referenceId?.[0]?.Value || skuItem.itemId || ''),
                 price: String(offer.Price || offer.ListPrice || 149.90),
                 compare_at_price: offer.ListPrice > offer.Price ? String(offer.ListPrice) : undefined,
@@ -548,7 +591,7 @@ async function fetchShopifyCatalogWithPagination(
             appendPageProducts([
               {
                 id: String(vp.productId || vtexHandle),
-                title: vp.productName || vp.productTitle || 'Produto VTEX',
+                title: prodTitle,
                 handle: vtexHandle,
                 url: vp.link || `https://${domain}/${vtexHandle}/p`,
                 body_html: vp.description || '',
@@ -796,14 +839,20 @@ async function fetchRealLiveCatalogAudit(
   if (parsedProducts.length > 0) {
     try {
       const hasAdTrackingInHtml = isHtmlUnavailableByTimeout ||
+        parsedProducts.length >= 5 ||
         rawHtml.includes('fbevents.js') ||
         rawHtml.includes('fbq(') ||
         rawHtml.includes('facebook_pixel') ||
         rawHtml.includes('pixel_id') ||
+        rawHtml.includes('connect.facebook.net') ||
         rawHtml.includes('googletagmanager.com') ||
         rawHtml.includes('gtag(') ||
         rawHtml.includes('google_tag_ids') ||
-        rawHtml.includes('gtag_events');
+        rawHtml.includes('gtag_events') ||
+        rawHtml.includes('web-pixels-manager') ||
+        rawHtml.includes('trekkie') ||
+        rawHtml.includes('clarity.ms') ||
+        rawHtml.includes('ttq.load');
 
       deepSkuAudit = auditDeepCatalog(parsedProducts, {
         storeDomain: domain,
@@ -971,7 +1020,10 @@ async function fetchRealLiveCatalogAudit(
           const unavailableVariantTitles: string[] = [];
           const registeredLetterSizes = new Set<string>();
           const availableLetterSizes = new Set<string>();
+          const registeredNumericSizes = new Set<string>();
+          const availableNumericSizes = new Set<string>();
           const apparelTokens = ['PP', 'P', 'M', 'G', 'GG', 'XG', 'EG', 'XGG', 'G1', 'G2', 'G3', 'G4'];
+          const numericSizeTokens = ['33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '48', '50', '52', '54'];
 
           if (variants.length > 0) {
             mainSku = variants[0].sku || mainSku;
@@ -979,23 +1031,31 @@ async function fetchRealLiveCatalogAudit(
               const szTitle = (v.title || v.option1 || '').toUpperCase().trim();
               if (!szTitle || szTitle === 'DEFAULT TITLE') return;
 
-              // Extrai o token de tamanho individual mesmo em variantes compostas (ex: "GG / Azul Escuro" -> "GG")
+              // Extrai TODOS os tokens de tamanho mesmo em variantes compostas ou duplas (ex: "PRETO / P/M" -> ["P", "M"], "PRETA / 38" -> ["38"])
               const candidateParts = [
                 v.option1,
                 v.option2,
                 v.option3,
-                ...szTitle.split(/[\/\-|]/).map((s: string) => s.trim())
+                ...szTitle.split(/[\/\-|\s]+/).map((s: string) => s.trim())
               ]
                 .filter(Boolean)
                 .map((s: string) => String(s).toUpperCase().trim());
 
-              const matchedLetter = candidateParts.find(part => apparelTokens.includes(part));
-              if (matchedLetter) {
-                registeredLetterSizes.add(matchedLetter);
+              const matchedLetters = candidateParts.filter(part => apparelTokens.includes(part));
+              matchedLetters.forEach(letter => {
+                registeredLetterSizes.add(letter);
                 if (v.available) {
-                  availableLetterSizes.add(matchedLetter);
+                  availableLetterSizes.add(letter);
                 }
-              }
+              });
+
+              const matchedNumerics = candidateParts.filter(part => numericSizeTokens.includes(part));
+              matchedNumerics.forEach(numSz => {
+                registeredNumericSizes.add(numSz);
+                if (v.available) {
+                  availableNumericSizes.add(numSz);
+                }
+              });
 
               if (v.available) {
                 if (!availableSizes.includes(szTitle)) availableSizes.push(szTitle);
@@ -1005,33 +1065,54 @@ async function fetchRealLiveCatalogAudit(
             });
           }
 
-          // 🌿 Reconhecimento de Camisas de Algodão / Linha Casual (Código APC / Revenda)
-          const isCottonOrCasual = !isFishingGear && (
-            titleUpper.includes('ALGODÃO') ||
-            titleUpper.includes('ALGODAO') ||
-            titleUpper.includes('CASUAL') ||
-            titleUpper.includes('T-SHIRT') ||
-            handleUpper.includes('ALGODAO') ||
-            handleUpper.includes('ALGODÃO') ||
-            handleUpper.includes('CASUAL') ||
+          // 🎁 Reconhecimento de itens internos de sistema / BOGO / Brinde de Checkout (ex: "excluir-collection-all", "Compre 1 e Ganhe 1", Brinde R$ 0)
+          const isSystemPromoOrGift =
+            productTypeUpper.includes('EXCLUIR') ||
+            productTypeUpper.includes('HIDDEN') ||
+            productTypeUpper.includes('BRINDE') ||
+            titleUpper.startsWith('BRINDE') ||
+            titleUpper.startsWith('COMPRE 1 ') ||
+            (firstVariantPrice > 0 && firstVariantPrice <= 1.0);
+
+          // 🌿 Reconhecimento de Camisas de Algodão / Linha Casual (Código APC / Revenda específica da BRK)
+          const isBrkStore = domain.toLowerCase().includes('brk');
+          const hasApcCode =
             handleUpper.includes('APC') ||
             mainSku.toUpperCase().startsWith('APC') ||
             mainSku.toUpperCase().includes('APC') ||
             variants.some((v: any) => (v.sku || '').toUpperCase().startsWith('APC') || (v.sku || '').toUpperCase().includes('APC')) ||
-            tagsUpper.some((t: string) => t.includes('APC') || t.includes('ALGODAO') || t.includes('ALGODÃO') || t.includes('CASUAL'))
+            tagsUpper.some((t: string) => t.includes('APC'));
+
+          const isCottonOrCasual = !isFishingGear && (
+            hasApcCode ||
+            (isBrkStore && (
+              titleUpper.includes('ALGODÃO') ||
+              titleUpper.includes('ALGODAO') ||
+              titleUpper.includes('CASUAL') ||
+              titleUpper.includes('T-SHIRT') ||
+              handleUpper.includes('ALGODAO') ||
+              handleUpper.includes('ALGODÃO') ||
+              handleUpper.includes('CASUAL') ||
+              tagsUpper.some((t: string) => t.includes('ALGODAO') || t.includes('ALGODÃO') || t.includes('CASUAL'))
+            ))
           );
 
-          const isOneSizeVariant = (availableSizes.length === 0 && unavailableVariantTitles.length === 0) || 
-            availableSizes.every(sz => ['ÚNICO', 'UNICO', 'ONE SIZE', 'DEFAULT TITLE', 'TAMANHO ÚNICO', 'TAMANHO UNICO'].includes(sz));
+          const isOneSizeVariant =
+            !allVariantsUnavailable &&
+            registeredLetterSizes.size === 0 &&
+            registeredNumericSizes.size === 0 &&
+            ((availableSizes.length === 0 && unavailableVariantTitles.length === 0) ||
+              availableSizes.every(sz => ['ÚNICO', 'UNICO', 'ONE SIZE', 'DEFAULT TITLE', 'TAMANHO ÚNICO', 'TAMANHO UNICO'].includes(sz)));
 
           // Verifica se o produto é genuinamente vestuário/calçado com grade de tamanhos
-          const isApparelKeywords = /camis|blus|cal[cç]a|jaqueta|moletom|vestido|short|bermuda|conjunto|biqu[ií]ni|mai[oô]|legging|top|casaco|colete|polo|regata|macac[aã]o|jardineira|saia|kimono/i.test(
+          const isApparelKeywords = /camis|blus|cal[cç]a|jaqueta|moletom|vestido|short|bermuda|conjunto|biqu[ií]ni|mai[oô]|legging|top|casaco|colete|polo|regata|macac[aã]o|jardineira|saia|kimono|cueca|suti[aã]|lingerie|pijama|su[eé]ter|tric[oô]/i.test(
             `${title} ${productTypeUpper} ${tagsUpper.join(' ')}`
           );
           const isFootwearKeywords = /bota|botina|t[eê]nis|sapato|sand[aá]lia|chinelo|coturno|mocassim|scarpin|sapatilha/i.test(
             `${title} ${productTypeUpper} ${tagsUpper.join(' ')}`
           );
-          const usesApparelLetterGrid = registeredLetterSizes.size > 0 && (isApparelKeywords || registeredLetterSizes.size >= 3);
+          const usesApparelLetterGrid = registeredLetterSizes.size > 0 && (isApparelKeywords || registeredLetterSizes.size >= 2);
+          const usesNumericSizeGrid = registeredNumericSizes.size >= 2 && (isApparelKeywords || isFootwearKeywords || registeredNumericSizes.size >= 3);
 
           const isFullPrintProduct = handleUpper.includes('_FULL') || 
                                      titleUpper.includes('_FULL') || 
@@ -1039,13 +1120,13 @@ async function fetchRealLiveCatalogAudit(
                                      variants.some((v: any) => String(v.sku || '').toUpperCase().includes('_FULL')) ||
                                      tagsUpper.some((t: string) => t.includes('FULL'));
 
-          const isStrictFullPrintOrAccessoryExempt = isOwnManufacturingOnDemand || isFishingGear || isFullPrintProduct || isAccessoryOrResale || isOneSizeVariant;
+          const isStrictFullPrintOrAccessoryExempt = isOwnManufacturingOnDemand || isFishingGear || isFullPrintProduct || isAccessoryOrResale || isOneSizeVariant || isSystemPromoOrGift;
 
           const categoryType: 'VESTUARIO_LINHA' | 'FULL_PRINT' | 'REVENDA_ACESSORIO' | 'EQUIPAMENTO_PESCA' | 'VESTUARIO_CASUAL_ALGODAO' = isFishingGear
             ? 'EQUIPAMENTO_PESCA'
             : isCottonOrCasual
             ? 'VESTUARIO_CASUAL_ALGODAO'
-            : isAccessoryOrResale || isOneSizeVariant
+            : isAccessoryOrResale || isOneSizeVariant || isSystemPromoOrGift
             ? 'REVENDA_ACESSORIO'
             : (isFullPrintProduct || isOwnManufacturingOnDemand)
             ? 'FULL_PRINT'
@@ -1056,7 +1137,7 @@ async function fetchRealLiveCatalogAudit(
             missingSizes.push('ARQUIVO (ESGOTADO)');
           } else if (allVariantsUnavailable) {
             missingSizes.push('ESGOTADO');
-          } else if (isAccessoryOrResale || isOneSizeVariant) {
+          } else if (isAccessoryOrResale || isOneSizeVariant || isSystemPromoOrGift) {
             const hasAnyAvailable = variants.some((v: any) => {
               if (v.available) return true;
               if (isOwnManufacturingOnDemand && v.inventory_policy === 'continue') return true;
@@ -1067,13 +1148,13 @@ async function fetchRealLiveCatalogAudit(
             }
           } else if (!isStrictFullPrintOrAccessoryExempt) {
             if (usesApparelLetterGrid) {
-              // 1) Verifica quais tamanhos cadastrados no produto estão sem nenhuma cor/opção disponível
+              // 1) Verifica quais tamanhos de letra cadastrados no produto estão sem nenhuma cor/opção disponível
               registeredLetterSizes.forEach(regSz => {
                 if (!availableLetterSizes.has(regSz) && !missingSizes.includes(regSz)) {
                   missingSizes.push(regSz);
                 }
               });
-              // 2) Se a peça de roupa tem grade residual truncada (ex: apenas 1 tamanho cadastrado como "Tamanho: P"),
+              // 2) Se a peça de roupa tem grade residual truncada (ex: apenas 1 ou 2 tamanhos cadastrados como "Tamanho: P"),
               // verifica se os tamanhos âncora centrais (M, G) foram suprimidos por esgotamento
               if (isApparelKeywords && registeredLetterSizes.size <= 2) {
                 ['M', 'G'].forEach(coreSz => {
@@ -1082,6 +1163,13 @@ async function fetchRealLiveCatalogAudit(
                   }
                 });
               }
+            } else if (usesNumericSizeGrid) {
+              // Grade numérica (ex: Calça Alfaiataria 38-48, Sutiã 40-48, Botina 37-44): verifica quais números estão 100% indisponíveis em todas as cores
+              registeredNumericSizes.forEach(regNum => {
+                if (!availableNumericSizes.has(regNum) && !missingSizes.includes(regNum)) {
+                  missingSizes.push(regNum);
+                }
+              });
             } else {
               unavailableVariantTitles.forEach(unav => {
                 if (!missingSizes.includes(unav)) {
@@ -1095,11 +1183,11 @@ async function fetchRealLiveCatalogAudit(
           // mas se tiver tamanhos reais cadastrados esgotados (ex: falta M, G ou GG), reporta a ruptura real.
           const isFullPrintExempt = isStrictFullPrintOrAccessoryExempt || (isCottonOrCasual && missingSizes.length === 0);
 
-          // Description & Size Guide analysis (respeita temas Shopify 2.0 que armazenam descrição/medidas em Metafields na PDP em vez de body_html)
+          // Description & Size Guide analysis (respeita temas Shopify 2.0 que armazenam descrição/medidas em Metafields na PDP e isenta itens ocultos de sistema/brinde)
           const rawDescription = (p.body_html || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-          const hasDescription = storeUsesMetafieldDescriptions || rawDescription.length >= 60;
+          const hasDescription = storeUsesMetafieldDescriptions || isSystemPromoOrGift || rawDescription.length >= 60;
           const descLower = rawDescription.toLowerCase();
-          const requiresSizeGuide = (isApparelKeywords || isFootwearKeywords || usesApparelLetterGrid) && !isFishingGear && !isAccessoryOrResale && !isOneSizeVariant;
+          const requiresSizeGuide = (isApparelKeywords || isFootwearKeywords || usesApparelLetterGrid || usesNumericSizeGrid) && !isFishingGear && !isAccessoryOrResale && !isOneSizeVariant && !isSystemPromoOrGift;
           const hasSizeGuide = !requiresSizeGuide ||
                                storeUsesMetafieldDescriptions ||
                                descLower.includes('medida') || 
@@ -1111,8 +1199,8 @@ async function fetchRealLiveCatalogAudit(
 
           // Images: avalia peso estimado apenas como alerta se for PNG não comprimido ou dimensão bruta > 2400px (Zero Falso-Positivo por hash)
           const images = Array.isArray(p.images) ? p.images : [];
-          const hasValidImage = images.length > 0 && !!images[0]?.src;
-          const firstImageSrc = hasValidImage ? images[0].src : '';
+          const hasValidImage = isSystemPromoOrGift || (images.length > 0 && !!images[0]?.src);
+          const firstImageSrc = images.length > 0 && images[0]?.src ? images[0].src : '';
           const firstImgWidth = Number(images[0]?.width || 0);
           const firstImgHeight = Number(images[0]?.height || 0);
           const isUnoptimizedPngOrRaw = /\.png(\?|$)/i.test(firstImageSrc) && (firstImgWidth > 2000 || firstImgHeight > 2000 || firstImgWidth === 0);
@@ -1128,9 +1216,9 @@ async function fetchRealLiveCatalogAudit(
             tagsUpper.some((t: string) => t.includes('REVENDA') || t.includes('FORNECEDOR') || t.includes('MULTIMARCA'));
           const isResaleGood = hasExplicitResaleTag || isCottonOrCasual || isFishingGear ||
             String(options?.operationMode || '').toUpperCase().includes('RESALE') ||
-            titleUpper.includes('WORK') || titleUpper.includes('SAFARI') || titleUpper.includes('BOTINA') ||
-            titleUpper.includes('BOTÃO') || titleUpper.includes('BOTAO') || titleUpper.includes('ADVENTURE') ||
-            mainSku.startsWith('CMB') || mainSku.startsWith('CBT') || mainSku.startsWith('BT') || mainSku.startsWith('BOT');
+            titleUpper.includes('WORK') || titleUpper.includes('SAFARI') ||
+            mainSku.startsWith('CMB') || mainSku.startsWith('CBT') || mainSku.startsWith('BT') || mainSku.startsWith('BOT') ||
+            (isBrkStore && (titleUpper.includes('BOTINA') || titleUpper.includes('BOTÃO') || titleUpper.includes('BOTAO') || titleUpper.includes('ADVENTURE')));
           const manufacturingType: 'REVENDA' | 'FABRICACAO_PROPRIA' = isResaleGood ? 'REVENDA' : 'FABRICACAO_PROPRIA';
 
           // Critical issues count
@@ -1163,18 +1251,18 @@ async function fetchRealLiveCatalogAudit(
             recommendedAction = ghostRisk?.actionSummary || '🚨 PAUSAR ANÚNCIO: Risco Crítico de Estoque Fantasma detectado (Promete Envio Imediato sem estoque físico no galpão).';
           } else if (!hasValidImage) {
             recommendedAction = 'CRÍTICO: Inserir foto principal em alta resolução na vitrine.';
+          } else if (!isFullPrintExempt && missingSizes.length > 0) {
+            recommendedAction = `Repor estoque na grade de tamanhos (${missingSizes.join(', ')}).`;
           } else if (isFishingGear) {
             recommendedAction = 'Equipamento / Tralha de pesca verificado (Iscas, Anzóis, Varas). Em conformidade técnica.';
           } else if (isCottonOrCasual) {
             recommendedAction = 'Camisa de Algodão / Casual verificada (Código APC / Revenda). Grade comercial em conformidade.';
-          } else if (isAccessoryOrResale || isOneSizeVariant) {
+          } else if (isAccessoryOrResale || isOneSizeVariant || isSystemPromoOrGift) {
             recommendedAction = 'Produto de Revenda / Acessório verificado em Tamanho Único. Em conformidade.';
           } else if (isOwnManufacturingOnDemand) {
             recommendedAction = 'Fabricação Própria sob Demanda: Gestão de SLA de produção ativa. Tabela de medidas e vitrine em conformidade.';
           } else if (isFullPrintProduct) {
             recommendedAction = 'Produto Full Print verificado com Guia de Tamanhos ativo. Em conformidade.';
-          } else if (!isFullPrintExempt && missingSizes.length > 0) {
-            recommendedAction = `Repor estoque na grade de tamanhos (${missingSizes.join(', ')}).`;
           } else if (!hasSizeGuide) {
             recommendedAction = 'Ativar widget ou inserir Tabela de Medidas na descrição.';
           }
@@ -1204,12 +1292,14 @@ async function fetchRealLiveCatalogAudit(
             imageResolutionStatus: hasValidImage ? 'ALTA' : 'QUEBRADA',
             availableSizes: isArchived100SoldOut
               ? ['ARQUIVO (ESGOTADO)']
+              : allVariantsUnavailable
+              ? ['NENHUM (100% ESGOTADO)']
               : availableSizes.length > 0
               ? availableSizes
               : ['Tamanho Único'],
             missingSizes,
             isFullPrintExempt,
-            isResaleAccessory: isAccessoryOrResale || isOneSizeVariant,
+            isResaleAccessory: isAccessoryOrResale || isOneSizeVariant || isSystemPromoOrGift,
             categoryType,
             manufacturingType,
             hasDescription,
@@ -1511,12 +1601,14 @@ export async function sweepStoreFullCatalog(
  */
 async function fetchHeadlessServerlessAudit(cleanUrl: string): Promise<any | null> {
   try {
-    const isNodeOrServer = typeof window === 'undefined';
-    const baseUrl = isNodeOrServer ? 'http://localhost:3000' : '';
+    const isNodeOrServer = typeof window === 'undefined' || !window.location?.origin?.startsWith('http');
+    if (isNodeOrServer) {
+      return null;
+    }
     const ctrl = new AbortController();
     const timeout = setTimeout(() => ctrl.abort(), 22000);
 
-    const res = await fetch(`${baseUrl}/api/audit`, {
+    const res = await fetch('/api/audit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url: cleanUrl, includeScreenshot: true }),
@@ -1937,7 +2029,7 @@ export async function inspectRealWebsite(
 
   let result: RealSiteData;
 
-  if (!htmlText || !doc) {
+  if (!htmlText) {
     result = {
       url: cleanUrl,
       domain,
@@ -1994,17 +2086,42 @@ export async function inspectRealWebsite(
     const scrapedMarkdown = await jinaMarkdownPromise;
     if (scrapedMarkdown) result.scrapedMarkdown = scrapedMarkdown;
   } else {
-    const rawTitle = doc.querySelector('title')?.textContent?.trim() || `${brandName} — Site Oficial`;
-    const metaDescEl = doc.querySelector('meta[name="description"]') || doc.querySelector('meta[property="og:description"]');
-    const metaDescription = metaDescEl?.getAttribute('content')?.trim() || `Loja oficial ${brandName}. Produtos com garantia e entrega para todo o Brasil.`;
+    const regexTitleMatch = htmlText.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+    const rawTitle =
+      doc?.querySelector('title')?.textContent?.trim() ||
+      (regexTitleMatch ? regexTitleMatch[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '') ||
+      `${brandName} — Site Oficial`;
 
-    const h1Elements = Array.from(doc.querySelectorAll('h1')).map(h => h.textContent?.trim() || '').filter(Boolean);
-    const h2Count = doc.querySelectorAll('h2').length;
+    const metaDescEl = doc ? (doc.querySelector('meta[name="description"]') || doc.querySelector('meta[property="og:description"]')) : null;
+    const regexMetaDescMatch =
+      htmlText.match(/<meta[^>]+(?:name=["']description["']|property=["']og:description["'])[^>]+content=["']([^"']+)["']/i) ||
+      htmlText.match(/<meta[^>]+content=["']([^"']+)["'][^>]+(?:name=["']description["']|property=["']og:description["'])/i);
+    const metaDescription =
+      metaDescEl?.getAttribute('content')?.trim() ||
+      (regexMetaDescMatch ? regexMetaDescMatch[1].trim() : '') ||
+      `Loja oficial ${brandName}. Produtos com garantia e entrega para todo o Brasil.`;
 
-    const imgList = Array.from(doc.querySelectorAll('img'));
-    const totalImages = imgList.length > 0 ? imgList.length : dynamicTotalImages;
+    const regexH1Matches = Array.from(htmlText.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/gi))
+      .map(m => m[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim())
+      .filter(Boolean);
+    const h1Elements = doc
+      ? Array.from(doc.querySelectorAll('h1')).map(h => h.textContent?.trim() || '').filter(Boolean)
+      : regexH1Matches;
+    const h2Count = doc
+      ? doc.querySelectorAll('h2').length
+      : (htmlText.match(/<h2[\s>]/gi) || []).length;
+
+    const imgList = doc ? Array.from(doc.querySelectorAll('img')) : [];
+    const regexImgTags = !doc ? (htmlText.match(/<img\b[^>]*>/gi) || []) : [];
+    const totalImages = imgList.length > 0
+      ? imgList.length
+      : regexImgTags.length > 0
+      ? regexImgTags.length
+      : dynamicTotalImages;
     const imagesWithoutAlt = imgList.length > 0 
       ? imgList.filter(img => !img.getAttribute('alt')?.trim()).length 
+      : regexImgTags.length > 0
+      ? regexImgTags.filter(tag => !/\balt=["'][^"']+["']/i.test(tag)).length
       : dynamicImagesWithoutAlt;
 
     const realBrokenList: BrokenProductImage[] = [];
@@ -2042,20 +2159,41 @@ export async function inspectRealWebsite(
       }
     });
 
-    const bodyText = (doc.body?.textContent || '').toLowerCase();
+    const bodyText = doc
+      ? (doc.body?.textContent || '').toLowerCase()
+      : htmlText.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ').toLowerCase();
     const hasPix = bodyText.includes('pix');
     const hasFrete = bodyText.includes('frete') || bodyText.includes('entrega');
-    const hasGarantia = bodyText.includes('garantia') || bodyText.includes('devolução');
+    const hasGarantia = bodyText.includes('garantia') || bodyText.includes('devolução') || bodyText.includes('troca');
     const hasCheckoutTransparente = bodyText.includes('checkout transparente') || isEnterprise;
-    const hasCart = bodyText.includes('carrinho') || bodyText.includes('cart') || bodyText.includes('bag');
+    const hasCart = bodyText.includes('carrinho') || bodyText.includes('cart') || bodyText.includes('bag') || bodyText.includes('sacola');
 
-    const scriptTags = Array.from(doc.querySelectorAll('script')).map(s => (s.innerHTML + ' ' + (s.getAttribute('src') || '')).toLowerCase());
+    const scriptTags = doc
+      ? Array.from(doc.querySelectorAll('script')).map(s => (s.innerHTML + ' ' + (s.getAttribute('src') || '')).toLowerCase())
+      : [];
     const htmlLower = htmlText.toLowerCase();
-    const hasMetaPixel = scriptTags.some(s => s.includes('fbevents.js') || s.includes('fbq(') || s.includes('facebook_pixel') || s.includes('pixel_id')) || htmlLower.includes('facebook_pixel');
-    const hasTiktokPixel = scriptTags.some(s => s.includes('ttq.load') || s.includes('tiktok.com/') || s.includes('tiktok_pixel')) || htmlLower.includes('tiktok_pixel');
-    const hasGtm = scriptTags.some(s => s.includes('googletagmanager.com') || s.includes('gtag(') || s.includes('google_tag_ids') || s.includes('gtag_events')) || htmlLower.includes('google_tag_ids');
+    const hasMetaPixel =
+      scriptTags.some(s => s.includes('fbevents.js') || s.includes('fbq(') || s.includes('facebook_pixel') || s.includes('pixel_id')) ||
+      htmlLower.includes('fbevents.js') ||
+      htmlLower.includes('fbq(') ||
+      htmlLower.includes('facebook_pixel') ||
+      htmlLower.includes('connect.facebook.net') ||
+      htmlLower.includes('web-pixels-manager') ||
+      htmlLower.includes('trekkie');
+    const hasTiktokPixel =
+      scriptTags.some(s => s.includes('ttq.load') || s.includes('tiktok.com/') || s.includes('tiktok_pixel')) ||
+      htmlLower.includes('ttq.load') ||
+      htmlLower.includes('analytics.tiktok.com') ||
+      htmlLower.includes('tiktok_pixel');
+    const hasGtm =
+      scriptTags.some(s => s.includes('googletagmanager.com') || s.includes('gtag(') || s.includes('google_tag_ids') || s.includes('gtag_events')) ||
+      htmlLower.includes('googletagmanager.com') ||
+      htmlLower.includes('gtag(') ||
+      htmlLower.includes('google_tag_ids') ||
+      htmlLower.includes('gtm-') ||
+      htmlLower.includes('web-pixels-manager');
 
-    const hasWhatsapp = bodyText.includes('whatsapp') || /api\.whatsapp\.com/.test(htmlText.toLowerCase()) || /wa\.me/.test(htmlText.toLowerCase());
+    const hasWhatsapp = bodyText.includes('whatsapp') || /api\.whatsapp\.com/.test(htmlLower) || /wa\.me/.test(htmlLower);
     const hasEmail = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}/.test(bodyText);
     const hasPhone = /(?:^|\s)(\(?\d{2}\)?\s?(?:9\d{4}|\d{4})-?\d{4})(?:$|\s)/.test(bodyText);
 
@@ -2099,9 +2237,9 @@ export async function inspectRealWebsite(
       brokenProductImages: realBrokenList.length > 0 ? realBrokenList.slice(0, 5) : brokenProductImages,
       typoAlerts,
       catalogAudit,
-      hasSchemaJsonLd: !!doc.querySelector('script[type="application/ld+json"]'),
-      hasViewportMeta: !!doc.querySelector('meta[name="viewport"]'),
-      hasOgTags: !!doc.querySelector('meta[property^="og:"]'),
+      hasSchemaJsonLd: doc ? !!doc.querySelector('script[type="application/ld+json"]') : /application\/ld\+json/i.test(htmlText),
+      hasViewportMeta: doc ? !!doc.querySelector('meta[name="viewport"]') : /name=["']viewport["']/i.test(htmlText),
+      hasOgTags: doc ? !!doc.querySelector('meta[property^="og:"]') : /property=["']og:/i.test(htmlText),
       detectedKeywords: ['comprar', brandName.toLowerCase(), 'ofertas'],
       detectedCheckoutTerms: {
         hasPix,
@@ -2110,8 +2248,8 @@ export async function inspectRealWebsite(
         hasCheckoutTransparente,
         hasCart
       },
-      formCount: doc.querySelectorAll('form').length || 1,
-      buttonCount: doc.querySelectorAll('button, a.btn, input[type="submit"]').length || 8,
+      formCount: doc ? (doc.querySelectorAll('form').length || 1) : ((htmlText.match(/<form[\s>]/gi) || []).length || 1),
+      buttonCount: doc ? (doc.querySelectorAll('button, a.btn, input[type="submit"]').length || 8) : ((htmlText.match(/<button[\s>]/gi) || []).length || 8),
       estimatedLoadTime: dynamicLoadTime,
       inspectionStatus: 'SUCCESS',
       executionTimeMs: Math.round(performance.now() - startTime),

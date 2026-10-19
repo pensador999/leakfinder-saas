@@ -33,6 +33,7 @@ export interface AuditedProductWithSkus {
   totalSkusCount: number;
   activeSkusCount: number;
   rupturedSkusCount: number;
+  brokenCoreSizes?: string[];
   skus: AuditedProductSkuItem[];
   criticalBleedBrlDay: number;
   criticalBleedBrlMonth: number;
@@ -63,17 +64,27 @@ const APPAREL_SIZE_WEIGHTS: Record<string, number> = {
   'M': 25,
   'G': 30,
   'GG': 18,
-  'XG': 18,
+  'XG': 12,
+  'XGG': 8,
+  'EG': 8,
   'G1': 5,
   'G2': 2,
   'G3': 1,
-  // Footwear & Pants Numbers
+  // Footwear, Tailoring & Jeans Numbers
+  '34': 4,
+  '35': 6,
   '36': 8,
   '37': 12,
   '38': 22,
+  '39': 20,
   '40': 28,
+  '41': 20,
   '42': 22,
+  '43': 10,
   '44': 8,
+  '46': 5,
+  '48': 3,
+  '50': 2,
   'ÚNICO': 10,
   'UNICO': 10
 };
@@ -81,35 +92,36 @@ const APPAREL_SIZE_WEIGHTS: Record<string, number> = {
 /**
  * 🏭 Detects manufacturing classification for an individual SKU and product
  */
-function classifyManufacturing(title: string, skuCode: string, tags: string[], productType: string): 'FABRICACAO_PROPRIA' | 'REVENDA' {
+function classifyManufacturing(title: string, skuCode: string, tags: string[], productType: string, storeDomain: string = ''): 'FABRICACAO_PROPRIA' | 'REVENDA' {
   const upper = `${title} ${skuCode} ${productType} ${tags.join(' ')}`.toUpperCase();
+  const isBrkStore = storeDomain.toLowerCase().includes('brk');
+  const skuUpper = skuCode.toUpperCase();
 
-  // Nota Crítica (Regra BRK): "ENVIO IMEDIATO" e "PRONTA ENTREGA" são promessas logísticas (usadas também em fabricação própria), NUNCA indicadores de revenda!
+  // Nota Crítica: Marcas D2C de vestuário (ex: Minimal Club, Insider, Mash, Duas Design) fabricam suas próprias peças de algodão/casual.
+  // Apenas marcamos como REVENDA quando há indicador explícito de fornecedor/multimarca, tralha de pesca ou códigos de revenda (APC/CMB/CBT/BT/BOT).
   const isResale = 
-    upper.includes('BOTÃO') || 
-    upper.includes('BOTAO') ||
-    upper.includes('SOCIAL') ||
-    upper.includes('BOTINA') ||
-    upper.includes('BOTA') ||
-    upper.includes('CALÇADO') ||
-    upper.includes('CALCADO') ||
     upper.includes('REVENDA') ||
     upper.includes('FORNECEDOR') ||
     upper.includes('MULTIMARCA') ||
     upper.includes('WORK') ||
     upper.includes('SAFARI') ||
-    upper.includes('ALGODÃO') ||
-    upper.includes('ALGODAO') ||
-    upper.includes('CASUAL') ||
     upper.includes('ISCA') ||
     upper.includes('CARRETILHA') ||
     upper.includes('MOLINETE') ||
-    skuCode.toUpperCase().startsWith('APC') ||
-    skuCode.toUpperCase().includes('APC') ||
-    skuCode.toUpperCase().startsWith('CMB') ||
-    skuCode.toUpperCase().startsWith('CBT') ||
-    skuCode.toUpperCase().startsWith('BT') ||
-    skuCode.toUpperCase().startsWith('BOT');
+    upper.includes('ANZOL') ||
+    skuUpper.startsWith('APC') ||
+    skuUpper.startsWith('CMB') ||
+    skuUpper.startsWith('CBT') ||
+    skuUpper.startsWith('BT') ||
+    skuUpper.startsWith('BOT') ||
+    (isBrkStore && (
+      upper.includes('BOTÃO') ||
+      upper.includes('BOTAO') ||
+      upper.includes('BOTINA') ||
+      upper.includes('BOTA') ||
+      upper.includes('ALGODÃO') ||
+      upper.includes('ALGODAO')
+    ));
 
   return isResale ? 'REVENDA' : 'FABRICACAO_PROPRIA';
 }
@@ -143,31 +155,59 @@ export function auditProductDeepSkus(
 
   const upperCorpus = `${title} ${handle} ${productType} ${tags.join(' ')}`.toUpperCase();
   const isProductLevelFull = 
-    upperCorpus.includes('FULL') ||
+    upperCorpus.includes('_FULL') ||
+    upperCorpus.includes('FULL PRINT') ||
     rawVariants.some((v: any) => String(v.sku || '').toUpperCase().includes('_FULL'));
 
-  const isCottonOrFishingExempt =
-    upperCorpus.includes('ALGODÃO') ||
-    upperCorpus.includes('ALGODAO') ||
-    upperCorpus.includes('CASUAL') ||
-    upperCorpus.includes('APC') ||
+  const isBrkStore = cleanDomain.toLowerCase().includes('brk');
+  const isApcOrFishingOrPromoExempt =
     upperCorpus.includes('ISCA') ||
     upperCorpus.includes('CARRETILHA') ||
     upperCorpus.includes('MOLINETE') ||
     upperCorpus.includes('ANZOL') ||
-    rawVariants.some((v: any) => String(v.sku || '').toUpperCase().startsWith('APC'));
+    upperCorpus.includes('EXCLUIR-COLLECTION') ||
+    upperCorpus.includes('BRINDE') ||
+    rawVariants.some((v: any) => String(v.sku || '').toUpperCase().startsWith('APC')) ||
+    (isBrkStore && (upperCorpus.includes('ALGODÃO') || upperCorpus.includes('ALGODAO')));
 
   const allVariantsOut = rawVariants.length > 0 && rawVariants.every((v: any) => !v.available);
 
   const vertical = resolveDynamicVertical(`${title} ${productType} ${tags.join(' ')} ${storeDomain}`);
   const primaryErpName = vertical.dominantTechStack.primaryErp.split('/')[0].trim();
-  const manufacturingType = classifyManufacturing(title, rawVariants[0]?.sku || '', tags, productType);
+  const manufacturingType = classifyManufacturing(title, rawVariants[0]?.sku || '', tags, productType, cleanDomain);
+
+  // Pré-computa a distribuição de tamanhos dentro do produto (para normalizar produtos com múltiplas cores por tamanho)
+  const extractSizeKeyFromVariant = (v: any): string => {
+    const vTitle = String(v?.title || '').toUpperCase();
+    const tokens = [
+      String(v?.option1 || '').toUpperCase().trim(),
+      String(v?.option2 || '').toUpperCase().trim(),
+      String(v?.option3 || '').toUpperCase().trim(),
+      ...vTitle.split(/[\/\-|\s]+/).map(s => s.trim())
+    ].filter(Boolean);
+    return (
+      tokens.find(tok => vertical.gaussianDemandDistribution[tok] !== undefined || APPAREL_SIZE_WEIGHTS[tok] !== undefined) ||
+      vTitle.trim() ||
+      'PADRÃO'
+    );
+  };
+
+  const totalVariantsForSize = new Map<string, number>();
+  const availableVariantsForSize = new Map<string, number>();
+  for (const v of rawVariants) {
+    const sKey = extractSizeKeyFromVariant(v);
+    totalVariantsForSize.set(sKey, (totalVariantsForSize.get(sKey) || 0) + 1);
+    if (v?.available) {
+      availableVariantsForSize.set(sKey, (availableVariantsForSize.get(sKey) || 0) + 1);
+    }
+  }
 
   let totalSkus = 0;
   let activeSkus = 0;
   let rupturedSkus = 0;
   let productDailyBleed = 0;
   const seenVariantSkus = new Set<string>();
+  const brokenCoreSet = new Set<string>();
 
   const auditedSkus: AuditedProductSkuItem[] = [];
 
@@ -192,28 +232,24 @@ export function auditProductDeepSkus(
 
     const isSkuLevelFull =
       isProductLevelFull ||
-      skuCode.toUpperCase().includes('FULL') ||
-      variantTitle.toUpperCase().includes('FULL') ||
-      (isCottonOrFishingExempt && !allVariantsOut);
+      skuCode.toUpperCase().includes('_FULL') ||
+      variantTitle.toUpperCase().includes('_FULL') ||
+      (isApcOrFishingOrPromoExempt && !allVariantsOut);
 
-    // Extrai o token de tamanho real mesmo em variantes compostas (ex: "GG / Azul Escuro" -> "GG")
-    const upperSize = variantTitle.toUpperCase();
-    const sizeTokens = [
-      String(v.option1 || '').toUpperCase().trim(),
-      String(v.option2 || '').toUpperCase().trim(),
-      ...upperSize.split(/[\/\-|]/).map(s => s.trim())
-    ].filter(Boolean);
-
-    const matchedSizeKey =
-      sizeTokens.find(tok => vertical.gaussianDemandDistribution[tok] !== undefined || APPAREL_SIZE_WEIGHTS[tok] !== undefined) ||
-      upperSize;
-
-    const demandWeight =
+    const matchedSizeKey = extractSizeKeyFromVariant(v);
+    const rawDemandWeight =
       vertical.gaussianDemandDistribution[matchedSizeKey] !== undefined
         ? vertical.gaussianDemandDistribution[matchedSizeKey]
         : APPAREL_SIZE_WEIGHTS[matchedSizeKey] !== undefined
         ? APPAREL_SIZE_WEIGHTS[matchedSizeKey]
         : 10;
+
+    const sameSizeCount = Math.max(1, totalVariantsForSize.get(matchedSizeKey) || 1);
+    const sameSizeAvailableCount = availableVariantsForSize.get(matchedSizeKey) || 0;
+    const isSizeCompletelyOutAcrossAllColors = sameSizeAvailableCount === 0;
+
+    // Normaliza o peso da variante pelo número de cores do mesmo tamanho no produto
+    const normalizedWeight = Number((rawDemandWeight / sameSizeCount).toFixed(2));
 
     let wastedAdSpendDay = 0;
     let operationalAction = 'Estoque Saudável';
@@ -222,12 +258,16 @@ export function auditProductDeepSkus(
       activeSkus++;
     } else {
       rupturedSkus++;
+      if (isSizeCompletelyOutAcrossAllColors && ['P', 'M', 'G', 'GG', '38', '40', '42', '44'].includes(matchedSizeKey)) {
+        brokenCoreSet.add(matchedSizeKey);
+      }
       if (isSkuLevelFull) {
         operationalAction = 'Estoque Fulfillment / Isento de Grade: Saldo gerenciado por lote ou CD Full.';
       } else {
-        // Daily wasted ad spend proportioned by size importance with 2-decimal precision (se anúncio confirmado)
+        // Se o tamanho inteiro esgotou em todas as cores do produto, perda severa (0.85); se apenas uma cor secundária esgotou mas o tamanho tem saldo em outras cores, fricção moderada (0.20)
+        const severityFactor = isSizeCompletelyOutAcrossAllColors ? 0.85 : 0.20;
         wastedAdSpendDay = isAdConfirmedRunning 
-          ? Number(((effectiveAdSpend * (demandWeight / 100)) * 0.85).toFixed(2))
+          ? Number(((effectiveAdSpend * (normalizedWeight / 100)) * severityFactor).toFixed(2))
           : 0;
         productDailyBleed = Number((productDailyBleed + wastedAdSpendDay).toFixed(2));
 
@@ -248,24 +288,23 @@ export function auditProductDeepSkus(
       available,
       barcode: v.barcode || '',
       isFullExempt: isSkuLevelFull,
-      sizeDemandWeight: demandWeight,
+      sizeDemandWeight: rawDemandWeight,
       estimatedWastedAdSpendDay: wastedAdSpendDay,
       manufacturingType,
       operationalAction
     });
   }
 
+  // Teto atuarial por produto individual (nunca excede 85% do dailyAdSpend parametrizado por produto)
+  productDailyBleed = Math.min(Number((effectiveAdSpend * 0.85).toFixed(2)), productDailyBleed);
+
   // Calculate Product Health Score (0-100)
   let healthScore = 100;
   if (totalSkus > 0) {
     const activePercent = (activeSkus / totalSkus) * 100;
     healthScore = Math.round(activePercent);
-    // Extra penalty if high-demand sizes of the detected vertical are missing
-    const coreSizesUpper = vertical.coreDemandSizes.map(s => s.toUpperCase());
-    const criticalMissing = auditedSkus.some(
-      s => !s.available && !s.isFullExempt && (coreSizesUpper.includes(s.variantTitle.toUpperCase()) || s.variantTitle === 'M' || s.variantTitle === 'G')
-    );
-    if (criticalMissing) {
+    // Extra penalty if high-demand sizes of the detected vertical are completely missing across all colors
+    if (brokenCoreSet.size > 0) {
       healthScore = Math.min(healthScore, 65);
     }
   }
@@ -290,6 +329,7 @@ export function auditProductDeepSkus(
     totalSkusCount: totalSkus,
     activeSkusCount: activeSkus,
     rupturedSkusCount: rupturedSkus,
+    brokenCoreSizes: Array.from(brokenCoreSet),
     skus: auditedSkus,
     criticalBleedBrlDay: productDailyBleed,
     criticalBleedBrlMonth: Number((productDailyBleed * 30).toFixed(2)),

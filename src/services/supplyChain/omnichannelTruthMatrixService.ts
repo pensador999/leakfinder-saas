@@ -7,6 +7,7 @@
 import { OmnichannelAuditItem } from '../../../api/omnichannel/cross-audit';
 import { useAuditStore } from '../../store/auditStore';
 import { resolveDynamicVertical } from '../ai/dynamicVerticalContext';
+import { isCatalogProductBroken } from '../siteInspector';
 
 function buildDynamicOmnichannelItemsFromStore(executeKillSwitch: boolean = false): {
   storeName: string;
@@ -24,19 +25,18 @@ function buildDynamicOmnichannelItemsFromStore(executeKillSwitch: boolean = fals
 
   // Prioriza os SKUs realmente em ruptura para que a Matriz Omnichannel reflita 100% dos gargalos reais da loja
   const sortedIssues = [...issues].sort((a: any, b: any) => {
-    const aBroken = Boolean(a.isGhostInventorySuspect) || (!a.isFullPrintExempt && a.missingSizes?.length > 0) || a.missingSizes?.includes('ESGOTADO');
-    const bBroken = Boolean(b.isGhostInventorySuspect) || (!b.isFullPrintExempt && b.missingSizes?.length > 0) || b.missingSizes?.includes('ESGOTADO');
+    const aBroken = isCatalogProductBroken(a);
+    const bBroken = isCatalogProductBroken(b);
     return Number(bBroken) - Number(aBroken);
   });
 
-  const brokenSet = sortedIssues.filter(
-    (a: any) => Boolean(a.isGhostInventorySuspect) || (!a.isFullPrintExempt && a.missingSizes?.length > 0) || a.missingSizes?.includes('ESGOTADO')
-  );
+  const brokenSet = sortedIssues.filter((a: any) => isCatalogProductBroken(a));
   const targetPool = brokenSet.length >= 10 ? brokenSet : sortedIssues.slice(0, Math.max(25, brokenSet.length));
 
   const items: OmnichannelAuditItem[] = targetPool.map((issue: any, idx: number) => {
-    const isCritical = Boolean(issue.isGhostInventorySuspect) || issue.missingSizes.includes('ESGOTADO') || (!issue.isFullPrintExempt && issue.missingSizes.length >= 2);
-    const isAlert = !isCritical && !issue.isFullPrintExempt && issue.missingSizes.length > 0;
+    const isBroken = isCatalogProductBroken(issue);
+    const isCritical = Boolean(issue.isGhostInventorySuspect) || issue.missingSizes.includes('ESGOTADO') || (isBroken && issue.missingSizes.length >= 2);
+    const isAlert = !isCritical && isBroken;
     const dailySpend = isCritical ? 250 : isAlert ? 180 : 200;
     const dailyWaste = isCritical ? Math.round(dailySpend * 0.65) : isAlert ? Math.round(dailySpend * 0.30) : 0;
     const realPrice = issue.price && issue.price > 0 ? issue.price : aov;
@@ -117,7 +117,10 @@ export async function runOmnichannelCrossAudit(options?: {
   const dynamicStoreData = buildDynamicOmnichannelItemsFromStore(options?.executeKillSwitch);
 
   try {
-    const res = await fetch('/api/omnichannel/cross-audit', {
+    if (typeof window === 'undefined' || !window.location?.origin?.startsWith('http')) {
+      throw new Error('SSR_LOCAL_DIRECT');
+    }
+    const res = await fetch(`${window.location.origin}/api/omnichannel/cross-audit`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -133,7 +136,9 @@ export async function runOmnichannelCrossAudit(options?: {
 
     return await res.json();
   } catch (err: any) {
-    console.warn('[Omnichannel Service Fallback]:', err.message);
+    if (err?.message !== 'SSR_LOCAL_DIRECT') {
+      console.warn('[Omnichannel Service Fallback]:', err.message);
+    }
     const fallbackItems: OmnichannelAuditItem[] = dynamicStoreData?.items || [
       {
         sku: "SKU-REF-001",

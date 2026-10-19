@@ -47,9 +47,12 @@ export interface CeoExecutiveBoardroomDossier {
 export async function runCeoOrchestratorEvaluation(diagnostic?: AgentDiagnosticResult): Promise<CeoExecutiveBoardroomDossier> {
   const decisions: CeoProposalDecision[] = [];
 
-  const catalogTitles = (diagnostic?.realSiteData?.catalogAudit?.issues || []).map(i => i.productTitle).join(' ');
-  const nicheRaw = `${diagnostic?.input?.niche || ''} ${diagnostic?.realSiteData?.title || ''} ${diagnostic?.realSiteData?.domain || ''} ${catalogTitles}`;
-  const vertical = resolveDynamicVertical(nicheRaw);
+  const primaryNicheContext = `${diagnostic?.input?.niche || ''} ${diagnostic?.realSiteData?.title || ''} ${diagnostic?.realSiteData?.domain || ''}`;
+  const primaryVertical = resolveDynamicVertical(primaryNicheContext);
+  const catalogTitles = (diagnostic?.realSiteData?.catalogAudit?.issues || []).slice(0, 25).map(i => i.productTitle).join(' ');
+  const vertical = primaryVertical.verticalId !== 'VAREJO_GERAL'
+    ? primaryVertical
+    : resolveDynamicVertical(`${primaryNicheContext} ${catalogTitles}`);
   const primaryErp = vertical.dominantTechStack.primaryErp.split('/')[0].trim();
   const mandatoryFeature = vertical.mandatoryProductFeatures[0] || 'Tabela de Especificações';
 

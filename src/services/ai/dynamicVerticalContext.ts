@@ -173,10 +173,16 @@ export const DYNAMIC_VERTICAL_REGISTRY: Record<SupportedVerticalId, DynamicVerti
       'P': 18,
       'M': 38,
       'G': 31,
-      'GG': 10
+      'GG': 10,
+      '36': 6,
+      '38': 18,
+      '40': 28,
+      '42': 25,
+      '44': 15,
+      '46': 8
     },
-    coreDemandSizes: ['M', 'G'],
-    secondaryDemandSizes: ['P', 'GG'],
+    coreDemandSizes: ['M', 'G', '40', '42'],
+    secondaryDemandSizes: ['P', 'GG', '38', '44'],
     dominantTechStack: {
       primaryErp: 'Bling ERP / Tiny ERP / Omie',
       primaryHub: 'Shopify Native Fulfillment / Plugg.to',
@@ -547,7 +553,7 @@ export function resolveDynamicVertical(rawInput: string): DynamicVerticalProfile
     SUPLEMENTOS_SAUDE: ['suplemento', 'whey', 'creatina', 'nutrição esportiva', 'nutricao esportiva', 'pré-treino', 'pre-treino', 'hipercalórico', 'bcaa', 'glutamina', 'aminoácido', 'coqueteleira', 'proteína isolada', 'termogênico'],
     AUTOPECAS_FERRAMENTAS: ['autopeça', 'autopeca', 'ferramenta', 'motociclismo', 'motocross', 'racing', 'motors', 'automotivo', 'oficina', 'veículo', 'veiculo', 'amortecedor', 'pastilha de freio', 'farol'],
     AGRO_CAMPO_OUTDOOR: ['agro', 'campo', 'country', 'western', 'pesca', 'fishing', 'chapeu', 'chapéu', 'camper', 'fazenda', 'rodeio', 'pecuária', 'uv50+', 'tucunaré', 'anzol', 'carretilha', 'brk'],
-    STREETWEAR_MODA_URBANA: ['streetwear', 'oversized', 'urban', 'tech apparel', 'drop', 'skate', 'insider', 'moletom', 'camiseta', 'hoodie', 'calça cargo'],
+    STREETWEAR_MODA_URBANA: ['streetwear', 'oversized', 'urban', 'tech apparel', 'techwear', 'moda', 'vestuário', 'vestuario', 'alfaiataria', 'camiseta', 'camisa', 'vestido', 'calça', 'calca', 'blusa', 'saia', 'tricô', 'tricot', 'suéter', 'sueter', 'cueca', 'lingerie', 'sutiã', 'sutia', 'pijama', 'algodão egípcio', 'minimal', 'insider', 'mash', 'duasdesign', 'moletom', 'hoodie', 'drop', 'skate'],
     FITNESS_BEACHWEAR: ['fitness', 'beachwear', 'legging', 'biquíni', 'biquini', 'academia', 'treino', 'activewear', 'moda praia', 'top fitness', 'maiô'],
     PET_SHOP_VETERINARIA: ['pet shop', 'petshop', 'ração', 'racao', 'cachorro', 'cães', 'gato', 'veterinári', 'veterinari', 'antipulgas', 'coleira', 'comedouro', 'pet'],
     CASA_DECORACAO_MOVEIS: ['móvel', 'movel', 'móveis', 'moveis', 'sofá', 'sofa', 'decoração', 'decoracao', 'cama', 'mesa', 'rack', 'estante', 'poltrona', 'colchão'],

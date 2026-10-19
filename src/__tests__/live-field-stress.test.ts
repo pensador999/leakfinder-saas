@@ -237,6 +237,86 @@ describe('🔥 TESTE DE CAMPO MÁXIMO E2E (LIVE MULTI-STORE STRESS TEST)', () =>
     }).not.toThrow();
     expect(useAuditStore.getState().diagnostic?.realSiteData.domain).toBe('duasdesign.com');
   }, 90000);
+
+  it('Valida verticalização de Vestuário em 100% dos produtos (Minimal Club, Insider Store e Mash VTEX) sem falsos positivos de grade dupla, numérica, BOGO ou revenda', async () => {
+    const apparelStores = [
+      {
+        name: 'Minimal Club',
+        url: 'https://minimalclub.com.br',
+        niche: 'Moda Masculina e Camisetas Básicas',
+        minProducts: 100,
+        minSkus: 3000,
+        expectedPlatform: 'Shopify'
+      },
+      {
+        name: 'Insider Store',
+        url: 'https://www.insiderstore.com.br',
+        niche: 'Moda Funcional e Techwear',
+        minProducts: 550,
+        minSkus: 9000,
+        expectedPlatform: 'Shopify'
+      },
+      {
+        name: 'Mash',
+        url: 'https://www.mash.com.br',
+        niche: 'Moda Íntima e Vestuário',
+        minProducts: 8,
+        minSkus: 30,
+        expectedPlatform: 'VTEX'
+      }
+    ];
+
+    for (const s of apparelStores) {
+      const diag = await runAgentDiagnosticAsync({
+        businessName: s.name,
+        siteUrl: s.url,
+        niche: s.niche,
+        targetRegion: 'Brasil',
+        averageOrderValue: 280,
+        grossMargin: 62,
+        operationMode: 'AUTO_DETECT'
+      });
+
+      const cat = diag.realSiteData.catalogAudit!;
+      const supply = auditSupplyChainDiscrepancy(diag.realSiteData, diag.input);
+      const ceo = await runCeoOrchestratorEvaluation(diag);
+      useAuditStore.getState().setDiagnostic(diag);
+      const omni = await runOmnichannelCrossAudit();
+
+      expect(diag.realSiteData.ecommercePlatform).toBe(s.expectedPlatform);
+      expect(cat.totalProductsScanned).toBeGreaterThanOrEqual(s.minProducts);
+      expect(cat.totalSkusAudited).toBeGreaterThanOrEqual(s.minSkus);
+      expect(cat.monthlyLossEstimateBRL).toBeGreaterThan(0);
+
+      // CEO não deve sofrer deriva para Fitness/Suplementos e Omnichannel deve alinhar 100% com productsWithBrokenGrid
+      expect(ceo.ceoStatus).toContain('Streetwear & Tech Apparel');
+      if (cat.productsWithBrokenGrid >= 10) {
+        expect(omni.items.length).toBe(cat.productsWithBrokenGrid);
+      }
+
+      // Lojas D2C de marca própria devem gerar alertas de FABRICACAO_PROPRIA (Ordem de Produção - OP), não Revenda
+      const prodAlerts = supply.discrepancyAlerts.filter(a => a.manufacturingCategory === 'FABRICACAO_PROPRIA');
+      expect(prodAlerts.length).toBeGreaterThan(0);
+
+      if (s.name === 'Minimal Club') {
+        // Calça Alfaiataria com 38..46 disponíveis e apenas 48 (ponta periférica) esgotado não deve ser grade quebrada
+        const calcaAlfaiataria = cat.issues.find(i => i.productTitle.includes('Calça Alfaiataria Minimal 2.0'));
+        if (calcaAlfaiataria) {
+          expect(calcaAlfaiataria.missingSizes).toContain('48');
+          expect(calcaAlfaiataria.recommendedAction).toBe('Catálogo em conformidade.');
+        }
+      }
+
+      if (s.name === 'Insider Store') {
+        // Saia Envelope Breeze com grade dupla P/M e G/GG em estoque não deve ter falso positivo
+        const saiaEnvelope = cat.issues.find(i => i.productTitle.includes('Saia Envelope Breeze'));
+        if (saiaEnvelope) {
+          expect(saiaEnvelope.missingSizes.length).toBe(0);
+        }
+      }
+    }
+  }, 120000);
 });
+
 
 
