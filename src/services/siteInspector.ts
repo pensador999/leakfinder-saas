@@ -64,6 +64,9 @@ export interface CatalogProductIssue {
   detailedSkus?: AuditedProductSkuItem[];
   isGhostInventorySuspect?: boolean;
   ghostInventoryRisk?: any;
+  isBestSellerCurveA?: boolean;
+  curveACollections?: string[];
+  bestSellerRank?: number;
 }
 
 /**
@@ -117,6 +120,8 @@ export interface CatalogAuditSummary {
   heavyImagesCount: number;
   catalogHealthScore: number; // 0 to 100
   monthlyLossEstimateBRL?: number;
+  curveATotalProducts?: number;
+  curveABrokenProducts?: number;
   issues: CatalogProductIssue[];
   deepSkuAudit?: DeepCatalogAuditSummary;
   paginationInfo?: {
@@ -516,6 +521,116 @@ async function fetchShopifyCatalogWithPagination(
   };
 }
 
+interface PublicCurveAProductInfo {
+  isCurveA: boolean;
+  badges: string[];
+  bestSellerRank?: number;
+}
+
+/**
+ * 🔥 PUBLIC CURVA A INTELLIGENCE HARVESTER (ZERO PRIVATE API KEYS)
+ * Mapeia 100% publicamente os produtos "Mais Vendidos", "Destaques", "Envio Imediato" e "Ofertas Ativas"
+ * cruzando /collections.json, /collections/{handle}/products.json e /collections/all?sort_by=best-selling.
+ */
+async function fetchPublicCurveACollectionsMap(domain: string): Promise<Map<string, PublicCurveAProductInfo>> {
+  const map = new Map<string, PublicCurveAProductInfo>();
+  const addBadge = (handleRaw: string, badge: string, rank?: number) => {
+    const h = String(handleRaw || '').trim().toLowerCase();
+    if (!h) return;
+    const existing = map.get(h) || { isCurveA: true, badges: [] };
+    if (!existing.badges.includes(badge)) {
+      existing.badges.push(badge);
+    }
+    if (rank !== undefined && (existing.bestSellerRank === undefined || rank < existing.bestSellerRank)) {
+      existing.bestSellerRank = rank;
+    }
+    map.set(h, existing);
+  };
+
+  try {
+    const [colRes, sortRes] = await Promise.all([
+      EdgeProxyService.fetchResilient(`https://${domain}/collections.json?limit=250`, 5500),
+      EdgeProxyService.fetchResilient(`https://${domain}/collections/all?sort_by=best-selling`, 4500)
+    ]);
+
+    // 1. Extrai o ranking nativo ?sort_by=best-selling da Shopify
+    if (sortRes.ok && sortRes.data && sortRes.data.length > 200) {
+      const matches = [...sortRes.data.matchAll(/\/products\/([a-z0-9-_]+)/gi)];
+      const seenSortHandles = new Set<string>();
+      for (const m of matches) {
+        const h = (m[1] || '').toLowerCase();
+        if (!h || h.includes('.js') || h.includes('.css') || h.includes('personalizacao')) continue;
+        if (!seenSortHandles.has(h)) {
+          seenSortHandles.add(h);
+          const rank = seenSortHandles.size;
+          if (rank <= 48) {
+            addBadge(h, `🔥 Top #${rank} Mais Vendidos`, rank);
+          }
+        }
+      }
+    }
+
+    // 2. Identifica as coleções estratégicas de Curva A, Envio Imediato, Destaques e Ofertas em /collections.json
+    if (colRes.ok && colRes.data) {
+      const parsed = JSON.parse(colRes.data);
+      const collections: any[] = Array.isArray(parsed?.collections) ? parsed.collections : [];
+
+      const scoredCols = collections
+        .filter(c => c?.handle && (c.products_count === undefined || c.products_count > 0))
+        .map(c => {
+          const text = `${c.handle} ${c.title || ''}`.toLowerCase();
+          let priority = 0;
+          let badgeLabel = '';
+          let isBestSellerCol = false;
+
+          if (/^mais-vendidos$|^mais-vendidas$|mais-vendid|best-sell|campeoes/.test(text) && !text.includes('master')) {
+            priority = 100;
+            badgeLabel = `🔥 Mais Vendidos (${c.title || c.handle})`;
+            isBestSellerCol = true;
+          } else if (/envio-imediato|pronta-entrega/.test(text)) {
+            priority = 90;
+            badgeLabel = `⚡ Envio Imediato (${c.title || c.handle})`;
+          } else if (/destaque|featured/.test(text)) {
+            priority = 85;
+            badgeLabel = `⭐ Destaques (${c.title || c.handle})`;
+          } else if (/super-ofertas|1ª-oferta|1a-oferta|kits-promocionais|ofertas-/.test(text)) {
+            priority = 75;
+            badgeLabel = `🎯 Oferta Ativa (${c.title || c.handle})`;
+          }
+          return { col: c, priority, badgeLabel, isBestSellerCol };
+        })
+        .filter(item => item.priority > 0)
+        .sort((a, b) => b.priority - a.priority)
+        .slice(0, 5);
+
+      await Promise.all(
+        scoredCols.map(async ({ col, badgeLabel, isBestSellerCol }) => {
+          try {
+            const res = await EdgeProxyService.fetchResilient(
+              `https://${domain}/collections/${col.handle}/products.json?limit=250`,
+              5500
+            );
+            if (!res.ok || !res.data) return;
+            const data = JSON.parse(res.data);
+            const prods: any[] = Array.isArray(data?.products) ? data.products : [];
+            prods.forEach((p, idx) => {
+              if (p?.handle) {
+                addBadge(p.handle, badgeLabel, isBestSellerCol ? idx + 1 : undefined);
+              }
+            });
+          } catch {
+            // Ignora falha individual de coleção
+          }
+        })
+      );
+    }
+  } catch {
+    // Continua normalmente se a loja não for Shopify ou não expuser coleções
+  }
+
+  return map;
+}
+
 /**
  * 🔍 UNIVERSAL REAL LIVE CATALOG SCRAPER (ALL E-COMMERCES + ENTERPRISE SCALING)
  * Adapts to Shopify, VTEX, Nuvemshop, WooCommerce and Enterprise Giants (Nike, Adidas, etc.).
@@ -581,8 +696,11 @@ async function fetchRealLiveCatalogAudit(
                                  rawHtml.includes('globo-size-chart') ||
                                  (doc ? !!doc.querySelector('product-addons, .size_chart, [data-custom-class="size_chart"], [data-text-header*="Guia"], [data-text-header*="guia"], [data-sizebay], .vfr-app, [class*="size-chart"], [id*="size-chart"], [class*="tabela-medidas"], [id*="tabela-medidas"], a[href*="tabela-de-medidas"], a[href*="guia-de-tamanhos"]') : false);
 
-  // Crawl Shopify products (with fast 50-item sample or 100% full sweep pagination)
-  const catalogFetch = await fetchShopifyCatalogWithPagination(domain, options);
+  // Crawl Shopify products (100% full sweep pagination) + Public Curva A Best-Sellers Map in parallel
+  const [catalogFetch, publicCurveAMap] = await Promise.all([
+    fetchShopifyCatalogWithPagination(domain, options),
+    fetchPublicCurveACollectionsMap(domain)
+  ]);
   const parsedProducts = catalogFetch.products;
   let deepSkuAudit: DeepCatalogAuditSummary | undefined = undefined;
 
@@ -608,7 +726,24 @@ async function fetchRealLiveCatalogAudit(
       const auditedProdById = new Map<string, AuditedProductWithSkus>();
       if (deepSkuAudit?.allProducts) {
         for (const item of deepSkuAudit.allProducts) {
+          const curveInfo = publicCurveAMap.get(String(item.handle || '').toLowerCase());
+          if (curveInfo?.isCurveA) {
+            item.isBestSellerCurveA = true;
+            item.curveACollections = curveInfo.badges;
+            item.bestSellerRank = curveInfo.bestSellerRank;
+          }
           auditedProdById.set(String(item.id), item);
+        }
+        if (deepSkuAudit.criticalProducts) {
+          deepSkuAudit.criticalProducts.sort((a, b) => {
+            const aCurve = a.isBestSellerCurveA ? 1 : 0;
+            const bCurve = b.isBestSellerCurveA ? 1 : 0;
+            if (bCurve !== aCurve) return bCurve - aCurve;
+            const aRank = a.bestSellerRank ?? 9999;
+            const bRank = b.bestSellerRank ?? 9999;
+            if (aRank !== bRank) return aRank - bRank;
+            return b.criticalBleedBrlMonth - a.criticalBleedBrlMonth;
+          });
         }
       }
 
@@ -771,7 +906,7 @@ async function fetchRealLiveCatalogAudit(
                                      variants.some((v: any) => String(v.sku || '').toUpperCase().includes('_FULL')) ||
                                      tagsUpper.some((t: string) => t.includes('FULL'));
 
-          const isFullPrintExempt = isOwnManufacturingOnDemand || isFishingGear || isCottonOrCasual || isFullPrintProduct || isAccessoryOrResale || isOneSizeVariant;
+          const isStrictFullPrintOrAccessoryExempt = isOwnManufacturingOnDemand || isFishingGear || isFullPrintProduct || isAccessoryOrResale || isOneSizeVariant;
 
           const categoryType: 'VESTUARIO_LINHA' | 'FULL_PRINT' | 'REVENDA_ACESSORIO' | 'EQUIPAMENTO_PESCA' | 'VESTUARIO_CASUAL_ALGODAO' = isFishingGear
             ? 'EQUIPAMENTO_PESCA'
@@ -800,7 +935,7 @@ async function fetchRealLiveCatalogAudit(
             if (!hasAnyAvailable && variants.length > 0) {
               missingSizes.push('ÚNICO (ESGOTADO)');
             }
-          } else if (!isFullPrintExempt) {
+          } else if (!isStrictFullPrintOrAccessoryExempt) {
             if (usesApparelLetterGrid) {
               // 1) Verifica quais tamanhos cadastrados no produto estão sem nenhuma cor/opção disponível
               registeredLetterSizes.forEach(regSz => {
@@ -825,6 +960,10 @@ async function fetchRealLiveCatalogAudit(
               });
             }
           }
+
+          // Linha Casual/Algodão (APC) é isenta de cobrança de Plus Size (G1/G2) quando P-GG está 100% ativa,
+          // mas se tiver tamanhos reais cadastrados esgotados (ex: falta M, G ou GG), reporta a ruptura real.
+          const isFullPrintExempt = isStrictFullPrintOrAccessoryExempt || (isCottonOrCasual && missingSizes.length === 0);
 
           // Description & Size Guide analysis (exige Tabela de Medidas apenas para Vestuário e Calçados)
           const rawDescription = (p.body_html || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -916,6 +1055,11 @@ async function fetchRealLiveCatalogAudit(
             seenSkus.add(cleanSkuKey);
           }
 
+          const curveInfo = publicCurveAMap.get(String(realHandle || '').toLowerCase());
+          if (curveInfo?.isCurveA && !isFullPrintExempt && missingSizes.length > 0) {
+            recommendedAction = `🚨 RUPTURA NA CURVA A [${curveInfo.badges[0]}]: Repor grade central (${missingSizes.join(', ')}) com urgência ou pausar tráfego!`;
+          }
+
           issues.push({
             id: `real-sku-${p.id || i}`,
             sku: mainSku,
@@ -940,7 +1084,10 @@ async function fetchRealLiveCatalogAudit(
             recommendedAction,
             detailedSkus,
             isGhostInventorySuspect: isGhostSuspect,
-            ghostInventoryRisk: ghostRisk
+            ghostInventoryRisk: ghostRisk,
+            isBestSellerCurveA: Boolean(curveInfo?.isCurveA),
+            curveACollections: curveInfo?.badges || [],
+            bestSellerRank: curveInfo?.bestSellerRank
           });
         }
       } catch {
@@ -1122,6 +1269,22 @@ async function fetchRealLiveCatalogAudit(
     });
   }
 
+  // 🔥 Ordena o catálogo priorizando: 1º Curva A c/ Grade Furada -> 2º Outros c/ Grade Furada -> 3º Curva A Saudável -> 4º Demais
+  issues.sort((a, b) => {
+    const aBroken = isCatalogProductBroken(a) ? 1 : 0;
+    const bBroken = isCatalogProductBroken(b) ? 1 : 0;
+    const aCurve = a.isBestSellerCurveA ? 1 : 0;
+    const bCurve = b.isBestSellerCurveA ? 1 : 0;
+
+    const aPriority = aBroken && aCurve ? 4 : aBroken ? 3 : aCurve ? 2 : 1;
+    const bPriority = bBroken && bCurve ? 4 : bBroken ? 3 : bCurve ? 2 : 1;
+    if (bPriority !== aPriority) return bPriority - aPriority;
+
+    const aRank = a.bestSellerRank ?? 9999;
+    const bRank = b.bestSellerRank ?? 9999;
+    return aRank - bRank;
+  });
+
   const totalProductsScanned = issues.length;
   const fallbackInStockCount = issues.reduce((acc, i) => acc + Math.max(1, i.availableSizes?.length || 0), 0);
   const fallbackStockoutCount = issues.reduce((acc, i) => acc + (i.missingSizes?.length || 0), 0);
@@ -1130,6 +1293,8 @@ async function fetchRealLiveCatalogAudit(
   const totalSkusAudited = deepSkuAudit?.totalSkusAudited !== undefined ? deepSkuAudit.totalSkusAudited : (totalSkusInStock + totalSkusInStockout);
   const brokenCatalogItems = issues.filter(isCatalogProductBroken);
   const productsWithBrokenGrid = brokenCatalogItems.length;
+  const curveATotalProducts = issues.filter(i => i.isBestSellerCurveA).length;
+  const curveABrokenProducts = brokenCatalogItems.filter(i => i.isBestSellerCurveA).length;
   const productsWithMissingImages = issues.filter(i => !i.hasValidImage).length;
   const productsWithFullExemption = issues.filter(i => i.isFullPrintExempt).length;
   const productsWithoutDescription = issues.filter(i => !i.hasDescription).length;
@@ -1157,6 +1322,8 @@ async function fetchRealLiveCatalogAudit(
     heavyImagesCount,
     catalogHealthScore,
     monthlyLossEstimateBRL,
+    curveATotalProducts,
+    curveABrokenProducts,
     issues,
     deepSkuAudit,
     paginationInfo: {

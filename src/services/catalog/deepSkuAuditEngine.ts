@@ -39,6 +39,9 @@ export interface AuditedProductWithSkus {
   healthScore: number;
   manufacturingCategory: 'FABRICACAO_PROPRIA' | 'REVENDA';
   ghostInventoryRisk?: GhostInventoryRiskAssessment;
+  isBestSellerCurveA?: boolean;
+  curveACollections?: string[];
+  bestSellerRank?: number;
 }
 
 export interface DeepCatalogAuditSummary {

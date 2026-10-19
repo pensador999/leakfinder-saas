@@ -164,13 +164,15 @@ describe('🔥 TESTE DE CAMPO MÁXIMO E2E (LIVE MULTI-STORE STRESS TEST)', () =>
       const colAudit = await auditSpecificCollection(store.url, undefined, summary.issues);
       const elapsed = Date.now() - start;
 
+      const topCurveABroken = summary.issues.find(i => i.isBestSellerCurveA && ((i.brokenCoreSizes?.length ?? 0) > 0 || (i.missingSizes?.length ?? 0) > 0));
       console.log(
-        `📊 [${store.name}] Páginas: ${summary.paginationInfo?.pagesCrawled} | Produtos: ${summary.totalProductsScanned} | SKUs: ${summary.totalSkusAudited} (Estoque: ${summary.totalSkusInStock} / Rompidos: ${summary.totalSkusInStockout}) | Coleções Reais: ${colAudit.totalCollectionsInStore} (Coleção ativa: "${colAudit.selectedCollection.collectionTitle}" com ${colAudit.selectedCollection.totalProductsInCollection} prods / ${colAudit.selectedCollection.brokenSizesCount} rompidos) (${elapsed}ms)`
+        `📊 [${store.name}] Páginas: ${summary.paginationInfo?.pagesCrawled} | Produtos: ${summary.totalProductsScanned} | SKUs: ${summary.totalSkusAudited} (Estoque: ${summary.totalSkusInStock} / Rompidos: ${summary.totalSkusInStockout}) | Curva A Pública: ${summary.curveATotalProducts ?? 0} prods (${summary.curveABrokenProducts ?? 0} rompidos — Top #1: "${topCurveABroken?.productTitle ?? 'N/A'}" [Falta: ${topCurveABroken?.missingSizes?.join(', ') ?? ''}] [${topCurveABroken?.curveACollections?.join(', ') ?? ''}]) | Coleções Reais: ${colAudit.totalCollectionsInStore} (${elapsed}ms)`
       );
 
       expect(summary.totalProductsScanned).toBeGreaterThanOrEqual(store.minProducts);
       expect(summary.totalSkusAudited).toBeGreaterThanOrEqual(store.minSkus);
       expect(summary.paginationInfo?.hasMorePages).toBe(false);
+      expect(summary.curveATotalProducts).toBeGreaterThan(0);
       expect(colAudit.totalCollectionsInStore).toBeGreaterThanOrEqual(store.minCollections);
       expect(colAudit.selectedCollection.totalProductsInCollection).toBeGreaterThan(0);
     }

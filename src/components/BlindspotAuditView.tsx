@@ -19,7 +19,7 @@ interface BlindspotAuditViewProps {
   diagnostic: AgentDiagnosticResult;
 }
 
-type CatalogFilter = 'TODOS' | 'GRADE_FURADA' | 'ISENTOS_FULL' | 'REVENDA' | 'FABRICACAO_PROPRIA' | 'SEM_FOTO' | 'SEM_DESCRICAO' | 'IMAGENS_PESADAS';
+type CatalogFilter = 'TODOS' | 'CURVA_A_RUPTURA' | 'CURVA_A' | 'GRADE_FURADA' | 'ISENTOS_FULL' | 'REVENDA' | 'FABRICACAO_PROPRIA' | 'SEM_FOTO' | 'SEM_DESCRICAO' | 'IMAGENS_PESADAS';
 
 export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnostic }) => {
   const { realSiteData, guardrailReport } = diagnostic;
@@ -74,6 +74,8 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
   const standardSizes = ['PP', 'P', 'M', 'G', 'GG', 'G1', 'G2'];
 
   const filteredIssues = (catalogAudit?.issues || []).filter(issue => {
+    if (activeFilter === 'CURVA_A_RUPTURA') return Boolean(issue.isBestSellerCurveA) && !issue.isFullPrintExempt && issue.missingSizes.length > 0;
+    if (activeFilter === 'CURVA_A') return Boolean(issue.isBestSellerCurveA);
     if (activeFilter === 'GRADE_FURADA') return !issue.isFullPrintExempt && issue.missingSizes.length > 0;
     if (activeFilter === 'ISENTOS_FULL') return issue.isFullPrintExempt;
     if (activeFilter === 'REVENDA') return issue.manufacturingType === 'REVENDA' || issue.isResaleAccessory;
@@ -84,6 +86,8 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
     return true;
   });
 
+  const curveACount = catalogAudit?.curveATotalProducts ?? (catalogAudit?.issues || []).filter(i => i.isBestSellerCurveA).length;
+  const curveABrokenCount = catalogAudit?.curveABrokenProducts ?? (catalogAudit?.issues || []).filter(i => i.isBestSellerCurveA && !i.isFullPrintExempt && i.missingSizes.length > 0).length;
   const resaleCount = (catalogAudit?.issues || []).filter(i => i.manufacturingType === 'REVENDA' || i.isResaleAccessory).length;
   const inHouseCount = (catalogAudit?.issues || []).filter(i => i.manufacturingType === 'FABRICACAO_PROPRIA' && !i.isResaleAccessory).length;
 
@@ -797,6 +801,28 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
         >
           Todos ({catalogAudit?.issues.length || 0})
         </button>
+        {curveABrokenCount > 0 && (
+          <button
+            onClick={() => { setActiveFilter('CURVA_A_RUPTURA'); setProductCurrentPage(1); }}
+            className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
+              activeFilter === 'CURVA_A_RUPTURA' ? 'bg-orange-500 text-slate-950 font-black shadow-lg shadow-orange-500/25' : 'bg-orange-500/15 border border-orange-500/40 text-orange-300 hover:bg-orange-500/25'
+            }`}
+          >
+            <Flame className="w-3.5 h-3.5 text-orange-400" />
+            <span>Ruptura Curva A ({curveABrokenCount})</span>
+          </button>
+        )}
+        {curveACount > 0 && (
+          <button
+            onClick={() => { setActiveFilter('CURVA_A'); setProductCurrentPage(1); }}
+            className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
+              activeFilter === 'CURVA_A' ? 'bg-amber-400 text-slate-950 font-black shadow-lg shadow-amber-400/20' : 'bg-amber-400/10 border border-amber-400/30 text-amber-200 hover:bg-amber-400/20'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <span>Curva A / Mais Vendidos ({curveACount})</span>
+          </button>
+        )}
         <button
           onClick={() => { setActiveFilter('GRADE_FURADA'); setProductCurrentPage(1); }}
           className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
@@ -881,6 +907,16 @@ export const BlindspotAuditView: React.FC<BlindspotAuditViewProps> = ({ diagnost
                         {copiedId === issue.id ? <Check className="w-3 h-3 text-[#0AE448]" /> : <Copy className="w-3 h-3" />}
                       </button>
                     </span>
+
+                    {/* 🔥 Public Curva A / Best-Seller / Envio Imediato Badges */}
+                    {issue.isBestSellerCurveA && (issue.curveACollections || []).slice(0, 2).map((badge, bIdx) => (
+                      <span
+                        key={bIdx}
+                        className="px-2.5 py-0.5 bg-orange-500/15 text-orange-300 border border-orange-500/40 font-black text-[10px] uppercase rounded-lg flex items-center gap-1 shadow-xs"
+                      >
+                        <span>{badge}</span>
+                      </span>
+                    ))}
 
                     {/* Manufacturing Type Badge */}
                     {issue.manufacturingType === 'REVENDA' || issue.isResaleAccessory ? (
