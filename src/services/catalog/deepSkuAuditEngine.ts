@@ -335,9 +335,44 @@ export function auditDeepCatalog(
     auditedProducts.push(audited);
   }
 
+  // 🛡️ Inteligência Anti-Falso-Positivo para Lojas com Arquivo Histórico de Coleções Passadas (ex: Moda Autoral / Cápsulas):
+  // Se a loja possui > 50 produtos 100% esgotados representando > 25% do feed público (/products.json),
+  // esses itens sem nenhuma variante ativa são coleções passadas não-arquivadas (Draft), e não campanhas ativas queimando verba de Ads.
+  const archive100OutProducts = auditedProducts.filter(p => p.activeSkusCount === 0 && p.totalSkusCount > 0);
+  const hasMassiveArchiveBacklog =
+    auditedProducts.length > 50 &&
+    archive100OutProducts.length > 50 &&
+    archive100OutProducts.length / auditedProducts.length > 0.25;
+
+  if (hasMassiveArchiveBacklog) {
+    totalMonthlyBleed = 0;
+    for (const p of auditedProducts) {
+      if (p.activeSkusCount === 0 && !p.isBestSellerCurveA) {
+        p.criticalBleedBrlDay = 0;
+        p.criticalBleedBrlMonth = 0;
+        p.skus.forEach(s => {
+          s.estimatedWastedAdSpendDay = 0;
+          s.operationalAction = 'Arquivo Histórico (100% Esgotado): Despublicar (Draft) ou aplicar 301 para preservar Crawl Budget de SEO.';
+        });
+      } else {
+        totalMonthlyBleed += p.criticalBleedBrlMonth;
+      }
+    }
+  }
+
   const criticalProducts = auditedProducts.filter(p => p.criticalBleedBrlDay > 0);
 
-  const globalHealthScore = totalSkus > 0 ? Math.round((totalInStock / totalSkus) * 100) : 100;
+  // Calcula a saúde do catálogo sobre os produtos ativos em linha (quando há backlog histórico massivo de coleções antigas)
+  let globalHealthScore = 100;
+  if (hasMassiveArchiveBacklog) {
+    const activeInlineProducts = auditedProducts.filter(p => p.activeSkusCount > 0 || p.isBestSellerCurveA);
+    const activeInlineTotalSkus = activeInlineProducts.reduce((acc, p) => acc + p.totalSkusCount, 0);
+    const activeInlineInStockSkus = activeInlineProducts.reduce((acc, p) => acc + p.activeSkusCount, 0);
+    const baseActiveScore = activeInlineTotalSkus > 0 ? Math.round((activeInlineInStockSkus / activeInlineTotalSkus) * 100) : 85;
+    globalHealthScore = Math.max(55, baseActiveScore - 4); // -4 pts por manter coleções antigas publicadas sem Draft
+  } else {
+    globalHealthScore = totalSkus > 0 ? Math.round((totalInStock / totalSkus) * 100) : 100;
+  }
 
   return {
     totalProductsAudited: auditedProducts.length,

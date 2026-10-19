@@ -121,15 +121,27 @@ export function HomePage() {
   // Sync helpers to keep Zustand store and local state identical
   const setDiagnostic = (val: AgentDiagnosticResult | null) => {
     setDiagnosticState(val);
-    useAuditStore.getState().setDiagnostic(val);
+    try {
+      useAuditStore.getState().setDiagnostic(val);
+    } catch (e) {
+      console.warn('[HomePage] Non-fatal store sync warning:', e);
+    }
   };
   const setActiveTab = (tab: string) => {
     setActiveTabState(tab);
-    useAuditStore.getState().setActiveTab(tab);
+    try {
+      useAuditStore.getState().setActiveTab(tab);
+    } catch {
+      // Non-fatal
+    }
   };
   const setIsAdvancedMode = (val: boolean) => {
     setIsAdvancedModeState(val);
-    useAuditStore.getState().setIsAdvancedMode(val);
+    try {
+      useAuditStore.getState().setIsAdvancedMode(val);
+    } catch {
+      // Non-fatal
+    }
   };
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState<boolean>(false);
   const [showOnboarding, setShowOnboarding] = useState<boolean>(() => {
@@ -234,13 +246,21 @@ export function HomePage() {
       setActiveTab(isMkt ? 'marketplace' : 'summary');
 
       // 🗄️ Save audit to Supabase and update continuous score evolution timeline
-      saveAuditToDatabase(result).catch(e => console.warn('[Supabase Auto-Save] Manual audit save error:', e));
+      try {
+        saveAuditToDatabase(result).catch(e => console.warn('[Supabase Auto-Save] Manual audit save error:', e));
+      } catch (e) {
+        console.warn('[Supabase Auto-Save] Sync error:', e);
+      }
 
-      confetti({
-        particleCount: 80,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
+      try {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      } catch {
+        // Non-fatal
+      }
     } catch (err) {
       console.error('Audit execution error:', err);
       setIsAnalyzing(false);

@@ -177,5 +177,66 @@ describe('🔥 TESTE DE CAMPO MÁXIMO E2E (LIVE MULTI-STORE STRESS TEST)', () =>
       expect(colAudit.selectedCollection.totalProductsInCollection).toBeGreaterThan(0);
     }
   }, 90000);
+
+  it('Audita lojas externas de moda autoral (Duas Design - duasdesign.com) sem falsos positivos de arquivo histórico, metafields Shopify 2.0, CNPJ >700KB ou QuotaExceededError', async () => {
+    const start = Date.now();
+    const diagnostic = await runAgentDiagnosticAsync({
+      businessName: 'Duas Design',
+      siteUrl: 'https://duasdesign.com',
+      niche: 'Moda Feminina Autoral',
+      targetRegion: 'Brasil',
+      averageOrderValue: 320,
+      grossMargin: 65,
+      operationMode: 'AUTO_DETECT'
+    });
+    const elapsed = Date.now() - start;
+
+    const catAudit = diagnostic.realSiteData.catalogAudit!;
+    const activeCatalogItems = catAudit.issues.filter(
+      i => !(i.availableSizes.length === 1 && i.availableSizes[0] === 'ARQUIVO (ESGOTADO)')
+    );
+    const archivedItems = catAudit.issues.filter(
+      i => i.availableSizes.length === 1 && i.availableSizes[0] === 'ARQUIVO (ESGOTADO)'
+    );
+
+    console.log(
+      `👗 [Duas Design — duasdesign.com] (${elapsed}ms)\n` +
+      `   ├─ Total Produtos Varridos: ${catAudit.totalProductsScanned} | Total SKUs: ${catAudit.totalSkusAudited}\n` +
+      `   ├─ Catálogo Ativo em Linha: ${activeCatalogItems.length} produtos (${catAudit.productsWithBrokenGrid} c/ grade central furada)\n` +
+      `   ├─ Arquivo Histórico Descontinuado (100% Esgotado): ${archivedItems.length} produtos isolados sem falso positivo\n` +
+      `   ├─ Falsos Positivos de Descrição (Metafields Shopify 2.0): ${catAudit.productsWithoutDescription}\n` +
+      `   ├─ Saúde Real do Catálogo Ativo: ${catAudit.catalogHealthScore}% | Growth Score: ${diagnostic.growthScore}/100\n` +
+      `   ├─ CNPJ Detectado (>700KB HTML): ${diagnostic.realSiteData.legalCompliance?.hasCnpjInFooter} (${diagnostic.realSiteData.legalCompliance?.cnpjFound})\n` +
+      `   └─ Top #1 Produto Crítico Ativo: "${catAudit.issues[0]?.productTitle}" [Disponível: ${catAudit.issues[0]?.availableSizes.join(', ')} | Falta: ${catAudit.issues[0]?.missingSizes.join(', ')}]`
+    );
+
+    // 1. Varredura 100% real do catálogo (>2.000 produtos e >9.000 SKUs)
+    expect(catAudit.totalProductsScanned).toBeGreaterThan(2000);
+    expect(catAudit.totalSkusAudited).toBeGreaterThan(9000);
+
+    // 2. Separação entre Catálogo Ativo (~273 prods) e Arquivo Histórico (~1.841 prods 100% esgotados)
+    expect(activeCatalogItems.length).toBeGreaterThan(200);
+    expect(archivedItems.length).toBeGreaterThan(1500);
+    expect(catAudit.productsWithBrokenGrid).toBeLessThan(activeCatalogItems.length);
+    // O primeiro item da lista deve ser um produto ativo com grade furada, nunca um item de arquivo morto
+    expect(catAudit.issues[0]?.availableSizes[0]).not.toBe('ARQUIVO (ESGOTADO)');
+
+    // 3. Zero falso positivo de descrição ausente em temas Shopify 2.0 que usam Metafields
+    expect(catAudit.productsWithoutDescription).toBe(0);
+
+    // 4. Saúde do catálogo calculada sobre a coleção ativa (não esmagada para 30% pelo arquivo morto)
+    expect(catAudit.catalogHealthScore).toBeGreaterThanOrEqual(55);
+
+    // 5. Detecção de CNPJ no rodapé mesmo em HTML > 735KB
+    expect(diagnostic.realSiteData.legalCompliance?.hasCnpjInFooter).toBe(true);
+    expect(diagnostic.realSiteData.legalCompliance?.cnpjFound).toContain('16.097.130/0001-24');
+
+    // 6. Blindagem contra QuotaExceededError no Zustand Persist (localStorage < 5MB)
+    expect(() => {
+      useAuditStore.getState().setDiagnostic(diagnostic);
+    }).not.toThrow();
+    expect(useAuditStore.getState().diagnostic?.realSiteData.domain).toBe('duasdesign.com');
+  }, 90000);
 });
+
 

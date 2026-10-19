@@ -123,26 +123,23 @@ export default async function handler(request: any, response: any) {
   const now = Date.now();
   const rlState = rateLimitMap.get(clientIp);
   if (rlState && now < rlState.resetAt) {
-    if (rlState.count >= 5) {
+    if (rlState.count >= 120) {
       return sendResponse(response, 429, { error: 'Too Many Requests', success: false });
     }
     rlState.count++;
   } else {
     rateLimitMap.set(clientIp, { count: 1, resetAt: now + 3600000 }); // 1 hour
   }
-  // Free tier rate limit: 3 per day for unauthenticated users
-  // Authenticated subscribers: unlimited (bypass rate limit)
   const authHeader = request.headers?.['authorization'] || '';
   const isAuthenticated = authHeader.startsWith('Bearer ') && authHeader.length > 20;
   
   if (!isAuthenticated) {
-    // Unauthenticated users get stricter rate limiting (3/day for free demo)
     const freeLimitKey = `free_${clientIp}`;
     const freeState = rateLimitMap.get(freeLimitKey);
     if (freeState && now < freeState.resetAt) {
-      if (freeState.count >= 3) {
+      if (freeState.count >= 100) {
         return sendResponse(response, 403, { 
-          error: 'Limite gratuito atingido. Faça login ou assine um plano para continuar auditando.', 
+          error: 'Limite diário atingido. Faça login ou assine um plano para continuar auditando.', 
           success: false,
           upgradeRequired: true 
         });
@@ -381,9 +378,12 @@ export default async function handler(request: any, response: any) {
       }
 
       const fullHtml = document.documentElement ? document.documentElement.outerHTML : (document.body.innerHTML || '');
-      const preservedHtmlSnippet = fullHtml.length <= 120000
+      const footerEl = document.querySelector('footer, [class*="footer"], [id*="footer"]');
+      const footerHtml = footerEl ? footerEl.outerHTML : '';
+      const detectedCnpjs = (fullHtml.match(/\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/g) || []).join(' ');
+      const preservedHtmlSnippet = fullHtml.length <= 160000
         ? fullHtml
-        : `${fullHtml.slice(0, 70000)}\n<!-- [MIDDLE_HTML_TRUNCATED] -->\n${fullHtml.slice(-50000)}`;
+        : `${fullHtml.slice(0, 75000)}\n<!-- [MIDDLE_HTML_TRUNCATED] -->\n${footerHtml}\n<!-- CNPJ: ${detectedCnpjs} -->\n${fullHtml.slice(-65000)}`;
 
       return {
         hasMetaPixel,

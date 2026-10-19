@@ -135,7 +135,11 @@ export function DashboardPage() {
         }
       }
       
-      localStorage.setItem('latestAudit', JSON.stringify(result));
+      try {
+        localStorage.setItem('latestAudit', JSON.stringify(result));
+      } catch (storageErr) {
+        console.warn('[DashboardPage] Non-fatal localStorage quota warning:', storageErr);
+      }
       navigate(`/report/fallback-${Date.now()}`);
       
     } catch (e) {

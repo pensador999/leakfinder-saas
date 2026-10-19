@@ -85,6 +85,7 @@ export function isCatalogProductBroken(item?: {
   if (item.isGhostInventorySuspect) return true;
   const missing = item.missingSizes || [];
   if (missing.length === 0) return false;
+  if (missing.includes('ARQUIVO (ESGOTADO)')) return false;
   if (
     missing.includes('ESGOTADO') || 
     missing.includes('ESTOQUE_FANTASMA_SUSPEITO') || 
@@ -513,6 +514,94 @@ async function fetchShopifyCatalogWithPagination(
     nextPage += waveSize;
   }
 
+  // 🌐 Universal Multi-Platform JSON Fallback (VTEX & WooCommerce Public APIs) quando a loja não é Shopify
+  if (allProducts.length === 0) {
+    try {
+      const [vtexRaw, wooRaw] = await Promise.all([
+        fetchHtmlWithTimeout(`https://${domain}/api/catalog_system/pub/products/search?_from=0&_to=49`, 4500),
+        fetchHtmlWithTimeout(`https://${domain}/wp-json/wc/store/v1/products?per_page=100`, 4500)
+      ]);
+
+      // 1) VTEX Public Search API
+      if (vtexRaw && vtexRaw.trim().startsWith('[')) {
+        const vtexItems = JSON.parse(vtexRaw);
+        if (Array.isArray(vtexItems) && vtexItems.length > 0) {
+          pagesCrawled = 1;
+          for (const vp of vtexItems) {
+            const vtexHandle = vp.linkText || String(vp.productId || '');
+            const rawSkus = Array.isArray(vp.items) ? vp.items : [];
+            const mappedVariants = rawSkus.map((skuItem: any) => {
+              const offer = skuItem?.sellers?.[0]?.commertialOffer || {};
+              const qty = Number(offer.AvailableQuantity ?? 0);
+              return {
+                id: String(skuItem.itemId || ''),
+                title: skuItem.name || skuItem.nameComplete || 'Único',
+                option1: skuItem.name || 'Único',
+                sku: String(skuItem.referenceId?.[0]?.Value || skuItem.itemId || ''),
+                price: String(offer.Price || offer.ListPrice || 149.90),
+                compare_at_price: offer.ListPrice > offer.Price ? String(offer.ListPrice) : undefined,
+                available: qty > 0,
+                inventory_quantity: qty
+              };
+            });
+            const firstImg = rawSkus[0]?.images?.[0]?.imageUrl || '';
+            appendPageProducts([
+              {
+                id: String(vp.productId || vtexHandle),
+                title: vp.productName || vp.productTitle || 'Produto VTEX',
+                handle: vtexHandle,
+                url: vp.link || `https://${domain}/${vtexHandle}/p`,
+                body_html: vp.description || '',
+                product_type: Array.isArray(vp.categories) && vp.categories[0] ? String(vp.categories[0]).replace(/\//g, ' ').trim() : '',
+                tags: [],
+                images: firstImg ? [{ src: firstImg }] : [],
+                variants: mappedVariants
+              }
+            ]);
+          }
+        }
+      }
+
+      // 2) WooCommerce Public Store API
+      if (allProducts.length === 0 && wooRaw && wooRaw.trim().startsWith('[')) {
+        const wooItems = JSON.parse(wooRaw);
+        if (Array.isArray(wooItems) && wooItems.length > 0) {
+          pagesCrawled = 1;
+          for (const wp of wooItems) {
+            const wooHandle = wp.slug || String(wp.id || '');
+            const rawPrice = Number(wp.prices?.price || 0) / Math.pow(10, Number(wp.prices?.currency_minor_unit ?? 2));
+            const firstImg = wp.images?.[0]?.src || '';
+            const isAvailable = Boolean(wp.is_in_stock ?? wp.is_purchasable ?? true);
+            appendPageProducts([
+              {
+                id: String(wp.id || wooHandle),
+                title: wp.name || 'Produto WooCommerce',
+                handle: wooHandle,
+                url: wp.permalink || `https://${domain}/produto/${wooHandle}`,
+                body_html: wp.description || wp.short_description || '',
+                product_type: wp.categories?.[0]?.name || '',
+                tags: Array.isArray(wp.tags) ? wp.tags.map((t: any) => t.name || '') : [],
+                images: firstImg ? [{ src: firstImg }] : [],
+                variants: [
+                  {
+                    id: String(wp.id || ''),
+                    title: 'Padrão',
+                    option1: 'Padrão',
+                    sku: wp.sku || `WOO-${wp.id}`,
+                    price: String(rawPrice > 0 ? rawPrice : 149.90),
+                    available: isAvailable
+                  }
+                ]
+              }
+            ]);
+          }
+        }
+      }
+    } catch {
+      // Continua para Schema.org / DOM fallback se não for VTEX nem WooCommerce
+    }
+  }
+
   return {
     products: allProducts,
     pagesCrawled: Math.max(1, pagesCrawled),
@@ -747,13 +836,30 @@ async function fetchRealLiveCatalogAudit(
         }
       }
 
+      const productsWithoutBodyHtml = parsedProducts.filter(
+        (prod: any) => String(prod?.body_html || '').replace(/<[^>]*>/g, '').trim().length < 25
+      ).length;
+      const storeUsesMetafieldDescriptions =
+        parsedProducts.length >= 5 &&
+        (productsWithoutBodyHtml >= 25 || (productsWithoutBodyHtml / parsedProducts.length) >= 0.12);
+
+      const archive100OutCount = parsedProducts.filter((prod: any) => {
+        const vars = Array.isArray(prod?.variants) ? prod.variants : [];
+        return vars.length > 0 && vars.every((v: any) => !v.available);
+      }).length;
+      const hasMassiveArchiveBacklog =
+        parsedProducts.length > 50 &&
+        archive100OutCount > 50 &&
+        (archive100OutCount / parsedProducts.length) > 0.25;
+
       for (let i = 0; i < parsedProducts.length; i++) {
         const p = parsedProducts[i];
           const realHandle = p.handle || '';
-          const realUrl = `https://${domain}/products/${realHandle}`;
+          const realUrl = p.url || `https://${domain}/products/${realHandle}`;
           const title = p.title || `${brandName} Item #${i + 1}`;
+          const curveInfo = publicCurveAMap.get(String(realHandle || '').toLowerCase());
           
-          // Check _FULL rule and Resale / One-Size Accessories (Bandanas, Manguitos, Bonés, etc.)
+          // Check _FULL rule and Resale / One-Size Accessories (Bandanas, Manguitos, Bonés, Brincos, Bolsas, etc.)
           const titleUpper = title.toUpperCase();
           const handleUpper = realHandle.toUpperCase();
           const productTypeUpper = (p.product_type || '').toUpperCase();
@@ -811,9 +917,34 @@ async function fetchRealLiveCatalogAudit(
             titleUpper.includes('GOLA') ||
             titleUpper.includes('CHAPÉU') ||
             titleUpper.includes('CHAPEU') ||
+            titleUpper.includes('BRINCO') ||
+            titleUpper.includes('BOLSA') ||
+            titleUpper.includes('COLAR') ||
+            titleUpper.includes('PULSEIRA') ||
+            titleUpper.includes('ANEL') ||
+            titleUpper.includes('BIJOUTERIA') ||
+            titleUpper.includes('BIJUTERIA') ||
+            titleUpper.includes('NECESSAIRE') ||
+            titleUpper.includes('NÉCESSAIRE') ||
+            titleUpper.includes('LENÇO') ||
+            titleUpper.includes('LENCO') ||
+            titleUpper.includes('CINTO') ||
+            titleUpper.includes('CARTEIRA') ||
+            titleUpper.includes('PRESILHA') ||
+            titleUpper.includes('TIARA') ||
+            titleUpper.includes('SCRUNCHIE') ||
+            titleUpper.includes('ECOBAG') ||
+            titleUpper.includes('POCHETE') ||
+            titleUpper.includes('MOCHILA') ||
             productTypeUpper.includes('ACESSORIO') ||
+            productTypeUpper.includes('ACESSÓRIO') ||
+            productTypeUpper.includes('BRINCO') ||
+            productTypeUpper.includes('BOLSA') ||
+            productTypeUpper.includes('BIJOUTERIA') ||
+            productTypeUpper.includes('BIJUTERIA') ||
+            productTypeUpper.includes('NECESS') ||
             productTypeUpper.includes('REVENDA') ||
-            tagsUpper.some((t: string) => t.includes('REVENDA') || t.includes('ACESSORIO') || t.includes('BANDANA') || t.includes('UNICO'))
+            tagsUpper.some((t: string) => t.includes('REVENDA') || t.includes('ACESSORIO') || t.includes('ACESSÓRIO') || t.includes('BANDANA') || t.includes('UNICO') || t.includes('BOLSA') || t.includes('BRINCO'))
           );
 
           // Extract variants & sizes
@@ -834,6 +965,8 @@ async function fetchRealLiveCatalogAudit(
             }
             return !v.available && v.inventory_policy !== 'continue';
           });
+
+          const isArchived100SoldOut = hasMassiveArchiveBacklog && allVariantsUnavailable && !curveInfo?.isCurveA;
 
           const unavailableVariantTitles: string[] = [];
           const registeredLetterSizes = new Set<string>();
@@ -892,7 +1025,7 @@ async function fetchRealLiveCatalogAudit(
             availableSizes.every(sz => ['ÚNICO', 'UNICO', 'ONE SIZE', 'DEFAULT TITLE', 'TAMANHO ÚNICO', 'TAMANHO UNICO'].includes(sz));
 
           // Verifica se o produto é genuinamente vestuário/calçado com grade de tamanhos
-          const isApparelKeywords = /camis|blus|cal[cç]a|jaqueta|moletom|vestido|short|bermuda|conjunto|biqu[ií]ni|mai[oô]|legging|top|casaco|colete|polo|regata|macac[aã]o|jardineira/i.test(
+          const isApparelKeywords = /camis|blus|cal[cç]a|jaqueta|moletom|vestido|short|bermuda|conjunto|biqu[ií]ni|mai[oô]|legging|top|casaco|colete|polo|regata|macac[aã]o|jardineira|saia|kimono/i.test(
             `${title} ${productTypeUpper} ${tagsUpper.join(' ')}`
           );
           const isFootwearKeywords = /bota|botina|t[eê]nis|sapato|sand[aá]lia|chinelo|coturno|mocassim|scarpin|sapatilha/i.test(
@@ -919,12 +1052,9 @@ async function fetchRealLiveCatalogAudit(
             : 'VESTUARIO_LINHA';
 
           // Calculate missing sizes Sem Falsos-Positivos:
-          // 1. Se todas as variantes estiverem indisponíveis -> ESGOTADO
-          // 2. Se for vestuário com grade alfabética -> audita apenas tamanhos cadastrados na peça que esgotaram
-          //    (ou, se a peça tiver grade truncada de apenas 1 tamanho residual como "Tamanho: P", aponta os tamanhos âncora M/G ausentes).
-          //    NUNCA exige G1/G2/PP de produtos que não fabricam Plus Size e estão com 100% da grade P-GG ativa!
-          // 3. Se for outra vertical -> audita estritamente as variantes reais indisponíveis (!v.available).
-          if (allVariantsUnavailable) {
+          if (isArchived100SoldOut) {
+            missingSizes.push('ARQUIVO (ESGOTADO)');
+          } else if (allVariantsUnavailable) {
             missingSizes.push('ESGOTADO');
           } else if (isAccessoryOrResale || isOneSizeVariant) {
             const hasAnyAvailable = variants.some((v: any) => {
@@ -965,12 +1095,13 @@ async function fetchRealLiveCatalogAudit(
           // mas se tiver tamanhos reais cadastrados esgotados (ex: falta M, G ou GG), reporta a ruptura real.
           const isFullPrintExempt = isStrictFullPrintOrAccessoryExempt || (isCottonOrCasual && missingSizes.length === 0);
 
-          // Description & Size Guide analysis (exige Tabela de Medidas apenas para Vestuário e Calçados)
+          // Description & Size Guide analysis (respeita temas Shopify 2.0 que armazenam descrição/medidas em Metafields na PDP em vez de body_html)
           const rawDescription = (p.body_html || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-          const hasDescription = rawDescription.length >= 60;
+          const hasDescription = storeUsesMetafieldDescriptions || rawDescription.length >= 60;
           const descLower = rawDescription.toLowerCase();
           const requiresSizeGuide = (isApparelKeywords || isFootwearKeywords || usesApparelLetterGrid) && !isFishingGear && !isAccessoryOrResale && !isOneSizeVariant;
           const hasSizeGuide = !requiresSizeGuide ||
+                               storeUsesMetafieldDescriptions ||
                                descLower.includes('medida') || 
                                descLower.includes('tamanho') || 
                                descLower.includes('tabela') || 
@@ -991,7 +1122,7 @@ async function fetchRealLiveCatalogAudit(
             ? 390
             : 185;
 
-          // Detect manufacturing type: Resale vs In-House Manufacturing (Acessórios de marca própria D2C continuam sendo FABRICACAO_PROPRIA, exceto linhas explícitas de revenda)
+          // Detect manufacturing type: Resale vs In-House Manufacturing
           const hasExplicitResaleTag =
             productTypeUpper.includes('REVENDA') ||
             tagsUpper.some((t: string) => t.includes('REVENDA') || t.includes('FORNECEDOR') || t.includes('MULTIMARCA'));
@@ -1005,8 +1136,8 @@ async function fetchRealLiveCatalogAudit(
           // Critical issues count
           let criticalIssuesCount = 0;
           if (!hasValidImage) criticalIssuesCount += 2;
-          if (allVariantsUnavailable) criticalIssuesCount += 3;
-          if (!isFullPrintExempt && missingSizes.length > 0) criticalIssuesCount += 1;
+          if (allVariantsUnavailable && !isArchived100SoldOut) criticalIssuesCount += 3;
+          if (!isFullPrintExempt && !isArchived100SoldOut && missingSizes.length > 0) criticalIssuesCount += 1;
           if (!hasDescription) criticalIssuesCount += 1;
           if (!hasSizeGuide) criticalIssuesCount += 1;
           if (imageWeightKb > 350) criticalIssuesCount += 1;
@@ -1024,7 +1155,9 @@ async function fetchRealLiveCatalogAudit(
           }
 
           let recommendedAction = 'Catálogo em conformidade.';
-          if (allVariantsUnavailable) {
+          if (isArchived100SoldOut) {
+            recommendedAction = 'ARQUIVO HISTÓRICO (100% ESGOTADO): Peça de coleção passada sem saldo. Ocultar da vitrine (Draft) ou redirecionar 301.';
+          } else if (allVariantsUnavailable) {
             recommendedAction = 'CRÍTICO: Ruptura total de estoque identificada (Todas as variantes esgotadas). Pausar anúncios imediatamente!';
           } else if (isGhostSuspect) {
             recommendedAction = ghostRisk?.actionSummary || '🚨 PAUSAR ANÚNCIO: Risco Crítico de Estoque Fantasma detectado (Promete Envio Imediato sem estoque físico no galpão).';
@@ -1035,7 +1168,7 @@ async function fetchRealLiveCatalogAudit(
           } else if (isCottonOrCasual) {
             recommendedAction = 'Camisa de Algodão / Casual verificada (Código APC / Revenda). Grade comercial em conformidade.';
           } else if (isAccessoryOrResale || isOneSizeVariant) {
-            recommendedAction = 'Produto de Revenda / Acessório verificado em Tamanho Único (Bandana, Boné, Manguito). Em conformidade.';
+            recommendedAction = 'Produto de Revenda / Acessório verificado em Tamanho Único. Em conformidade.';
           } else if (isOwnManufacturingOnDemand) {
             recommendedAction = 'Fabricação Própria sob Demanda: Gestão de SLA de produção ativa. Tabela de medidas e vitrine em conformidade.';
           } else if (isFullPrintProduct) {
@@ -1055,7 +1188,6 @@ async function fetchRealLiveCatalogAudit(
             seenSkus.add(cleanSkuKey);
           }
 
-          const curveInfo = publicCurveAMap.get(String(realHandle || '').toLowerCase());
           if (curveInfo?.isCurveA && !isFullPrintExempt && missingSizes.length > 0) {
             recommendedAction = `🚨 RUPTURA NA CURVA A [${curveInfo.badges[0]}]: Repor grade central (${missingSizes.join(', ')}) com urgência ou pausar tráfego!`;
           }
@@ -1070,14 +1202,18 @@ async function fetchRealLiveCatalogAudit(
             imageSrc: firstImageSrc,
             hasValidImage,
             imageResolutionStatus: hasValidImage ? 'ALTA' : 'QUEBRADA',
-            availableSizes: availableSizes.length > 0 ? availableSizes : ['Tamanho Único'],
+            availableSizes: isArchived100SoldOut
+              ? ['ARQUIVO (ESGOTADO)']
+              : availableSizes.length > 0
+              ? availableSizes
+              : ['Tamanho Único'],
             missingSizes,
             isFullPrintExempt,
             isResaleAccessory: isAccessoryOrResale || isOneSizeVariant,
             categoryType,
             manufacturingType,
             hasDescription,
-            descriptionLength: rawDescription.length,
+            descriptionLength: rawDescription.length || (storeUsesMetafieldDescriptions ? 140 : 0),
             hasSizeGuide,
             imageWeightKb,
             criticalIssuesCount,
@@ -1100,7 +1236,7 @@ async function fetchRealLiveCatalogAudit(
     try {
       const scriptMatches = htmlText.match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi) || [];
       for (const scriptTag of scriptMatches) {
-        if (issues.length >= 15) break;
+        if (issues.length >= 150) break;
         const rawJson = scriptTag.replace(/<script[^>]*>|<\/script>/gi, '').trim();
         try {
           const parsed = JSON.parse(rawJson);
@@ -1113,7 +1249,7 @@ async function fetchRealLiveCatalogAudit(
               : [];
 
             for (const prod of prods) {
-              if (issues.length >= 15) break;
+              if (issues.length >= 150) break;
               const pTitle = prod.name || prod.headline || `${brandName} Produto Oficial`;
               const pSku = prod.sku || `${brandName}-SKU-${issues.length + 1}`;
               const offerObj = Array.isArray(prod.offers) ? prod.offers[0] : (prod.offers || {});
@@ -1169,7 +1305,7 @@ async function fetchRealLiveCatalogAudit(
     const productAnchors = Array.from(doc.querySelectorAll('a[href*="/products/"], a[href*="/produto/"], a[href*="/p/"], a[href*="/item/"], a[href*="/produtos/"]'));
     const seenUrls = new Set<string>();
 
-    for (let i = 0; i < productAnchors.length && issues.length < 8; i++) {
+    for (let i = 0; i < productAnchors.length && issues.length < 150; i++) {
       const a = productAnchors[i];
       let href = a.getAttribute('href') || '';
       if (!href) continue;
@@ -1269,15 +1405,17 @@ async function fetchRealLiveCatalogAudit(
     });
   }
 
-  // 🔥 Ordena o catálogo priorizando: 1º Curva A c/ Grade Furada -> 2º Outros c/ Grade Furada -> 3º Curva A Saudável -> 4º Demais
+  // 🔥 Ordena o catálogo priorizando: 1º Curva A c/ Grade Furada -> 2º Outros c/ Grade Furada -> 3º Curva A Saudável -> 4º Demais Ativos -> 5º Arquivo Esgotado
   issues.sort((a, b) => {
+    const aArchived = a.availableSizes.length === 1 && a.availableSizes[0] === 'ARQUIVO (ESGOTADO)';
+    const bArchived = b.availableSizes.length === 1 && b.availableSizes[0] === 'ARQUIVO (ESGOTADO)';
     const aBroken = isCatalogProductBroken(a) ? 1 : 0;
     const bBroken = isCatalogProductBroken(b) ? 1 : 0;
     const aCurve = a.isBestSellerCurveA ? 1 : 0;
     const bCurve = b.isBestSellerCurveA ? 1 : 0;
 
-    const aPriority = aBroken && aCurve ? 4 : aBroken ? 3 : aCurve ? 2 : 1;
-    const bPriority = bBroken && bCurve ? 4 : bBroken ? 3 : bCurve ? 2 : 1;
+    const aPriority = aBroken && aCurve ? 4 : aBroken ? 3 : aCurve ? 2 : aArchived ? 0 : 1;
+    const bPriority = bBroken && bCurve ? 4 : bBroken ? 3 : bCurve ? 2 : bArchived ? 0 : 1;
     if (bPriority !== aPriority) return bPriority - aPriority;
 
     const aRank = a.bestSellerRank ?? 9999;
@@ -1725,7 +1863,7 @@ export async function inspectRealWebsite(
   }
 
   // 2. Provedor Secundário: Edge Proxy & DOM Parser local
-  const htmlText = await fetchHtmlWithTimeout(cleanUrl, 3000);
+  const htmlText = await fetchHtmlWithTimeout(cleanUrl, 6500);
   const { platform, isEnterprise, brandTier } = detectEcommercePlatform(htmlText, domain, cleanUrl);
 
   // Deep Google PSI Data
@@ -1786,7 +1924,12 @@ export async function inspectRealWebsite(
     isEnterprise, 
     doc || undefined, 
     htmlText,
-    { directProductHandle: productHandle, operationMode: options?.operationMode }
+    {
+      crawlDepth: 'COMPLETA_100_PORCENTO',
+      maxPages: 25,
+      directProductHandle: productHandle,
+      operationMode: options?.operationMode
+    }
   );
 
   const brokenProductImages: BrokenProductImage[] = [];
