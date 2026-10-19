@@ -79,9 +79,14 @@ export function assessGhostInventoryRisk(input: GhostInventoryCheckInput): Ghost
   const sku = primaryVariant.sku || 'N/A';
 
   // 1. CHECAGEM DE INVENTORY POLICY (BACKORDER / CONTINUAR VENDENDO)
-  const isContinuePolicy = primaryVariant.inventory_policy === 'continue';
-  const isUntracked = primaryVariant.inventory_management === null || primaryVariant.inventory_management === undefined;
-  const isReportedZeroStock = primaryVariant.inventory_quantity !== undefined && primaryVariant.inventory_quantity <= 0;
+  const isContinuePolicy = variants.some((v: any) => v.inventory_policy === 'continue');
+  // Nota técnica: O endpoint público /products.json omite inventory_management (undefined).
+  // Apenas inventory_management === null explícito (via .js ou Admin API) comprova estoque não rastreado.
+  const isUntracked = primaryVariant.inventory_management === null;
+  const isReportedZeroStock = variants.some(
+    (v: any) => v.inventory_quantity !== undefined && v.inventory_quantity <= 0 && (v.available || v.inventory_policy === 'continue')
+  );
+  const allVariantsUnavailable = variants.length > 0 && variants.every((v: any) => v.available === false);
 
   // Reconhecimento de modelo de negócio: Confecção Sob Demanda vs Estoque Físico
   const isMadeToOrder = operationMode === 'OWN_MANUFACTURING_ON_DEMAND' ||
@@ -102,12 +107,12 @@ export function assessGhostInventoryRisk(input: GhostInventoryCheckInput): Ghost
 
   if (isUntracked) {
     if (!isMadeToOrder) {
-      flags.push("Estoque sem rastreamento oficial no front-end (inventory_management: null).");
+      flags.push("Estoque explicitamente sem rastreamento no sistema (inventory_management: null).");
       riskScore += 20;
     }
   }
 
-  if (isReportedZeroStock && (isContinuePolicy || primaryVariant.available)) {
+  if (isReportedZeroStock) {
     if (isMadeToOrder) {
       flags.push("Saldo físico zerado no galpão com produção sob demanda ativa (fluxo PCP normal).");
       riskScore += 5;
@@ -118,12 +123,19 @@ export function assessGhostInventoryRisk(input: GhostInventoryCheckInput): Ghost
   }
 
   // 2. CHECAGEM DIRETA VIA ERP OU ADMIN INTEGRATION (GROUNDING REAL)
-  if (erpOrAdminStock) {
-    if (erpOrAdminStock.warehouseQuantity !== undefined && erpOrAdminStock.warehouseQuantity <= 0) {
-      flags.push(`Estoque Físico Real no Galpão = ${erpOrAdminStock.warehouseQuantity} un (RUPTURA CONFIRMADA).`);
-      riskScore += 50;
-    }
+  const hasConfirmedErpZeroStock = Boolean(
+    erpOrAdminStock && erpOrAdminStock.warehouseQuantity !== undefined && erpOrAdminStock.warehouseQuantity <= 0
+  );
+  if (hasConfirmedErpZeroStock) {
+    flags.push(`Estoque Físico Real no Galpão = ${erpOrAdminStock!.warehouseQuantity} un (RUPTURA CONFIRMADA).`);
+    riskScore += 50;
   }
+
+  // Verifica se há anomalia real de estoque antes de aplicar amplificadores contextuais
+  const hasRealInventoryAnomaly =
+    (!isMadeToOrder && (isContinuePolicy || isUntracked || isReportedZeroStock)) ||
+    hasConfirmedErpZeroStock ||
+    Boolean(liveDomDetails?.hasSoldOutBadge && !liveDomDetails?.buyButtonDisabled);
 
   // 3. CONFLITO DE PROMESSA DE EXPEDIÇÃO ('ENVIO IMEDIATO' VS RUPTURA REAL - CDC ART. 35)
   const claimsImmediateDelivery = 
@@ -134,13 +146,14 @@ export function assessGhostInventoryRisk(input: GhostInventoryCheckInput): Ghost
     Boolean(liveDomDetails?.bodyText?.toLowerCase().includes('envio imediato'));
 
   let fulfillmentPromiseConflict = false;
-  if (claimsImmediateDelivery && (isContinuePolicy || (erpOrAdminStock?.warehouseQuantity ?? 1) <= 0)) {
+  if (claimsImmediateDelivery && (hasRealInventoryAnomaly || allVariantsUnavailable)) {
     fulfillmentPromiseConflict = true;
     flags.push("Infração CDC Art. 35: Produto ostenta 'Envio Imediato' sem estoque expedível em 24h.");
     riskScore += 30;
   }
 
   // 4. CHECAGEM DE PRODUTO HERO EM ACESSÓRIOS/BONÉS (HISTÓRICO YELLOWSTONE)
+  // Apenas amplifica o risco quando já existe evidência real de anomalia de inventário ou conflito
   const isHighTrafficAccessory = 
     titleLower.includes('bone') || 
     titleLower.includes('boné') || 
@@ -150,7 +163,7 @@ export function assessGhostInventoryRisk(input: GhostInventoryCheckInput): Ghost
     titleLower.includes('chapéu') ||
     titleLower.includes('bandana');
 
-  if (isHighTrafficAccessory) {
+  if (isHighTrafficAccessory && (hasRealInventoryAnomaly || allVariantsUnavailable)) {
     flags.push("Item de alta atratividade e compra por impulso no tráfego pago (Acessório/Colecionável).");
     riskScore += 15;
   }
@@ -159,7 +172,7 @@ export function assessGhostInventoryRisk(input: GhostInventoryCheckInput): Ghost
   const hasMultipleThemeImages = Array.isArray(product.images) && product.images.length >= 3 && (
     titleLower.includes('yellowstone') || titleLower.includes('long horn') || titleLower.includes('taurus')
   );
-  if (hasMultipleThemeImages) {
+  if (hasMultipleThemeImages && (hasRealInventoryAnomaly || allVariantsUnavailable)) {
     flags.push("Variações visuais misturadas no mesmo SKU: risco de substituição de modelo esgotado.");
     riskScore += 10;
   }

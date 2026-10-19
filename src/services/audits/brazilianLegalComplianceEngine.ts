@@ -85,9 +85,10 @@ export function auditBrazilianLegalCompliance(html: string, isMarketplace: boole
   const htmlLower = (html || '').toLowerCase();
   const violations: LegalComplianceReport['violations'] = [];
 
-  // 1. Extração de CNPJ
-  const cnpjMatches = html.match(/\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/g) || 
-                      html.match(/\b\d{14}\b/g) || [];
+  // 1. Extração de CNPJ (Apenas formato oficial XX.XXX.XXX/XXXX-XX ou 14 dígitos explicitamente precedidos por "CNPJ")
+  const formattedCnpjMatches = html.match(/\d{2}\.?\d{3}\.?\d{3}\/\d{4}-\d{2}/g) || [];
+  const contextualRawMatches = Array.from(html.matchAll(/cnpj\s*[:º°\-]?\s*(\d{14})\b/gi)).map(m => m[1]);
+  const cnpjMatches = [...formattedCnpjMatches, ...contextualRawMatches];
   let cnpjFound: string | undefined = undefined;
   let isCnpjValid = false;
 
@@ -99,9 +100,9 @@ export function auditBrazilianLegalCompliance(html: string, isMarketplace: boole
     }
   }
 
-  // Se encontrou padrão de CNPJ mas os dígitos verificadores falharam
-  if (!cnpjFound && cnpjMatches.length > 0) {
-    cnpjFound = cnpjMatches[0];
+  // Se encontrou padrão explícito de CNPJ formatado (com barra/hífen) mas os dígitos verificadores falharam
+  if (!cnpjFound && formattedCnpjMatches.length > 0) {
+    cnpjFound = formattedCnpjMatches[0];
     isCnpjValid = false;
   }
 

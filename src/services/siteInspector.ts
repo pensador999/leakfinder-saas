@@ -496,7 +496,6 @@ async function fetchRealLiveCatalogAudit(
     operationMode?: StoreOperationMode;
   }
 ): Promise<CatalogAuditSummary> {
-  const standardLineSizes = ['PP', 'P', 'M', 'G', 'GG', 'G1', 'G2'];
   const issues: CatalogProductIssue[] = [];
   const seenSkus = new Set<string>();
 
@@ -642,11 +641,34 @@ async function fetchRealLiveCatalogAudit(
           });
 
           const unavailableVariantTitles: string[] = [];
+          const registeredLetterSizes = new Set<string>();
+          const availableLetterSizes = new Set<string>();
+          const apparelTokens = ['PP', 'P', 'M', 'G', 'GG', 'XG', 'EG', 'XGG', 'G1', 'G2', 'G3', 'G4'];
+
           if (variants.length > 0) {
             mainSku = variants[0].sku || mainSku;
             variants.forEach((v: any) => {
               const szTitle = (v.title || v.option1 || '').toUpperCase().trim();
               if (!szTitle || szTitle === 'DEFAULT TITLE') return;
+
+              // Extrai o token de tamanho individual mesmo em variantes compostas (ex: "GG / Azul Escuro" -> "GG")
+              const candidateParts = [
+                v.option1,
+                v.option2,
+                v.option3,
+                ...szTitle.split(/[\/\-|]/).map((s: string) => s.trim())
+              ]
+                .filter(Boolean)
+                .map((s: string) => String(s).toUpperCase().trim());
+
+              const matchedLetter = candidateParts.find(part => apparelTokens.includes(part));
+              if (matchedLetter) {
+                registeredLetterSizes.add(matchedLetter);
+                if (v.available) {
+                  availableLetterSizes.add(matchedLetter);
+                }
+              }
+
               if (v.available) {
                 if (!availableSizes.includes(szTitle)) availableSizes.push(szTitle);
               } else {
@@ -674,14 +696,19 @@ async function fetchRealLiveCatalogAudit(
           const isOneSizeVariant = (availableSizes.length === 0 && unavailableVariantTitles.length === 0) || 
             availableSizes.every(sz => ['ÚNICO', 'UNICO', 'ONE SIZE', 'DEFAULT TITLE', 'TAMANHO ÚNICO', 'TAMANHO UNICO'].includes(sz));
 
-          // Verifica se o produto utiliza grade alfabética de vestuário (PP, P, M, G, GG, XG, G1, G2, G3)
-          const allVariantLabels = [...availableSizes, ...unavailableVariantTitles];
-          const usesApparelLetterGrid = allVariantLabels.some(sz =>
-            ['PP', 'P', 'M', 'G', 'GG', 'XG', 'G1', 'G2', 'G3'].includes(sz)
+          // Verifica se o produto é genuinamente vestuário/calçado com grade de tamanhos
+          const isApparelKeywords = /camis|blus|cal[cç]a|jaqueta|moletom|vestido|short|bermuda|conjunto|biqu[ií]ni|mai[oô]|legging|top|casaco|colete|polo|regata|macac[aã]o|jardineira/i.test(
+            `${title} ${productTypeUpper} ${tagsUpper.join(' ')}`
           );
+          const isFootwearKeywords = /bota|botina|t[eê]nis|sapato|sand[aá]lia|chinelo|coturno|mocassim|scarpin|sapatilha/i.test(
+            `${title} ${productTypeUpper} ${tagsUpper.join(' ')}`
+          );
+          const usesApparelLetterGrid = registeredLetterSizes.size > 0 && (isApparelKeywords || registeredLetterSizes.size >= 3);
 
           const isFullPrintProduct = handleUpper.includes('_FULL') || 
                                      titleUpper.includes('_FULL') || 
+                                     mainSku.toUpperCase().includes('_FULL') ||
+                                     variants.some((v: any) => String(v.sku || '').toUpperCase().includes('_FULL')) ||
                                      tagsUpper.some((t: string) => t.includes('FULL'));
 
           const isFullPrintExempt = isOwnManufacturingOnDemand || isFishingGear || isCottonOrCasual || isFullPrintProduct || isAccessoryOrResale || isOneSizeVariant;
@@ -696,10 +723,12 @@ async function fetchRealLiveCatalogAudit(
             ? 'FULL_PRINT'
             : 'VESTUARIO_LINHA';
 
-          // Calculate missing sizes:
+          // Calculate missing sizes Sem Falsos-Positivos:
           // 1. Se todas as variantes estiverem indisponíveis -> ESGOTADO
-          // 2. Se for grade de vestuário (PP-G2) não isenta -> audita curva padrão PP-G2 + variantes indisponíveis
-          // 3. Se for outra vertical (tons de cosméticos, numeração de calçado, sabores, ml, voltagem) -> audita exatamente as variantes reais indisponíveis no JSON!
+          // 2. Se for vestuário com grade alfabética -> audita apenas tamanhos cadastrados na peça que esgotaram
+          //    (ou, se a peça tiver grade truncada de apenas 1 tamanho residual como "Tamanho: P", aponta os tamanhos âncora M/G ausentes).
+          //    NUNCA exige G1/G2/PP de produtos que não fabricam Plus Size e estão com 100% da grade P-GG ativa!
+          // 3. Se for outra vertical -> audita estritamente as variantes reais indisponíveis (!v.available).
           if (allVariantsUnavailable) {
             missingSizes.push('ESGOTADO');
           } else if (isAccessoryOrResale || isOneSizeVariant) {
@@ -713,11 +742,21 @@ async function fetchRealLiveCatalogAudit(
             }
           } else if (!isFullPrintExempt) {
             if (usesApparelLetterGrid) {
-              standardLineSizes.forEach(std => {
-                if (!availableSizes.includes(std)) {
-                  missingSizes.push(std);
+              // 1) Verifica quais tamanhos cadastrados no produto estão sem nenhuma cor/opção disponível
+              registeredLetterSizes.forEach(regSz => {
+                if (!availableLetterSizes.has(regSz) && !missingSizes.includes(regSz)) {
+                  missingSizes.push(regSz);
                 }
               });
+              // 2) Se a peça de roupa tem grade residual truncada (ex: apenas 1 tamanho cadastrado como "Tamanho: P"),
+              // verifica se os tamanhos âncora centrais (M, G) foram suprimidos por esgotamento
+              if (isApparelKeywords && registeredLetterSizes.size <= 2) {
+                ['M', 'G'].forEach(coreSz => {
+                  if (!availableLetterSizes.has(coreSz) && !missingSizes.includes(coreSz)) {
+                    missingSizes.push(coreSz);
+                  }
+                });
+              }
             } else {
               unavailableVariantTitles.forEach(unav => {
                 if (!missingSizes.includes(unav)) {
@@ -727,27 +766,38 @@ async function fetchRealLiveCatalogAudit(
             }
           }
 
-          // Description & Size Guide analysis
+          // Description & Size Guide analysis (exige Tabela de Medidas apenas para Vestuário e Calçados)
           const rawDescription = (p.body_html || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
           const hasDescription = rawDescription.length >= 60;
           const descLower = rawDescription.toLowerCase();
-          const hasSizeGuide = descLower.includes('medida') || 
+          const requiresSizeGuide = (isApparelKeywords || isFootwearKeywords || usesApparelLetterGrid) && !isFishingGear && !isAccessoryOrResale && !isOneSizeVariant;
+          const hasSizeGuide = !requiresSizeGuide ||
+                               descLower.includes('medida') || 
                                descLower.includes('tamanho') || 
                                descLower.includes('tabela') || 
                                descLower.includes('guia') || 
-                               themeHasSizeGuideAddon ||
-                               isFishingGear ||
-                               isAccessoryOrResale ||
-                               isOneSizeVariant;
+                               descLower.includes('cm') ||
+                               themeHasSizeGuideAddon;
 
-          // Images
+          // Images: avalia peso estimado apenas como alerta se for PNG não comprimido ou dimensão bruta > 2400px (Zero Falso-Positivo por hash)
           const images = Array.isArray(p.images) ? p.images : [];
           const hasValidImage = images.length > 0 && !!images[0]?.src;
           const firstImageSrc = hasValidImage ? images[0].src : '';
-          const imageWeightKb = hasValidImage ? Math.round(180 + ((hashString(realHandle) % 250))) : 0;
+          const firstImgWidth = Number(images[0]?.width || 0);
+          const firstImgHeight = Number(images[0]?.height || 0);
+          const isUnoptimizedPngOrRaw = /\.png(\?|$)/i.test(firstImageSrc) && (firstImgWidth > 2000 || firstImgHeight > 2000 || firstImgWidth === 0);
+          const imageWeightKb = !hasValidImage
+            ? 0
+            : isUnoptimizedPngOrRaw
+            ? 390
+            : 185;
 
-          // Detect manufacturing type: Resale vs In-House Manufacturing
-          const isResaleGood = isAccessoryOrResale || isCottonOrCasual || isFishingGear || isOneSizeVariant ||
+          // Detect manufacturing type: Resale vs In-House Manufacturing (Acessórios de marca própria D2C continuam sendo FABRICACAO_PROPRIA, exceto linhas explícitas de revenda)
+          const hasExplicitResaleTag =
+            productTypeUpper.includes('REVENDA') ||
+            tagsUpper.some((t: string) => t.includes('REVENDA') || t.includes('FORNECEDOR') || t.includes('MULTIMARCA'));
+          const isResaleGood = hasExplicitResaleTag || isCottonOrCasual || isFishingGear ||
+            String(options?.operationMode || '').toUpperCase().includes('RESALE') ||
             titleUpper.includes('WORK') || titleUpper.includes('SAFARI') || titleUpper.includes('BOTINA') ||
             titleUpper.includes('BOTÃO') || titleUpper.includes('BOTAO') || titleUpper.includes('ADVENTURE') ||
             mainSku.startsWith('CMB') || mainSku.startsWith('CBT') || mainSku.startsWith('BT') || mainSku.startsWith('BOT');
@@ -759,7 +809,7 @@ async function fetchRealLiveCatalogAudit(
           if (allVariantsUnavailable) criticalIssuesCount += 3;
           if (!isFullPrintExempt && missingSizes.length > 0) criticalIssuesCount += 1;
           if (!hasDescription) criticalIssuesCount += 1;
-          if (!hasSizeGuide && !isAccessoryOrResale && !isFishingGear) criticalIssuesCount += 1;
+          if (!hasSizeGuide) criticalIssuesCount += 1;
           if (imageWeightKb > 350) criticalIssuesCount += 1;
 
           const auditedProd = deepSkuAudit?.allProducts.find(item => String(item.id) === String(p.id));
@@ -1569,16 +1619,33 @@ export async function inspectRealWebsite(
     const realBrokenList: BrokenProductImage[] = [];
     imgList.forEach((img, idx) => {
       const alt = img.getAttribute('alt')?.trim() || '';
-      const src = img.getAttribute('src')?.trim() || '';
-      const parentText = img.parentElement?.textContent?.trim().slice(0, 60) || '';
+      const rawSrc = img.getAttribute('src')?.trim() || '';
+      const lazySrc =
+        img.getAttribute('data-src')?.trim() ||
+        img.getAttribute('data-original')?.trim() ||
+        img.getAttribute('srcset')?.trim() ||
+        img.getAttribute('data-srcset')?.trim() ||
+        '';
+      const effectiveSrc = rawSrc && !rawSrc.startsWith('data:image/') ? rawSrc : (lazySrc || rawSrc);
+      const isDecorativeOrPixel =
+        img.getAttribute('role') === 'presentation' ||
+        img.getAttribute('aria-hidden') === 'true' ||
+        img.getAttribute('width') === '1' ||
+        img.getAttribute('height') === '1' ||
+        /icon|logo|flag|badge|payment|bandeira|selo|pix|svg/i.test(`${effectiveSrc} ${img.className || ''}`);
 
-      if (!alt || !src || src.includes('placeholder') || src.includes('no-image')) {
+      if (isDecorativeOrPixel) return;
+
+      const parentText = img.parentElement?.textContent?.trim().slice(0, 60) || '';
+      const isPlaceholder = effectiveSrc.includes('placeholder') || effectiveSrc.includes('no-image');
+
+      if (!effectiveSrc || isPlaceholder) {
         const pTitle = alt || parentText || `${brandName} — Item #${idx + 1}`;
         realBrokenList.push({
           id: `img-real-${idx}`,
-          src: src || 'src vazio no HTML',
+          src: effectiveSrc || 'src vazio no HTML',
           productTitle: pTitle,
-          reason: !alt ? 'SEM_ALT' : src.includes('placeholder') ? 'PLACEHOLDER' : 'SRC_VAZIO_OU_BROKEN',
+          reason: isPlaceholder ? 'PLACEHOLDER' : 'SRC_VAZIO_OU_BROKEN',
           locationHint: `Tag <img> na linha ~L${(idx + 1) * 8} de ${domain}`
         });
       }
