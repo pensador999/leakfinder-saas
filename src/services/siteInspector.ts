@@ -591,8 +591,12 @@ async function fetchRealLiveCatalogAudit(
       const hasAdTrackingInHtml = isHtmlUnavailableByTimeout ||
         rawHtml.includes('fbevents.js') ||
         rawHtml.includes('fbq(') ||
+        rawHtml.includes('facebook_pixel') ||
+        rawHtml.includes('pixel_id') ||
         rawHtml.includes('googletagmanager.com') ||
-        rawHtml.includes('gtag(');
+        rawHtml.includes('gtag(') ||
+        rawHtml.includes('google_tag_ids') ||
+        rawHtml.includes('gtag_events');
 
       deepSkuAudit = auditDeepCatalog(parsedProducts, {
         storeDomain: domain,
@@ -1736,9 +1740,10 @@ export async function inspectRealWebsite(
     const hasCart = bodyText.includes('carrinho') || bodyText.includes('cart') || bodyText.includes('bag');
 
     const scriptTags = Array.from(doc.querySelectorAll('script')).map(s => (s.innerHTML + ' ' + (s.getAttribute('src') || '')).toLowerCase());
-    const hasMetaPixel = scriptTags.some(s => s.includes('fbevents.js') || s.includes('fbq('));
-    const hasTiktokPixel = scriptTags.some(s => s.includes('ttq.load') || s.includes('tiktok.com/'));
-    const hasGtm = scriptTags.some(s => s.includes('googletagmanager.com') || s.includes('gtag('));
+    const htmlLower = htmlText.toLowerCase();
+    const hasMetaPixel = scriptTags.some(s => s.includes('fbevents.js') || s.includes('fbq(') || s.includes('facebook_pixel') || s.includes('pixel_id')) || htmlLower.includes('facebook_pixel');
+    const hasTiktokPixel = scriptTags.some(s => s.includes('ttq.load') || s.includes('tiktok.com/') || s.includes('tiktok_pixel')) || htmlLower.includes('tiktok_pixel');
+    const hasGtm = scriptTags.some(s => s.includes('googletagmanager.com') || s.includes('gtag(') || s.includes('google_tag_ids') || s.includes('gtag_events')) || htmlLower.includes('google_tag_ids');
 
     const hasWhatsapp = bodyText.includes('whatsapp') || /api\.whatsapp\.com/.test(htmlText.toLowerCase()) || /wa\.me/.test(htmlText.toLowerCase());
     const hasEmail = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}/.test(bodyText);

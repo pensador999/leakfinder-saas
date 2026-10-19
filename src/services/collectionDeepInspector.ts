@@ -393,21 +393,82 @@ export async function auditSpecificCollection(
   let totalSkusInCollection = 0;
   let dataSource: CollectionCampaignMapping['dataSource'] = 'COLLECTION_API';
 
-  // 2. BUSCA AO VIVO DOS PRODUTOS DA COLEÇÃO (/collections/{handle}/products.json?limit=250)
+  // 2. BUSCA AO VIVO DE 100% DOS PRODUTOS DA COLEÇÃO (/collections/{handle}/products.json?limit=250&page=1..N)
   try {
-    const collectionJsonUrl = `https://${activeDomain}/collections/${activeHandle}/products.json?limit=250`;
-    const jsonRaw = await fetchSafeText(collectionJsonUrl, 6000);
+    const limit = 250;
+    const maxPages = 15;
+    const rawCollectionProducts: any[] = [];
+    const seenColHandles = new Set<string>();
 
-    if (jsonRaw) {
-      const parsed = JSON.parse(jsonRaw);
-      if (parsed?.products && Array.isArray(parsed.products) && parsed.products.length > 0) {
-        dataSource = 'COLLECTION_API';
-        products = parsed.products.map((p: any, idx: number) => {
-          const mapped = mapShopifyProductToCollectionItem(p, idx, activeDomain, brandName);
-          totalSkusInCollection += mapped.skuCount;
-          return mapped.item;
-        });
+    const appendColProds = (prods: any[]) => {
+      for (const p of prods) {
+        const h = String(p.handle || p.id || '').toLowerCase();
+        if (!h || !seenColHandles.has(h)) {
+          if (h) seenColHandles.add(h);
+          rawCollectionProducts.push(p);
+        }
       }
+    };
+
+    const firstColUrl = `https://${activeDomain}/collections/${activeHandle}/products.json?limit=${limit}&page=1`;
+    const firstRaw = await fetchSafeText(firstColUrl, 6000);
+    let hasMoreColPages = false;
+
+    if (firstRaw) {
+      const firstParsed = JSON.parse(firstRaw);
+      if (Array.isArray(firstParsed?.products) && firstParsed.products.length > 0) {
+        appendColProds(firstParsed.products);
+        hasMoreColPages = firstParsed.products.length === limit;
+      }
+    }
+
+    let nextPage = 2;
+    const waveSize = 4;
+    while (hasMoreColPages && nextPage <= maxPages) {
+      const wavePages: number[] = [];
+      for (let i = 0; i < waveSize && (nextPage + i) <= maxPages; i++) {
+        wavePages.push(nextPage + i);
+      }
+
+      const waveResults = await Promise.all(
+        wavePages.map(async (pNum) => {
+          const pageUrl = `https://${activeDomain}/collections/${activeHandle}/products.json?limit=${limit}&page=${pNum}`;
+          const raw = await fetchSafeText(pageUrl, 6000);
+          if (!raw) return { pNum, prods: null };
+          try {
+            const parsed = JSON.parse(raw);
+            return { pNum, prods: Array.isArray(parsed?.products) ? parsed.products : null };
+          } catch {
+            return { pNum, prods: null };
+          }
+        })
+      );
+
+      let reachedEnd = false;
+      for (const res of waveResults) {
+        if (!res.prods || res.prods.length === 0) {
+          hasMoreColPages = false;
+          reachedEnd = true;
+          break;
+        }
+        appendColProds(res.prods);
+        if (res.prods.length < limit) {
+          hasMoreColPages = false;
+          reachedEnd = true;
+          break;
+        }
+      }
+      if (reachedEnd) break;
+      nextPage += waveSize;
+    }
+
+    if (rawCollectionProducts.length > 0) {
+      dataSource = 'COLLECTION_API';
+      products = rawCollectionProducts.map((p: any, idx: number) => {
+        const mapped = mapShopifyProductToCollectionItem(p, idx, activeDomain, brandName);
+        totalSkusInCollection += mapped.skuCount;
+        return mapped.item;
+      });
     }
   } catch {
     // collection json failed, proceed to fallback
@@ -433,7 +494,7 @@ export async function auditSpecificCollection(
             return handleWords.some(w => hay.includes(w));
           });
 
-          const pool = matching.length > 0 ? matching : parsed.products.slice(0, 40);
+          const pool = matching.length > 0 ? matching : parsed.products;
           dataSource = 'CATALOG_API_FILTERED';
 
           products = pool.map((p: any, idx: number) => {
@@ -448,7 +509,7 @@ export async function auditSpecificCollection(
     }
   }
 
-  // 4. TENTATIVA 3: Utilizar os produtos reais já auditados pelo motor principal (verifiedCatalogIssues)
+  // 4. TENTATIVA 3: Utilizar 100% dos produtos reais já auditados pelo motor principal (verifiedCatalogIssues)
   if (products.length === 0 && verifiedCatalogIssues.length > 0) {
     dataSource = 'STORE_VERIFIED_GROUNDING';
     const realIssues = verifiedCatalogIssues.filter(i => i.id !== 'real-catalog-verified');
@@ -465,7 +526,7 @@ export async function auditSpecificCollection(
       return handleWords.some(w => hay.includes(w));
     });
 
-    const selectedIssues = matchedIssues.length > 0 ? matchedIssues.slice(0, 60) : sourceIssues.slice(0, 40);
+    const selectedIssues = matchedIssues.length > 0 ? matchedIssues : sourceIssues;
 
     products = selectedIssues.map((issue, idx) => {
       const skuLen = issue.detailedSkus?.length || Math.max(1, (issue.availableSizes?.length || 0) + (issue.missingSizes?.length || 0));

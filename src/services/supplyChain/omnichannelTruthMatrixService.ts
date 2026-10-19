@@ -22,14 +22,19 @@ function buildDynamicOmnichannelItemsFromStore(executeKillSwitch: boolean = fals
   const hubName = vertical.dominantTechStack.primaryHub.split('/')[0].trim();
   const aov = diagnostic?.input?.averageOrderValue || vertical.averageTicketBRL || 179.90;
 
-  // Prioriza os SKUs realmente em ruptura para que a Matriz Omnichannel reflita os gargalos reais da loja
+  // Prioriza os SKUs realmente em ruptura para que a Matriz Omnichannel reflita 100% dos gargalos reais da loja
   const sortedIssues = [...issues].sort((a: any, b: any) => {
     const aBroken = Boolean(a.isGhostInventorySuspect) || (!a.isFullPrintExempt && a.missingSizes?.length > 0) || a.missingSizes?.includes('ESGOTADO');
     const bBroken = Boolean(b.isGhostInventorySuspect) || (!b.isFullPrintExempt && b.missingSizes?.length > 0) || b.missingSizes?.includes('ESGOTADO');
     return Number(bBroken) - Number(aBroken);
   });
 
-  const items: OmnichannelAuditItem[] = sortedIssues.slice(0, 5).map((issue: any, idx: number) => {
+  const brokenSet = sortedIssues.filter(
+    (a: any) => Boolean(a.isGhostInventorySuspect) || (!a.isFullPrintExempt && a.missingSizes?.length > 0) || a.missingSizes?.includes('ESGOTADO')
+  );
+  const targetPool = brokenSet.length >= 10 ? brokenSet : sortedIssues.slice(0, Math.max(25, brokenSet.length));
+
+  const items: OmnichannelAuditItem[] = targetPool.map((issue: any, idx: number) => {
     const isCritical = Boolean(issue.isGhostInventorySuspect) || issue.missingSizes.includes('ESGOTADO') || (!issue.isFullPrintExempt && issue.missingSizes.length >= 2);
     const isAlert = !isCritical && !issue.isFullPrintExempt && issue.missingSizes.length > 0;
     const dailySpend = isCritical ? 250 : isAlert ? 180 : 200;

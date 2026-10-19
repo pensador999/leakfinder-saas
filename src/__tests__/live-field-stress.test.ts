@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { runAgentDiagnosticAsync } from '../services/agentEngine';
-import { auditDeepCatalog } from '../services/catalog/deepSkuAuditEngine';
 import { auditSupplyChainDiscrepancy } from '../services/supplyChain/erpHubDiscrepancyEngine';
 import { runCeoOrchestratorEvaluation } from '../services/agents/chiefExecutiveOrchestratorAgent';
 import { classifyUniversalNiche } from '../services/agents/universalNicheRecognitionAgent';
@@ -34,23 +33,7 @@ describe('🔥 TESTE DE CAMPO MÁXIMO E2E (LIVE MULTI-STORE STRESS TEST)', () =>
 
       const startMs = Date.now();
 
-      // 1. Fetch ao vivo de /products.json para testar auditDeepCatalog diretamente com payload real da Shopify
-      let rawShopifyProducts: any[] = [];
-      try {
-        const res = await fetch(`${store.url}/products.json?limit=50`, {
-          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AdShield-FieldAuditor/2026' }
-        });
-        if (res.ok) {
-          const json = await res.json();
-          rawShopifyProducts = json.products || [];
-        }
-      } catch (err: any) {
-        console.warn(`[Live Fetch Warning] ${store.url}/products.json:`, err.message);
-      }
-
-      console.log(`📦 [1/7] Produtos extraídos ao vivo de /products.json: ${rawShopifyProducts.length}`);
-
-      // 2. Execução completa do Pipeline Principal de Diagnóstico (runAgentDiagnosticAsync)
+      // 1 & 2. Execução completa do Pipeline Principal de Diagnóstico varrendo 100% das páginas, produtos e SKUs
       const diagnostic = await runAgentDiagnosticAsync({
         businessName: store.name,
         siteUrl: store.url,
@@ -62,16 +45,27 @@ describe('🔥 TESTE DE CAMPO MÁXIMO E2E (LIVE MULTI-STORE STRESS TEST)', () =>
       });
 
       const elapsedMs = Date.now() - startMs;
+      const catAudit = diagnostic.realSiteData.catalogAudit;
+      const deepSummary = catAudit?.deepSkuAudit;
+
+      console.log(`📦 [1/7] Paginação 100% Concluída (/products.json):`);
+      console.log(`   ├─ Páginas Varridas: ${catAudit?.paginationInfo?.pagesCrawled} (Modo: ${catAudit?.paginationInfo?.crawlDepth})`);
+      console.log(`   ├─ Total de Produtos Auditados (100%): ${catAudit?.totalProductsScanned}`);
+      console.log(`   └─ Total de SKUs Mapeados (100%): ${catAudit?.totalSkusAudited} (Em Estoque: ${catAudit?.totalSkusInStock} | Rompidos: ${catAudit?.totalSkusInStockout})`);
+
       console.log(`⚡ [2/7] Diagnóstico E2E concluído em ${elapsedMs}ms | Growth Score: ${diagnostic.growthScore}/100`);
       console.log(`   ├─ Plataforma detectada: ${diagnostic.realSiteData.ecommercePlatform}`);
       console.log(`   ├─ Nicho detectado: ${diagnostic.input.niche}`);
-      console.log(`   ├─ Produtos escaneados no Catalog Doctor: ${diagnostic.realSiteData.catalogAudit?.totalProductsScanned}`);
-      console.log(`   ├─ Produtos com grade quebrada: ${diagnostic.realSiteData.catalogAudit?.productsWithBrokenGrid}`);
-      console.log(`   └─ Saúde do Catálogo: ${diagnostic.realSiteData.catalogAudit?.catalogHealthScore}%`);
+      console.log(`   ├─ Produtos escaneados no Catalog Doctor: ${catAudit?.totalProductsScanned}`);
+      console.log(`   ├─ Produtos Isentos (_FULL / Pesca / Casual / Único): ${catAudit?.productsWithFullExemption}`);
+      console.log(`   ├─ Produtos com grade quebrada real: ${catAudit?.productsWithBrokenGrid}`);
+      console.log(`   └─ Saúde do Catálogo: ${catAudit?.catalogHealthScore}%`);
 
       expect(diagnostic.growthScore).toBeGreaterThanOrEqual(0);
       expect(diagnostic.growthScore).toBeLessThanOrEqual(100);
       expect(diagnostic.realSiteData.domain).toBeTruthy();
+      expect(catAudit?.totalProductsScanned).toBeGreaterThan(100);
+      expect(catAudit?.totalSkusAudited).toBeGreaterThan(100);
 
       // 3. Verificação da Detecção de Vertical & Prompt Injector
       const verticalContextText = `${diagnostic.input.niche} ${diagnostic.realSiteData.title} ${diagnostic.realSiteData.domain}`;
@@ -89,16 +83,10 @@ describe('🔥 TESTE DE CAMPO MÁXIMO E2E (LIVE MULTI-STORE STRESS TEST)', () =>
       expect(vertical.verticalId).toBe(store.expectedVertical);
       expect(injectedAdsPrompt).toContain(vertical.verticalId);
 
-      // 4. Auditoria Profunda de SKUs + Deduplicação + Ghost Inventory
-      if (rawShopifyProducts.length > 0) {
-        const deepSummary = auditDeepCatalog(rawShopifyProducts, {
-          storeDomain: diagnostic.realSiteData.domain,
-          dailyAdSpend: 300,
-          isAdRunning: diagnostic.realSiteData.hasMetaPixel,
-          operationMode: 'AUTO_DETECT'
-        });
-
-        console.log(`🔬 [4/7] Deep SKU Audit & Deduplicação:`);
+      // 4. Auditoria Profunda de 100% dos SKUs + Deduplicação + Ghost Inventory
+      expect(deepSummary).toBeDefined();
+      if (deepSummary) {
+        console.log(`🔬 [4/7] Deep SKU Audit & Deduplicação em 100% da Loja:`);
         console.log(`   ├─ Produtos únicos auditados: ${deepSummary.totalProductsAudited}`);
         console.log(`   ├─ SKUs únicos auditados: ${deepSummary.totalSkusAudited}`);
         console.log(`   ├─ SKUs em estoque: ${deepSummary.totalInStockSkus} | SKUs em ruptura: ${deepSummary.totalRupturedSkus}`);
@@ -108,7 +96,7 @@ describe('🔥 TESTE DE CAMPO MÁXIMO E2E (LIVE MULTI-STORE STRESS TEST)', () =>
           console.log(`   └─ Top Produto Crítico: "${topCrit.title}" (${topCrit.rupturedSkusCount}/${topCrit.totalSkusCount} SKUs rompidos) -> Ação: ${topCrit.skus.find(s => !s.available)?.operationalAction}`);
         }
 
-        // Verifica que não há códigos SKU duplicados dentro do mesmo produto auditado
+        // Verifica que não há códigos SKU duplicados dentro do mesmo produto em 100% dos produtos da loja
         for (const prod of deepSummary.allProducts) {
           const skus = prod.skus.map(s => s.skuCode.toUpperCase());
           const uniqueSkus = new Set(skus);
@@ -116,9 +104,9 @@ describe('🔥 TESTE DE CAMPO MÁXIMO E2E (LIVE MULTI-STORE STRESS TEST)', () =>
         }
       }
 
-      // 5. Motor de Discrepância Supply Chain (ERP / Hub / Meta Ads)
+      // 5. Motor de Discrepância Supply Chain (ERP / Hub / Meta Ads) sobre 100% do catálogo
       const supplyChainAudit = auditSupplyChainDiscrepancy(diagnostic.realSiteData, diagnostic.input);
-      console.log(`🏭 [5/7] Auditoria Supply Chain (ERP/Hub):`);
+      console.log(`🏭 [5/7] Auditoria Supply Chain (ERP/Hub) em 100% do Catálogo:`);
       console.log(`   ├─ ERP Configurado/Detectado: ${supplyChainAudit.stackOverview.erpDetectedOrConfigured}`);
       console.log(`   ├─ Hub Configurado/Detectado: ${supplyChainAudit.stackOverview.hubDetectedOrConfigured}`);
       console.log(`   ├─ Sync Score Operacional: ${supplyChainAudit.operationalSyncScore}% (${supplyChainAudit.syncHealthStatus})`);
@@ -142,23 +130,23 @@ describe('🔥 TESTE DE CAMPO MÁXIMO E2E (LIVE MULTI-STORE STRESS TEST)', () =>
       // 7. Persistência no Zustand Store + Cruzamento Quádruplo Omnichannel + Cálculo Atuarial
       useAuditStore.getState().setDiagnostic(diagnostic);
       const omniResult = await runOmnichannelCrossAudit();
-      const firstIssue = diagnostic.realSiteData.catalogAudit?.issues?.find(i => i.missingSizes.length > 0) || diagnostic.realSiteData.catalogAudit?.issues?.[0];
+      const firstIssue = diagnostic.realSiteData.catalogAudit?.issues?.find(i => !i.isFullPrintExempt && i.missingSizes.length > 0) || diagnostic.realSiteData.catalogAudit?.issues?.[0];
       if (firstIssue) {
         const bleedActuary = calculateActuarialBleed({
           productTitle: firstIssue.productTitle,
-          productPriceBRL: 199.90,
+          productPriceBRL: firstIssue.price || 199.90,
           availableSizes: firstIssue.availableSizes,
           outOfStockSizes: firstIssue.missingSizes,
           niche: vertical.verticalId
         });
-        console.log(`📐 [7/7] Engenharia Atuarial & Matriz Omnichannel:`);
+        console.log(`📐 [7/7] Engenharia Atuarial & Matriz Omnichannel (100% do Catálogo):`);
         console.log(`   ├─ Produto Auditado no Atuário: "${bleedActuary.productTitle}"`);
         console.log(`   ├─ Demanda Rompida na Curva Gaussiana: ${bleedActuary.rupturedDemandPct}% | Severidade: ${bleedActuary.severity}`);
         console.log(`   ├─ Sangria Mensal Total (Ads + Lucro Cessante): R$ ${bleedActuary.totalMonthlyBleedBRL.toFixed(2)}`);
-        console.log(`   └─ Itens na Matriz Omnichannel: ${omniResult.items.length} (Primeiro SKU: ${omniResult.items[0]?.sku})`);
+        console.log(`   └─ Itens Críticos na Matriz Omnichannel: ${omniResult.items.length} (Primeiro SKU: ${omniResult.items[0]?.sku})`);
       }
     }
-  }, 60000);
+  }, 90000);
 
   it('Mapeia 100% dos produtos, SKUs e coleções reais nos 3 sites da BRK (Agro > 16k, Fishing > 11.8k, Motors > 9k)', async () => {
     const { sweepStoreFullCatalog } = await import('../services/siteInspector');
