@@ -44,10 +44,10 @@ async function generateDiagnosticFromWorker(input: AuditInput, worker: WorkerIns
   // Factual Weighted Score Computation based on real audit metrics
   let calculatedScore = Math.round(
     (siteData.catalogAudit?.catalogHealthScore || 80) * 0.25 +
-    (security.securityScore || 80) * 0.20 +
+    (security?.securityScore || 80) * 0.20 +
     Math.min(100, Math.max(30, 100 - (siteData.estimatedLoadTime || 2.0) * 15)) * 0.20 +
-    (social.socialScore || 70) * 0.15 +
-    (visionAnalysis.eyeTracking.focusScoreCta || 60) * 0.20
+    (social?.socialScore || 70) * 0.15 +
+    (visionAnalysis?.eyeTracking?.focusScoreCta || 60) * 0.20
   );
 
   // Dynamic Revenue Lift Calculation based on audited store bottlenecks
@@ -70,7 +70,7 @@ async function generateDiagnosticFromWorker(input: AuditInput, worker: WorkerIns
   }
 
   // Vision / Contrast lift
-  if (!visionAnalysis.contrastAudit.wcagAaPassed) {
+  if (visionAnalysis?.contrastAudit && !visionAnalysis.contrastAudit.wcagAaPassed) {
     calculatedLiftMin += 4;
     calculatedLiftMax += 9;
   }
@@ -212,5 +212,11 @@ async function generateDiagnosticFromWorker(input: AuditInput, worker: WorkerIns
   const guardrailReport = runGuardrailAudit(initialDiagnostic, siteData);
   initialDiagnostic.guardrailReport = guardrailReport;
 
+  // 🧬 Ciclo de Automelhoria Contínua: O enxame aprende padrões estruturais e calibra benchmarks a cada loja auditada
+  learnFromStoreDiagnostic(initialDiagnostic);
+
   return initialDiagnostic;
 }
+
+import { learnFromStoreDiagnostic } from './memory/swarmEvolutionaryLearningEngine.ts';
+

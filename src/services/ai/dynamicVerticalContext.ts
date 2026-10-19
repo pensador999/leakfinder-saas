@@ -548,16 +548,16 @@ export function resolveDynamicVertical(rawInput: string): DynamicVerticalProfile
   }
 
   const VERTICAL_SIGNALS: Record<Exclude<SupportedVerticalId, 'VAREJO_GERAL'>, string[]> = {
-    CALCADOS_COURO: ['sapato', 'bota', 'botina', 'calçado', 'calcado', 'tênis', 'tenis', 'couro', 'coturno', 'sandália', 'sandalia', 'shoes', 'sneaker', 'palmilha', 'solado', 'mocassim'],
-    COSMETICOS_BEAUTY: ['cosmético', 'cosmetico', 'skincare', 'beleza', 'sérum', 'serum', 'creme', 'maquiagem', 'perfume', 'shampoo', 'hidratante', 'limpador facial', 'antiacne', 'protetor solar', 'esfoliante', 'batom', 'dermocosmético', 'sallve', 'ácido hialurônico', 'niacinamida'],
-    SUPLEMENTOS_SAUDE: ['suplemento', 'whey', 'creatina', 'nutrição esportiva', 'nutricao esportiva', 'pré-treino', 'pre-treino', 'hipercalórico', 'bcaa', 'glutamina', 'aminoácido', 'coqueteleira', 'proteína isolada', 'termogênico'],
-    AUTOPECAS_FERRAMENTAS: ['autopeça', 'autopeca', 'ferramenta', 'motociclismo', 'motocross', 'racing', 'motors', 'automotivo', 'oficina', 'veículo', 'veiculo', 'amortecedor', 'pastilha de freio', 'farol'],
-    AGRO_CAMPO_OUTDOOR: ['agro', 'campo', 'country', 'western', 'pesca', 'fishing', 'chapeu', 'chapéu', 'camper', 'fazenda', 'rodeio', 'pecuária', 'uv50+', 'tucunaré', 'anzol', 'carretilha', 'brk'],
-    STREETWEAR_MODA_URBANA: ['streetwear', 'oversized', 'urban', 'tech apparel', 'techwear', 'moda', 'vestuário', 'vestuario', 'alfaiataria', 'camiseta', 'camisa', 'vestido', 'calça', 'calca', 'blusa', 'saia', 'tricô', 'tricot', 'suéter', 'sueter', 'cueca', 'lingerie', 'sutiã', 'sutia', 'pijama', 'algodão egípcio', 'minimal', 'insider', 'mash', 'duasdesign', 'moletom', 'hoodie', 'drop', 'skate'],
-    FITNESS_BEACHWEAR: ['fitness', 'beachwear', 'legging', 'biquíni', 'biquini', 'academia', 'treino', 'activewear', 'moda praia', 'top fitness', 'maiô'],
-    PET_SHOP_VETERINARIA: ['pet shop', 'petshop', 'ração', 'racao', 'cachorro', 'cães', 'gato', 'veterinári', 'veterinari', 'antipulgas', 'coleira', 'comedouro', 'pet'],
-    CASA_DECORACAO_MOVEIS: ['móvel', 'movel', 'móveis', 'moveis', 'sofá', 'sofa', 'decoração', 'decoracao', 'cama', 'mesa', 'rack', 'estante', 'poltrona', 'colchão'],
-    ELETRONICOS_INFORMATICA: ['eletrônico', 'eletronico', 'informática', 'informatica', 'notebook', 'monitor', 'placa de vídeo', 'processador', 'gamer', 'smartphone', 'celular', 'ssd', 'teclado']
+    CALCADOS_COURO: ['calcados_couro', 'calcados_couro_tenis', 'sapato', 'bota', 'botina', 'calçado', 'calcado', 'tênis', 'tenis', 'couro', 'coturno', 'sandália', 'sandalia', 'shoes', 'sneaker', 'palmilha', 'solado', 'mocassim'],
+    COSMETICOS_BEAUTY: ['cosmeticos_beauty', 'cosmético', 'cosmetico', 'skincare', 'beleza', 'sérum', 'serum', 'creme', 'maquiagem', 'perfume', 'shampoo', 'hidratante', 'limpador facial', 'antiacne', 'protetor solar', 'esfoliante', 'batom', 'dermocosmético', 'sallve', 'ácido hialurônico', 'niacinamida'],
+    SUPLEMENTOS_SAUDE: ['suplementos_saude', 'suplemento', 'whey', 'creatina', 'nutrição esportiva', 'nutricao esportiva', 'pré-treino', 'pre-treino', 'hipercalórico', 'bcaa', 'glutamina', 'aminoácido', 'coqueteleira', 'proteína isolada', 'termogênico'],
+    AUTOPECAS_FERRAMENTAS: ['autopecas_ferramentas', 'autopeça', 'autopeca', 'ferramenta', 'motociclismo', 'motocross', 'racing', 'motors', 'automotivo', 'oficina', 'veículo', 'veiculo', 'amortecedor', 'pastilha de freio', 'farol'],
+    AGRO_CAMPO_OUTDOOR: ['agro_campo_outdoor', 'agro', 'campo', 'country', 'western', 'pesca', 'fishing', 'chapeu', 'chapéu', 'camper', 'fazenda', 'rodeio', 'pecuária', 'uv50+', 'tucunaré', 'anzol', 'carretilha', 'brk'],
+    STREETWEAR_MODA_URBANA: ['streetwear_moda_urbana', 'vestuario_moda', 'streetwear', 'oversized', 'urban', 'tech apparel', 'techwear', 'moda', 'vestuário', 'vestuario', 'alfaiataria', 'camiseta', 'camisa', 'vestido', 'calça', 'calca', 'blusa', 'saia', 'tricô', 'tricot', 'suéter', 'sueter', 'cueca', 'lingerie', 'sutiã', 'sutia', 'pijama', 'algodão egípcio', 'minimal', 'insider', 'mash', 'duasdesign', 'moletom', 'hoodie', 'drop', 'skate'],
+    FITNESS_BEACHWEAR: ['fitness_beachwear', 'fitness', 'beachwear', 'legging', 'biquíni', 'biquini', 'academia', 'treino', 'activewear', 'moda praia', 'top fitness', 'maiô'],
+    PET_SHOP_VETERINARIA: ['pet_shop_veterinaria', 'pet shop', 'petshop', 'ração', 'racao', 'cachorro', 'cães', 'gato', 'veterinári', 'veterinari', 'antipulgas', 'coleira', 'comedouro', 'pet'],
+    CASA_DECORACAO_MOVEIS: ['casa_decoracao_moveis', 'móvel', 'movel', 'móveis', 'moveis', 'sofá', 'sofa', 'decoração', 'decoracao', 'cama', 'mesa', 'rack', 'estante', 'poltrona', 'colchão'],
+    ELETRONICOS_INFORMATICA: ['eletronicos_informatica', 'eletrônico', 'eletronico', 'informática', 'informatica', 'notebook', 'monitor', 'placa de vídeo', 'processador', 'gamer', 'smartphone', 'celular', 'ssd', 'teclado']
   };
 
   let bestVerticalId: SupportedVerticalId = 'VAREJO_GERAL';

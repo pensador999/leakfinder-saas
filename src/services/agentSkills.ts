@@ -5,8 +5,13 @@ import { agentKnowledgeBases, getVerticalizedAgentPrompt } from '../agents';
 import { resolveDynamicVertical } from './ai/dynamicVerticalContext';
 
 function buildNicheContextString(worker: WorkerInspectionResult, input: AuditInput): string {
-  const catalogTitles = (worker.siteData.catalogAudit?.issues || []).map(i => i.productTitle).join(' ');
-  return `${worker.detectedNiche || ''} ${input.niche || ''} ${worker.siteData.domain || ''} ${worker.siteData.title || ''} ${catalogTitles}`.toLowerCase();
+  const primaryContext = `${worker.detectedNiche || ''} ${input.niche || ''} ${worker.siteData.domain || ''} ${worker.siteData.title || ''}`.toLowerCase();
+  const primaryVertical = resolveDynamicVertical(primaryContext);
+  if (primaryVertical.verticalId !== 'VAREJO_GERAL') {
+    return primaryContext;
+  }
+  const catalogTitles = (worker.siteData.catalogAudit?.issues || []).slice(0, 25).map(i => i.productTitle).join(' ');
+  return `${primaryContext} ${catalogTitles}`.toLowerCase();
 }
 
 export async function buildCroAgentSkill(worker: WorkerInspectionResult, input: AuditInput): Promise<AgentDiagnosticResult['cro']> {

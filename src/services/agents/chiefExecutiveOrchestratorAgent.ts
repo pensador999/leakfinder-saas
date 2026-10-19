@@ -1,5 +1,6 @@
 import { AgentDiagnosticResult } from '../../types';
 import { resolveDynamicVertical } from '../ai/dynamicVerticalContext';
+import { isCatalogProductBroken } from '../siteInspector';
 
 export interface CeoProposalDecision {
   id: string;
@@ -60,12 +61,7 @@ export async function runCeoOrchestratorEvaluation(diagnostic?: AgentDiagnosticR
   if (diagnostic?.realSiteData) {
     const { realSiteData } = diagnostic;
     const issues = realSiteData.catalogAudit?.issues || [];
-    const brokenItems = issues.filter(i => 
-      (!i.isFullPrintExempt && i.missingSizes.length > 0) || 
-      i.missingSizes.includes('ESGOTADO') ||
-      i.missingSizes.includes('ESTOQUE_FANTASMA_SUSPEITO') ||
-      Boolean(i.isGhostInventorySuspect)
-    );
+    const brokenItems = issues.filter(isCatalogProductBroken);
     const brokenInHouse = brokenItems.filter(i => i.manufacturingType !== 'REVENDA');
     const brokenResale = brokenItems.filter(i => i.manufacturingType === 'REVENDA');
     const ghostSuspects = issues.filter(i => i.isGhostInventorySuspect || i.missingSizes.includes('ESTOQUE_FANTASMA_SUSPEITO'));

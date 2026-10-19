@@ -164,11 +164,14 @@ export function executeTreeOfThoughtReasoning(
   const activeBrokenCount = realBrokenIssues.length;
   const dailyAdSpend = isEnterprise ? 2500 : isMotorsOrAuto ? 680 : isAgro ? 450 : 250;
   
-  // Real dynamic daily and monthly loss (Zero Hallucination: 0 broken SKUs = R$ 0 loss)
-  const dailyLoss = activeBrokenCount > 0 
-    ? Math.round(dailyAdSpend * 0.38 * (activeBrokenCount / Math.max(1, activeBrokenCount + 1)))
+  // Real dynamic daily and monthly loss (Zero Hallucination: 0 broken SKUs = R$ 0 loss; anchored to Deep SKU Audit when available)
+  const auditedCatalogMonthlyLoss = realSiteData.catalogAudit?.monthlyLossEstimateBRL || 0;
+  const monthlyLoss = activeBrokenCount > 0
+    ? (auditedCatalogMonthlyLoss > 0
+        ? Math.round(auditedCatalogMonthlyLoss)
+        : Math.round(dailyAdSpend * 0.38 * (activeBrokenCount / Math.max(1, activeBrokenCount + 1))) * 30)
     : 0;
-  const monthlyLoss = dailyLoss * 30;
+  const dailyLoss = activeBrokenCount > 0 ? Math.round(monthlyLoss / 30) : 0;
 
   // Dynamic competitor duel prices
   const storePrice = Math.round(baseTicket * 1.12);

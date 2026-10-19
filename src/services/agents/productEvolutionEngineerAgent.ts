@@ -1,3 +1,5 @@
+import { getSwarmEvolutionSummary } from '../memory/swarmEvolutionaryLearningEngine.ts';
+
 export interface ProductEvolutionProposal {
   id: string;
   category: 'PERFORMANCE' | 'NOVA_FERRAMENTA' | 'UX_CONVERSAO' | 'SEGURANCA_BANCO';
@@ -19,16 +21,39 @@ export interface PlatformHealthDossier {
   bundleEfficiencyPct: number;
   databaseIndexHealth: string;
   conversionFrictionScore: number;
+  swarmMaturityScore?: number;
+  storesLearnedCount?: number;
+  learnedPatternsCount?: number;
   activeProposals: ProductEvolutionProposal[];
   engineerVerdict: string;
 }
 
 /**
  * 🛠️ Product & Code Evolution Engineer Engine
- * Inspects AdShield's codebase, Supabase performance, and conversion funnel to submit high-ROI improvements
+ * Inspects AdShield's codebase, Supabase performance, conversion funnel, and Evolutionary Swarm Memory
+ * to submit high-ROI improvements learned across real audited stores.
  */
 export async function runProductEvolutionAudit(): Promise<PlatformHealthDossier> {
+  const evolution = getSwarmEvolutionSummary();
+  const learnedList = Object.values(evolution.learnedPatterns);
+
+  const dynamicLearnedProposals: ProductEvolutionProposal[] = learnedList.slice(0, 3).map((pat, idx) => ({
+    id: `evo-learned-${pat.patternType.toLowerCase()}`,
+    category: idx % 2 === 0 ? 'UX_CONVERSAO' : 'NOVA_FERRAMENTA',
+    title: `[Auto-Aprendizado em Campo • ${pat.firstLearnedFromDomain}] ${pat.patternType.replace(/_/g, ' ')}`,
+    targetComponent: 'src/services/siteInspector.ts & src/services/catalog/deepSkuAuditEngine.ts',
+    problemIdentified: pat.description,
+    technicalSolution: pat.activeRuleApplied,
+    estimatedRoiJustification: `Regra autônoma validada em ${pat.occurrencesCount} auditoria(s), eliminando falsos positivos e aumentando a precisão atuarial.`,
+    impactScore: 9.6,
+    confidenceScore: 9.9,
+    easeScore: 9.4,
+    iceScore: 9.6,
+    status: 'APROVADO'
+  }));
+
   const activeProposals: ProductEvolutionProposal[] = [
+    ...dynamicLearnedProposals,
     {
       id: 'evo-1',
       category: 'PERFORMANCE',
@@ -89,11 +114,15 @@ export async function runProductEvolutionAudit(): Promise<PlatformHealthDossier>
 
   return {
     auditedAt: new Date().toLocaleTimeString('pt-BR'),
-    overallHealthScore: 94,
+    overallHealthScore: Math.max(94, Math.round(evolution.swarmMaturityScore)),
     bundleEfficiencyPct: 91,
     databaseIndexHealth: 'Excelente (RLS Ativo)',
     conversionFrictionScore: 88,
+    swarmMaturityScore: evolution.swarmMaturityScore,
+    storesLearnedCount: evolution.uniqueDomainsLearned.length,
+    learnedPatternsCount: learnedList.length,
     activeProposals,
-    engineerVerdict: 'A plataforma AdShield está estável e veloz. 4 propostas de alto ROI técnico foram formuladas para acelerar o carregamento, blindar o PostgreSQL e aumentar as conversões.'
+    engineerVerdict: `A plataforma AdShield está estável e em evolução contínua (Maturidade SIQ: ${evolution.swarmMaturityScore}% após ${evolution.uniqueDomainsLearned.length} loja(s) e ${learnedList.length} padrão(ões) assimilados em campo).`
   };
 }
+

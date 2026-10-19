@@ -83,8 +83,12 @@ export function auditSupplyChainDiscrepancy(
   const finances = calculateStoreFinancialGrounding(realSiteData, input);
 
   const catalogIssues = realSiteData.catalogAudit?.issues || [];
-  const catalogTitles = catalogIssues.map(i => i.productTitle).join(' ');
-  const vertical = resolveDynamicVertical(`${input?.niche || ''} ${realSiteData.title || ''} ${domain} ${catalogTitles}`);
+  const primaryContext = `${input?.niche || ''} ${realSiteData.title || ''} ${domain}`;
+  const primaryVertical = resolveDynamicVertical(primaryContext);
+  const catalogTitles = catalogIssues.slice(0, 25).map(i => i.productTitle).join(' ');
+  const vertical = primaryVertical.verticalId !== 'VAREJO_GERAL'
+    ? primaryVertical
+    : resolveDynamicVertical(`${primaryContext} ${catalogTitles}`);
 
   const erpRawUpper = vertical.dominantTechStack.primaryErp.toUpperCase();
   const erpCode: SupplyChainSyncAuditResult['stackOverview']['erpDetectedOrConfigured'] =

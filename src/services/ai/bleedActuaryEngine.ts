@@ -90,8 +90,39 @@ export function calculateActuarialBleed(input: BleedActuaryInput): BleedActuaryR
   const vertical = resolveDynamicVertical(`${input.productTitle} ${input.niche || ''}`);
   
   const demandCurve = vertical.gaussianDemandDistribution;
-  const outOfStockUpper = input.outOfStockSizes.map(s => s.toUpperCase().trim());
-  const availableUpper = input.availableSizes.map(s => s.toUpperCase().trim());
+  const outOfStockUpper = input.outOfStockSizes.map(s => s.toUpperCase().trim()).filter(Boolean);
+  const availableUpper = input.availableSizes.map(s => s.toUpperCase().trim()).filter(Boolean);
+
+  // Extrai tokens exatos de tamanho (evita colisão de substring onde 'XGG' ou 'GG' dava match em 'G')
+  const extractSizeTokens = (rawList: string[]): Set<string> => {
+    const tokens = new Set<string>();
+    for (const raw of rawList) {
+      tokens.add(raw);
+      for (const part of raw.split(/[\/\-|\s,;:()]+/)) {
+        const clean = part.trim().toUpperCase();
+        if (clean) tokens.add(clean);
+      }
+    }
+    return tokens;
+  };
+
+  const missingTokens = extractSizeTokens(outOfStockUpper);
+  const availableTokens = extractSizeTokens(availableUpper);
+  const allProductTokens = new Set([...missingTokens, ...availableTokens]);
+
+  const hasNumericProductSizes = Array.from(allProductTokens).some(t => /^\d{2}$/.test(t));
+  const hasAlphaProductSizes = Array.from(allProductTokens).some(t =>
+    ['PP', 'P', 'M', 'G', 'GG', 'XG', 'XGG', 'EG', 'G1', 'G2', 'G3', 'G4'].includes(t)
+  );
+
+  // Filtra a curva de demanda da vertical para a família de grade usada pelo produto (evita somar grade alfabética + numérica no mesmo item)
+  const filteredDemandEntries = Object.entries(demandCurve).filter(([sizeKey]) => {
+    const isNumericKey = /^\d{2}$/.test(sizeKey);
+    if (hasNumericProductSizes && !hasAlphaProductSizes) return isNumericKey;
+    if (hasAlphaProductSizes && !hasNumericProductSizes) return !isNumericKey;
+    return true;
+  });
+  const activeDemandEntries = filteredDemandEntries.length > 0 ? filteredDemandEntries : Object.entries(demandCurve);
 
   // 1. Mapeia a distribuição de demanda por variante
   let totalDemandCovered = 0;
@@ -101,12 +132,23 @@ export function calculateActuarialBleed(input: BleedActuaryInput): BleedActuaryR
   const sizeDemandDistribution: SizeDemandWeight[] = [];
 
   // Se o item estiver 100% esgotado
-  if (outOfStockUpper.includes('ESGOTADO') || (availableUpper.length === 0 && outOfStockUpper.length > 0)) {
+  if (
+    missingTokens.has('ESGOTADO') ||
+    outOfStockUpper.some(s => s.includes('ESGOTADO')) ||
+    (availableUpper.length === 0 && outOfStockUpper.length > 0)
+  ) {
     rupturedDemandPct = 100;
     hasCoreRupture = true;
+  } else if (outOfStockUpper.length === 0) {
+    rupturedDemandPct = 0;
+    hasCoreRupture = false;
   } else {
-    for (const [sizeKey, weight] of Object.entries(demandCurve)) {
-      const isMissing = outOfStockUpper.some(o => o === sizeKey || o.includes(sizeKey));
+    for (const [sizeKey, weight] of activeDemandEntries) {
+      const keyUpper = sizeKey.toUpperCase().trim();
+      // Match exato de token (ou equivalência periférica XGG/EG -> XG quando XG está na curva)
+      const isMissing =
+        missingTokens.has(keyUpper) ||
+        (keyUpper === 'XG' && (missingTokens.has('XGG') || missingTokens.has('EG')) && !demandCurve['XGG']);
       const isCore = vertical.coreDemandSizes.includes(sizeKey);
 
       sizeDemandDistribution.push({
@@ -124,14 +166,20 @@ export function calculateActuarialBleed(input: BleedActuaryInput): BleedActuaryR
       totalDemandCovered += weight;
     }
 
-    // Se tamanhos fora da curva padrão estiverem esgotados (ex: GG, XG), garantir proporcionalidade
+    // Se tamanhos periféricos fora da curva padrão estiverem esgotados (ex: G1, G2, 48, 50), atribuir peso periférico real (5% por ponta)
     if (rupturedDemandPct === 0 && outOfStockUpper.length > 0) {
-      rupturedDemandPct = Math.min(85, outOfStockUpper.length * 20);
+      const peripheralTokens = ['PP', 'XG', 'XGG', 'EG', 'G1', 'G2', 'G3', 'G4', '33', '34', '46', '48', '50', '52', '54'];
+      const onlyPeripheral = outOfStockUpper.every(s => peripheralTokens.includes(s));
+      rupturedDemandPct = onlyPeripheral
+        ? Math.min(15, outOfStockUpper.length * 5)
+        : Math.min(85, outOfStockUpper.length * 18);
     }
   }
 
-  // Normaliza proporção de ruptura (0.00 a 1.00)
-  const ruptureRatio = Math.min(1, Math.max(0.05, rupturedDemandPct / 100));
+  // Normaliza proporção de ruptura (0.00 se sem ruptura; 0.04 a 1.00 se houver ruptura)
+  const ruptureRatio = outOfStockUpper.length === 0
+    ? 0
+    : Math.min(1, Math.max(0.04, rupturedDemandPct / 100));
 
   // 2. Parâmetros de Tráfego e Conversão calibrados pela vertical
   const dailyVisitors = input.estimatedDailyVisitors || Math.max(80, Math.round(3500 / Math.max(50, unitPrice)));
@@ -168,9 +216,10 @@ export function calculateActuarialBleed(input: BleedActuaryInput): BleedActuaryR
   if (totalMonthlyBleedBRL >= 9000 || hasCoreRupture) severity = 'CRITICA';
   if (totalMonthlyBleedBRL >= 25000) severity = 'CATASTROFICA';
 
-  // 8. Escolha do gancho de dor visceral do nicho
+  // 8. Escolha determinística do gancho de dor visceral do nicho (Zero Math.random)
   const visceralHooks = vertical.vocabulary.lossPainHooks;
-  const visceralLossHook = visceralHooks[Math.floor(Math.random() * visceralHooks.length)] || visceralHooks[0];
+  const titleHash = (input.productTitle || '').split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  const visceralLossHook = visceralHooks[titleHash % Math.max(1, visceralHooks.length)] || visceralHooks[0];
 
   // Mapeamento de tipo para compatibilidade legada
   let legacyNicheCategory: ProductNicheCategory = 'GENERICO';
