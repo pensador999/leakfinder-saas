@@ -61,6 +61,22 @@ function isSafePublicUrl(rawUrl: string): { valid: boolean; cleanUrl: string; er
   }
 }
 
+const proxyMemoryCache = new Map<string, { body: string; contentType: string; expiresAt: number }>();
+
+function toggleWwwUrl(urlStr: string): string | null {
+  try {
+    const parsed = new URL(urlStr);
+    if (parsed.hostname.startsWith('www.')) {
+      parsed.hostname = parsed.hostname.slice(4);
+    } else {
+      parsed.hostname = `www.${parsed.hostname}`;
+    }
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+}
+
 export default async function handler(request: any, response: any) {
   const method = (request.method || 'GET').toUpperCase();
   if (method === 'OPTIONS') {
@@ -68,7 +84,7 @@ export default async function handler(request: any, response: any) {
   }
 
   let targetUrl = '';
-  if ( request.query && typeof request.query.url === 'string') {
+  if (request.query && typeof request.query.url === 'string') {
     targetUrl = request.query.url;
   } else {
     try {
@@ -84,25 +100,64 @@ export default async function handler(request: any, response: any) {
     return sendJsonOrText(response, 400, JSON.stringify({ error: check.error }), 'application/json');
   }
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 12000);
+  const cached = proxyMemoryCache.get(check.cleanUrl);
+  if (cached && Date.now() < cached.expiresAt) {
+    return sendJsonOrText(response, 200, cached.body, cached.contentType);
+  }
+
+  const isJsonReq = /\.json(\?|$)/i.test(check.cleanUrl);
+  const fetchCandidate = async (candidateUrl: string) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    try {
+      const res = await fetch(candidateUrl, {
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+          'Accept': 'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7'
+        }
+      });
+      clearTimeout(timeoutId);
+      const text = await res.text();
+      const contentType = res.headers.get('content-type') || 'application/json; charset=utf-8';
+      return { status: res.status, ok: res.ok, text, contentType };
+    } catch (err: any) {
+      clearTimeout(timeoutId);
+      throw err;
+    }
+  };
 
   try {
-    const upstream = await fetch(check.cleanUrl, {
-      signal: controller.signal,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
-        'Accept': 'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7'
-      }
-    });
-    clearTimeout(timeoutId);
+    let result = await fetchCandidate(check.cleanUrl);
+    const isInvalidJson = isJsonReq && (!result.text.trim().startsWith('{') && !result.text.trim().startsWith('['));
 
-    const text = await upstream.text();
-    const contentType = upstream.headers.get('content-type') || 'application/json; charset=utf-8';
-    return sendJsonOrText(response, upstream.status, text, contentType);
+    // 🛡️ Failover automático www <-> sem-www se a zona Cloudflare retornar 429/403/Challenge
+    if (!result.ok || isInvalidJson) {
+      const altUrl = toggleWwwUrl(check.cleanUrl);
+      if (altUrl) {
+        try {
+          const altResult = await fetchCandidate(altUrl);
+          const altValid = !isJsonReq || altResult.text.trim().startsWith('{') || altResult.text.trim().startsWith('[');
+          if (altResult.ok && altValid) {
+            result = altResult;
+          }
+        } catch {
+          // Mantém resultado original
+        }
+      }
+    }
+
+    if (result.ok && (!isJsonReq || result.text.trim().startsWith('{') || result.text.trim().startsWith('['))) {
+      proxyMemoryCache.set(check.cleanUrl, {
+        body: result.text,
+        contentType: result.contentType,
+        expiresAt: Date.now() + 10 * 60 * 1000
+      });
+    }
+
+    return sendJsonOrText(response, result.status, result.text, result.contentType);
   } catch (err: any) {
-    clearTimeout(timeoutId);
     return sendJsonOrText(
       response,
       502,

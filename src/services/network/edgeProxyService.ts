@@ -21,9 +21,23 @@ export interface ProxyFetchResult {
 }
 
 export class EdgeProxyService {
+  private static jsonCache = new Map<string, { data: string; expiresAt: number }>();
+
   private static getRandomUserAgent(): string {
     const idx = Math.floor(Math.random() * REALISTIC_USER_AGENTS.length);
     return REALISTIC_USER_AGENTS[idx];
+  }
+
+  private static toggleWww(urlStr: string): string | null {
+    try {
+      const parsed = new URL(urlStr);
+      parsed.hostname = parsed.hostname.startsWith('www.')
+        ? parsed.hostname.slice(4)
+        : `www.${parsed.hostname}`;
+      return parsed.toString();
+    } catch {
+      return null;
+    }
   }
 
   /**
@@ -52,6 +66,19 @@ export class EdgeProxyService {
     const isBrowser = typeof window !== 'undefined';
     const isJsonEndpoint = /\.json(\?|$)/i.test(url) || url.includes('/api/catalog_system/');
 
+    if (isJsonEndpoint) {
+      const cached = this.jsonCache.get(url);
+      if (cached && Date.now() < cached.expiresAt) {
+        return {
+          ok: true,
+          status: 200,
+          data: cached.data,
+          source: 'DIRECT_FETCH',
+          latencyMs: 1
+        };
+      }
+    }
+
     const isValidExpectedPayload = (text: string): boolean => {
       if (!text) return false;
       if (isJsonEndpoint) {
@@ -59,6 +86,12 @@ export class EdgeProxyService {
         return trimmed.startsWith('{') || trimmed.startsWith('[');
       }
       return true;
+    };
+
+    const cacheIfValidJson = (data: string) => {
+      if (isJsonEndpoint && isValidExpectedPayload(data)) {
+        this.jsonCache.set(url, { data, expiresAt: Date.now() + 10 * 60 * 1000 });
+      }
     };
 
     // TIER 0 (Browser): Proxy Serverless Oficial (/api/catalog-proxy) — Zero CORS, JSON/HTML 100% puro
@@ -73,6 +106,7 @@ export class EdgeProxyService {
         if (response.ok) {
           const text = await response.text();
           if (isValidExpectedPayload(text)) {
+            cacheIfValidJson(text);
             return {
               ok: true,
               status: response.status,
@@ -87,40 +121,47 @@ export class EdgeProxyService {
       }
     }
 
-    // TIER 1: Requisição Direta com AbortController (Sem headers de preflight CORS no navegador)
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), Math.min(3500, timeoutMs));
+    // TIER 1: Requisição Direta com AbortController + Failover Automático www <-> sem-www
+    const candidateUrls = [url];
+    const altWwwUrl = this.toggleWww(url);
+    if (altWwwUrl) candidateUrls.push(altWwwUrl);
 
-      const fetchInit: RequestInit = {
-        signal: controller.signal
-      };
+    for (const candidateUrl of candidateUrls) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), Math.min(3500, timeoutMs));
 
-      if (!isBrowser) {
-        fetchInit.headers = {
-          'User-Agent': userAgent,
-          'Accept': 'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-          'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7'
+        const fetchInit: RequestInit = {
+          signal: controller.signal
         };
-      }
 
-      const response = await fetch(url, fetchInit);
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const text = await response.text();
-        if (isValidExpectedPayload(text)) {
-          return {
-            ok: true,
-            status: response.status,
-            data: text,
-            source: 'DIRECT_FETCH',
-            latencyMs: Date.now() - startTime
+        if (!isBrowser) {
+          fetchInit.headers = {
+            'User-Agent': userAgent,
+            'Accept': 'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7'
           };
         }
+
+        const response = await fetch(candidateUrl, fetchInit);
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          const text = await response.text();
+          if (isValidExpectedPayload(text)) {
+            cacheIfValidJson(text);
+            return {
+              ok: true,
+              status: response.status,
+              data: text,
+              source: 'DIRECT_FETCH',
+              latencyMs: Date.now() - startTime
+            };
+          }
+        }
+      } catch {
+        // Tenta candidato alternativo (www <-> sem-www) ou avança para os próximos tiers
       }
-    } catch {
-      // Ignora erro e avança para os próximos tiers
     }
 
     // TIER 2: Jina AI Edge Reader (Apenas para páginas HTML — NUNCA para .json pois o Jina converte para Markdown)

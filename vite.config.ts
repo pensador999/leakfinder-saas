@@ -2,6 +2,18 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
+const devProxyCache = new Map<string, { body: string; contentType: string; expiresAt: number }>();
+
+function toggleWwwDevUrl(urlStr: string): string | null {
+  try {
+    const parsed = new URL(urlStr);
+    parsed.hostname = parsed.hostname.startsWith('www.') ? parsed.hostname.slice(4) : `www.${parsed.hostname}`;
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+}
+
 function catalogProxyDevPlugin() {
   return {
     name: 'adshield-catalog-proxy',
@@ -17,17 +29,51 @@ function catalogProxyDevPlugin() {
             return;
           }
 
-          const upstream = await fetch(targetUrl, {
-            headers: {
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
-              'Accept': 'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-              'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7'
+          const cached = devProxyCache.get(targetUrl);
+          if (cached && Date.now() < cached.expiresAt) {
+            res.statusCode = 200;
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Content-Type', cached.contentType);
+            res.end(cached.body);
+            return;
+          }
+
+          const isJsonReq = /\.json(\?|$)/i.test(targetUrl);
+          const reqHeaders = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+            'Accept': 'application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7'
+          };
+
+          let upstream = await fetch(targetUrl, { headers: reqHeaders });
+          let body = await upstream.text();
+          let contentType = upstream.headers.get('content-type') || 'application/json; charset=utf-8';
+          const isInvalidJson = isJsonReq && !body.trim().startsWith('{') && !body.trim().startsWith('[');
+
+          if (!upstream.ok || isInvalidJson) {
+            const altUrl = toggleWwwDevUrl(targetUrl);
+            if (altUrl) {
+              try {
+                const altUpstream = await fetch(altUrl, { headers: reqHeaders });
+                const altBody = await altUpstream.text();
+                if (altUpstream.ok && (!isJsonReq || altBody.trim().startsWith('{') || altBody.trim().startsWith('['))) {
+                  upstream = altUpstream;
+                  body = altBody;
+                  contentType = altUpstream.headers.get('content-type') || contentType;
+                }
+              } catch {
+                // Keep original response
+              }
             }
-          });
-          const body = await upstream.text();
+          }
+
+          if (upstream.ok && (!isJsonReq || body.trim().startsWith('{') || body.trim().startsWith('['))) {
+            devProxyCache.set(targetUrl, { body, contentType, expiresAt: Date.now() + 10 * 60 * 1000 });
+          }
+
           res.statusCode = upstream.status;
           res.setHeader('Access-Control-Allow-Origin', '*');
-          res.setHeader('Content-Type', upstream.headers.get('content-type') || 'application/json; charset=utf-8');
+          res.setHeader('Content-Type', contentType);
           res.end(body);
         } catch (err: any) {
           res.statusCode = 502;
