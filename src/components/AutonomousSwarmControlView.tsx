@@ -8,12 +8,31 @@ import {
   Database, 
   Send, 
   Check, 
-  Store 
+  Store,
+  History,
+  Sparkles,
+  TrendingUp,
+  TrendingDown,
+  PackageCheck
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { executeAutonomousStoreAudit, SwarmJobResult } from '../services/swarm/autonomousSwarmEngine';
 import { formatDailyWhatsAppExecutiveSummary } from '../services/workers/whatsappAlertWorker';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import {
+  getMonitoredStores,
+  getLocalStoreSnapshots,
+  getLocalSwarmJobLogs,
+  saveStoreSnapshot,
+  recordSwarmJobLog,
+  LocalStoreSnapshotRecord
+} from '../services/database/swarmDatabaseService';
+import {
+  getStoreMemory,
+  recordStoreInspection,
+  formatRestockCelebrationMessage,
+  StoreMemoryProfile
+} from '../services/memory/storeContextMemory';
 
 interface AutonomousSwarmControlViewProps {
   diagnostic: AgentDiagnosticResult;
@@ -21,15 +40,26 @@ interface AutonomousSwarmControlViewProps {
 
 export const AutonomousSwarmControlView: React.FC<AutonomousSwarmControlViewProps> = ({ diagnostic }) => {
   const { realSiteData } = diagnostic;
+  const currentStoreId = `store-${realSiteData.domain.replace(/\./g, '-')}`;
 
-  const [activeTab, setActiveTab] = useState<'threads' | 'critic' | 'alerts'>('threads');
+  const [activeTab, setActiveTab] = useState<'threads' | 'history' | 'critic' | 'alerts'>('threads');
   const [isSimulatingRun, setIsSimulatingRun] = useState(false);
   const [lastJobResult, setLastJobResult] = useState<SwarmJobResult | null>(null);
   const [copiedAlert, setCopiedAlert] = useState(false);
+  const [copiedRestock, setCopiedRestock] = useState(false);
   const [dbStats, setDbStats] = useState<{ snapshots: number; stores: number; logs: number }>({ snapshots: 0, stores: 0, logs: 0 });
+  const [storeSnapshots, setStoreSnapshots] = useState<LocalStoreSnapshotRecord[]>([]);
+  const [storeMemory, setStoreMemory] = useState<StoreMemoryProfile>(() => getStoreMemory(realSiteData.domain));
 
-  // Fetch live stats from Supabase
+  // Fetch live stats from Supabase or Local-First Vault
   const loadDatabaseTelemetry = async () => {
+    const storesList = await getMonitoredStores();
+    const localSnaps = getLocalStoreSnapshots();
+    const localLogs = getLocalSwarmJobLogs();
+    const mem = getStoreMemory(realSiteData.domain);
+    setStoreMemory({ ...mem });
+    setStoreSnapshots(getLocalStoreSnapshots(currentStoreId));
+
     if (isSupabaseConfigured) {
       try {
         const { count: countStores } = await supabase.from('swarm_monitored_stores').select('*', { count: 'exact', head: true });
@@ -37,28 +67,55 @@ export const AutonomousSwarmControlView: React.FC<AutonomousSwarmControlViewProp
         const { data: logsData } = await supabase.from('swarm_job_logs').select('*').order('created_at', { ascending: false }).limit(5);
 
         setDbStats({
-          stores: countStores || 3,
-          snapshots: countSnapshots || 12,
-          logs: logsData?.length || 5
+          stores: countStores || storesList.length,
+          snapshots: countSnapshots || localSnaps.length,
+          logs: logsData?.length || localLogs.length
         });
+        return;
       } catch {
         // local fallback
       }
     }
+
+    setDbStats({
+      stores: storesList.length,
+      snapshots: localSnaps.length,
+      logs: localLogs.length
+    });
   };
 
   useEffect(() => {
+    // Seed episodic memory from current live diagnostic so the user immediately sees the known SKUs in the vault
+    const catalogIssues = realSiteData.catalogAudit?.issues || [];
+    if (catalogIssues.length > 0) {
+      const existingMem = getStoreMemory(realSiteData.domain);
+      if (Object.keys(existingMem.knownSkus).length === 0) {
+        recordStoreInspection(realSiteData.domain, {
+          brandName: realSiteData.brandName,
+          products: catalogIssues.map(issue => ({
+            handle: issue.sku,
+            title: issue.productTitle,
+            url: issue.productUrl,
+            brokenSizes: issue.missingSizes,
+            availableSizes: issue.availableSizes
+          }))
+        });
+      }
+    }
     loadDatabaseTelemetry();
     const interval = setInterval(loadDatabaseTelemetry, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [realSiteData.domain]);
 
   const handleRunAutonomousCycle = async () => {
     setIsSimulatingRun(true);
     try {
+      const estimatedLoss = Math.round(
+        realSiteData.catalogAudit?.monthlyLossEstimateBRL ?? (diagnostic.estimatedRevenueLiftMin * 45)
+      );
       const result = await executeAutonomousStoreAudit(
         {
-          id: `store-${realSiteData.domain.replace(/\./g, '-')}`,
+          id: currentStoreId,
           storeUrl: realSiteData.url || `https://${realSiteData.domain}`,
           brandName: realSiteData.brandName,
           niche: diagnostic.input.niche || 'Geral',
@@ -66,12 +123,29 @@ export const AutonomousSwarmControlView: React.FC<AutonomousSwarmControlViewProp
           isActive: true,
           checkIntervalHours: 24,
           currentScore: diagnostic.growthScore,
-          currentEstimatedLoss: diagnostic.estimatedRevenueLiftMin * 45
+          currentEstimatedLoss: estimatedLoss
         },
         diagnostic
       );
+
+      // Persist snapshot, job log, and update Mem0 episodic store memory
+      await saveStoreSnapshot(currentStoreId, result.diagnostic, result.delta);
+      await recordSwarmJobLog(result);
+
+      const newIssues = result.diagnostic.realSiteData.catalogAudit?.issues || [];
+      recordStoreInspection(realSiteData.domain, {
+        brandName: realSiteData.brandName,
+        products: newIssues.map(issue => ({
+          handle: issue.sku,
+          title: issue.productTitle,
+          url: issue.productUrl,
+          brokenSizes: issue.missingSizes,
+          availableSizes: issue.availableSizes
+        }))
+      });
+
       setLastJobResult(result);
-      loadDatabaseTelemetry();
+      await loadDatabaseTelemetry();
     } finally {
       setIsSimulatingRun(false);
     }
@@ -101,11 +175,26 @@ export const AutonomousSwarmControlView: React.FC<AutonomousSwarmControlViewProp
     lastJobResult?.delta
   );
 
+  const restockCelebrationText = formatRestockCelebrationMessage({
+    storeDomain: realSiteData.domain,
+    merchantName: storeMemory.merchantName || realSiteData.brandName || 'Gestor',
+    restockEvents: storeMemory.recentRestocks
+  });
+
   const handleCopyAlert = () => {
     navigator.clipboard.writeText(generatedAlertText);
     setCopiedAlert(true);
     setTimeout(() => setCopiedAlert(false), 2000);
   };
+
+  const handleCopyRestockCelebration = () => {
+    if (!restockCelebrationText) return;
+    navigator.clipboard.writeText(restockCelebrationText);
+    setCopiedRestock(true);
+    setTimeout(() => setCopiedRestock(false), 2000);
+  };
+
+  const knownSkuEntries = Object.values(storeMemory.knownSkus);
 
   return (
     <div className="space-y-6 font-sans text-[#FFFCE1]">
@@ -117,14 +206,14 @@ export const AutonomousSwarmControlView: React.FC<AutonomousSwarmControlViewProp
             <BrainCircuit className="w-8 h-8" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-xl font-bold text-[#FFFCE1]">Torre de Controle do Enxame 24/7 (AdShield OS)</h2>
               <span className="px-2.5 py-0.5 text-xs font-mono font-extrabold rounded-full bg-[#0AE448]/10 text-[#0AE448] border border-[#0AE448]/20">
-                Supabase Live • Workers
+                {isSupabaseConfigured ? 'Supabase Live • Workers' : 'Local-First Vault • Workers'}
               </span>
             </div>
             <p className="text-xs text-[#BBBAA6] mt-1 max-w-2xl leading-relaxed">
-              Execução paralela concorrente tolerante a falhas com agendamento automático diário às 07:00 da manhã via Vercel Edge + Supabase.
+              Execução paralela concorrente tolerante a falhas com persistência {isSupabaseConfigured ? 'híbrida PostgreSQL + LocalVault' : '100% Local-First (Mem0 + Snapshots Históricos)'}.
             </p>
           </div>
         </div>
@@ -149,7 +238,7 @@ export const AutonomousSwarmControlView: React.FC<AutonomousSwarmControlViewProp
       </div>
 
       {/* Live Telemetry KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div className="p-4 rounded-2xl bg-[#101211] border border-white/10 shadow-xl flex items-center gap-3">
           <div className="p-2.5 bg-white/5 text-[#00BAE2] rounded-xl border border-white/5">
             <Store className="w-5 h-5" />
@@ -165,8 +254,20 @@ export const AutonomousSwarmControlView: React.FC<AutonomousSwarmControlViewProp
             <Database className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] uppercase font-bold text-[#BBBAA6] font-mono block">Snapshots no PostgreSQL</span>
+            <span className="text-[10px] uppercase font-bold text-[#BBBAA6] font-mono block">
+              {isSupabaseConfigured ? 'Snapshots no PostgreSQL' : 'Snapshots no LocalVault'}
+            </span>
             <span className="text-xl font-black text-[#0AE448] font-mono">{dbStats.snapshots} Registros</span>
+          </div>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-[#101211] border border-white/10 shadow-xl flex items-center gap-3">
+          <div className="p-2.5 bg-white/5 text-[#00BAE2] rounded-xl border border-white/5">
+            <PackageCheck className="w-5 h-5" />
+          </div>
+          <div>
+            <span className="text-[10px] uppercase font-bold text-[#BBBAA6] font-mono block">Memória Episódica (Mem0)</span>
+            <span className="text-xl font-black text-[#FFFCE1] font-mono">{knownSkuEntries.length} SKUs Vigiados</span>
           </div>
         </div>
 
@@ -182,7 +283,7 @@ export const AutonomousSwarmControlView: React.FC<AutonomousSwarmControlViewProp
       </div>
 
       {/* Sub-tabs Navigation */}
-      <div className="flex items-center gap-2 border-b border-white/10 pb-2 text-xs font-bold">
+      <div className="flex items-center gap-2 flex-wrap border-b border-white/10 pb-2 text-xs font-bold">
         <button
           onClick={() => setActiveTab('threads')}
           className={`px-4 py-2 rounded-xl transition-all cursor-pointer ${
@@ -192,6 +293,17 @@ export const AutonomousSwarmControlView: React.FC<AutonomousSwarmControlViewProp
           }`}
         >
           Threads em Execução ({parallelWorkers.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('history')}
+          className={`px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+            activeTab === 'history'
+              ? 'bg-[#0AE448] text-slate-950 font-black shadow-lg shadow-[#0AE448]/20'
+              : 'text-[#BBBAA6] hover:text-[#FFFCE1] hover:bg-white/5'
+          }`}
+        >
+          <History className="w-3.5 h-3.5" />
+          Radar Antes vs. Depois & Reposições ({storeSnapshots.length})
         </button>
         <button
           onClick={() => setActiveTab('critic')}
@@ -236,6 +348,138 @@ export const AutonomousSwarmControlView: React.FC<AutonomousSwarmControlViewProp
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* TAB 1.5: RADAR ANTES VS DEPOIS & DETECTOR DE REPOSIÇÃO (MEM0) */}
+      {activeTab === 'history' && (
+        <div className="space-y-6">
+          {/* Restock Celebration Banner */}
+          <div className="p-6 bg-[#101211] border border-white/10 rounded-3xl space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-[#0AE448]/10 border border-[#0AE448]/20 text-[#0AE448] rounded-xl">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-[#FFFCE1] text-sm">
+                    Detector Episódico de Reposição de Grade (Mem0 • {realSiteData.domain})
+                  </h3>
+                  <p className="text-xs text-[#BBBAA6]">
+                    Compara os tamanhos furados da auditoria anterior com a disponibilidade atual para avisar quando reativar campanhas no Meta Ads.
+                  </p>
+                </div>
+              </div>
+              {storeMemory.recentRestocks.length > 0 && (
+                <button
+                  onClick={handleCopyRestockCelebration}
+                  className="px-3 py-1.5 bg-[#0AE448]/15 hover:bg-[#0AE448]/25 text-[#0AE448] border border-[#0AE448]/30 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                >
+                  {copiedRestock ? <Check className="w-3.5 h-3.5" /> : <Send className="w-3.5 h-3.5" />}
+                  <span>{copiedRestock ? 'Alerta de Reposição Copiado!' : 'Copiar Alerta de Reposição WhatsApp'}</span>
+                </button>
+              )}
+            </div>
+
+            {storeMemory.recentRestocks.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {storeMemory.recentRestocks.map((ev, idx) => (
+                  <div key={`${ev.productHandle}-${idx}`} className="p-3.5 rounded-2xl bg-[#141716] border border-[#0AE448]/30 flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-bold text-[#FFFCE1]">{ev.productTitle}</p>
+                      <p className="text-[11px] text-[#0AE448] font-mono mt-0.5">
+                        Tamanhos repostos: [{ev.restockedSizes.join(', ')}]
+                      </p>
+                    </div>
+                    <span className="text-[10px] font-mono text-[#BBBAA6]">
+                      {new Date(ev.detectedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-4 rounded-2xl bg-[#141716] border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#BBBAA6]">
+                <div>
+                  <span className="text-[#FFFCE1] font-bold block">
+                    {knownSkuEntries.length} SKUs monitorados na memória episódica de {realSiteData.brandName}
+                  </span>
+                  <span>
+                    Assim que um tamanho furado voltar a ficar disponível em uma próxima varredura, o alerta de reativação de campanha aparecerá aqui.
+                  </span>
+                </div>
+                <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 font-mono text-[11px] text-[#00BAE2] shrink-0">
+                  Auditorias na loja: {storeMemory.auditCount || 1}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Snapshot Delta Timeline */}
+          <div className="p-6 bg-[#101211] border border-white/10 rounded-3xl space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div>
+                <h3 className="font-bold text-[#FFFCE1] text-sm">Histórico de Snapshots Antes vs. Depois ({realSiteData.brandName})</h3>
+                <p className="text-xs text-[#BBBAA6]">
+                  Clique em &ldquo;Disparar Ciclo Autônomo Agora&rdquo; no topo para gravar um novo snapshot comparativo no LocalVault.
+                </p>
+              </div>
+              <span className="text-xs font-mono text-[#BBBAA6]">
+                Exibindo {storeSnapshots.length} snapshot(s) desta loja
+              </span>
+            </div>
+
+            {storeSnapshots.length === 0 ? (
+              <div className="p-6 rounded-2xl bg-[#141716] border border-white/10 text-center space-y-2">
+                <p className="text-xs font-bold text-[#FFFCE1]">Nenhum snapshot histórico gravado ainda para {realSiteData.brandName}.</p>
+                <p className="text-xs text-[#BBBAA6]">
+                  Acione o botão &ldquo;Disparar Ciclo Autônomo Agora&rdquo; para criar o marco zero e habilitar a comparação temporal.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {storeSnapshots.slice(0, 8).map((snap) => (
+                  <div key={snap.id} className="p-4 rounded-2xl bg-[#141716] border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs font-mono font-bold text-[#FFFCE1]">
+                          Score: {snap.score}/100
+                        </span>
+                        {snap.delta && snap.delta.scoreDelta !== 0 && (
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold flex items-center gap-1 ${
+                            snap.delta.scoreDelta > 0
+                              ? 'bg-[#0AE448]/15 text-[#0AE448] border border-[#0AE448]/30'
+                              : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                          }`}>
+                            {snap.delta.scoreDelta > 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                            {snap.delta.scoreDelta > 0 ? `+${snap.delta.scoreDelta}` : snap.delta.scoreDelta} pts
+                          </span>
+                        )}
+                        <span className="text-[11px] font-mono text-[#BBBAA6]">
+                          • {new Date(snap.audited_at).toLocaleString('pt-BR')}
+                        </span>
+                      </div>
+                      <p className="text-xs text-[#BBBAA6]">
+                        {snap.delta?.evolutionSummary || 'Snapshot de linha de base (Marco Zero) registrado no cofre local.'}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-4 text-xs font-mono shrink-0">
+                      <div className="text-right">
+                        <span className="text-[10px] text-[#BBBAA6] block uppercase">SKUs Críticos</span>
+                        <span className="font-bold text-amber-400">{snap.broken_skus_count}/{snap.total_skus_count}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-[10px] text-[#BBBAA6] block uppercase">Perda Mensal Est.</span>
+                        <span className="font-bold text-rose-400">
+                          R$ {snap.estimated_monthly_loss.toLocaleString('pt-BR')}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
 

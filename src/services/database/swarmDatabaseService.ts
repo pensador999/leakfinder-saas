@@ -8,12 +8,77 @@ const LOCAL_SNAPSHOTS_KEY = 'adshield_local_store_snapshots';
 const LOCAL_MONITORED_STORES_KEY = 'adshield_local_monitored_stores';
 const LOCAL_JOB_LOGS_KEY = 'adshield_local_swarm_job_logs';
 
+export interface LocalStoreSnapshotRecord {
+  id: string;
+  store_id: string;
+  score: number;
+  lift_min: number;
+  lift_max: number;
+  broken_skus_count: number;
+  total_skus_count: number;
+  estimated_monthly_loss: number;
+  contrast_ratio: number;
+  wcag_passed: boolean;
+  audited_at: string;
+  delta?: StoreSnapshotDelta;
+  top_broken_skus_summary?: Array<{
+    sku: string;
+    title: string;
+    missingSizes: string[];
+    url?: string;
+  }>;
+}
+
+export interface LocalSwarmJobLogRecord {
+  id: string;
+  store_id: string;
+  job_status: string;
+  execution_time_ms: number;
+  agents_executed: string[];
+  grounding_score: number;
+  false_positives_prevented: number;
+  created_at: string;
+}
+
 /**
- * 1. Busca todas as lojas ativas para o Enxame auditar (Merge Supabase + LocalStorage + Default Stores)
+ * 1. Busca todas as lojas ativas para o Enxame auditar (Merge Supabase + LocalStorage + Default Multi-Vertical Portfolio)
  */
 export async function getMonitoredStores(): Promise<MonitoredStore[]> {
-  // Lojas padrão apenas para seed de primeira inicialização
+  // Portfólio Multi-Vertical D2C brasileiro para seed de primeira inicialização (Zero vínculo exclusivo com uma única marca)
   const seedStores: MonitoredStore[] = [
+    {
+      id: 'store-minimal-club',
+      storeUrl: 'https://www.minimalclub.com.br',
+      brandName: 'Minimal Club',
+      niche: 'Moda Masculina & Básicos Tech',
+      targetPhone: '5511999999999',
+      isActive: true,
+      checkIntervalHours: 24,
+      currentScore: 82,
+      currentEstimatedLoss: 1450
+    },
+    {
+      id: 'store-sallve',
+      storeUrl: 'https://www.sallve.com.br',
+      brandName: 'Sallve',
+      niche: 'Cosméticos & Dermocosméticos',
+      targetPhone: '5511999999999',
+      isActive: true,
+      checkIntervalHours: 24,
+      currentScore: 88,
+      currentEstimatedLoss: 620
+    },
+    {
+      id: 'store-insider-store',
+      storeUrl: 'https://www.insiderstore.com.br',
+      brandName: 'Insider Store',
+      niche: 'Vestuário Tecnológico & Performance',
+      targetPhone: '5511999999999',
+      isActive: true,
+      checkIntervalHours: 24,
+      currentScore: 86,
+      currentEstimatedLoss: 980
+    },
     {
       id: 'store-brk-agro',
       storeUrl: 'https://www.brkagro.com.br',
@@ -23,29 +88,7 @@ export async function getMonitoredStores(): Promise<MonitoredStore[]> {
       isActive: true,
       checkIntervalHours: 24,
       currentScore: 78,
-      currentEstimatedLoss: 840
-    },
-    {
-      id: 'store-brk-fishing',
-      storeUrl: 'https://www.brkfishing.com.br',
-      brandName: 'BRK Fishing',
-      niche: 'Pesca Esportiva & Vestuário UV',
-      targetPhone: '5511999999999',
-      isActive: true,
-      checkIntervalHours: 24,
-      currentScore: 84,
-      currentEstimatedLoss: 0
-    },
-    {
-      id: 'store-brk-motors',
-      storeUrl: 'https://www.brkmotors.com.br',
-      brandName: 'BRK Motors',
-      niche: 'Autopeças & Acessórios Moto',
-      targetPhone: '5511999999999',
-      isActive: true,
-      checkIntervalHours: 24,
-      currentScore: 72,
-      currentEstimatedLoss: 1250
+      currentEstimatedLoss: 1840
     }
   ];
 
@@ -125,7 +168,7 @@ export async function deleteMonitoredStore(storeId: string, storeUrl: string): P
 }
 
 /**
- * 2. Salva o Snapshot da Auditoria no PostgreSQL (Com comparador de evolução)
+ * 2. Salva o Snapshot da Auditoria no PostgreSQL ou LocalStorage (Com comparador de evolução e proteção de quota)
  */
 export async function saveStoreSnapshot(
   storeId: string,
@@ -133,7 +176,20 @@ export async function saveStoreSnapshot(
   delta?: StoreSnapshotDelta
 ): Promise<boolean> {
   const catalogIssues = diagnostic.realSiteData.catalogAudit?.issues || [];
-  const brokenCount = catalogIssues.filter(isCatalogProductBroken).length;
+  const brokenSkus = catalogIssues.filter(isCatalogProductBroken);
+  const brokenCount = brokenSkus.length;
+
+  const estimatedMonthlyLoss = Math.round(
+    diagnostic.realSiteData.catalogAudit?.monthlyLossEstimateBRL ??
+    (diagnostic.estimatedRevenueLiftMin * 45)
+  );
+
+  const topBrokenSummary = brokenSkus.slice(0, 5).map(issue => ({
+    sku: issue.sku,
+    title: issue.productTitle,
+    missingSizes: issue.missingSizes,
+    url: issue.productUrl
+  }));
 
   const snapshotRecord = {
     store_id: storeId,
@@ -142,28 +198,72 @@ export async function saveStoreSnapshot(
     lift_max: diagnostic.estimatedRevenueLiftMax,
     broken_skus_count: brokenCount,
     total_skus_count: diagnostic.realSiteData.catalogAudit?.totalProductsScanned || 24,
-    estimated_monthly_loss: diagnostic.estimatedRevenueLiftMin * 45,
+    estimated_monthly_loss: estimatedMonthlyLoss,
     contrast_ratio: diagnostic.visionAnalysis.contrastAudit.contrastRatio,
     wcag_passed: diagnostic.visionAnalysis.contrastAudit.wcagAaPassed,
-    raw_diagnostic_json: diagnostic,
     audited_at: new Date().toISOString()
   };
 
   if (isSupabaseConfigured) {
     try {
-      const { error } = await supabase.from('store_daily_snapshots').insert([snapshotRecord]);
+      const { error } = await supabase.from('store_daily_snapshots').insert([
+        { ...snapshotRecord, raw_diagnostic_json: diagnostic }
+      ]);
       if (!error) return true;
     } catch {
       // Fallback
     }
   }
 
-  // Local Storage Fallback
-  const existing = localStorage.getItem(LOCAL_SNAPSHOTS_KEY);
-  const snapshots = existing ? JSON.parse(existing) : [];
-  snapshots.unshift({ id: `snap-${Date.now()}`, ...snapshotRecord, delta });
-  localStorage.setItem(LOCAL_SNAPSHOTS_KEY, JSON.stringify(snapshots.slice(0, 50)));
+  // Local Storage Fallback (Compactado sem raw_diagnostic_json gigante para evitar QuotaExceededError)
+  if (typeof localStorage !== 'undefined') {
+    try {
+      const existing = localStorage.getItem(LOCAL_SNAPSHOTS_KEY);
+      const snapshots: LocalStoreSnapshotRecord[] = existing ? JSON.parse(existing) : [];
+      snapshots.unshift({
+        id: `snap-${Date.now()}`,
+        ...snapshotRecord,
+        delta,
+        top_broken_skus_summary: topBrokenSummary
+      });
+      localStorage.setItem(LOCAL_SNAPSHOTS_KEY, JSON.stringify(snapshots.slice(0, 50)));
+    } catch {
+      try {
+        // Fallback em caso de armazenamento quase cheio: mantém apenas os 15 mais recentes
+        const compactList: LocalStoreSnapshotRecord[] = [
+          {
+            id: `snap-${Date.now()}`,
+            ...snapshotRecord,
+            delta,
+            top_broken_skus_summary: topBrokenSummary
+          }
+        ];
+        localStorage.setItem(LOCAL_SNAPSHOTS_KEY, JSON.stringify(compactList));
+      } catch {
+        // Safe to ignore
+      }
+    }
+  }
   return true;
+}
+
+/**
+ * 2.1. Recupera o histórico local de Snapshots (Antes vs. Depois)
+ */
+export function getLocalStoreSnapshots(storeId?: string): LocalStoreSnapshotRecord[] {
+  if (typeof localStorage === 'undefined') return [];
+  try {
+    const existing = localStorage.getItem(LOCAL_SNAPSHOTS_KEY);
+    if (!existing) return [];
+    const parsed: LocalStoreSnapshotRecord[] = JSON.parse(existing);
+    if (!Array.isArray(parsed)) return [];
+    if (storeId) {
+      return parsed.filter(s => s.store_id === storeId);
+    }
+    return parsed;
+  } catch {
+    return [];
+  }
 }
 
 /**
@@ -189,11 +289,32 @@ export async function recordSwarmJobLog(jobResult: SwarmJobResult): Promise<bool
     }
   }
 
-  const existing = localStorage.getItem(LOCAL_JOB_LOGS_KEY);
-  const logs = existing ? JSON.parse(existing) : [];
-  logs.unshift({ id: `log-${Date.now()}`, ...logEntry });
-  localStorage.setItem(LOCAL_JOB_LOGS_KEY, JSON.stringify(logs.slice(0, 50)));
+  if (typeof localStorage !== 'undefined') {
+    try {
+      const existing = localStorage.getItem(LOCAL_JOB_LOGS_KEY);
+      const logs: LocalSwarmJobLogRecord[] = existing ? JSON.parse(existing) : [];
+      logs.unshift({ id: `log-${Date.now()}`, ...logEntry });
+      localStorage.setItem(LOCAL_JOB_LOGS_KEY, JSON.stringify(logs.slice(0, 50)));
+    } catch {
+      // Safe fallback
+    }
+  }
   return true;
+}
+
+/**
+ * 3.1. Recupera os logs locais de execução do Enxame
+ */
+export function getLocalSwarmJobLogs(): LocalSwarmJobLogRecord[] {
+  if (typeof localStorage === 'undefined') return [];
+  try {
+    const existing = localStorage.getItem(LOCAL_JOB_LOGS_KEY);
+    if (!existing) return [];
+    const parsed: LocalSwarmJobLogRecord[] = JSON.parse(existing);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 }
 
 /**

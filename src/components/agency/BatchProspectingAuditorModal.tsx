@@ -4,27 +4,22 @@ import {
   Layers, 
   Play, 
   CheckCircle2, 
-  Copy, 
   Check, 
   ExternalLink, 
   Flame, 
-  DollarSign, 
-  MessageSquare, 
-  Download, 
   FileSpreadsheet, 
-  Sparkles, 
-  AlertTriangle,
-  Building2,
   RefreshCw,
-  Search,
   TrendingDown,
-  Zap
+  Zap,
+  UserPlus
 } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { 
   parseDomainListInput, 
   runBatchProspectingAudit, 
+  getSavedBatchProspectingLeads,
+  saveBatchLeadToLocalCrm,
   BatchProspectingLead, 
   BatchAuditProgress 
 } from '../../services/agency/batchAuditorService';
@@ -40,13 +35,14 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
   onOpenStoreDossier
 }) => {
   const [rawInput, setRawInput] = useState(
-    'brkmotors.com.br\nbrkagro.com.br\nlojavirtuallider.com.br\nmodasportfitness.com.br\ncalcadosbrasil.com.br'
+    'minimalclub.com.br\nsallve.com.br\ninsiderstore.com.br\nduasdesign.com\nmash.com.br'
   );
-  const [agencyName, setAgencyName] = useState('Growth Performance Agency');
+  const [agencyName, setAgencyName] = useState('AdShield Intelligence');
   const [isAuditing, setIsAuditing] = useState(false);
   const [progress, setProgress] = useState<BatchAuditProgress | null>(null);
-  const [leads, setLeads] = useState<BatchProspectingLead[]>([]);
+  const [leads, setLeads] = useState<BatchProspectingLead[]>(() => getSavedBatchProspectingLeads());
   const [copiedLeadId, setCopiedLeadId] = useState<string | null>(null);
+  const [savedCrmIds, setSavedCrmIds] = useState<string[]>([]);
   const [copiedCsv, setCopiedCsv] = useState(false);
 
   const handleStartBatchAudit = async () => {
@@ -89,11 +85,23 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
     setTimeout(() => setCopiedLeadId(null), 2500);
   };
 
+  const handleSendWhatsApp = (lead: BatchProspectingLead) => {
+    const encoded = encodeURIComponent(lead.whatsAppPitchScript);
+    window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleSaveToLocalCrm = (lead: BatchProspectingLead) => {
+    saveBatchLeadToLocalCrm(lead);
+    if (!savedCrmIds.includes(lead.id)) {
+      setSavedCrmIds(prev => [...prev, lead.id]);
+    }
+  };
+
   const handleExportCsv = () => {
     if (leads.length === 0) return;
-    const headers = 'Marca,Dominio,Plataforma,Desperdicio_Mensal_BRL,SKUs_Rompidos,Prioridade,Pitch_WhatsApp\n';
+    const headers = 'Marca,Dominio,Plataforma,Vertical,SKUs_Auditados,Desperdicio_Mensal_BRL,Produtos_Rompidos,Top_SKU_Quebrado,Tamanhos_Faltantes,Prioridade,Pitch_WhatsApp\n';
     const rows = leads.map(l => 
-      `"${l.brandName}","${l.domain}","${l.platform}","${l.monthlyAdWasteBRL}","${l.brokenSkusCount}","${l.dealPriority}","${l.whatsAppPitchScript.replace(/"/g, '""')}"`
+      `"${l.brandName}","${l.domain}","${l.platform}","${l.verticalLabel || ''}","${l.totalSkusAudited || 0}","${l.monthlyAdWasteBRL}","${l.brokenSkusCount}","${(l.topBrokenProductTitle || '').replace(/"/g, '""')}","${(l.topBrokenSizes || []).join('/')}","${l.dealPriority}","${l.whatsAppPitchScript.replace(/"/g, '""')}"`
     ).join('\n');
 
     const blob = new Blob([headers + rows], { type: 'text/csv;charset=utf-8;' });
@@ -108,7 +116,7 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
 
   return (
     <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-[80] flex items-center justify-center p-4 overflow-y-auto font-sans">
-      <div className="w-full max-w-5xl bg-[#101211] rounded-3xl shadow-2xl overflow-hidden my-8 relative flex flex-col max-h-[92vh] border border-white/10 animate-fadeIn text-[#FFFCE1]">
+      <div className="w-full max-w-6xl bg-[#101211] rounded-3xl shadow-2xl overflow-hidden my-8 relative flex flex-col max-h-[92vh] border border-white/10 animate-fadeIn text-[#FFFCE1]">
         
         {/* Header */}
         <div className="p-5 bg-[#0E100F] border-b border-white/10 flex items-center justify-between text-[#FFFCE1] shrink-0">
@@ -118,13 +126,13 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-black text-sm tracking-tight text-[#FFFCE1]">Scanner em Lote para Prospecção de Agências</h3>
+                <h3 className="font-black text-sm tracking-tight text-[#FFFCE1]">Máquina de Prospecção em Lote & Ranking de Sangria (Local-First)</h3>
                 <span className="px-2 py-0.5 bg-[#0AE448]/20 text-[#0AE448] border border-[#0AE448]/30 rounded-full text-[10px] font-mono font-bold">
                   B2B Mass Auditor
                 </span>
               </div>
               <p className="text-[11px] text-[#BBBAA6]">
-                Audite até 50 e-commerces em 2 minutos e gere relatórios com scripts prontos para fechar contratos de tráfego.
+                Audite até 50 e-commerces simultaneamente, ranqueie por perda real de catálogo e dispare o pitch ancorado no SKU #1 quebrado.
               </p>
             </div>
           </div>
@@ -149,7 +157,7 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
                   type="text"
                   value={agencyName}
                   onChange={(e) => setAgencyName(e.target.value)}
-                  placeholder="Ex: Nexus Growth Media"
+                  placeholder="Ex: AdShield Intelligence"
                   className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 rounded-xl text-xs font-bold text-[#FFFCE1] placeholder-[#BBBAA6]/40 focus:border-[#0AE448] focus:outline-none"
                 />
               </div>
@@ -160,10 +168,10 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
                 </div>
                 <button
                   type="button"
-                  onClick={() => setRawInput('brkmotors.com.br\nbrkagro.com.br\nlojavirtuallider.com.br\nmodasportfitness.com.br\ncalcadosbrasil.com.br')}
+                  onClick={() => setRawInput('minimalclub.com.br\nsallve.com.br\ninsiderstore.com.br\nduasdesign.com\nmash.com.br')}
                   className="text-xs text-[#0AE448] hover:underline font-bold cursor-pointer"
                 >
-                  Carregar Lojas de Exemplo
+                  Carregar Portfólio Multi-Vertical Real
                 </button>
               </div>
             </div>
@@ -176,7 +184,7 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
                 rows={3}
                 value={rawInput}
                 onChange={(e) => setRawInput(e.target.value)}
-                placeholder="loja1.com.br&#10;loja2.com.br&#10;loja3.com.br"
+                placeholder="minimalclub.com.br&#10;sallve.com.br&#10;insiderstore.com.br"
                 className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 rounded-xl text-xs font-mono text-[#FFFCE1] placeholder-[#BBBAA6]/40 focus:border-[#0AE448] focus:outline-none"
               />
             </div>
@@ -209,7 +217,7 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
                 </span>
                 <span className="font-mono font-bold text-rose-400 inline-flex items-center gap-1.5">
                   <TrendingDown className="w-3.5 h-3.5 text-rose-400" />
-                  <span>Desperdício Total Encontrado: {formatBRL(progress.totalMonthlyWasteIdentifiedBRL)}/mês</span>
+                  <span>Sangria Total Identificada: {formatBRL(progress.totalMonthlyWasteIdentifiedBRL)}/mês</span>
                 </span>
               </div>
 
@@ -233,8 +241,8 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
             <div className="space-y-4">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div>
-                  <h4 className="text-sm font-bold text-[#FFFCE1]">Radar de Prospecção Ativa (Ordenado por Maior Vazamento)</h4>
-                  <p className="text-xs text-[#BBBAA6]">Lojas com anúncios ativos sofrendo ruptura na grade de tamanhos.</p>
+                  <h4 className="text-sm font-bold text-[#FFFCE1]">Radar de Prospecção Ativa (Ordenado por Maior Sangria Mensal)</h4>
+                  <p className="text-xs text-[#BBBAA6]">Pitches gerados com o SKU real #1 em ruptura de cada loja auditada.</p>
                 </div>
 
                 <button
@@ -242,19 +250,19 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
                   className="px-3.5 py-2 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 text-xs font-black rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-[#0AE448]/20"
                 >
                   <FileSpreadsheet className="w-3.5 h-3.5 text-slate-950" />
-                  <span>{copiedCsv ? 'Baixando CSV...' : 'Exportar Planilha CSV'}</span>
+                  <span>{copiedCsv ? 'Baixando CSV...' : 'Exportar Planilha CSV Completa'}</span>
                 </button>
               </div>
 
-              <div className="border border-white/10 rounded-2xl overflow-hidden bg-[#141716]">
+              <div className="border border-white/10 rounded-2xl overflow-x-auto bg-[#141716]">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="bg-[#191C1B] border-b border-white/10 text-[#BBBAA6] font-bold uppercase text-[10px] font-mono">
-                      <th className="p-3">Loja / Marca</th>
-                      <th className="p-3">Desperdício em Mídia</th>
-                      <th className="p-3">SKUs Rompidos</th>
-                      <th className="p-3">Prioridade do Lead</th>
-                      <th className="p-3 text-right">Ação de Prospecção</th>
+                      <th className="p-3">Loja / Vertical</th>
+                      <th className="p-3">Sangria Auditada</th>
+                      <th className="p-3">SKU #1 Quebrado (Prova Real)</th>
+                      <th className="p-3">Prioridade</th>
+                      <th className="p-3 text-right">Ações Comerciais Outbound</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5 font-medium text-[#FFFCE1]">
@@ -262,10 +270,16 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
                       <tr key={lead.id} className="hover:bg-white/5 transition-colors">
                         <td className="p-3">
                           <div className="font-bold text-[#FFFCE1]">{lead.brandName}</div>
-                          <div className="text-[10px] text-[#BBBAA6] font-mono flex items-center gap-1">
+                          <div className="text-[10px] text-[#BBBAA6] font-mono flex items-center gap-1 flex-wrap">
                             <span>{lead.domain}</span>
                             <span>•</span>
                             <span className="text-[#00BAE2] font-bold">{lead.platform}</span>
+                            {lead.verticalLabel && (
+                              <>
+                                <span>•</span>
+                                <span className="text-[#0AE448]">{lead.verticalLabel}</span>
+                              </>
+                            )}
                           </div>
                         </td>
 
@@ -273,13 +287,31 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
                           <span className="text-sm font-black font-mono text-rose-400">
                             {formatBRL(lead.monthlyAdWasteBRL)}
                           </span>
-                          <span className="text-[10px] text-[#BBBAA6] block font-normal">/mês em cliques perdidos</span>
+                          <span className="text-[10px] text-[#BBBAA6] block font-normal">
+                            /mês ({lead.brokenSkusCount} prods furados / {lead.totalSkusAudited || 0} SKUs)
+                          </span>
                         </td>
 
-                        <td className="p-3">
-                          <span className="px-2 py-0.5 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-md font-mono font-bold text-[10px]">
-                            {lead.brokenSkusCount} SKUs furados
-                          </span>
+                        <td className="p-3 max-w-xs">
+                          {lead.topBrokenProductTitle ? (
+                            <div className="space-y-1">
+                              <a
+                                href={lead.topBrokenProductUrl || lead.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs font-bold text-[#FFFCE1] hover:text-[#0AE448] transition-colors line-clamp-1 underline decoration-white/20"
+                              >
+                                {lead.topBrokenProductTitle}
+                              </a>
+                              {lead.topBrokenSizes && lead.topBrokenSizes.length > 0 && (
+                                <span className="inline-block px-2 py-0.5 bg-rose-500/15 text-rose-300 border border-rose-500/30 rounded font-mono text-[10px] font-bold">
+                                  Falta: {lead.topBrokenSizes.slice(0, 5).join(', ')}
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-[11px] text-[#BBBAA6]">Grade central 100% em estoque</span>
+                          )}
                         </td>
 
                         <td className="p-3">
@@ -302,21 +334,39 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
                         </td>
 
                         <td className="p-3 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
+                          <div className="flex items-center justify-end gap-1.5 flex-wrap">
                             <button
                               onClick={() => handleCopyPitch(lead)}
                               className="px-2.5 py-1.5 bg-[#0AE448]/10 hover:bg-[#0AE448]/20 text-[#0AE448] border border-[#0AE448]/30 rounded-xl font-bold text-[11px] transition-all flex items-center gap-1.5 cursor-pointer"
-                              title="Copiar Script WhatsApp pronto"
+                              title="Copiar Script WhatsApp ancorado no SKU real"
                             >
                               {copiedLeadId === lead.id ? <Check className="w-3 h-3 text-[#0AE448]" /> : <FontAwesomeIcon icon={faWhatsapp} className="w-3 h-3 text-[#0AE448]" />}
-                              <span>{copiedLeadId === lead.id ? 'Copiado!' : 'Script WhatsApp'}</span>
+                              <span>{copiedLeadId === lead.id ? 'Copiado!' : 'Copiar Pitch'}</span>
+                            </button>
+
+                            <button
+                              onClick={() => handleSendWhatsApp(lead)}
+                              className="px-2.5 py-1.5 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 rounded-xl font-black text-[11px] transition-all flex items-center gap-1 cursor-pointer"
+                              title="Abrir no WhatsApp Web"
+                            >
+                              <FontAwesomeIcon icon={faWhatsapp} className="w-3 h-3" />
+                              <span>WhatsApp</span>
+                            </button>
+
+                            <button
+                              onClick={() => handleSaveToLocalCrm(lead)}
+                              className="px-2.5 py-1.5 bg-white/5 hover:bg-white/10 text-[#FFFCE1] border border-white/10 rounded-xl font-bold text-[11px] transition-all flex items-center gap-1 cursor-pointer"
+                              title="Salvar Lead no CRM Local"
+                            >
+                              {savedCrmIds.includes(lead.id) ? <Check className="w-3 h-3 text-[#0AE448]" /> : <UserPlus className="w-3 h-3 text-[#00BAE2]" />}
+                              <span>{savedCrmIds.includes(lead.id) ? 'No CRM' : 'CRM'}</span>
                             </button>
 
                             {onOpenStoreDossier && (
                               <button
                                 onClick={() => onOpenStoreDossier(lead.domain)}
                                 className="p-1.5 bg-white/5 hover:bg-white/10 text-[#BBBAA6] hover:text-[#FFFCE1] border border-white/10 rounded-xl transition-all cursor-pointer"
-                                title="Abrir Dossiê Individual"
+                                title="Abrir Dossiê Completo da Loja"
                               >
                                 <ExternalLink className="w-3.5 h-3.5" />
                               </button>
