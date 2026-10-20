@@ -303,6 +303,43 @@ describe('MVP Core Flow Validation', () => {
     expect(snaps.length).toBe(1);
     expect(snaps[0].top_broken_skus_summary?.[0].title).toBe('Camiseta Pima Preta');
     expect((snaps[0] as any).raw_diagnostic_json).toBeUndefined();
+
+    // 4. White-Label Vault + PDF Export Unification
+    const { setWhiteLabelConfig, getWhiteLabelConfig } = await import('../services/whiteLabelService');
+    const { PdfExportService } = await import('../services/export/pdfExportService');
+
+    setWhiteLabelConfig({
+      agencyName: 'Alpha Growth Partners',
+      consultantName: 'Lucas Lima • Head CRO',
+      consultantWhatsApp: '5511977778888',
+      primaryColor: '#0AE448'
+    });
+
+    const syncedWl = getWhiteLabelConfig();
+    expect(syncedWl.agencyName).toBe('Alpha Growth Partners');
+    expect(syncedWl.consultantName).toBe('Lucas Lima • Head CRO');
+    expect(syncedWl.consultantWhatsApp).toBe('5511977778888');
+
+    const fullMockDiag: any = {
+      ...mockDiag,
+      input: { businessName: 'Minimal Club', url: 'https://minimalclub.com.br', niche: 'Moda' },
+      visionAnalysis: {
+        contrastAudit: { contrastRatio: 7.5, wcagAaPassed: true },
+        eyeTracking: { mainFocusElement: 'Botão Comprar', focusScoreCta: 88 },
+        thumbZone: { ctaZoneLocation: 'EASY', recommendation: 'Posição ergonômica ideal' }
+      },
+      realSiteData: {
+        ...mockDiag.realSiteData,
+        domain: 'minimalclub.com.br',
+        brandName: 'Minimal Club',
+        ecommercePlatform: 'Shopify'
+      }
+    };
+
+    const dossierHtml = PdfExportService.buildExecutiveDossierHtml(fullMockDiag);
+    expect(dossierHtml).toContain('Alpha Growth Partners');
+    expect(dossierHtml).toContain('Lucas Lima • Head CRO');
+    expect(dossierHtml).toContain('5511977778888');
   });
 });
 

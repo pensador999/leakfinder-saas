@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   X, 
   Printer, 
@@ -13,13 +13,16 @@ import {
   TrendingUp,
   Phone,
   TableProperties,
-  KeyRound
+  KeyRound,
+  Share2,
+  Check
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { SpreadsheetExporter } from '../services/export/spreadsheetExporter';
 import { OfficialIntegrationConnectModal } from './OfficialIntegrationConnectModal';
 import { PdfExportService } from '../services/export/pdfExportService';
 import { isCatalogProductBroken } from '../services/siteInspector';
+import { getWhiteLabelConfig, setWhiteLabelConfig } from '../services/whiteLabelService';
 
 interface ExecutivePdfExportModalProps {
   isOpen: boolean;
@@ -27,16 +30,70 @@ interface ExecutivePdfExportModalProps {
   diagnostic: AgentDiagnosticResult;
 }
 
+function mapHexToAccent(hex?: string): 'indigo' | 'blue' | 'emerald' | 'black' {
+  if (!hex) return 'emerald';
+  const h = hex.toLowerCase();
+  if (h.includes('0ae448') || h.includes('10b981') || h.includes('059669')) return 'emerald';
+  if (h.includes('00bae2') || h.includes('2563eb') || h.includes('3b82f6')) return 'blue';
+  if (h.includes('0f172a') || h.includes('000000') || h.includes('101211')) return 'black';
+  return 'indigo';
+}
+
+function mapAccentToHex(accent: 'indigo' | 'blue' | 'emerald' | 'black'): string {
+  switch (accent) {
+    case 'emerald':
+      return '#0AE448';
+    case 'blue':
+      return '#00BAE2';
+    case 'black':
+      return '#0F172A';
+    default:
+      return '#4F46E5';
+  }
+}
+
 export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = ({
   isOpen,
   onClose,
   diagnostic
 }) => {
-  // White-Label State
-  const [agencyName, setAgencyName] = useState('AdShield Intelligence');
-  const [consultantName, setConsultantName] = useState('Especialista em CRO & Performance');
-  const [consultantPhone, setConsultantPhone] = useState('(11) 98765-4321');
-  const [accentColor, setAccentColor] = useState<'indigo' | 'blue' | 'emerald' | 'black'>('indigo');
+  // White-Label State (100% conectado ao Cofre White-Label Local-First)
+  const initialWl = getWhiteLabelConfig();
+  const [agencyName, setAgencyName] = useState(initialWl.agencyName || 'AdShield Intelligence');
+  const [consultantName, setConsultantName] = useState(initialWl.consultantName || 'Especialista em CRO & Performance');
+  const [consultantPhone, setConsultantPhone] = useState(initialWl.consultantWhatsApp || '5511999999999');
+  const [accentColor, setAccentColor] = useState<'indigo' | 'blue' | 'emerald' | 'black'>(() =>
+    mapHexToAccent(initialWl.primaryColor)
+  );
+  const [savedWlFeedback, setSavedWlFeedback] = useState(false);
+  const [copiedPublicUrl, setCopiedPublicUrl] = useState(false);
+
+  // Sync when modal opens or external White-Label settings update
+  useEffect(() => {
+    const syncFromVault = () => {
+      const wl = getWhiteLabelConfig();
+      setAgencyName(wl.agencyName || 'AdShield Intelligence');
+      setConsultantName(wl.consultantName || 'Especialista em CRO & Performance');
+      setConsultantPhone(wl.consultantWhatsApp || '5511999999999');
+      setAccentColor(mapHexToAccent(wl.primaryColor));
+    };
+    if (isOpen) {
+      syncFromVault();
+    }
+    window.addEventListener('whitelabel-updated', syncFromVault);
+    return () => window.removeEventListener('whitelabel-updated', syncFromVault);
+  }, [isOpen]);
+
+  const persistBrandingField = (patch: {
+    agencyName?: string;
+    consultantName?: string;
+    consultantWhatsApp?: string;
+    primaryColor?: string;
+  }) => {
+    setWhiteLabelConfig(patch);
+    setSavedWlFeedback(true);
+    setTimeout(() => setSavedWlFeedback(false), 2000);
+  };
   
   // Section Inclusions
   const [includeCover, setIncludeCover] = useState(true);
@@ -75,6 +132,17 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const publicDossierUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/app?dossier=${encodeURIComponent(realSiteData.domain)}`
+      : `https://adshield.com.br/app?dossier=${encodeURIComponent(realSiteData.domain)}`;
+
+  const handleCopyPublicDossierUrl = () => {
+    navigator.clipboard.writeText(publicDossierUrl);
+    setCopiedPublicUrl(true);
+    setTimeout(() => setCopiedPublicUrl(false), 2500);
   };
 
   return (
@@ -118,6 +186,15 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
             </div>
 
             <button
+              onClick={handleCopyPublicDossierUrl}
+              className="px-3.5 py-2 bg-[#00BAE2]/15 hover:bg-[#00BAE2]/25 text-[#00BAE2] border border-[#00BAE2]/30 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+              title={`Copiar link público interativo: ${publicDossierUrl}`}
+            >
+              {copiedPublicUrl ? <Check className="w-4 h-4 text-[#0AE448]" /> : <Share2 className="w-4 h-4 text-[#00BAE2]" />}
+              <span>{copiedPublicUrl ? 'Link Público Copiado!' : 'Compartilhar Link (?dossier=)'}</span>
+            </button>
+
+            <button
               onClick={() => PdfExportService.downloadExecutivePdf(diagnostic, {
                 agencyName,
                 consultantName,
@@ -153,11 +230,18 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
           
           {/* SIDEBAR DE CUSTOMIZAÇÃO WHITE-LABEL (Oculta na Impressão) */}
           <div className="print:hidden w-full lg:w-80 bg-[#101211] border-r border-white/10 p-6 space-y-5 overflow-y-auto shrink-0">
-            <div>
-              <h4 className="text-xs font-bold text-[#FFFCE1] uppercase font-mono flex items-center gap-2">
-                <Building2 className="w-3.5 h-3.5 text-[#0AE448]" /> Branding da Consultoria
-              </h4>
-              <p className="text-[11px] text-[#BBBAA6] mt-0.5">Seus dados no cabeçalho e rodapé do documento.</p>
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <h4 className="text-xs font-bold text-[#FFFCE1] uppercase font-mono flex items-center gap-2">
+                  <Building2 className="w-3.5 h-3.5 text-[#0AE448]" /> Branding da Consultoria
+                </h4>
+                <p className="text-[11px] text-[#BBBAA6] mt-0.5">Sincronizado com o Cofre White-Label.</p>
+              </div>
+              {savedWlFeedback && (
+                <span className="px-2 py-0.5 bg-[#0AE448]/15 text-[#0AE448] border border-[#0AE448]/30 rounded-full text-[9px] font-mono font-bold shrink-0">
+                  Salvo!
+                </span>
+              )}
             </div>
 
             <div className="space-y-3">
@@ -166,7 +250,11 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
                 <input
                   type="text"
                   value={agencyName}
-                  onChange={(e) => setAgencyName(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setAgencyName(val);
+                    persistBrandingField({ agencyName: val });
+                  }}
                   className="w-full px-3 py-2 bg-[#0E100F] border border-white/10 rounded-xl text-xs font-bold text-[#FFFCE1] focus:border-[#0AE448]"
                 />
               </div>
@@ -176,7 +264,11 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
                 <input
                   type="text"
                   value={consultantName}
-                  onChange={(e) => setConsultantName(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setConsultantName(val);
+                    persistBrandingField({ consultantName: val });
+                  }}
                   className="w-full px-3 py-2 bg-[#0E100F] border border-white/10 rounded-xl text-xs text-[#FFFCE1] focus:border-[#0AE448]"
                 />
               </div>
@@ -186,7 +278,11 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
                 <input
                   type="text"
                   value={consultantPhone}
-                  onChange={(e) => setConsultantPhone(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setConsultantPhone(val);
+                    persistBrandingField({ consultantWhatsApp: val });
+                  }}
                   className="w-full px-3 py-2 bg-[#0E100F] border border-white/10 rounded-xl text-xs font-mono text-[#FFFCE1] focus:border-[#0AE448]"
                 />
               </div>
@@ -198,7 +294,10 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
                 {(['indigo', 'blue', 'emerald', 'black'] as const).map((color) => (
                   <button
                     key={color}
-                    onClick={() => setAccentColor(color)}
+                    onClick={() => {
+                      setAccentColor(color);
+                      persistBrandingField({ primaryColor: mapAccentToHex(color) });
+                    }}
                     className={`py-1.5 rounded-lg text-[10px] font-bold border transition-all cursor-pointer capitalize ${
                       accentColor === color
                         ? 'border-[#0AE448] bg-[#0AE448]/10 text-[#0AE448] font-black'
@@ -304,20 +403,28 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
               </button>
             </div>
 
-            {/* Ação Rápida WhatsApp Ancorada no SKU Real */}
-            <div className="pt-2 border-t border-white/10">
+            {/* Ação Rápida WhatsApp Ancorada no SKU Real + Link Público */}
+            <div className="pt-2 border-t border-white/10 space-y-2">
+              <button
+                onClick={handleCopyPublicDossierUrl}
+                className="w-full py-2 px-3 bg-[#00BAE2]/10 hover:bg-[#00BAE2]/20 border border-[#00BAE2]/30 text-[#00BAE2] font-bold text-[11px] rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                {copiedPublicUrl ? <Check className="w-3.5 h-3.5 text-[#0AE448]" /> : <Share2 className="w-3.5 h-3.5" />}
+                <span>{copiedPublicUrl ? 'Link Copiado para o Clipboard!' : `Copiar Link Público (?dossier=${realSiteData.domain})`}</span>
+              </button>
+
               <button
                 onClick={() => {
                   const skuHighlight = sampleBroken
                     ? `• SKU Crítico Detectado: "${sampleBroken.productTitle}" (Faltando [${sampleBrokenSizes.join(', ')}])\n• Link Verificado: ${sampleBroken.productUrl}\n`
                     : '';
-                  const msg = `DIAGNÓSTICO EXECUTIVO DE CRO & CATÁLOGO (${realSiteData.brandName || realSiteData.domain})\n\nOlá! Concluímos a auditoria profunda da vitrine pública (${realSiteData.domain}):\n• Growth Score Atual: ${growthScore}/100\n• Produtos com Ruptura Central: ${brokenItems.length} de ${realSiteData.catalogAudit?.totalProductsScanned || allIssues.length} produtos\n${skuHighlight}• Sangria Mensal Estimada em Mídia: R$ ${monthlyLoss.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês [Simulação]\n\nGerado por: ${agencyName} (${consultantName})\nDossiê Completo em PDF disponível.`;
+                  const msg = `DIAGNÓSTICO EXECUTIVO DE CRO & CATÁLOGO (${realSiteData.brandName || realSiteData.domain})\n\nOlá! Concluímos a auditoria profunda da vitrine pública (${realSiteData.domain}):\n• Growth Score Atual: ${growthScore}/100\n• Produtos com Ruptura Central: ${brokenItems.length} de ${realSiteData.catalogAudit?.totalProductsScanned || allIssues.length} produtos\n${skuHighlight}• Sangria Mensal Estimada em Mídia: R$ ${monthlyLoss.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês [Simulação]\n\n📄 Acesse o Dossiê Interativo ao vivo:\n${publicDossierUrl}\n\nGerado por: ${agencyName} (${consultantName})`;
                   window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
                 }}
                 className="w-full py-2.5 px-3 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 font-black text-xs rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#0AE448]/20 cursor-pointer"
               >
                 <Phone className="w-3.5 h-3.5" />
-                <span>Enviar Pitch com SKU no WhatsApp</span>
+                <span>Enviar Pitch + Link no WhatsApp</span>
               </button>
             </div>
           </div>

@@ -123,8 +123,8 @@ export class PdfExportService {
   ): string {
     const wl: WhiteLabelConfig = getWhiteLabelConfig();
     const agency = options?.agencyName || wl.agencyName || 'AdShield Growth OS';
-    const consultant = options?.consultantName || 'Especialista em CRO & E-Commerce';
-    const phone = options?.consultantPhone || '(11) 98765-4321';
+    const consultant = options?.consultantName || wl.consultantName || 'Especialista em CRO & E-Commerce';
+    const phone = options?.consultantPhone || wl.consultantWhatsApp || '(11) 98765-4321';
 
     const { realSiteData, growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax, visionAnalysis } = diagnostic;
     const finances = calculateStoreFinancialGrounding(realSiteData, diagnostic.input, diagnostic.social);

@@ -15,6 +15,26 @@ export interface WhiteLabelConfig {
 const STORAGE_KEY = 'whitelabel_config';
 const AGENCY_CONFIG_KEY = 'adshield_agency_whitelabel_config_v1';
 
+const memoryWhiteLabelStore = new Map<string, string>();
+
+function safeGetItem(key: string): string | null {
+  try {
+    if (typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function') {
+      return localStorage.getItem(key);
+    }
+  } catch {}
+  return memoryWhiteLabelStore.get(key) ?? null;
+}
+
+function safeSetItem(key: string, value: string): void {
+  memoryWhiteLabelStore.set(key, value);
+  try {
+    if (typeof localStorage !== 'undefined' && typeof localStorage.setItem === 'function') {
+      localStorage.setItem(key, value);
+    }
+  } catch {}
+}
+
 const defaultConfig: WhiteLabelConfig = {
   agencyName: 'AdShield',
   logoUrl: '',
@@ -30,9 +50,8 @@ const defaultConfig: WhiteLabelConfig = {
 };
 
 export function getWhiteLabelConfig(): WhiteLabelConfig {
-  if (typeof localStorage === 'undefined') return defaultConfig;
-  const stored = localStorage.getItem(STORAGE_KEY);
-  const agencyStored = localStorage.getItem(AGENCY_CONFIG_KEY);
+  const stored = safeGetItem(STORAGE_KEY);
+  const agencyStored = safeGetItem(AGENCY_CONFIG_KEY);
   let merged = { ...defaultConfig };
 
   if (agencyStored) {
@@ -66,37 +85,39 @@ export function getWhiteLabelConfig(): WhiteLabelConfig {
   return merged;
 }
 
-export function setWhiteLabelConfig(config: Partial<WhiteLabelConfig>) {
+export function setWhiteLabelConfig(config: Partial<WhiteLabelConfig>): WhiteLabelConfig {
   const current = getWhiteLabelConfig();
   const next = { ...current, ...config };
-  if (typeof localStorage !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  safeSetItem(STORAGE_KEY, JSON.stringify(next));
 
-    // Sincroniza também com o gerador de Dossiê PDF White-Label (adshield_agency_whitelabel_config_v1)
-    try {
-      const existingAgencyRaw = localStorage.getItem(AGENCY_CONFIG_KEY);
-      const existingAgency = existingAgencyRaw ? JSON.parse(existingAgencyRaw) : {};
-      localStorage.setItem(
-        AGENCY_CONFIG_KEY,
-        JSON.stringify({
-          includeCommercialProposal: true,
-          proposedRetainerValue: 3500,
-          customNotesToClient:
-            'Este diagnóstico executivo foi elaborado com exclusividade para a diretoria da loja, identificando as principais oportunidades de ganho imediato de margem e conversão.',
-          ...existingAgency,
-          agencyName: next.agencyName,
-          agencyLogoUrl: next.logoUrl,
-          primaryBrandColor: next.primaryColor,
-          consultantName: next.consultantName,
-          consultantRole: next.consultantRole,
-          consultantWhatsApp: next.consultantWhatsApp,
-          consultantEmail: next.consultantEmail,
-          agencyWebsite: next.agencyWebsite
-        })
-      );
-    } catch {
-      // ignore
+  // Sincroniza também com o gerador de Dossiê PDF White-Label (adshield_agency_whitelabel_config_v1)
+  try {
+    const existingAgencyRaw = safeGetItem(AGENCY_CONFIG_KEY);
+    const existingAgency = existingAgencyRaw ? JSON.parse(existingAgencyRaw) : {};
+    safeSetItem(
+      AGENCY_CONFIG_KEY,
+      JSON.stringify({
+        includeCommercialProposal: true,
+        proposedRetainerValue: 3500,
+        customNotesToClient:
+          'Este diagnóstico executivo foi elaborado com exclusividade para a diretoria da loja, identificando as principais oportunidades de ganho imediato de margem e conversão.',
+        ...existingAgency,
+        agencyName: next.agencyName,
+        agencyLogoUrl: next.logoUrl,
+        primaryBrandColor: next.primaryColor,
+        consultantName: next.consultantName,
+        consultantRole: next.consultantRole,
+        consultantWhatsApp: next.consultantWhatsApp,
+        consultantEmail: next.consultantEmail,
+        agencyWebsite: next.agencyWebsite
+      })
+    );
+    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+      window.dispatchEvent(new Event('whitelabel-updated'));
     }
+  } catch {
+    // ignore
   }
+
   return next;
 }
