@@ -8,19 +8,17 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'not-configured-ye
 
 export const isSupabaseConfigured = isConfigured;
 
-if (!isConfigured) {
-  console.warn('⚠️ Supabase environment variables missing! Local dev only.');
-}
-
-// ⚡ Custom Resilient Fetch with Circuit Breaker
+// ⚡ Custom Resilient Fetch with Circuit Breaker & Zero Network Noise in Local-First Mode
 const resilientFetch: typeof fetch = async (input, init) => {
-  // If circuit is open, avoid making network request and return immediate offline response
-  if (circuitBreaker.isCircuitOpen()) {
+  // In Local-First mode (no Supabase credentials configured), never trigger DNS lookups to placeholder URLs
+  if (!isConfigured || circuitBreaker.isCircuitOpen()) {
     return new Response(JSON.stringify({ 
-      error: 'Circuit Breaker Active: Supabase is paused or unreachable. Operating in local fallback mode.' 
+      data: null,
+      error: null,
+      mode: 'LOCAL_FIRST_STORAGE'
     }), {
-      status: 503,
-      statusText: 'Service Unavailable (Circuit Open)',
+      status: 200,
+      statusText: 'OK (Local-First Storage Mode)',
       headers: { 'Content-Type': 'application/json' }
     });
   }

@@ -13,6 +13,7 @@ export interface SkuDiscrepancyAlert {
   productUrl: string;
   imageSrc: string;
   price: number;
+  manufacturingCategory?: 'FABRICACAO_PROPRIA' | 'REVENDA';
   severity: DiscrepancySeverity;
   severityLabel: string;
   badgeColor: string;
@@ -147,6 +148,7 @@ export function auditSupplyChainDiscrepancy(
         productUrl: skuItem.productUrl,
         imageSrc: skuItem.imageSrc,
         price,
+        manufacturingCategory: skuItem.manufacturingType || 'FABRICACAO_PROPRIA',
         severity,
         severityLabel: severity === 'GRAU_1_ANUNCIO_FANTASMA' 
           ? '🔴 Grau 1: Anúncio Fantasma (Grade Zerada em Tráfego Ativo)' 

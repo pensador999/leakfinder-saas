@@ -114,28 +114,17 @@ function classifyManufacturing(title: string, skuCode: string, tags: string[], p
 
   // Nota Crítica: Marcas D2C de vestuário (ex: Minimal Club, Insider, Mash, Duas Design) fabricam suas próprias peças de algodão/casual.
   // Apenas marcamos como REVENDA quando há indicador explícito de fornecedor/multimarca, tralha de pesca ou códigos de revenda (APC/CMB/CBT/BT/BOT).
+  const hasFishingGearWord = /\b(ISCA|ISCAS|CARRETILHA|CARRETILHAS|MOLINETE|MOLINETES|ANZOL|ANZOIS|ANZÓIS)\b/i.test(upper);
   const isResale = 
-    upper.includes('REVENDA') ||
-    upper.includes('FORNECEDOR') ||
-    upper.includes('MULTIMARCA') ||
-    upper.includes('WORK') ||
-    upper.includes('SAFARI') ||
-    upper.includes('ISCA') ||
-    upper.includes('CARRETILHA') ||
-    upper.includes('MOLINETE') ||
-    upper.includes('ANZOL') ||
-    skuUpper.startsWith('APC') ||
-    skuUpper.startsWith('CMB') ||
-    skuUpper.startsWith('CBT') ||
-    skuUpper.startsWith('BT') ||
-    skuUpper.startsWith('BOT') ||
+    /\b(REVENDA|MULTIMARCA)\b/i.test(upper) ||
+    hasFishingGearWord ||
     (isBrkStore && (
-      upper.includes('BOTÃO') ||
-      upper.includes('BOTAO') ||
-      upper.includes('BOTINA') ||
-      upper.includes('BOTA') ||
-      upper.includes('ALGODÃO') ||
-      upper.includes('ALGODAO')
+      skuUpper.startsWith('APC') ||
+      skuUpper.startsWith('CMB') ||
+      skuUpper.startsWith('CBT') ||
+      skuUpper.startsWith('BT') ||
+      skuUpper.startsWith('BOT') ||
+      /\b(WORK|SAFARI|BOTÃO|BOTAO|BOTINA|BOTA|ALGODÃO|ALGODAO)\b/i.test(upper)
     ));
 
   return isResale ? 'REVENDA' : 'FABRICACAO_PROPRIA';

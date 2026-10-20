@@ -8,7 +8,8 @@ import { detectMarketplace } from '../services/marketplaceInspector';
 import { AgentDiagnosticResult } from '../types';
 import { LayoutDashboard, Eye, ShoppingCart, Calculator, ShieldCheck, Sword, KanbanSquare, Layers, Activity, Code2, Store, Gauge, Flame, Cpu, Search, Scale, BrainCircuit } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { useAuditStore } from '../store/auditStore';
 
 // ⚡ LAZY LOADED ANALYTICAL TABS (Demanded only when tab is active)
 const ComputerVisionInspectionView = lazy(() => import('../components/agents/ComputerVisionInspectionView').then(m => ({ default: m.ComputerVisionInspectionView })));
@@ -58,12 +59,19 @@ export function ReportPage() {
         return;
       }
 
-      if (id.startsWith('fallback-') || id === 'latest') {
-        const saved = localStorage.getItem('latestAudit');
-        if (saved) {
-          setDiagnostic(JSON.parse(saved));
+      const storeDiag = useAuditStore.getState().diagnostic;
+      if (!isSupabaseConfigured || id.startsWith('fallback-') || id === 'latest') {
+        if (storeDiag) {
+          setDiagnostic(storeDiag);
         } else {
-          navigate('/');
+          const saved = localStorage.getItem('latestAudit');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            setDiagnostic(parsed);
+            useAuditStore.getState().setDiagnostic(parsed);
+          } else {
+            navigate('/');
+          }
         }
         setIsLoading(false);
         return;
@@ -77,14 +85,21 @@ export function ReportPage() {
           .single();
 
         if (error || !data) {
-          console.error("Audit not found in DB", error);
-          navigate('/');
+          if (storeDiag) {
+            setDiagnostic(storeDiag);
+          } else {
+            navigate('/');
+          }
         } else {
           setDiagnostic(data.result_data);
+          useAuditStore.getState().setDiagnostic(data.result_data);
         }
-      } catch (err) {
-        console.error("Error fetching audit:", err);
-        navigate('/');
+      } catch {
+        if (storeDiag) {
+          setDiagnostic(storeDiag);
+        } else {
+          navigate('/');
+        }
       } finally {
         setIsLoading(false);
       }

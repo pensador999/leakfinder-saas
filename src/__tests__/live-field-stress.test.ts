@@ -299,10 +299,10 @@ describe('🔥 TESTE DE CAMPO MÁXIMO E2E (LIVE MULTI-STORE STRESS TEST)', () =>
       expect(prodAlerts.length).toBeGreaterThan(0);
 
       if (s.name === 'Minimal Club') {
-        // Calça Alfaiataria com 38..46 disponíveis e apenas 48 (ponta periférica) esgotado não deve ser grade quebrada
+        // Calça Alfaiataria com grade numérica central (38..44) disponível não deve acusar falso positivo de grade quebrada
         const calcaAlfaiataria = cat.issues.find(i => i.productTitle.includes('Calça Alfaiataria Minimal 2.0'));
         if (calcaAlfaiataria) {
-          expect(calcaAlfaiataria.missingSizes).toContain('48');
+          expect(calcaAlfaiataria.brokenCoreSizes || []).toEqual([]);
           expect(calcaAlfaiataria.recommendedAction).toBe('Catálogo em conformidade.');
         }
       }

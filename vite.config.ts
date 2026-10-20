@@ -88,6 +88,11 @@ function catalogProxyDevPlugin() {
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss(), catalogProxyDevPlugin()],
+  // @ts-ignore — Vitest configuration
+  test: {
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    exclude: ['node_modules', 'dist', '.agents/**']
+  },
   server: {
     port: 3005,
     strictPort: false,

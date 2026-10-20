@@ -919,37 +919,12 @@ async function fetchRealLiveCatalogAudit(
           const productTypeUpper = (p.product_type || '').toUpperCase();
           const tagsUpper = Array.isArray(p.tags) ? p.tags.map((t: string) => t.toUpperCase()) : [];
 
+          const fishingRegex = /\b(ISCA|ISCAS|ANZOL|ANZOIS|ANZÓIS|VARA DE PESCA|VARA DE PESCAR|CARRETILHA|CARRETILHAS|MOLINETE|MOLINETES|LINHA DE PESCA|MULTIFILAMENTO|FLUOROCARBON|PEGA PEIXE|GARATEIA|GARATÉIA|GIRADOR|CHUMBADA|PASSAGUÁ|PASSAGUA|PORTA VARA|TRALHA)\b/i;
           const isFishingGear = 
-            titleUpper.includes('ISCA') ||
-            handleUpper.includes('ISCA') ||
-            titleUpper.includes('ANZOL') ||
-            titleUpper.includes('ANZÓIS') ||
-            titleUpper.includes('ANZOIS') ||
-            titleUpper.includes('VARA DE PESCAR') ||
-            titleUpper.includes('VARA') ||
-            handleUpper.includes('VARA') ||
-            titleUpper.includes('CARRETILHA') ||
-            handleUpper.includes('CARRETILHA') ||
-            titleUpper.includes('MOLINETE') ||
-            handleUpper.includes('MOLINETE') ||
-            titleUpper.includes('LINHA DE PESCA') ||
-            titleUpper.includes('MULTIFILAMENTO') ||
-            titleUpper.includes('FLUOROCARBON') ||
-            titleUpper.includes('ALICATE') ||
-            titleUpper.includes('BOGA') ||
-            titleUpper.includes('PEGA PEIXE') ||
-            titleUpper.includes('GARATEIA') ||
-            titleUpper.includes('GARATÉIA') ||
-            titleUpper.includes('SNAP') ||
-            titleUpper.includes('GIRADOR') ||
-            titleUpper.includes('CHUMBADA') ||
-            titleUpper.includes('PASSAGUÁ') ||
-            titleUpper.includes('PASSAGUA') ||
-            titleUpper.includes('PORTA VARA') ||
-            titleUpper.includes('ESTOJO') ||
-            productTypeUpper.includes('TRALHA') ||
-            productTypeUpper.includes('EQUIPAMENTO') ||
-            tagsUpper.some((t: string) => t.includes('ISCA') || t.includes('VARA') || t.includes('ANZOL') || t.includes('TRALHA') || t.includes('CARRETILHA') || t.includes('MOLINETE'));
+            fishingRegex.test(titleUpper) ||
+            fishingRegex.test(handleUpper.replace(/-/g, ' ')) ||
+            fishingRegex.test(productTypeUpper) ||
+            tagsUpper.some((t: string) => fishingRegex.test(t));
 
           const isAccessoryOrResale = !isFishingGear && (
             titleUpper.includes('BANDANA') ||
@@ -1218,12 +1193,14 @@ async function fetchRealLiveCatalogAudit(
           // Detect manufacturing type: Resale vs In-House Manufacturing
           const hasExplicitResaleTag =
             productTypeUpper.includes('REVENDA') ||
-            tagsUpper.some((t: string) => t.includes('REVENDA') || t.includes('FORNECEDOR') || t.includes('MULTIMARCA'));
+            tagsUpper.some((t: string) => t.includes('REVENDA') || t.includes('MULTIMARCA'));
           const isResaleGood = hasExplicitResaleTag || isCottonOrCasual || isFishingGear ||
             String(options?.operationMode || '').toUpperCase().includes('RESALE') ||
-            titleUpper.includes('WORK') || titleUpper.includes('SAFARI') ||
-            mainSku.startsWith('CMB') || mainSku.startsWith('CBT') || mainSku.startsWith('BT') || mainSku.startsWith('BOT') ||
-            (isBrkStore && (titleUpper.includes('BOTINA') || titleUpper.includes('BOTÃO') || titleUpper.includes('BOTAO') || titleUpper.includes('ADVENTURE')));
+            (isBrkStore && (
+              mainSku.startsWith('CMB') || mainSku.startsWith('CBT') || mainSku.startsWith('BT') || mainSku.startsWith('BOT') ||
+              titleUpper.includes('WORK') || titleUpper.includes('SAFARI') ||
+              titleUpper.includes('BOTINA') || titleUpper.includes('BOTÃO') || titleUpper.includes('BOTAO') || titleUpper.includes('ADVENTURE')
+            ));
           const manufacturingType: 'REVENDA' | 'FABRICACAO_PROPRIA' = isResaleGood ? 'REVENDA' : 'FABRICACAO_PROPRIA';
 
           // Critical issues count
