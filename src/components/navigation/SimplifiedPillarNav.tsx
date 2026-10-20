@@ -104,8 +104,7 @@ export const SimplifiedPillarNav: React.FC<SimplifiedPillarNavProps> = ({
       agents: [
         { id: 'tree_of_thought', label: 'Debate ToT', icon: GitFork, desc: 'Árvore de pensamento multi-ângulo' },
         { id: 'truth_auditor', label: 'Tribunal de Consenso', icon: Scale, desc: 'Zero falso-positivo auditado' },
-        { id: 'vector_radar', label: 'Memória RAG Vetorial', icon: Database, desc: 'Aprendizado contínuo' },
-        { id: 'agent_flowchart', label: 'Fluxograma do Enxame', icon: Zap, desc: 'Topologia autônoma' }
+        { id: 'vector_radar', label: 'Memória RAG Vetorial', icon: Database, desc: 'Aprendizado contínuo' }
       ]
     },
     {
@@ -113,14 +112,13 @@ export const SimplifiedPillarNav: React.FC<SimplifiedPillarNavProps> = ({
       agents: [
         { id: 'competitor', label: 'Espião de Concorrentes', icon: Sword, desc: 'Preço e posicionamento' },
         { id: 'market_hunter', label: 'Caçador de Mercado', icon: Compass, desc: 'Mineração e benchmarks' },
-        { id: 'product_evolution', label: 'Auto-Evolução do Produto', icon: Wrench, desc: 'Recomendações técnicas' },
-        { id: 'customer_success', label: 'VoC & Precificação', icon: BarChart3, desc: 'Voz do cliente e elasticidade' }
+        { id: 'cro_copy', label: 'CRO, Copy & Growth', icon: Sparkles, desc: 'Alavancas de conversão e anúncios' }
       ]
     },
     {
       title: 'Orquestração & Comando',
       agents: [
-        { id: 'ceo_orchestrator', label: 'Orquestrador CEO', icon: Crown, desc: 'Priorização executiva' },
+        { id: 'swarm_control', label: 'Sentinela 24/7 (Swarm)', icon: Zap, desc: 'Vigia autônomo & memória Mem0' },
         { id: 'orchestrator', label: 'Torre do Maestro', icon: Cpu, desc: 'Roteamento de agentes' },
         { id: 'scraper_dossier', label: 'Dossiê Forense', icon: Search, desc: 'Inspeção profunda de DOM' },
         ...(isFounderAuthenticated ? [{ id: 'founder_hq', label: 'Torre do Fundador (HQ)', icon: Crown, desc: 'Comando confidencial' }] : [])

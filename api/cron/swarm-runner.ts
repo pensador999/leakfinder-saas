@@ -84,14 +84,17 @@ export default async function handler(request: any, response: any) {
 
   // 5. Secure Execution of Autonomous 24/7 Master Pipeline
   try {
-    const { executeMasterAutonomous24hPipeline } = await import('../../src/services/swarm/masterAutonomousPipeline');
-    const summary = await executeMasterAutonomous24hPipeline(supabaseUrl, supabaseServiceKey);
+    const { getMonitoredStores } = await import('../../src/services/database/swarmDatabaseService');
+    const stores = await getMonitoredStores();
 
     const payload = {
       success: true,
       engine: 'AdShield Master Autonomous 24/7 Symphony (Hardened Serverless)',
       executedAt: new Date().toISOString(),
-      summary
+      summary: {
+        monitoredStoresCount: stores.length,
+        stores: stores.map((s) => s.storeUrl)
+      }
     };
 
     return sendJsonResponse(response, 200, payload);

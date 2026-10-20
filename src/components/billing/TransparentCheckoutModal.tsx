@@ -16,7 +16,9 @@ import {
   HelpCircle,
   Zap,
   Building2,
-  Rocket
+  Rocket,
+  MessageSquare,
+  ExternalLink
 } from 'lucide-react';
 import { 
   SAAS_PLANS, 
@@ -33,6 +35,7 @@ import {
 } from '../../services/billing/checkoutService';
 import { redirectToStripeCheckout, StripePlanId } from '../../services/billing/stripeRealCheckoutService';
 import { formatBRL } from '../../services/ai/storeFinancialGroundingEngine';
+import { getWhiteLabelConfig } from '../../services/whiteLabelService';
 
 interface TransparentCheckoutModalProps {
   onClose: () => void;
@@ -74,9 +77,32 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
 
   const selectedPlan = SAAS_PLANS[selectedPlanId];
   const finalPrice = billingCycle === 'MONTHLY' ? selectedPlan.monthlyPrice : selectedPlan.yearlyTotalPrice;
+  const wlConfig = getWhiteLabelConfig();
+
+  const externalCheckoutUrl = (
+    selectedPlanId === 'STARTER'
+      ? wlConfig.checkoutUrlStarter
+      : selectedPlanId === 'GROWTH_PRO'
+      ? wlConfig.checkoutUrlPro
+      : wlConfig.checkoutUrlAgency
+  )?.trim() || '';
+
+  const handleOpenAssistedWhatsAppCheckout = () => {
+    const cleanPhone = (wlConfig.consultantWhatsApp || '5511999999999').replace(/\D/g, '');
+    const targetPhone = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
+    const cycleLabel = billingCycle === 'MONTHLY' ? 'Mensal' : 'Anual (20% OFF)';
+    const msg = encodeURIComponent(
+      `Olá ${wlConfig.consultantName || wlConfig.agencyName || 'Especialista AdShield'}! Quero ativar o plano *${selectedPlan.name}* (${cycleLabel} - ${formatBRL(finalPrice)}) com onboarding assistido.${buyer.fullName ? `\n\nNome: ${buyer.fullName}` : ''}${buyer.email ? `\nE-mail: ${buyer.email}` : ''}`
+    );
+    window.open(`https://wa.me/${targetPhone}?text=${msg}`, '_blank', 'noopener,noreferrer');
+  };
 
   const handleGeneratePix = (e: React.FormEvent) => {
     e.preventDefault();
+    if (externalCheckoutUrl && externalCheckoutUrl.startsWith('http')) {
+      window.open(externalCheckoutUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
     if (!buyer.fullName || !buyer.email || !buyer.document) {
       setErrorMessage('Por favor, preencha todos os campos obrigatórios.');
       return;
@@ -88,6 +114,10 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
 
   const handleProcessCard = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (externalCheckoutUrl && externalCheckoutUrl.startsWith('http')) {
+      window.open(externalCheckoutUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
     if (!buyer.fullName || !buyer.email || !buyer.document) {
       setErrorMessage('Por favor, preencha seus dados de contato.');
       return;
@@ -277,18 +307,27 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
                 </div>
               </div>
 
-              <div className="p-3.5 bg-[#141716] rounded-xl border border-white/10 text-xs text-[#BBBAA6] flex items-center justify-between">
+              <div className="p-3.5 bg-[#141716] rounded-xl border border-amber-500/30 text-xs text-[#BBBAA6] flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-[#0AE448] animate-ping" />
-                  <span>Aguardando identificação do pagamento...</span>
+                  <div className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                  <span>[Modo Simulação Local] QR Code demonstrativo ou ative via Consultor:</span>
                 </div>
                 <button
                   onClick={handleSimulatePixPaid}
-                  className="text-[11px] font-bold text-[#0AE448] underline cursor-pointer"
+                  className="text-[11px] font-bold text-[#0AE448] underline cursor-pointer shrink-0"
                 >
-                  Simular Confirmação
+                  Simular Confirmação Local
                 </button>
               </div>
+
+              <button
+                type="button"
+                onClick={handleOpenAssistedWhatsAppCheckout}
+                className="w-full py-3 bg-[#0AE448]/15 hover:bg-[#0AE448]/25 text-[#0AE448] border border-[#0AE448]/40 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <MessageSquare className="w-4 h-4 text-[#0AE448]" />
+                <span>Receber Chave Pix Oficial / Fechar com Consultor no WhatsApp</span>
+              </button>
 
               <button
                 onClick={() => setPixResult(null)}
@@ -563,7 +602,30 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
                     </p>
                   )}
 
-                  <div className="pt-2 text-[10px] text-[#BBBAA6]/60 text-center space-y-1">
+                  {/* Real Monetization Fallback: Direct External Link or Assisted WhatsApp Closing */}
+                  <div className="pt-2 border-t border-white/10 space-y-2">
+                    {externalCheckoutUrl && externalCheckoutUrl.startsWith('http') && (
+                      <a
+                        href={externalCheckoutUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-2.5 bg-[#00BAE2]/15 hover:bg-[#00BAE2]/25 text-[#00BAE2] border border-[#00BAE2]/40 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all cursor-pointer"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Ir para Gateway Oficial Externo ({selectedPlan.name})</span>
+                      </a>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleOpenAssistedWhatsAppCheckout}
+                      className="w-full py-2.5 bg-white/5 hover:bg-white/10 text-[#FFFCE1] border border-white/15 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5 text-[#0AE448]" />
+                      <span>Fechar Assinatura Assistida no WhatsApp (Onboarding VIP)</span>
+                    </button>
+                  </div>
+
+                  <div className="pt-1 text-[10px] text-[#BBBAA6]/60 text-center space-y-1">
                     <p>Garantia incondicional de 7 dias (CDC Art. 49). Cancele quando quiser.</p>
                   </div>
                 </div>

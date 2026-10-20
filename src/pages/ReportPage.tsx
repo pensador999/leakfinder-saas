@@ -34,7 +34,7 @@ const TrustBadgeGeneratorView = lazy(() => import('../components/TrustBadgeGener
 const StockRuptureMonitorView = lazy(() => import('../components/StockRuptureMonitorView').then(m => ({ default: m.StockRuptureMonitorView })));
 const OrchestratorControlTowerView = lazy(() => import('../components/OrchestratorControlTowerView').then(m => ({ default: m.OrchestratorControlTowerView })));
 const DeepScraperDossierView = lazy(() => import('../components/DeepScraperDossierView').then(m => ({ default: m.DeepScraperDossierView })));
-const TruthAuditorTribunalView = lazy(() => import('../components/TruthAuditorTribunalView').then(m => ({ default: m.TruthAuditorTribunalView })));
+const DualAgentConsensusTribunalView = lazy(() => import('../components/agents/DualAgentConsensusTribunalView').then(m => ({ default: m.DualAgentConsensusTribunalView })));
 const AutonomousSwarmControlView = lazy(() => import('../components/AutonomousSwarmControlView').then(m => ({ default: m.AutonomousSwarmControlView })));
 
 // ⚡ LAZY LOADED MODALS
@@ -262,7 +262,7 @@ export function ReportPage() {
                   )}
 
                   {activeTab === 'truth_auditor' && (
-                    <TruthAuditorTribunalView diagnostic={diagnostic} />
+                    <DualAgentConsensusTribunalView diagnostic={diagnostic} />
                   )}
 
                   {activeTab === 'swarm_control' && (

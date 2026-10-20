@@ -51,17 +51,12 @@ const TrustBadgeGeneratorView = lazy(() => import('../components/TrustBadgeGener
 const StockRuptureMonitorView = lazy(() => import('../components/StockRuptureMonitorView').then(m => ({ default: m.StockRuptureMonitorView })));
 const OrchestratorControlTowerView = lazy(() => import('../components/OrchestratorControlTowerView').then(m => ({ default: m.OrchestratorControlTowerView })));
 const DeepScraperDossierView = lazy(() => import('../components/DeepScraperDossierView').then(m => ({ default: m.DeepScraperDossierView })));
-const TruthAuditorTribunalView = lazy(() => import('../components/TruthAuditorTribunalView').then(m => ({ default: m.TruthAuditorTribunalView })));
 const AutonomousSwarmControlView = lazy(() => import('../components/AutonomousSwarmControlView').then(m => ({ default: m.AutonomousSwarmControlView })));
 const MarketHunterAgentView = lazy(() => import('../components/agents/MarketHunterAgentView').then(m => ({ default: m.MarketHunterAgentView })));
-const ProductEvolutionAgentView = lazy(() => import('../components/agents/ProductEvolutionAgentView').then(m => ({ default: m.ProductEvolutionAgentView })));
-const CustomerSuccessVocAgentView = lazy(() => import('../components/agents/CustomerSuccessVocAgentView').then(m => ({ default: m.CustomerSuccessVocAgentView })));
-const ChiefExecutiveOrchestratorAgentView = lazy(() => import('../components/agents/ChiefExecutiveOrchestratorAgentView').then(m => ({ default: m.ChiefExecutiveOrchestratorAgentView })));
 const CollectionDeepAuditView = lazy(() => import('../components/CollectionDeepAuditView').then(m => ({ default: m.CollectionDeepAuditView })));
 const UniversalNicheRecognitionView = lazy(() => import('../components/agents/UniversalNicheRecognitionView').then(m => ({ default: m.UniversalNicheRecognitionView })));
 const SkuAbandonmentCrossAuditView = lazy(() => import('../components/SkuAbandonmentCrossAuditView').then(m => ({ default: m.SkuAbandonmentCrossAuditView })));
 const FounderMasterHqView = lazy(() => import('../components/founder/FounderMasterHqView').then(m => ({ default: m.FounderMasterHqView })));
-const AutonomousAgentFlowchartView = lazy(() => import('../components/founder/AutonomousAgentFlowchartView').then(m => ({ default: m.AutonomousAgentFlowchartView })));
 const TreeOfThoughtDebateView = lazy(() => import('../components/agents/TreeOfThoughtDebateView').then(m => ({ default: m.TreeOfThoughtDebateView })));
 const VectorMemoryCompetitorRadarView = lazy(() => import('../components/agents/VectorMemoryCompetitorRadarView').then(m => ({ default: m.VectorMemoryCompetitorRadarView })));
 const DualAgentConsensusTribunalView = lazy(() => import('../components/agents/DualAgentConsensusTribunalView').then(m => ({ default: m.DualAgentConsensusTribunalView })));
@@ -588,8 +583,8 @@ export function HomePage() {
                     : 'bg-[#141716] text-[#BBBAA6] border border-white/10 hover:text-white hover:bg-[#191C1B]'
                 }`}
               >
-                {isAdvancedMode ? <ChevronDown className="w-4 h-4 rotate-180 transition-transform" /> : <Sparkles className="w-4 h-4 text-[#00BAE2]" />}
-                🔬 Modo Avançado (33 agentes)
+                { isAdvancedMode ? <ChevronDown className="w-4 h-4 rotate-180 transition-transform" /> : <Sparkles className="w-4 h-4 text-[#00BAE2]" />}
+                🔬 Modo Avançado (War Room & 18 Agentes)
               </button>
             </div>
 
@@ -648,10 +643,6 @@ export function HomePage() {
                     <FounderMasterHqView />
                   )}
 
-                {activeTab === 'agent_flowchart' && (
-                  <AutonomousAgentFlowchartView />
-                )}
-
                 {activeTab === 'sku_crossing' && diagnostic && (
                   <SkuAbandonmentCrossAuditView diagnostic={diagnostic} />
                 )}
@@ -662,10 +653,6 @@ export function HomePage() {
 
                 {activeTab === 'orchestrator' && (
                   <OrchestratorControlTowerView diagnostic={diagnostic} />
-                )}
-
-                {activeTab === 'ceo_orchestrator' && (
-                  <ChiefExecutiveOrchestratorAgentView />
                 )}
 
                 {activeTab === 'collection_audit' && diagnostic && (
@@ -686,14 +673,6 @@ export function HomePage() {
 
                 {activeTab === 'market_hunter' && (
                   <MarketHunterAgentView diagnostic={diagnostic} />
-                )}
-
-                {activeTab === 'product_evolution' && (
-                  <ProductEvolutionAgentView />
-                )}
-
-                {activeTab === 'customer_success' && (
-                  <CustomerSuccessVocAgentView />
                 )}
 
                 {activeTab === 'truth_auditor' && diagnostic && (

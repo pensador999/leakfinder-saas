@@ -37,10 +37,11 @@ graph TD
 
 ## 💰 3. Monetization Engine & Unit Economics
 
-### Subscription Tiers:
+### Subscription Tiers (Unified Across Codebase):
 1. **Free Diagnostic Tier (Lead Magnet):** 3 quick audits, basic script telemetry.
-2. **Pro Monthly (\$29 / R\$ 147/mo):** 50 audits/mo, 24/7 WhatsApp Watchdog, Pix Simulator, Excel & PDF exports.
-3. **Agency Scale (\$99 / R\$ 497/mo):** Unlimited audits, 100% White-Label reporting, MCP Server access, multi-store API connections.
+2. **Starter Sentinel (\$59 / R\$ 297/mo or R\$ 237/mo yearly):** 1 monitored store (60m scan), WhatsApp rupture alerts, Chrome Extension MV3, PDF Dossier.
+3. **Growth Pro Shield (\$97 / R\$ 497/mo or R\$ 397/mo yearly — Core Flagship):** Up to 3 stores monitored (15–30m scan), AdShield Kill-Switch via Meta Pixel event (`AdShield_BrokenCoreSize_View`) & `<60s` alerts, dynamic Liquid snippets (Sticky Buy + Pix discount), CSV & PDF exports.
+4. **Agency Scale White-Label (\$297 / R\$ 1.497/mo or R\$ 1.197/mo yearly):** Up to 15 client stores, 100% White-Label reporting & custom checkout links, Batch Auditor (up to 20 stores/batch), MCP Server access, and full 18-Agent Swarm.
 
 ### LTV / CAC Potential:
 - **Low CAC:** High viral factor through **White-Label PDF sharing** and the **Trust Badge backlink loop**.

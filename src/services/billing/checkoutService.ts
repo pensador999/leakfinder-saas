@@ -46,7 +46,7 @@ export const SAAS_PLANS: Record<PlanTierId, PlanDetails> = {
     features: [
       'Até 3 Lojas Virtuais Monitoradas Simultaneamente',
       'Sentinela Cloud 24/7 com Varredura a cada 15 a 30m',
-      'AdShield Kill-Switch: Pausa Automática de Anúncios no Meta Ads',
+      'AdShield Kill-Switch: Gatilho via Pixel (AdShield_BrokenCoreSize_View) & Alerta < 60s',
       'Alerta Imediato (< 60s) ao esgotar tamanhos mais vendidos',
       'Snippets Liquid Prontos: Sticky Buy Button & 7% OFF Pix',
       'Suporte Prioritário VIP no WhatsApp com Engenharia'

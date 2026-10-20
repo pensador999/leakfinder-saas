@@ -4,7 +4,7 @@
  */
 
 export interface PricingPlan {
-  id: 'FREE' | 'PRO_MONTHLY' | 'AGENCY_SCALE' | 'ENTERPRISE';
+  id: 'FREE' | 'STARTER_MONTHLY' | 'PRO_MONTHLY' | 'AGENCY_SCALE' | 'ENTERPRISE';
   name: string;
   priceBrlMonthly: number;
   priceUsdMonthly: number;
@@ -17,7 +17,7 @@ export interface PricingPlan {
 export const SAAS_PRICING_PLANS: PricingPlan[] = [
   {
     id: 'FREE',
-    name: 'Diagnóstico Gratuito',
+    name: 'Diagnóstico Gratuito (Lead Magnet)',
     priceBrlMonthly: 0,
     priceUsdMonthly: 0,
     creditsPerMonth: 3,
@@ -29,8 +29,23 @@ export const SAAS_PRICING_PLANS: PricingPlan[] = [
     ]
   },
   {
+    id: 'STARTER_MONTHLY',
+    name: 'Starter Sentinel',
+    priceBrlMonthly: 297,
+    priceUsdMonthly: 59,
+    creditsPerMonth: 50,
+    stripePriceId: 'price_adshield_starter_297',
+    features: [
+      '1 Loja Virtual Monitorada 24/7 (Varredura a cada 60m)',
+      'Alertas de Ruptura de Grade no WhatsApp da Equipe',
+      'Extensão Chrome Manifest V3 Oficial AdShield',
+      'Calculadora Atuarial de Sangria Financeira em R$',
+      'Dossiê Executivo em PDF & Garantia Incondicional de 7 Dias'
+    ]
+  },
+  {
     id: 'PRO_MONTHLY',
-    name: 'AdShield Pro Sentinel & Vigia 24h',
+    name: 'Growth Pro Shield & Vigia 24h',
     priceBrlMonthly: 497,
     priceUsdMonthly: 97,
     creditsPerMonth: 150,
@@ -38,7 +53,7 @@ export const SAAS_PRICING_PLANS: PricingPlan[] = [
     stripePriceId: 'price_adshield_pro_497',
     features: [
       'Até 3 Lojas Inspecionadas 24/7 (Varredura 15-30m)',
-      'AdShield Kill-Switch: Pausa Automática no Meta Ads',
+      'AdShield Kill-Switch: Gatilho via Pixel (AdShield_BrokenCoreSize_View) & Alerta < 60s',
       'Vigia 24h com Alertas no WhatsApp às 07:00 ou < 60s',
       'Simulador Dinâmico de Elasticidade e Desconto Pix',
       'Inspeção SKU por SKU do Catálogo ao Vivo',
@@ -49,7 +64,7 @@ export const SAAS_PRICING_PLANS: PricingPlan[] = [
   },
   {
     id: 'AGENCY_SCALE',
-    name: 'AdShield Agency Scale White-Label',
+    name: 'Agency Scale White-Label',
     priceBrlMonthly: 1497,
     priceUsdMonthly: 297,
     creditsPerMonth: 9999,
