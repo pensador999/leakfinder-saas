@@ -7,6 +7,7 @@ import { AgentDiagnosticResult } from '../../types/index.ts';
 import { calculateStoreFinancialGrounding } from '../ai/storeFinancialGroundingEngine.ts';
 import { auditSupplyChainDiscrepancy } from '../supplyChain/erpHubDiscrepancyEngine.ts';
 import { getWhiteLabelConfig, WhiteLabelConfig } from '../whiteLabelService.ts';
+import { isCatalogProductBroken } from '../siteInspector.ts';
 
 export interface PdfExportOptions {
   agencyName?: string;
@@ -18,35 +19,13 @@ export interface PdfExportOptions {
 
 export class PdfExportService {
   /**
-   * Dispara o download nativo com 1 clique do PDF executivo.
-   * Se for uma loja com dossiê pré-compilado de alta resolução (ex: Shopee BRK Agro),
-   * baixa o arquivo PDF oficial diretamente. Caso contrário, aciona a renderização A4 isolada.
+   * Dispara o download/impressão nativa com 1 clique do Dossiê Executivo A4 dinâmico
+   * 100% ancorado nos dados auditados da loja atual.
    */
   public static async downloadExecutivePdf(
     diagnostic: AgentDiagnosticResult,
     options?: PdfExportOptions
   ): Promise<boolean> {
-    const domain = (diagnostic.realSiteData.domain || '').toLowerCase();
-    const brand = (diagnostic.realSiteData.brandName || '').toLowerCase();
-    const isMarketplace = Boolean(diagnostic.realSiteData.isMarketplaceSeller);
-
-    // 🎯 1. Se for BRK Agro (Shopee ou Site Oficial), baixar o dossiê oficial consolidado de 5 páginas
-    if (domain.includes('shopee') || brand.includes('brk') || brand.includes('agro')) {
-      const officialPdfUrl = '/DOSSIE_AUDITORIA_SHOPEE_BRK_AGRO.pdf';
-      try {
-        const link = document.createElement('a');
-        link.href = officialPdfUrl;
-        link.download = `DOSSIE_AUDITORIA_SHOPEE_BRK_AGRO.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        return true;
-      } catch (err) {
-        console.warn('Fallback para impressão A4 dinâmica:', err);
-      }
-    }
-
-    // 🎯 2. Para qualquer outra loja, renderiza o documento dinâmico A4 via iframe invisível
     return this.printExecutiveDossier(diagnostic, options);
   }
 
@@ -150,7 +129,10 @@ export class PdfExportService {
     const { realSiteData, growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax, visionAnalysis } = diagnostic;
     const finances = calculateStoreFinancialGrounding(realSiteData, diagnostic.input, diagnostic.social);
     const supplyChain = auditSupplyChainDiscrepancy(realSiteData, diagnostic.input);
-    const issues = realSiteData.catalogAudit?.issues || [];
+    const rawIssues = realSiteData.catalogAudit?.issues || [];
+    const brokenIssues = rawIssues.filter(isCatalogProductBroken);
+    const healthyIssues = rawIssues.filter(i => !isCatalogProductBroken(i));
+    const issues = [...brokenIssues, ...healthyIssues];
 
     const isMarketplace = Boolean(realSiteData.isMarketplaceSeller);
     const operationMode = realSiteData.operationMode || 'AUTO_DETECT';
@@ -383,7 +365,7 @@ export class PdfExportService {
       </div>
 
       <!-- AUDITORIA DE CATÁLOGO & SKUs -->
-      <div class="section-title">1. Raio-X de SKUs & Integridade de Catálogo</div>
+      <div class="section-title">1. Raio-X de SKUs & Integridade de Catálogo (${brokenIssues.length} com Ruptura Central)</div>
       <table>
         <thead>
           <tr>
@@ -395,7 +377,10 @@ export class PdfExportService {
           </tr>
         </thead>
         <tbody>
-          ${issues.slice(0, 7).map(item => `
+          ${issues.slice(0, 8).map(item => {
+            const isBroken = isCatalogProductBroken(item);
+            const coreMissing = item.brokenCoreSizes?.length ? item.brokenCoreSizes : item.missingSizes;
+            return `
             <tr>
               <td style="font-family: 'JetBrains Mono', monospace; font-weight: 700;">${item.sku}</td>
               <td style="max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.productTitle}</td>
@@ -407,15 +392,16 @@ export class PdfExportService {
               <td>
                 ${item.isFullPrintExempt 
                   ? '<strong style="color: #047857;">Isento _FULL</strong>' 
-                  : item.missingSizes.length > 0 
-                  ? `<span style="color: #BE123C; font-weight: 700;">Falta: ${item.missingSizes.join(', ')}</span>` 
-                  : '<span style="color: #047857;">Grade Completa</span>'}
+                  : isBroken 
+                  ? `<span style="color: #BE123C; font-weight: 700;">Falta Core: [${coreMissing.join(', ')}]</span>` 
+                  : '<span style="color: #047857;">Grade Saudável</span>'}
               </td>
               <td style="text-align: right; font-size: 9.5px; color: #475569;">
                 ${item.recommendedAction || 'Manter vitrine ativa'}
               </td>
             </tr>
-          `).join('')}
+          `;
+          }).join('')}
         </tbody>
       </table>
 
@@ -458,7 +444,7 @@ export class PdfExportService {
     <!-- FOOTER DA PÁGINA -->
     <div class="footer-bar">
       <div>Relatório Oficial • ${agency} (${consultant}) • WhatsApp: ${phone}</div>
-      <div>https://adshield.vercel.app</div>
+      <div>AdShield Intelligence • Plataforma Independente de Auditoria de E-Commerce</div>
     </div>
   </div>
 

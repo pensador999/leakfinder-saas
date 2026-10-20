@@ -16,6 +16,8 @@ import {
   simulateFounderTestDispatch, 
   DEFAULT_FOUNDER_CONFIG 
 } from '../../services/outbound/founderExperienceTester';
+import { useAuditStore } from '../../store/auditStore';
+import { isCatalogProductBroken } from '../../services/siteInspector';
 
 interface FounderWhatsAppTesterModalProps {
   isOpen: boolean;
@@ -26,27 +28,46 @@ export const FounderWhatsAppTesterModal: React.FC<FounderWhatsAppTesterModalProp
   isOpen,
   onClose
 }) => {
+  const diagnostic = useAuditStore(state => state.diagnostic);
   const [phone, setPhone] = useState(DEFAULT_FOUNDER_CONFIG.founderPhone);
-  const [selectedStore, setSelectedStore] = useState<'insider' | 'brk' | 'texas'>('insider');
+  const [selectedStore, setSelectedStore] = useState<'active_store' | 'insider' | 'minimal' | 'texas'>(
+    diagnostic ? 'active_store' : 'insider'
+  );
   const [copied, setCopied] = useState(false);
   const [simulationStatus, setSimulationStatus] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
+  const brokenItems = (diagnostic?.realSiteData?.catalogAudit?.issues || []).filter(isCatalogProductBroken);
+  const activeBrokenItem = brokenItems[0] || diagnostic?.realSiteData?.catalogAudit?.issues?.[0];
+  const activeBrokenSizes =
+    activeBrokenItem?.brokenCoreSizes && activeBrokenItem.brokenCoreSizes.length > 0
+      ? activeBrokenItem.brokenCoreSizes
+      : activeBrokenItem?.missingSizes && activeBrokenItem.missingSizes.length > 0
+      ? activeBrokenItem.missingSizes
+      : ['M', 'G'];
+
   const storePresets = {
+    active_store: {
+      domain: diagnostic?.realSiteData?.domain || 'minimalclub.com.br',
+      productTitle: activeBrokenItem?.productTitle || 'Camisa Henley Tricot Algodão Egípcio',
+      productUrl: activeBrokenItem?.productUrl || `https://${diagnostic?.realSiteData?.domain || 'minimalclub.com.br'}`,
+      brokenSizes: activeBrokenSizes,
+      budget: 250
+    },
     insider: {
       domain: 'insiderstore.com.br',
-      productTitle: 'Daily T-Shirt Tech Algodão Orgânico',
-      productUrl: 'https://insiderstore.com.br/products/daily-t-shirt-tech',
+      productTitle: 'Tech T-Shirt® Algodão Modal',
+      productUrl: 'https://insiderstore.com.br/products/tech-t-shirt',
       brokenSizes: ['M', 'G'],
       budget: 250
     },
-    brk: {
-      domain: 'brkagro.com.br',
-      productTitle: 'Camisa Masculina Manga Longa UV50+',
-      productUrl: 'https://brkagro.com.br/products/camisa-manga-longa-uv50',
-      brokenSizes: ['M', 'G', 'GG'],
-      budget: 180
+    minimal: {
+      domain: 'minimalclub.com.br',
+      productTitle: 'Camisa Henley Tricot Algodão Egípcio',
+      productUrl: 'https://minimalclub.com.br/products/camisa-henley-tricot-preta',
+      brokenSizes: ['M', 'G'],
+      budget: 220
     },
     texas: {
       domain: 'texascenter.com.br',
@@ -57,7 +78,7 @@ export const FounderWhatsAppTesterModal: React.FC<FounderWhatsAppTesterModalProp
     }
   };
 
-  const currentConfig = storePresets[selectedStore];
+  const currentConfig = storePresets[selectedStore] || storePresets.insider;
 
   const testPayload = buildFounderExperienceTest({
     founderPhone: phone,
@@ -94,11 +115,11 @@ export const FounderWhatsAppTesterModal: React.FC<FounderWhatsAppTesterModalProp
               <div className="flex items-center gap-2">
                 <h3 className="text-base font-bold text-white">Teste Real no WhatsApp do Fundador</h3>
                 <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-400 border border-emerald-500/20">
-                  Golden Trio • Validação Pessoal
+                  Golden Trio • Ancorado no SKU Real
                 </span>
               </div>
               <p className="text-xs text-slate-400">
-                Disparo do pacote completo (Vídeo 15s + Print Playwright + Copy + Checkout Stripe)
+                Disparo do pacote completo (Vídeo 15s + Print Playwright + Copy Ancorada + Checkout Stripe)
               </p>
             </div>
           </div>
@@ -123,11 +144,23 @@ export const FounderWhatsAppTesterModal: React.FC<FounderWhatsAppTesterModalProp
             />
           </div>
           <div>
-            <label className="block text-slate-400 font-semibold mb-1">Loja de Exemplo para Teste:</label>
-            <div className="flex gap-2">
+            <label className="block text-slate-400 font-semibold mb-1">Loja para Gerar o Alerta:</label>
+            <div className="flex flex-wrap gap-2">
+              {diagnostic && (
+                <button 
+                  onClick={() => setSelectedStore('active_store')}
+                  className={`py-2 px-3 rounded-lg font-semibold border transition-all cursor-pointer ${
+                    selectedStore === 'active_store'
+                      ? 'bg-emerald-600/20 border-emerald-500 text-emerald-300'
+                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  🎯 {diagnostic.realSiteData.brandName || diagnostic.realSiteData.domain}
+                </button>
+              )}
               <button 
                 onClick={() => setSelectedStore('insider')}
-                className={`flex-1 py-2 px-3 rounded-lg font-semibold border transition-all ${
+                className={`py-2 px-3 rounded-lg font-semibold border transition-all cursor-pointer ${
                   selectedStore === 'insider'
                     ? 'bg-emerald-600/20 border-emerald-500 text-emerald-300'
                     : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
@@ -136,18 +169,18 @@ export const FounderWhatsAppTesterModal: React.FC<FounderWhatsAppTesterModalProp
                 Insider Store
               </button>
               <button 
-                onClick={() => setSelectedStore('brk')}
-                className={`flex-1 py-2 px-3 rounded-lg font-semibold border transition-all ${
-                  selectedStore === 'brk'
+                onClick={() => setSelectedStore('minimal')}
+                className={`py-2 px-3 rounded-lg font-semibold border transition-all cursor-pointer ${
+                  selectedStore === 'minimal'
                     ? 'bg-emerald-600/20 border-emerald-500 text-emerald-300'
                     : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
                 }`}
               >
-                BRK Agro
+                Minimal Club
               </button>
               <button 
                 onClick={() => setSelectedStore('texas')}
-                className={`flex-1 py-2 px-3 rounded-lg font-semibold border transition-all ${
+                className={`py-2 px-3 rounded-lg font-semibold border transition-all cursor-pointer ${
                   selectedStore === 'texas'
                     ? 'bg-emerald-600/20 border-emerald-500 text-emerald-300'
                     : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
@@ -172,10 +205,10 @@ export const FounderWhatsAppTesterModal: React.FC<FounderWhatsAppTesterModalProp
                 <span>1. Vídeo Pitch 15s</span>
               </div>
               <p className="text-[11px] text-slate-400">
-                Avatar 9:16 PiP com sincronia labial e áudio ElevenLabs.
+                Avatar 9:16 PiP com sincronia labial e áudio consultivo.
               </p>
-              <div className="bg-slate-900 rounded p-2 text-[10px] font-mono text-cyan-300 border border-slate-800">
-                Duração: 15.0s • 45 Palavras
+              <div className="bg-slate-900 rounded p-2 text-[10px] font-mono text-cyan-300 border border-slate-800 truncate">
+                SKU: {currentConfig.productTitle}
               </div>
             </div>
 
@@ -186,7 +219,7 @@ export const FounderWhatsAppTesterModal: React.FC<FounderWhatsAppTesterModalProp
                 <span>2. Print Demarcado</span>
               </div>
               <p className="text-[11px] text-slate-400">
-                Foto do botão indisponível com box vermelho e selo de data/hora.
+                Evidência visual dos tamanhos centrais esgotados na vitrine.
               </p>
               <div className="bg-slate-900 rounded p-2 text-[10px] font-mono text-amber-300 border border-slate-800">
                 Ruptura: [{currentConfig.brokenSizes.join(', ')}]
@@ -197,7 +230,7 @@ export const FounderWhatsAppTesterModal: React.FC<FounderWhatsAppTesterModalProp
             <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4 space-y-2">
               <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
                 <ShieldCheck className="h-4 w-4" />
-                <span>3. Checkout Stripe</span>
+                <span>3. Checkout 1-Clique</span>
               </div>
               <p className="text-[11px] text-slate-400">
                 Link de ativação imediata com cartão ou Pix (R$ 297/mês).
@@ -240,14 +273,14 @@ export const FounderWhatsAppTesterModal: React.FC<FounderWhatsAppTesterModalProp
           <div className="flex gap-2">
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-3 py-2 border border-slate-700 transition-colors"
+              className="flex items-center gap-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-3 py-2 border border-slate-700 transition-colors cursor-pointer"
             >
               {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
               {copied ? 'Copiado!' : 'Copiar Texto'}
             </button>
             <button
               onClick={handleSimulateDispatch}
-              className="flex items-center gap-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-3 py-2 border border-slate-700 transition-colors"
+              className="flex items-center gap-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-3 py-2 border border-slate-700 transition-colors cursor-pointer"
             >
               <Play className="h-4 w-4 text-cyan-400" />
               Simular Envio no Gateway
@@ -267,7 +300,7 @@ export const FounderWhatsAppTesterModal: React.FC<FounderWhatsAppTesterModalProp
             </a>
             <button
               onClick={onClose}
-              className="rounded-lg bg-slate-800 px-4 py-2 font-semibold text-slate-400 hover:text-slate-200 transition-colors"
+              className="rounded-lg bg-slate-800 px-4 py-2 font-semibold text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
             >
               Fechar
             </button>

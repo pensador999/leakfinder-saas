@@ -51,6 +51,7 @@ export interface CatalogProductIssue {
   imageResolutionStatus: 'ALTA' | 'BAIXA' | 'QUEBRADA';
   availableSizes: string[];
   missingSizes: string[];
+  brokenCoreSizes?: string[];
   isFullPrintExempt: boolean;
   isResaleAccessory?: boolean;
   categoryType?: 'VESTUARIO_LINHA' | 'FULL_PRINT' | 'REVENDA_ACESSORIO' | 'EQUIPAMENTO_PESCA' | 'VESTUARIO_CASUAL_ALGODAO';
@@ -1298,6 +1299,7 @@ async function fetchRealLiveCatalogAudit(
               ? availableSizes
               : ['Tamanho Único'],
             missingSizes,
+            brokenCoreSizes: missingSizes.filter(s => !['PP', 'XG', 'EG', 'XGG', 'G1', 'G2', 'G3', 'G4', '33', '34', '35', '45', '46', '48', '50', '52', '54', 'ARQUIVO (ESGOTADO)'].includes(s.toUpperCase().trim())),
             isFullPrintExempt,
             isResaleAccessory: isAccessoryOrResale || isOneSizeVariant || isSystemPromoOrGift,
             categoryType,

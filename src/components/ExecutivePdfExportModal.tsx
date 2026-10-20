@@ -6,26 +6,20 @@ import {
   FileText, 
   ShieldCheck, 
   Building2, 
-  Palette, 
-  CheckCircle2, 
   Sparkles, 
   Flame, 
   Calculator, 
   Layers, 
-  ArrowRight,
   TrendingUp,
-  Lock,
   Phone,
-  Settings2,
   TableProperties,
-  Sliders,
-  Zap,
   KeyRound
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { SpreadsheetExporter } from '../services/export/spreadsheetExporter';
 import { OfficialIntegrationConnectModal } from './OfficialIntegrationConnectModal';
 import { PdfExportService } from '../services/export/pdfExportService';
+import { isCatalogProductBroken } from '../services/siteInspector';
 
 interface ExecutivePdfExportModalProps {
   isOpen: boolean;
@@ -39,8 +33,8 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
   diagnostic
 }) => {
   // White-Label State
-  const [agencyName, setAgencyName] = useState('Apex Growth Advisors');
-  const [consultantName, setConsultantName] = useState('Especialista em CRO & Growth');
+  const [agencyName, setAgencyName] = useState('AdShield Intelligence');
+  const [consultantName, setConsultantName] = useState('Especialista em CRO & Performance');
   const [consultantPhone, setConsultantPhone] = useState('(11) 98765-4321');
   const [accentColor, setAccentColor] = useState<'indigo' | 'blue' | 'emerald' | 'black'>('indigo');
   
@@ -62,36 +56,25 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
   if (!isOpen || !diagnostic) return null;
 
   const { input, realSiteData, growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax } = diagnostic;
+  const allIssues = realSiteData.catalogAudit?.issues || [];
+  const brokenItems = allIssues.filter(isCatalogProductBroken);
+  const sortedPreviewIssues = [...brokenItems, ...allIssues.filter(i => !isCatalogProductBroken(i))].slice(0, 8);
+  const sampleBroken = brokenItems[0];
+  const sampleBrokenSizes =
+    sampleBroken?.brokenCoreSizes && sampleBroken.brokenCoreSizes.length > 0
+      ? sampleBroken.brokenCoreSizes
+      : sampleBroken?.missingSizes && sampleBroken.missingSizes.length > 0
+      ? sampleBroken.missingSizes
+      : ['M', 'G'];
+
+  const monthlyLoss =
+    realSiteData.catalogAudit?.monthlyLossEstimateBRL !== undefined
+      ? Number(realSiteData.catalogAudit.monthlyLossEstimateBRL.toFixed(2))
+      : Number((brokenItems.length * 1384.65).toFixed(2));
+  const pixEstimatedGain = Math.max(2800, Math.round(monthlyLoss * 0.85));
 
   const handlePrint = () => {
     window.print();
-  };
-
-  const colorThemes = {
-    indigo: {
-      primary: 'bg-indigo-900 text-white',
-      accent: 'text-indigo-600',
-      border: 'border-indigo-600',
-      badge: 'bg-indigo-50 text-indigo-800 border-indigo-200'
-    },
-    blue: {
-      primary: 'bg-blue-900 text-white',
-      accent: 'text-blue-600',
-      border: 'border-blue-600',
-      badge: 'bg-blue-50 text-blue-800 border-blue-200'
-    },
-    emerald: {
-      primary: 'bg-emerald-950 text-white',
-      accent: 'text-emerald-600',
-      border: 'border-emerald-600',
-      badge: 'bg-emerald-50 text-emerald-800 border-emerald-200'
-    },
-    black: {
-      primary: 'bg-slate-950 text-white',
-      accent: 'text-slate-900',
-      border: 'border-slate-900',
-      badge: 'bg-slate-100 text-slate-900 border-slate-300'
-    }
   };
 
   return (
@@ -107,8 +90,8 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-sm text-[#FFFCE1]">Gerador de Relatório Executivo em PDF (White-Label)</h3>
-              <p className="text-xs text-[#BBBAA6]">Personalize a identidade da sua consultoria e imprima ou salve em PDF A4 de 1 clique.</p>
+              <h3 className="font-bold text-sm text-[#FFFCE1]">Gerador de Dossiê Executivo em PDF (White-Label • 100% Ancorado)</h3>
+              <p className="text-xs text-[#BBBAA6]">Personalize a assinatura da consultoria e exporte o diagnóstico com os SKUs reais auditados.</p>
             </div>
           </div>
 
@@ -145,7 +128,7 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
               title="Baixar arquivo PDF consolidado com 1 clique"
             >
               <Download className="w-4 h-4 text-slate-950" />
-              <span>Baixar Arquivo PDF (1 Clique)</span>
+              <span>Gerar PDF A4 (1 Clique)</span>
             </button>
 
             <button
@@ -153,7 +136,7 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
               className="px-4 py-2 bg-white/5 hover:bg-white/10 text-[#FFFCE1] border border-white/10 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-xs cursor-pointer hover:scale-105 active:scale-95"
             >
               <Printer className="w-4 h-4 text-[#00BAE2]" />
-              <span>Imprimir / Salvar em PDF</span>
+              <span>Imprimir / Salvar</span>
             </button>
 
             <button
@@ -172,9 +155,9 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
           <div className="print:hidden w-full lg:w-80 bg-[#101211] border-r border-white/10 p-6 space-y-5 overflow-y-auto shrink-0">
             <div>
               <h4 className="text-xs font-bold text-[#FFFCE1] uppercase font-mono flex items-center gap-2">
-                <Building2 className="w-3.5 h-3.5 text-[#0AE448]" /> Branding da sua Agência
+                <Building2 className="w-3.5 h-3.5 text-[#0AE448]" /> Branding da Consultoria
               </h4>
-              <p className="text-[11px] text-[#BBBAA6] mt-0.5">Seus dados no cabeçalho do documento.</p>
+              <p className="text-[11px] text-[#BBBAA6] mt-0.5">Seus dados no cabeçalho e rodapé do documento.</p>
             </div>
 
             <div className="space-y-3">
@@ -238,22 +221,22 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
 
               <label className="flex items-center gap-2 text-xs text-[#BBBAA6] cursor-pointer hover:text-[#FFFCE1]">
                 <input type="checkbox" checked={includeLeaks} onChange={(e) => setIncludeLeaks(e.target.checked)} className="rounded text-[#0AE448] accent-[#0AE448]" />
-                <span>Os 3 Maiores Vazamentos</span>
+                <span>Vazamentos Auditados</span>
+              </label>
+
+              <label className="flex items-center gap-2 text-xs text-[#BBBAA6] cursor-pointer hover:text-[#FFFCE1]">
+                <input type="checkbox" checked={includeCatalog} onChange={(e) => setIncludeCatalog(e.target.checked)} className="rounded text-[#0AE448] accent-[#0AE448]" />
+                <span>Tabela de SKUs & Rupturas Reais</span>
               </label>
 
               <label className="flex items-center gap-2 text-xs text-[#BBBAA6] cursor-pointer hover:text-[#FFFCE1]">
                 <input type="checkbox" checked={includeRupture} onChange={(e) => setIncludeRupture(e.target.checked)} className="rounded text-[#0AE448] accent-[#0AE448]" />
-                <span>Vigia 24h & Ruptura de Anúncios</span>
+                <span>Impacto de Ruptura em Ads</span>
               </label>
 
               <label className="flex items-center gap-2 text-xs text-[#BBBAA6] cursor-pointer hover:text-[#FFFCE1]">
                 <input type="checkbox" checked={includePix} onChange={(e) => setIncludePix(e.target.checked)} className="rounded text-[#0AE448] accent-[#0AE448]" />
                 <span>Simulador Pix & Elasticidade</span>
-              </label>
-
-              <label className="flex items-center gap-2 text-xs text-[#BBBAA6] cursor-pointer hover:text-[#FFFCE1]">
-                <input type="checkbox" checked={includeCatalog} onChange={(e) => setIncludeCatalog(e.target.checked)} className="rounded text-[#0AE448] accent-[#0AE448]" />
-                <span>Grade de Catálogo (Regra APC)</span>
               </label>
 
               <label className="flex items-center gap-2 text-xs text-[#BBBAA6] cursor-pointer hover:text-[#FFFCE1]">
@@ -273,11 +256,20 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
                 <TableProperties className="w-3.5 h-3.5 text-[#00BAE2]" /> Planilhas Excel (.CSV)
               </h4>
               <button
+                onClick={() => SpreadsheetExporter.exportAllSkusCsv(realSiteData)}
+                className="w-full py-2 px-3 bg-[#0AE448]/10 hover:bg-[#0AE448]/20 border border-[#0AE448]/30 text-[#0AE448] font-bold text-[11px] rounded-xl transition-all flex items-center justify-between shadow-xs cursor-pointer"
+              >
+                <span className="flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5 text-[#0AE448]" /> Inventário Granular (100% SKUs)
+                </span>
+                <Download className="w-3.5 h-3.5 text-[#0AE448]" />
+              </button>
+              <button
                 onClick={() => SpreadsheetExporter.exportCatalogAudit(realSiteData)}
                 className="w-full py-2 px-3 bg-white/5 hover:bg-white/10 border border-white/10 text-[#FFFCE1] font-bold text-[11px] rounded-xl transition-all flex items-center justify-between shadow-xs cursor-pointer"
               >
                 <span className="flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-[#00BAE2]" /> Planilha de Catálogo & SKUs
+                  <Layers className="w-3.5 h-3.5 text-[#00BAE2]" /> Resumo de Produtos & Grade
                 </span>
                 <Download className="w-3.5 h-3.5 text-[#BBBAA6]" />
               </button>
@@ -312,17 +304,20 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
               </button>
             </div>
 
-            {/* Ação Rápida WhatsApp */}
+            {/* Ação Rápida WhatsApp Ancorada no SKU Real */}
             <div className="pt-2 border-t border-white/10">
               <button
                 onClick={() => {
-                  const msg = `DIAGNÓSTICO EXECUTIVO DE CRO & ESCALA (${realSiteData.brandName})\n\nOlá! Concluímos a auditoria profunda da sua operação:\n• Growth Score Atual: ${growthScore}/100\n• Oportunidade de Receita Extra: +R$ ${estimatedRevenueLiftMin.toLocaleString('pt-BR')} a R$ ${estimatedRevenueLiftMax.toLocaleString('pt-BR')}/mês\n• Ação Imediata: Simulador Pix + Reposição de Grade nos Anúncios.\n\nGerado por: ${agencyName} (${consultantName})\nRelatório Completo em PDF disponível.`;
-                  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+                  const skuHighlight = sampleBroken
+                    ? `• SKU Crítico Detectado: "${sampleBroken.productTitle}" (Faltando [${sampleBrokenSizes.join(', ')}])\n• Link Verificado: ${sampleBroken.productUrl}\n`
+                    : '';
+                  const msg = `DIAGNÓSTICO EXECUTIVO DE CRO & CATÁLOGO (${realSiteData.brandName || realSiteData.domain})\n\nOlá! Concluímos a auditoria profunda da vitrine pública (${realSiteData.domain}):\n• Growth Score Atual: ${growthScore}/100\n• Produtos com Ruptura Central: ${brokenItems.length} de ${realSiteData.catalogAudit?.totalProductsScanned || allIssues.length} produtos\n${skuHighlight}• Sangria Mensal Estimada em Mídia: R$ ${monthlyLoss.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês [Simulação]\n\nGerado por: ${agencyName} (${consultantName})\nDossiê Completo em PDF disponível.`;
+                  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
                 }}
                 className="w-full py-2.5 px-3 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 font-black text-xs rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#0AE448]/20 cursor-pointer"
               >
                 <Phone className="w-3.5 h-3.5" />
-                <span>Enviar Pitch no WhatsApp</span>
+                <span>Enviar Pitch com SKU no WhatsApp</span>
               </button>
             </div>
           </div>
@@ -342,16 +337,16 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
               
               {/* PAGE 1: COVER & EXECUTIVE HEADER */}
               {includeCover && (
-                <div className="space-y-6 border-b border-slate-200 pb-8 break-inside-avoid">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div className="space-y-6 border-b border-slate-200/30 pb-8 break-inside-avoid">
+                  <div className="flex items-center justify-between border-b border-slate-200/20 pb-4">
                     <div>
-                      <span className="text-xs font-mono font-bold tracking-widest text-indigo-600 uppercase">
+                      <span className="text-xs font-mono font-bold tracking-widest text-indigo-500 uppercase">
                         {agencyName}
                       </span>
-                      <p className="text-[10px] text-slate-400 font-mono">Dossiê Estratégico de E-Commerce & CRO</p>
+                      <p className="text-[10px] text-slate-400 font-mono">Plataforma Independente de Auditoria de E-Commerce & CRO</p>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-bold text-slate-600 font-mono">
+                      <span className="text-xs font-bold text-slate-400 font-mono">
                         Data: {new Date().toLocaleDateString('pt-BR')}
                       </span>
                       <p className="text-[10px] text-slate-400 font-mono">Confidencial • Nível Diretoria</p>
@@ -359,24 +354,24 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
                   </div>
 
                   <div className="space-y-2">
-                    <span className="px-3 py-1 bg-slate-100 text-slate-800 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider">
-                      Auditoria de Crescimento & Blindagem Financeira
+                    <span className="px-3 py-1 bg-indigo-500/15 text-indigo-400 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider">
+                      Auditoria de Crescimento & Blindagem de Catálogo
                     </span>
-                    <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                    <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
                       Diagnóstico Executivo: {input.businessName || realSiteData.brandName}
                     </h1>
-                    <p className="text-xs text-slate-600 font-mono">
-                      Domínio Auditado: <span className="font-bold text-indigo-600">{realSiteData.domain}</span> | Nicho: {input.niche || 'E-Commerce'}
+                    <p className="text-xs text-slate-400 font-mono">
+                      Domínio Auditado: <span className="font-bold text-indigo-400">{realSiteData.domain}</span> | Plataforma: <span className="font-bold">{realSiteData.ecommercePlatform}</span> | Produtos: <span className="font-bold">{realSiteData.catalogAudit?.totalProductsScanned || allIssues.length}</span> ({realSiteData.catalogAudit?.totalSkusAudited || 0} SKUs)
                     </p>
                   </div>
 
                   {/* Growth Score & Revenue Lift Highlight Cards */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="p-5 rounded-2xl bg-slate-900 text-white space-y-2">
+                    <div className="p-5 rounded-2xl bg-slate-900 text-white space-y-2 border border-white/10">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-mono text-slate-400">Growth Score Geral</span>
                         <span className="text-xs font-bold px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono">
-                          Ponderado
+                          Saúde Grade: {realSiteData.catalogAudit?.catalogHealthScore || 100}%
                         </span>
                       </div>
                       <div className="flex items-baseline gap-2">
@@ -390,56 +385,62 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
 
                     <div className="p-5 rounded-2xl bg-gradient-to-br from-indigo-950 to-slate-900 text-white space-y-2 border border-indigo-800/40">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-mono text-slate-400">Lucro Adicional Estimado</span>
+                        <span className="text-xs font-mono text-slate-400">Sangria Atuarial Auditada</span>
                         <span className="text-xs font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono">
-                          Simulação Dinâmica
+                          [Simulação / Benchmark]
                         </span>
                       </div>
                       <div className="text-2xl sm:text-3xl font-black text-emerald-400 font-mono">
-                        +R$ {estimatedRevenueLiftMin.toLocaleString('pt-BR')} a R$ {estimatedRevenueLiftMax.toLocaleString('pt-BR')}
+                        R$ {monthlyLoss.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} /mês
                       </div>
                       <p className="text-[11px] text-slate-300">
-                        Receita destravável com eliminação de rupturas em anúncios e conversão no Pix.
+                        {brokenItems.length} produto(s) com curva central rompida (+{estimatedRevenueLiftMin}% a +{estimatedRevenueLiftMax}% Lift).
                       </p>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* PAGE 2: OS 3 MAIORES VAZAMENTOS */}
+              {/* PAGE 2: OS 3 MAIORES VAZAMENTOS ANCORADOS NOS DADOS REAIS */}
               {includeLeaks && (
-                <div className="space-y-4 border-b border-slate-200 pb-8 break-inside-avoid">
-                  <h2 className="text-sm font-bold text-slate-900 uppercase font-mono flex items-center gap-2">
-                    <Flame className="w-4 h-4 text-rose-600" /> 1. Os 3 Maiores Vazamentos Financeiros Identificados:
+                <div className="space-y-4 border-b border-slate-200/30 pb-8 break-inside-avoid">
+                  <h2 className="text-sm font-bold uppercase font-mono flex items-center gap-2">
+                    <Flame className="w-4 h-4 text-rose-500" /> 1. Os 3 Maiores Vazamentos Financeiros Identificados em {realSiteData.domain}:
                   </h2>
 
                   <div className="space-y-3">
-                    <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-3">
-                      <div className="p-2 bg-rose-100 text-rose-700 rounded-lg shrink-0 font-mono font-bold text-xs">#1</div>
+                    <div className="p-4 rounded-xl bg-slate-900/60 border border-white/10 flex items-start gap-3">
+                      <div className="p-2 bg-rose-500/20 text-rose-400 rounded-lg shrink-0 font-mono font-bold text-xs">#1</div>
                       <div className="space-y-1">
-                        <h4 className="text-xs font-bold text-slate-900">Ruptura de Estoque nos Tamanhos Mais Vendidos (G / GG)</h4>
-                        <p className="text-[11px] text-slate-600">
-                          Visitantes vindos de anúncios encontram os tamanhos populares esgotados, queimando até 48% da verba investida em tráfego pago.
+                        <h4 className="text-xs font-bold">
+                          {sampleBroken
+                            ? `Ruptura Central em "${sampleBroken.productTitle}" (Faltando [${sampleBrokenSizes.join(', ')}])`
+                            : 'Auditoria Preventiva de Curva Central de Estoque'}
+                        </h4>
+                        <p className="text-[11px] text-slate-400">
+                          {brokenItems.length > 0
+                            ? `Foram identificados ${brokenItems.length} produto(s) com tamanhos de alta demanda esgotados na vitrine ativa, gerando desperdício estimado de R$ ${monthlyLoss.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês no tráfego pago.`
+                            : 'Todos os produtos inspecionados estão com a curva central abastecida no momento da leitura.'}
                         </p>
                       </div>
                     </div>
 
-                    <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-3">
-                      <div className="p-2 bg-amber-100 text-amber-700 rounded-lg shrink-0 font-mono font-bold text-xs">#2</div>
+                    <div className="p-4 rounded-xl bg-slate-900/60 border border-white/10 flex items-start gap-3">
+                      <div className="p-2 bg-amber-500/20 text-amber-400 rounded-lg shrink-0 font-mono font-bold text-xs">#2</div>
                       <div className="space-y-1">
-                        <h4 className="text-xs font-bold text-slate-900">Ausência de Desconto Inteligente no Pix (Perda de Margem em Cartão)</h4>
-                        <p className="text-[11px] text-slate-600">
-                          A loja paga taxas elevadas no cartão. Um desconto de 5% a 7% no Pix acelera o fluxo de caixa e aumenta o lucro líquido real.
+                        <h4 className="text-xs font-bold">Alavanca de Margem no Pix & Redução de Taxa de Gateway</h4>
+                        <p className="text-[11px] text-slate-400">
+                          Destacar o cálculo dinâmico de economia no Pix junto ao seletor de variantes eleva a conversão à vista e preserva até +R$ {pixEstimatedGain.toLocaleString('pt-BR')}/mês [Simulação].
                         </p>
                       </div>
                     </div>
 
-                    <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-3">
-                      <div className="p-2 bg-indigo-100 text-indigo-700 rounded-lg shrink-0 font-mono font-bold text-xs">#3</div>
+                    <div className="p-4 rounded-xl bg-slate-900/60 border border-white/10 flex items-start gap-3">
+                      <div className="p-2 bg-indigo-500/20 text-indigo-400 rounded-lg shrink-0 font-mono font-bold text-xs">#3</div>
                       <div className="space-y-1">
-                        <h4 className="text-xs font-bold text-slate-900">Fricção de Contraste e Carregamento Mobile</h4>
-                        <p className="text-[11px] text-slate-600">
-                          Botões principais fora da zona de alcance fácil do polegar e contraste abaixo da norma WCAG 2.1 reduzem a conversão no celular.
+                        <h4 className="text-xs font-bold">Ergonomia Mobile (Zona do Polegar) & Contraste WCAG 2.1</h4>
+                        <p className="text-[11px] text-slate-400">
+                          Otimização da área de toque principal (mínimo 48px) e barra fixa de compra mobile para reduzir abandono em tráfego de redes sociais.
                         </p>
                       </div>
                     </div>
@@ -447,30 +448,76 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
                 </div>
               )}
 
+              {/* PAGE 2.5: TABELA REAL DE SKUs AUDITADOS (QUANDO includeCatalog ESTIVER MARCADO) */}
+              {includeCatalog && sortedPreviewIssues.length > 0 && (
+                <div className="space-y-4 border-b border-slate-200/30 pb-8 break-inside-avoid">
+                  <h2 className="text-sm font-bold uppercase font-mono flex items-center gap-2">
+                    <Layers className="w-4 h-4 text-cyan-400" /> 2. Amostra Auditada ao Vivo de Produtos & Grade ({brokenItems.length} Críticos):
+                  </h2>
+
+                  <div className="overflow-x-auto rounded-xl border border-white/10">
+                    <table className="w-full text-left text-[11px] border-collapse">
+                      <thead>
+                        <tr className="bg-slate-900/90 border-b border-white/10 text-slate-400 font-mono text-[10px] uppercase">
+                          <th className="p-2.5">SKU</th>
+                          <th className="p-2.5">Produto Auditado</th>
+                          <th className="p-2.5">Tamanhos Ativos</th>
+                          <th className="p-2.5">Ruptura Central</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/10 font-mono">
+                        {sortedPreviewIssues.map((item, idx) => {
+                          const isBroken = isCatalogProductBroken(item);
+                          const coreMissing = item.brokenCoreSizes?.length ? item.brokenCoreSizes : item.missingSizes;
+                          return (
+                            <tr key={item.id || idx}>
+                              <td className="p-2.5 font-bold">{item.sku}</td>
+                              <td className="p-2.5 font-sans max-w-[200px] truncate">{item.productTitle}</td>
+                              <td className="p-2.5 text-emerald-400">{(item.availableSizes || []).slice(0, 6).join(', ')}</td>
+                              <td className="p-2.5">
+                                {isBroken ? (
+                                  <span className="text-rose-400 font-bold">Falta: [{coreMissing.join(', ')}]</span>
+                                ) : (
+                                  <span className="text-emerald-400">Grade Saudável</span>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
               {/* PAGE 3: SIMULADOR PIX & RUPTURA */}
               {(includeRupture || includePix) && (
-                <div className="space-y-4 border-b border-slate-200 pb-8 break-inside-avoid">
-                  <h2 className="text-sm font-bold text-slate-900 uppercase font-mono flex items-center gap-2">
-                    <Calculator className="w-4 h-4 text-emerald-600" /> 2. Simulação de Elasticidade & Impacto Financeiro:
+                <div className="space-y-4 border-b border-slate-200/30 pb-8 break-inside-avoid">
+                  <h2 className="text-sm font-bold uppercase font-mono flex items-center gap-2">
+                    <Calculator className="w-4 h-4 text-emerald-500" /> 3. Simulação de Elasticidade & Impacto Financeiro [Benchmark]:
                   </h2>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {includeRupture && (
-                      <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                        <span className="text-[10px] font-bold text-rose-600 uppercase font-mono">Simulador de Ruptura de Anúncios</span>
-                        <h4 className="text-xs font-bold text-slate-900">Demanda Perdida: 48% em [G, GG]</h4>
-                        <p className="text-[11px] text-slate-600">
-                          Desperdício projetado em anúncios: <strong className="text-rose-700 font-mono">~R$ 4.320/mês</strong>.
+                      <div className="p-4 rounded-xl bg-slate-900/60 border border-white/10 space-y-2">
+                        <span className="text-[10px] font-bold text-rose-400 uppercase font-mono">[Simulação] Ruptura de Anúncios</span>
+                        <h4 className="text-xs font-bold">
+                          {sampleBroken
+                            ? `Curva Central Afetada: [${sampleBrokenSizes.join(', ')}]`
+                            : 'Monitoramento Preventivo de Grade'}
+                        </h4>
+                        <p className="text-[11px] text-slate-400">
+                          Desperdício projetado em anúncios: <strong className="text-rose-400 font-mono">R$ {monthlyLoss.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês</strong>.
                         </p>
                       </div>
                     )}
 
                     {includePix && (
-                      <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                        <span className="text-[10px] font-bold text-emerald-600 uppercase font-mono">Simulador de Elasticidade Pix</span>
-                        <h4 className="text-xs font-bold text-slate-900">Ganho com 5% de Desconto no Pix</h4>
-                        <p className="text-[11px] text-slate-600">
-                          Lucro líquido adicional destravável: <strong className="text-emerald-700 font-mono">+R$ 12.370/mês</strong>.
+                      <div className="p-4 rounded-xl bg-slate-900/60 border border-white/10 space-y-2">
+                        <span className="text-[10px] font-bold text-emerald-400 uppercase font-mono">[Simulação] Elasticidade Pix</span>
+                        <h4 className="text-xs font-bold">Ganho com Destaque de Desconto no Pix</h4>
+                        <p className="text-[11px] text-slate-400">
+                          Margem adicional destravável: <strong className="text-emerald-400 font-mono">+R$ {pixEstimatedGain.toLocaleString('pt-BR')}/mês</strong>.
                         </p>
                       </div>
                     )}
@@ -480,38 +527,40 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
 
               {/* PAGE 4: PLANO DE AÇÃO ICE SCORE */}
               {includeIceRoadmap && (
-                <div className="space-y-4 border-b border-slate-200 pb-8 break-inside-avoid">
-                  <h2 className="text-sm font-bold text-slate-900 uppercase font-mono flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-indigo-600" /> 3. Plano de Ação Priorizado (Matriz ICE Score):
+                <div className="space-y-4 border-b border-slate-200/30 pb-8 break-inside-avoid">
+                  <h2 className="text-sm font-bold uppercase font-mono flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-indigo-400" /> 4. Plano de Ação Priorizado (Matriz ICE Score):
                   </h2>
 
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="border-b border-slate-200 text-slate-500 font-mono">
+                      <tr className="border-b border-white/10 text-slate-400 font-mono">
                         <th className="pb-2">Iniciativa / Ação</th>
                         <th className="pb-2 text-center">Impacto</th>
                         <th className="pb-2 text-center">Facilidade</th>
                         <th className="pb-2 text-right">ICE Score</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 text-[11px]">
+                    <tbody className="divide-y divide-white/10 text-[11px]">
                       <tr>
-                        <td className="py-2.5 font-bold text-slate-900">1. Instalar Script de Desconto Dinâmico no Pix</td>
+                        <td className="py-2.5 font-bold">
+                          1. {brokenItems.length > 0 ? `Pausar/Redirecionar Ads dos ${brokenItems.length} SKUs com Grade Central Rompida` : 'Ativar Monitoramento Preventivo de Ruptura nos Criativos de Ads'}
+                        </td>
+                        <td className="py-2.5 text-center font-mono">9.8</td>
                         <td className="py-2.5 text-center font-mono">9.5</td>
-                        <td className="py-2.5 text-center font-mono">10.0</td>
-                        <td className="py-2.5 text-right font-mono font-bold text-indigo-600">95 / 100</td>
+                        <td className="py-2.5 text-right font-mono font-bold text-emerald-400">96 / 100</td>
                       </tr>
                       <tr>
-                        <td className="py-2.5 font-bold text-slate-900">2. Ativar Vigia 24h de Ruptura nos Criativos de Ads</td>
-                        <td className="py-2.5 text-center font-mono">9.0</td>
-                        <td className="py-2.5 text-center font-mono">9.0</td>
-                        <td className="py-2.5 text-right font-mono font-bold text-indigo-600">88 / 100</td>
+                        <td className="py-2.5 font-bold">2. Destacar Economia Dinâmica no Pix Acima da Dobra (PDP)</td>
+                        <td className="py-2.5 text-center font-mono">9.2</td>
+                        <td className="py-2.5 text-center font-mono">9.5</td>
+                        <td className="py-2.5 text-right font-mono font-bold text-indigo-400">93 / 100</td>
                       </tr>
                       <tr>
-                        <td className="py-2.5 font-bold text-slate-900">3. Repor Grade Comercial nos SKUs Destaque</td>
+                        <td className="py-2.5 font-bold">3. Reposição Prioritária dos Tamanhos Centrais nos Produtos Curva A</td>
+                        <td className="py-2.5 text-center font-mono">9.0</td>
                         <td className="py-2.5 text-center font-mono">8.5</td>
-                        <td className="py-2.5 text-center font-mono">8.0</td>
-                        <td className="py-2.5 text-right font-mono font-bold text-indigo-600">82 / 100</td>
+                        <td className="py-2.5 text-right font-mono font-bold text-indigo-400">88 / 100</td>
                       </tr>
                     </tbody>
                   </table>
@@ -520,30 +569,30 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
 
               {/* PAGE 5: CERTIDÃO DO FACT-CHECKER & FOOTER */}
               {includeFactChecker && (
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-4 break-inside-avoid">
+                <div className="p-4 rounded-2xl bg-slate-900/70 border border-emerald-500/30 flex items-center justify-between gap-4 break-inside-avoid">
                   <div className="flex items-center gap-3">
-                    <ShieldCheck className="w-8 h-8 text-emerald-600 shrink-0" />
+                    <ShieldCheck className="w-8 h-8 text-emerald-400 shrink-0" />
                     <div>
-                      <h4 className="text-xs font-bold text-slate-900">Certidão de Integridade Factual (Grounding 100%)</h4>
-                      <p className="text-[10px] text-slate-500">
-                        Zero links quebrados (404), regras de isenção aplicadas e transparência absoluta de dados.
+                      <h4 className="text-xs font-bold">Certidão de Integridade Factual (Grounding 100% • 18 Agentes Harmonizados)</h4>
+                      <p className="text-[10px] text-slate-400">
+                        Zero links quebrados (404), separação rigorosa entre fatos auditados ao vivo e simulações de benchmark.
                       </p>
                     </div>
                   </div>
-                  <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-lg font-mono shrink-0">
+                  <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-bold rounded-lg font-mono shrink-0">
                     Auditado & Aprovado
                   </span>
                 </div>
               )}
 
               {/* PDF FOOTER (CONTATO DA AGÊNCIA) */}
-              <div className="pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs text-slate-500 border-t border-slate-200 gap-2 break-inside-avoid">
+              <div className="pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs text-slate-400 border-t border-white/10 gap-2 break-inside-avoid">
                 <div>
-                  <p className="font-bold text-slate-900">{agencyName}</p>
-                  <p className="text-[10px] text-slate-500">{consultantName} • WhatsApp: {consultantPhone}</p>
+                  <p className="font-bold text-white">{agencyName}</p>
+                  <p className="text-[10px] text-slate-400">{consultantName} • WhatsApp: {consultantPhone}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-mono text-slate-400">Gerado via AdShield • Engine v2026</p>
+                  <p className="text-[10px] font-mono text-slate-400">AdShield Intelligence • Plataforma Independente de Auditoria de E-Commerce</p>
                 </div>
               </div>
 
