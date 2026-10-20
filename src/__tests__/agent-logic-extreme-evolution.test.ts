@@ -24,6 +24,10 @@ import { analyzeComputerVision } from '../services/visionCoreEngine';
 import { auditSiteSecurity } from '../services/securityInspector';
 import { auditSocialConversion } from '../services/socialInspector';
 import { analyzeOsint } from '../services/osintEngine';
+import {
+  extractUniversalPlatformProducts,
+  buildIssuesFromUniversalProducts
+} from '../services/catalog/universalPlatformExtractor';
 import type { WorkerInspectionResult } from '../services/siteInspectorWorker';
 
 async function buildFieldAccurateWorkerPayload(params: {
@@ -698,5 +702,146 @@ describe('🧠 BATERIA EXTREMA DE LÓGICA MULTI-AMBIENTE & AUTOMELHORIA EVOLUTIV
     expect(celebrationMsg).toContain('Calça Alfaiataria Minimal');
     expect(celebrationMsg).toContain('[42]');
     expect( diag1.growthScore ).toBeGreaterThan(0);
+  });
+
+  it('Ambiente 7 (Extrator Universal SSR/DOM — Nuvemshop, Tray, Wake/Fbits e WooCommerce): Extrai variantes reais e sangria financeira sem /products.json', () => {
+    // 1. Nuvemshop com LS.variants (Camiseta Oversized com M e G esgotados, PP periférico esgotado e P/GG em estoque)
+    const nuvemHtml = `
+      <html>
+        <head><title>Camiseta Oversized Heavy Cotton | Studio Street</title></head>
+        <body>
+          <h1>Camiseta Oversized Heavy Cotton</h1>
+          <script>
+            LS.variants = [
+              {"id": 101, "product_id": 900, "option0": "PP", "stock": 0, "available": false, "price_number": 179.90, "sku": "ST-OV-PP"},
+              {"id": 102, "product_id": 900, "option0": "P", "stock": 8, "available": true, "price_number": 179.90, "sku": "ST-OV-P"},
+              {"id": 103, "product_id": 900, "option0": "M", "stock": 0, "available": false, "price_number": 179.90, "sku": "ST-OV-M"},
+              {"id": 104, "product_id": 900, "option0": "G", "stock": 0, "available": false, "price_number": 179.90, "sku": "ST-OV-G"},
+              {"id": 105, "product_id": 900, "option0": "GG", "stock": 5, "available": true, "price_number": 179.90, "sku": "ST-OV-GG"}
+            ];
+          </script>
+        </body>
+      </html>
+    `;
+    const nuvemProducts = extractUniversalPlatformProducts(
+      nuvemHtml,
+      undefined,
+      'studiostreet.com.br',
+      'Studio Street',
+      'https://studiostreet.com.br/produtos/camiseta-oversized'
+    );
+    expect(nuvemProducts.length).toBe(1);
+    expect(nuvemProducts[0].sourcePlatform).toBe('NUVEMSHOP');
+    expect(nuvemProducts[0].variants.length).toBe(5);
+
+    const nuvemBuilt = buildIssuesFromUniversalProducts(
+      nuvemProducts,
+      'studiostreet.com.br',
+      true,
+      nuvemHtml
+    );
+    expect(nuvemBuilt.issues[0].brokenCoreSizes).toEqual(['M', 'G']);
+    expect(isCatalogProductBroken(nuvemBuilt.issues[0])).toBe(true);
+    expect(nuvemBuilt.deepSkuAudit.totalMonthlyBleedBrl).toBeGreaterThan(0);
+
+    // 2. WooCommerce com data-product_variations codificado em HTML entities
+    const wooVariationsJson = JSON.stringify([
+      { variation_id: 201, sku: 'WOO-JAQ-P', attributes: { attribute_pa_tamanho: 'P' }, is_in_stock: true, is_purchasable: true, display_price: 349.9, max_qty: 4 },
+      { variation_id: 202, sku: 'WOO-JAQ-M', attributes: { attribute_pa_tamanho: 'M' }, is_in_stock: false, is_purchasable: true, display_price: 349.9, max_qty: 0 },
+      { variation_id: 203, sku: 'WOO-JAQ-G', attributes: { attribute_pa_tamanho: 'G' }, is_in_stock: true, is_purchasable: true, display_price: 349.9, max_qty: 6 }
+    ]).replace(/"/g, '&quot;');
+
+    const wooHtml = `
+      <html>
+        <head><title>Jaqueta Puffer Impermeável - Loja Woo</title></head>
+        <body>
+          <h1>Jaqueta Puffer Impermeável</h1>
+          <form class="variations_form cart" data-product_variations="${wooVariationsJson}"></form>
+        </body>
+      </html>
+    `;
+    const wooProducts = extractUniversalPlatformProducts(
+      wooHtml,
+      undefined,
+      'lojawoo.com.br',
+      'Loja Woo',
+      'https://lojawoo.com.br/produto/jaqueta-puffer'
+    );
+    expect(wooProducts.length).toBe(1);
+    expect(wooProducts[0].sourcePlatform).toBe('WOOCOMMERCE');
+    const wooBuilt = buildIssuesFromUniversalProducts(wooProducts, 'lojawoo.com.br', true, wooHtml);
+    expect(wooBuilt.issues[0].brokenCoreSizes).toEqual(['M']);
+    expect(isCatalogProductBroken(wooBuilt.issues[0])).toBe(true);
+
+    // 3. Wake / Fbits com Fbits.Produto (Calçado 38..42 com 39 e 40 esgotados)
+    const wakeHtml = `
+      <html>
+        <head><title>Bota Chelsea Couro Legítimo</title></head>
+        <body>
+          <script>
+            Fbits.Produto = {
+              "ProdutoId": 7788,
+              "Nome": "Bota Chelsea Couro Legítimo",
+              "PrecoPor": 429.90,
+              "Variantes": [
+                {"ProdutoVarianteId": 1, "SKU": "BOTA-38", "Tamanho": "38", "Estoque": 4, "Disponivel": true},
+                {"ProdutoVarianteId": 2, "SKU": "BOTA-39", "Tamanho": "39", "Estoque": 0, "Disponivel": false},
+                {"ProdutoVarianteId": 3, "SKU": "BOTA-40", "Tamanho": "40", "Estoque": 0, "Disponivel": false},
+                {"ProdutoVarianteId": 4, "SKU": "BOTA-41", "Tamanho": "41", "Estoque": 3, "Disponivel": true}
+              ]
+            };
+          </script>
+        </body>
+      </html>
+    `;
+    const wakeProducts = extractUniversalPlatformProducts(
+      wakeHtml,
+      undefined,
+      'calcadoswake.com.br',
+      'Calçados Wake',
+      'https://calcadoswake.com.br/bota-chelsea'
+    );
+    expect(wakeProducts.length).toBe(1);
+    expect(wakeProducts[0].sourcePlatform).toBe('WAKE_FBITS');
+    const wakeBuilt = buildIssuesFromUniversalProducts(wakeProducts, 'calcadoswake.com.br', true, wakeHtml);
+    expect(wakeBuilt.issues[0].brokenCoreSizes).toEqual(['39', '40']);
+    expect(isCatalogProductBroken(wakeBuilt.issues[0])).toBe(true);
+
+    // 4. Tray Commerce com Schema.org Multi-Offer (Apenas tamanho periférico G2 esgotado -> Zero Falso-Positivo!)
+    const trayHtml = `
+      <html>
+        <head>
+          <script type="application/ld+json">
+            {
+              "@context": "https://schema.org",
+              "@type": "Product",
+              "name": "Camisa Polo Piquet Premium",
+              "sku": "TRAY-POLO-01",
+              "offers": [
+                {"@type": "Offer", "name": "Tamanho P", "sku": "TRAY-POLO-P", "price": "149.90", "availability": "https://schema.org/InStock"},
+                {"@type": "Offer", "name": "Tamanho M", "sku": "TRAY-POLO-M", "price": "149.90", "availability": "https://schema.org/InStock"},
+                {"@type": "Offer", "name": "Tamanho G", "sku": "TRAY-POLO-G", "price": "149.90", "availability": "https://schema.org/InStock"},
+                {"@type": "Offer", "name": "Tamanho GG", "sku": "TRAY-POLO-GG", "price": "149.90", "availability": "https://schema.org/InStock"},
+                {"@type": "Offer", "name": "Tamanho G2", "sku": "TRAY-POLO-G2", "price": "149.90", "availability": "https://schema.org/OutOfStock"}
+              ]
+            }
+          </script>
+        </head>
+        <body data-tray-tst="page-product"><h1>Camisa Polo Piquet Premium</h1></body>
+      </html>
+    `;
+    const trayProducts = extractUniversalPlatformProducts(
+      trayHtml,
+      undefined,
+      'lojatray.com.br',
+      'Loja Tray',
+      'https://lojatray.com.br/camisa-polo'
+    );
+    expect(trayProducts.length).toBe(1);
+    expect(trayProducts[0].sourcePlatform).toBe('TRAY');
+    const trayBuilt = buildIssuesFromUniversalProducts(trayProducts, 'lojatray.com.br', true, trayHtml);
+    expect(trayBuilt.issues[0].missingSizes).toEqual(['G2']);
+    expect(trayBuilt.issues[0].brokenCoreSizes).toEqual([]);
+    expect(isCatalogProductBroken(trayBuilt.issues[0])).toBe(false);
   });
 });

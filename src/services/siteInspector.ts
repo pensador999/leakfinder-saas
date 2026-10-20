@@ -12,6 +12,10 @@ import type {
 import { auditBrazilianLegalCompliance, type LegalComplianceReport } from './audits/brazilianLegalComplianceEngine.ts';
 import { auditGoogleShoppingShield, type GoogleShoppingShieldSummary } from './audits/googleShoppingShieldEngine.ts';
 import { parseBRLPrice } from './pricing/currencyUtils.ts';
+import {
+  extractUniversalPlatformProducts,
+  buildIssuesFromUniversalProducts
+} from './catalog/universalPlatformExtractor.ts';
 import { 
   resolveMarketplaceShieldData, 
   parseMarketplaceUrl, 
@@ -1323,136 +1327,27 @@ async function fetchRealLiveCatalogAudit(
       }
     }
 
-  // 🌐 MULTI-CMS REAL PRODUCT HARVESTER (TRAY, NUVEMSHOP, VTEX, SCHEMA.ORG JSON-LD)
-  if (issues.length === 0 && htmlText) {
-    try {
-      const scriptMatches = htmlText.match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi) || [];
-      for (const scriptTag of scriptMatches) {
-        if (issues.length >= 150) break;
-        const rawJson = scriptTag.replace(/<script[^>]*>|<\/script>/gi, '').trim();
-        try {
-          const parsed = JSON.parse(rawJson);
-          const items = Array.isArray(parsed) ? parsed : [parsed];
-          for (const item of items) {
-            const prods = item['@type'] === 'Product' 
-              ? [item] 
-              : Array.isArray(item['@graph']) 
-              ? item['@graph'].filter((g: any) => g['@type'] === 'Product') 
-              : [];
-
-            for (const prod of prods) {
-              if (issues.length >= 150) break;
-              const pTitle = prod.name || prod.headline || `${brandName} Produto Oficial`;
-              const pSku = prod.sku || `${brandName}-SKU-${issues.length + 1}`;
-              const offerObj = Array.isArray(prod.offers) ? prod.offers[0] : (prod.offers || {});
-              const pPrice = parseBRLPrice(offerObj.price || prod.price);
-              const pAvail = String(offerObj.availability || '').toLowerCase();
-              const isOutOfStock = pAvail.includes('outofstock');
-              const rawUrl = prod.url || offerObj.url || cleanUrl;
-              const pUrl = rawUrl.startsWith('http') ? rawUrl : `https://${domain}${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`;
-              const pImg = Array.isArray(prod.image) ? prod.image[0] : (typeof prod.image === 'object' ? prod.image?.url : (prod.image || ''));
-              
-              const cleanSchemaSku = String(pSku).trim().toUpperCase();
-              if (cleanSchemaSku && seenSkus.has(cleanSchemaSku)) {
-                continue; // Descarta réplica de SKU já processada
-              }
-              if (cleanSchemaSku) {
-                seenSkus.add(cleanSchemaSku);
-              }
-
-              issues.push({
-                id: `schema-sku-${issues.length}`,
-                sku: pSku,
-                productTitle: pTitle,
-                productUrl: pUrl,
-                price: pPrice > 0 ? pPrice : 159.90,
-                imageSrc: pImg || '',
-                hasValidImage: Boolean(pImg),
-                imageResolutionStatus: pImg ? 'ALTA' : 'BAIXA',
-                availableSizes: isOutOfStock ? [] : ['Disponível'],
-                missingSizes: isOutOfStock ? ['ESGOTADO'] : [],
-                isFullPrintExempt: true,
-                hasDescription: true,
-                descriptionLength: (prod.description || '').length || 120,
-                hasSizeGuide: themeHasSizeGuideAddon,
-                imageWeightKb: 180,
-                criticalIssuesCount: isOutOfStock ? 2 : 0,
-                recommendedAction: isOutOfStock 
-                  ? 'CRÍTICO: Ruptura de estoque declarada no Schema.org (Google Merchant Center). Pausar anúncios!' 
-                  : 'Produto em conformidade catalogado via Schema.org.'
-              });
-            }
-          }
-        } catch {
-          // Ignore individual malformed JSON scripts
-        }
+  // 🌐 MULTI-CMS UNIVERSAL SSR/DOM PRODUCT HARVESTER (NUVEMSHOP, TRAY, WAKE/FBITS, WOOCOMMERCE, VTEX, SCHEMA.ORG)
+  if (issues.length === 0 && (htmlText || doc)) {
+    const universalProducts = extractUniversalPlatformProducts(
+      htmlText || '',
+      doc,
+      domain,
+      brandName,
+      cleanUrl
+    );
+    if (universalProducts.length > 0) {
+      const built = buildIssuesFromUniversalProducts(
+        universalProducts,
+        domain,
+        themeHasSizeGuideAddon,
+        htmlText || '',
+        options?.operationMode
+      );
+      issues.push(...built.issues);
+      if (!deepSkuAudit) {
+        deepSkuAudit = built.deepSkuAudit;
       }
-    } catch {
-      // Ignore Schema.org scan errors
-    }
-  }
-
-  // Fallback: Extract from live DOM <a> tags and product cards if issues is still empty
-  if (issues.length === 0 && doc) {
-    const productAnchors = Array.from(doc.querySelectorAll('a[href*="/products/"], a[href*="/produto/"], a[href*="/p/"], a[href*="/item/"], a[href*="/produtos/"]'));
-    const seenUrls = new Set<string>();
-
-    for (let i = 0; i < productAnchors.length && issues.length < 150; i++) {
-      const a = productAnchors[i];
-      let href = a.getAttribute('href') || '';
-      if (!href) continue;
-
-      let fullUrl = href;
-      try {
-        fullUrl = new URL(href, `https://${domain}`).href;
-      } catch {
-        fullUrl = `https://${domain}${href.startsWith('/') ? '' : '/'}${href}`;
-      }
-
-      if (seenUrls.has(fullUrl)) continue;
-      seenUrls.add(fullUrl);
-
-      const title = a.textContent?.trim() || a.querySelector('img')?.getAttribute('alt')?.trim() || `${brandName} Produto Oficial`;
-      const titleUpper = title.toUpperCase();
-      const isAccessory = /bon[eé]|chap[eé]u|bandana|manguito|carteira|cinto|meia|[oó]culos|isca|vara/i.test(title);
-      const isFullPrintExempt = fullUrl.toUpperCase().includes('_FULL') || titleUpper.includes('_FULL') || isAccessory;
-      const imgEl = a.querySelector('img') || a.parentElement?.querySelector('img');
-      const imgSrc = imgEl?.getAttribute('src') || '';
-      const hasValidImage = !!imgSrc;
-
-      // Extract card-level price and stockout classes
-      const cardContainer = a.closest('.produto, .item-produto, .js-item-product, [data-tray-tst="product-item"], .product-item, div') || a.parentElement;
-      const priceEl = cardContainer?.querySelector('.preco-destaque, .js-price-display, .price, .preco, [data-product-price], strong');
-      const extractedPrice = priceEl?.textContent ? parseBRLPrice(priceEl.textContent) : 0;
-      
-      const cardHtml = (cardContainer?.innerHTML || '').toLowerCase();
-      const isOutOfStockCard = cardHtml.includes('indisponível') || 
-                               cardHtml.includes('produto-esgotado') || 
-                               cardHtml.includes('js-product-out-of-stock') || 
-                               cardHtml.includes('avise-me');
-
-      issues.push({
-        id: `dom-sku-${i}`,
-        sku: `${brandName}-SKU-${i + 1}`,
-        productTitle: title,
-        productUrl: fullUrl,
-        price: extractedPrice > 0 ? extractedPrice : 159.90,
-        imageSrc: imgSrc,
-        hasValidImage,
-        imageResolutionStatus: hasValidImage ? 'ALTA' : 'BAIXA',
-        availableSizes: isOutOfStockCard ? [] : ['Consultar no Produto'],
-        missingSizes: isOutOfStockCard ? ['ESGOTADO'] : [],
-        isFullPrintExempt: isFullPrintExempt,
-        manufacturingType: isAccessory ? 'REVENDA' : 'FABRICACAO_PROPRIA',
-        hasDescription: true,
-        descriptionLength: 120,
-        hasSizeGuide: themeHasSizeGuideAddon,
-        imageWeightKb: 220,
-        criticalIssuesCount: isOutOfStockCard ? 2 : 0,
-        recommendedAction: isOutOfStockCard
-          ? 'CRÍTICO: Produto identificado como esgotado na vitrine. Pausar anúncios!'
-          : 'Produto indexado via vitrine pública.'
-      });
     }
   }
 
