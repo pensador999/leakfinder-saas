@@ -15,7 +15,9 @@ import {
   BrainCircuit,
   TrendingUp,
   Globe,
-  Activity
+  Activity,
+  Download,
+  Upload
 } from 'lucide-react';
 import { 
   runProductEvolutionAudit, 
@@ -25,7 +27,9 @@ import {
 import {
   getSwarmEvolutionSummary,
   runFieldCalibrationPass,
-  learnFromStoreDiagnostic
+  learnFromStoreDiagnostic,
+  exportSwarmMemoryVaultJson,
+  importSwarmMemoryVaultJson
 } from '../../services/memory/swarmEvolutionaryLearningEngine';
 import { DYNAMIC_VERTICAL_REGISTRY } from '../../services/ai/dynamicVerticalContext';
 import { useAuditStore } from '../../store/auditStore';
@@ -85,6 +89,43 @@ export const ProductEvolutionAgentView: React.FC = () => {
     }
   };
 
+  const handleExportVaultJson = () => {
+    const jsonContent = exportSwarmMemoryVaultJson();
+    const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `adshield-memory-vault-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setFeedbackSuccess('💾 Backup JSON do Cofre Local (Memória Evolutiva + Contexto de Lojas) exportado com sucesso!');
+    setTimeout(() => setFeedbackSuccess(''), 6000);
+  };
+
+  const handleImportVaultJson = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const text = String(e.target?.result || '');
+      const res = importSwarmMemoryVaultJson(text);
+      if (res.success) {
+        const updated = await runProductEvolutionAudit();
+        setDossier(updated);
+        setFeedbackSuccess(
+          `📥 Cofre Local restaurado! ${res.restoredDomainsCount} lojas e ${res.restoredPatternsCount} padrões carregados (Maturidade SIQ: ${res.swarmMaturityScore}%).`
+        );
+      } else {
+        setFeedbackSuccess(`⚠️ Falha ao importar JSON: ${res.error}`);
+      }
+      setTimeout(() => setFeedbackSuccess(''), 6000);
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  };
+
   if (isLoading || !dossier) {
     return (
       <div className="py-16 text-center space-y-3 bg-[#101211] border border-white/10 rounded-3xl">
@@ -132,13 +173,38 @@ export const ProductEvolutionAgentView: React.FC = () => {
           </div>
         </div>
 
-        <button
-          onClick={() => loadDossier(true)}
-          className="px-4 py-2.5 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 rounded-2xl text-xs font-black transition-all flex items-center gap-2 shadow-md shadow-[#0AE448]/20 cursor-pointer shrink-0"
-        >
-          <RefreshCw className="w-4 h-4" />
-          <span>Sincronizar & Recalibrar Campo</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <button
+            onClick={handleExportVaultJson}
+            className="px-3.5 py-2.5 bg-[#141716] hover:bg-white/10 text-[#FFFCE1] border border-white/15 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
+            title="Baixar Snapshot JSON da Memória Evolutiva e Contexto de Lojas"
+          >
+            <Download className="w-4 h-4 text-[#00BAE2]" />
+            <span>Exportar Cofre JSON</span>
+          </button>
+
+          <label
+            className="px-3.5 py-2.5 bg-[#141716] hover:bg-white/10 text-[#FFFCE1] border border-white/15 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
+            title="Restaurar Snapshot JSON do Cofre Local"
+          >
+            <Upload className="w-4 h-4 text-amber-400" />
+            <span>Importar JSON</span>
+            <input
+              type="file"
+              accept=".json,application/json"
+              onChange={handleImportVaultJson}
+              className="hidden"
+            />
+          </label>
+
+          <button
+            onClick={() => loadDossier(true)}
+            className="px-4 py-2.5 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 rounded-2xl text-xs font-black transition-all flex items-center gap-2 shadow-md shadow-[#0AE448]/20 cursor-pointer"
+          >
+            <RefreshCw className="w-4 h-4" />
+            <span>Sincronizar & Recalibrar Campo</span>
+          </button>
+        </div>
       </div>
 
       {/* Success Feedback Banner */}

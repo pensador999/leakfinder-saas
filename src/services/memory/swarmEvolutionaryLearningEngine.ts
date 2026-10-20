@@ -30,6 +30,8 @@ export interface LearnedPatternSignature {
   patternType:
     | 'GRADE_DUPLA_COMBINADA'
     | 'GRADE_NUMERICA_ALFAIATARIA'
+    | 'GRADE_CALCADOS_34_44'
+    | 'GRADE_VOLUMETRICA_SUPLEMENTOS_COSMETICOS'
     | 'MATRIZ_MULTICOR_ALTA_DENSIDADE'
     | 'ARQUIVO_HISTORICO_MASSIVO'
     | 'SHOPIFY_OS2_METAFIELDS'
@@ -215,6 +217,40 @@ export function learnFromStoreDiagnostic(diagnostic: AgentDiagnosticResult): Swa
       domain,
       'Produtos de alfaiataria/calças/moda íntima utilizando grade numérica (36 ao 50) em conjunto com grade alfabética.',
       'Isolamento de curva gaussiana numérica (38-44 central) e isenção de ponta de grade periférica (46, 48, 50).'
+    );
+  }
+
+  const hasFootwearSizes =
+    vertical.verticalId === 'CALCADOS_COURO' ||
+    issues.some(iss =>
+      /bota|botina|t[eê]nis|sapato|sand[aá]lia|coturno|mocassim/i.test(iss.productTitle) &&
+      [...(iss.availableSizes || []), ...(iss.missingSizes || [])].some(s => /\b(34|35|36|37|38|39|40|41|42|43|44)\b/.test(s))
+    );
+  if (hasFootwearSizes) {
+    registerPattern(
+      state,
+      'GRADE_CALCADOS_34_44',
+      domain,
+      'Grade calçadista feminina e masculina (34 ao 44) com concentração gaussiana central nos tamanhos 37 ao 41.',
+      'Auditoria de fôrma central (37-41) e isenção de numeração extrema periférica (33, 34, 44, 45).'
+    );
+  }
+
+  const hasVolumetricOrFlavorGrid =
+    vertical.verticalId === 'SUPLEMENTOS_SAUDE' ||
+    vertical.verticalId === 'COSMETICOS_BEAUTY' ||
+    issues.some(iss =>
+      [...(iss.availableSizes || []), ...(iss.missingSizes || [])].some(s =>
+        /\b(300G|450G|500G|900G|1KG|30ML|50ML|100ML|200ML|CHOCOLATE|BAUNILHA|MORANGO|MEDIO|MÉDIO)\b/i.test(s)
+      )
+    );
+  if (hasVolumetricOrFlavorGrid) {
+    registerPattern(
+      state,
+      'GRADE_VOLUMETRICA_SUPLEMENTOS_COSMETICOS',
+      domain,
+      'Catálogo de Suplementos/Skincare operando por gramatura/volume (300g, 900g, 1kg, 30ml, 50ml) e curva de sabores/tons.',
+      'Ponderação gaussiana por pote/volume campeão (900g/300g e 30ml/50ml) e proteção de sabor/tom carro-chefe.'
     );
   }
 
@@ -704,5 +740,100 @@ export function resetSwarmEvolutionStateForTest(): void {
     } catch {
       // Ignore
     }
+  }
+}
+
+export interface LocalMemoryVaultSnapshot {
+  vaultVersion: 'ADSHIELD_LOCAL_VAULT_V1';
+  exportedAt: string;
+  swarmEvolutionState: SwarmEvolutionState;
+  storeContextMemoryRaw?: Record<string, any>;
+}
+
+/**
+ * 💾 Exporta o Cofre Local de Memória Evolutiva e Contexto de Lojas em JSON estruturado (Local-First Backup)
+ */
+export function exportSwarmMemoryVaultJson(): string {
+  const state = loadPersistedEvolutionState();
+  let storeContextMemoryRaw: Record<string, any> = {};
+  if (isBrowserStorageReady()) {
+    try {
+      const rawCtx = window.localStorage.getItem('ADSHIELD_STORE_CONTEXT_MEMORY_V1');
+      if (rawCtx) {
+        storeContextMemoryRaw = JSON.parse(rawCtx);
+      }
+    } catch {
+      storeContextMemoryRaw = {};
+    }
+  }
+
+  const snapshot: LocalMemoryVaultSnapshot = {
+    vaultVersion: 'ADSHIELD_LOCAL_VAULT_V1',
+    exportedAt: new Date().toISOString(),
+    swarmEvolutionState: state,
+    storeContextMemoryRaw
+  };
+
+  return JSON.stringify(snapshot, null, 2);
+}
+
+/**
+ * 📥 Importa e restaura um Snapshot JSON do Cofre Local de Memória Evolutiva
+ */
+export function importSwarmMemoryVaultJson(rawJson: string): {
+  success: boolean;
+  restoredDomainsCount: number;
+  restoredPatternsCount: number;
+  swarmMaturityScore: number;
+  error?: string;
+} {
+  try {
+    const parsed = JSON.parse(rawJson) as Partial<LocalMemoryVaultSnapshot>;
+    const evo = parsed.swarmEvolutionState || (parsed as any);
+    if (!evo || typeof evo.swarmMaturityScore !== 'number' || !evo.learnedPatterns) {
+      return {
+        success: false,
+        restoredDomainsCount: 0,
+        restoredPatternsCount: 0,
+        swarmMaturityScore: runtimeEvolutionState.swarmMaturityScore,
+        error: 'Arquivo JSON incompatível com o formato ADSHIELD_LOCAL_VAULT_V1.'
+      };
+    }
+
+    const restoredState: SwarmEvolutionState = {
+      totalAuditsProcessed: Number(evo.totalAuditsProcessed || 0),
+      uniqueDomainsLearned: Array.isArray(evo.uniqueDomainsLearned) ? evo.uniqueDomainsLearned : [],
+      swarmMaturityScore: Number(evo.swarmMaturityScore || 86.0),
+      crossAgentHarmonyPct: Number(evo.crossAgentHarmonyPct || 100),
+      verticalEmpiricalBenchmarks: evo.verticalEmpiricalBenchmarks || {},
+      learnedPatterns: evo.learnedPatterns || {},
+      selfHealingHistory: Array.isArray(evo.selfHealingHistory) ? evo.selfHealingHistory : [],
+      lastEvolvedAt: new Date().toISOString()
+    };
+
+    persistEvolutionState(restoredState);
+
+    if (parsed.storeContextMemoryRaw && isBrowserStorageReady()) {
+      try {
+        window.localStorage.setItem('ADSHIELD_STORE_CONTEXT_MEMORY_V1', JSON.stringify(parsed.storeContextMemoryRaw));
+      } catch {
+        // Ignore quota errors
+      }
+    }
+
+    return {
+      success: true,
+      restoredDomainsCount: restoredState.uniqueDomainsLearned.length,
+      restoredPatternsCount: Object.keys(restoredState.learnedPatterns).length,
+      swarmMaturityScore: restoredState.swarmMaturityScore
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      restoredDomainsCount: 0,
+      restoredPatternsCount: 0,
+      swarmMaturityScore: runtimeEvolutionState.swarmMaturityScore,
+      error: err?.message || 'Erro ao decodificar JSON do Cofre Local.'
+    };
   }
 }

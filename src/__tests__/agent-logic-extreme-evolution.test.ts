@@ -18,7 +18,9 @@ import {
   learnFromStoreDiagnostic,
   verifyAndHealAgentOutputConsistency,
   getSwarmEvolutionSummary,
-  resetSwarmEvolutionStateForTest
+  resetSwarmEvolutionStateForTest,
+  exportSwarmMemoryVaultJson,
+  importSwarmMemoryVaultJson
 } from '../services/memory/swarmEvolutionaryLearningEngine';
 import { analyzeComputerVision } from '../services/visionCoreEngine';
 import { auditSiteSecurity } from '../services/securityInspector';
@@ -843,5 +845,123 @@ describe('🧠 BATERIA EXTREMA DE LÓGICA MULTI-AMBIENTE & AUTOMELHORIA EVOLUTIV
     expect(trayBuilt.issues[0].missingSizes).toEqual(['G2']);
     expect(trayBuilt.issues[0].brokenCoreSizes).toEqual([]);
     expect(isCatalogProductBroken(trayBuilt.issues[0])).toBe(false);
+  });
+
+  it('Ambiente 8 (Verticais Calçados 34-44, Cosméticos 30ml/50ml, Suplementos 900g/300g & Cofre Local Exportável JSON): Audita grades especializadas e faz backup/restore 100% fiel', async () => {
+    resetSwarmEvolutionStateForTest();
+
+    // 1. Loja de Calçados (34 ao 44 com fôrma central 39 e 40 esgotada)
+    const workerShoes = await buildFieldAccurateWorkerPayload({
+      domain: 'francacouro.com.br',
+      brandName: 'Franca Couro',
+      platform: 'Shopify',
+      niche: 'Calçados, Botas e Tênis de Couro',
+      title: 'Franca Couro — Botas e Sapatos em Couro Legítimo',
+      rawHtmlSnippet: '<html><footer>CNPJ: 11.222.333/0001-44</footer></html>',
+      products: [
+        {
+          id: 'shoe-1',
+          title: 'Bota Coturno Couro Floater Masculina',
+          handle: 'bota-coturno-floater',
+          product_type: 'Botas',
+          tags: ['couro', 'calçado'],
+          variants: [
+            { id: 's-37', sku: 'FC-BOTA-37', title: '37', price: '329.90', available: true },
+            { id: 's-38', sku: 'FC-BOTA-38', title: '38', price: '329.90', available: true },
+            { id: 's-39', sku: 'FC-BOTA-39', title: '39', price: '329.90', available: false },
+            { id: 's-40', sku: 'FC-BOTA-40', title: '40', price: '329.90', available: false },
+            { id: 's-41', sku: 'FC-BOTA-41', title: '41', price: '329.90', available: true },
+            { id: 's-44', sku: 'FC-BOTA-44', title: '44', price: '329.90', available: false }
+          ]
+        }
+      ]
+    });
+
+    const diagShoes = await runAgentDiagnostic(
+      { businessName: 'Franca Couro', siteUrl: 'https://francacouro.com.br', niche: 'Calçados e Botas de Couro', targetRegion: 'Brasil' },
+      workerShoes
+    );
+    expect(diagShoes.realSiteData.catalogAudit!.deepSkuAudit!.allProducts[0].brokenCoreSizes).toEqual(['39', '40']);
+
+    // 2. Loja de Suplementos (Whey 900G esgotado, 300G disponível)
+    const workerSupps = await buildFieldAccurateWorkerPayload({
+      domain: 'alphawhey.com.br',
+      brandName: 'Alpha Whey',
+      platform: 'Shopify',
+      niche: 'Suplementos, Whey Protein e Creatina',
+      title: 'Alpha Whey — Suplementos e Nutrição Esportiva',
+      rawHtmlSnippet: '<html><footer>CNPJ: 22.333.444/0001-55</footer></html>',
+      products: [
+        {
+          id: 'supp-1',
+          title: 'Whey Protein Isolado 100% Pure',
+          handle: 'whey-isolado-pure',
+          product_type: 'Suplementos',
+          tags: ['whey', 'suplemento'],
+          variants: [
+            { id: 'w-900', sku: 'AW-900G', title: '900G', price: '219.90', available: false },
+            { id: 'w-300', sku: 'AW-300G', title: '300G', price: '99.90', available: true },
+            { id: 'w-1kg', sku: 'AW-1KG', title: '1KG', price: '239.90', available: true }
+          ]
+        }
+      ]
+    });
+
+    const diagSupps = await runAgentDiagnostic(
+      { businessName: 'Alpha Whey', siteUrl: 'https://alphawhey.com.br', niche: 'Suplementos e Whey Protein', targetRegion: 'Brasil' },
+      workerSupps
+    );
+    expect(diagSupps.realSiteData.catalogAudit!.deepSkuAudit!.allProducts[0].brokenCoreSizes).toContain('900G');
+
+    // 3. Loja de Cosméticos & Skincare (Sérum 30ML esgotado, 50ML disponível)
+    const workerBeauty = await buildFieldAccurateWorkerPayload({
+      domain: 'lumaskincare.com.br',
+      brandName: 'Luma Skincare',
+      platform: 'Shopify',
+      niche: 'Cosméticos, Skincare e Sérum Facial',
+      title: 'Luma Skincare — Dermocosméticos e Ácido Hialurônico',
+      rawHtmlSnippet: '<html><footer>CNPJ: 33.444.555/0001-66</footer></html>',
+      products: [
+        {
+          id: 'beauty-1',
+          title: 'Sérum Facial Ácido Hialurônico + Niacinamida',
+          handle: 'serum-acido-hialuronico',
+          product_type: 'Skincare',
+          tags: ['skincare', 'sérum'],
+          variants: [
+            { id: 'b-30', sku: 'LUMA-30ML', title: '30ML', price: '139.90', available: false },
+            { id: 'b-50', sku: 'LUMA-50ML', title: '50ML', price: '189.90', available: true }
+          ]
+        }
+      ]
+    });
+
+    await runAgentDiagnostic(
+      { businessName: 'Luma Skincare', siteUrl: 'https://lumaskincare.com.br', niche: 'Cosméticos e Skincare', targetRegion: 'Brasil' },
+      workerBeauty
+    );
+
+    const summaryBeforeExport = getSwarmEvolutionSummary();
+    expect(summaryBeforeExport.learnedPatterns['GRADE_CALCADOS_34_44']).toBeDefined();
+    expect(summaryBeforeExport.learnedPatterns['GRADE_VOLUMETRICA_SUPLEMENTOS_COSMETICOS']).toBeDefined();
+    expect(summaryBeforeExport.uniqueDomainsLearned).toEqual([
+      'francacouro.com.br',
+      'alphawhey.com.br',
+      'lumaskincare.com.br'
+    ]);
+
+    // 4. Exporta o Cofre Local em JSON, reseta a memória e restaura via importSwarmMemoryVaultJson
+    const exportedJson = exportSwarmMemoryVaultJson();
+    expect(exportedJson).toContain('ADSHIELD_LOCAL_VAULT_V1');
+    expect(exportedJson).toContain('francacouro.com.br');
+
+    resetSwarmEvolutionStateForTest();
+    expect(getSwarmEvolutionSummary().totalAuditsProcessed).toBe(0);
+
+    const importResult = importSwarmMemoryVaultJson(exportedJson);
+    expect(importResult.success).toBe(true);
+    expect(importResult.restoredDomainsCount).toBe(3);
+    expect(getSwarmEvolutionSummary().swarmMaturityScore).toBe(summaryBeforeExport.swarmMaturityScore);
+    expect(getSwarmEvolutionSummary().learnedPatterns['GRADE_CALCADOS_34_44']).toBeDefined();
   });
 });

@@ -85,6 +85,21 @@ const APPAREL_SIZE_WEIGHTS: Record<string, number> = {
   '46': 5,
   '48': 3,
   '50': 2,
+  // Supplements & Cosmetics Volumetric / Flavor / Shade Weights
+  '900G': 45,
+  '300G': 25,
+  '450G': 15,
+  '500G': 15,
+  '1KG': 15,
+  '30ML': 32,
+  '50ML': 28,
+  '100ML': 15,
+  '200ML': 10,
+  'CHOCOLATE': 35,
+  'BAUNILHA': 25,
+  'MORANGO': 20,
+  'MEDIO': 40,
+  'MÉDIO': 40,
   'ÚNICO': 10,
   'UNICO': 10
 };
@@ -258,7 +273,11 @@ export function auditProductDeepSkus(
       activeSkus++;
     } else {
       rupturedSkus++;
-      if (isSizeCompletelyOutAcrossAllColors && ['P', 'M', 'G', 'GG', '38', '40', '42', '44'].includes(matchedSizeKey)) {
+      const isCoreDemandForVertical =
+        vertical.coreDemandSizes.includes(matchedSizeKey) ||
+        ['P', 'M', 'G', 'GG', '37', '38', '39', '40', '41', '42', '900G', '300G', '450G', '1KG', '30ML', '50ML', 'CHOCOLATE', 'BAUNILHA'].includes(matchedSizeKey) ||
+        (matchedSizeKey === '44' && vertical.verticalId !== 'CALCADOS_COURO');
+      if (isSizeCompletelyOutAcrossAllColors && isCoreDemandForVertical) {
         brokenCoreSet.add(matchedSizeKey);
       }
       if (isSkuLevelFull) {

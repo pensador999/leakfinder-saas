@@ -77,17 +77,20 @@ export const DYNAMIC_VERTICAL_REGISTRY: Record<SupportedVerticalId, DynamicVerti
     baselineCvrPct: 1.35,
     averageReturnRatePct: 16.5, // Calçado tem a maior taxa de troca do e-commerce
     gaussianDemandDistribution: {
-      '37': 4,
-      '38': 8,
-      '39': 22,
-      '40': 28,
-      '41': 20,
-      '42': 12,
-      '43': 4,
-      '44': 2
+      '34': 2,
+      '35': 5,
+      '36': 9,
+      '37': 11,
+      '38': 12,
+      '39': 18,
+      '40': 21,
+      '41': 13,
+      '42': 6,
+      '43': 2,
+      '44': 1
     },
-    coreDemandSizes: ['39', '40', '41'],
-    secondaryDemandSizes: ['38', '42'],
+    coreDemandSizes: ['37', '38', '39', '40', '41'],
+    secondaryDemandSizes: ['35', '36', '42', '43'],
     dominantTechStack: {
       primaryErp: 'Bling ERP (Edição Calçadista de Franca) / Tiny ERP',
       primaryHub: 'Plugg.to / AnyMarket / Magis5',
@@ -265,10 +268,18 @@ export const DYNAMIC_VERTICAL_REGISTRY: Record<SupportedVerticalId, DynamicVerti
     gaussianDemandDistribution: {
       'UNITARIO': 70,
       'KIT_DUPLO': 20,
-      'KIT_TRIPLO': 10
+      'KIT_TRIPLO': 10,
+      '30ML': 32,
+      '50ML': 28,
+      '100ML': 15,
+      '200ML': 10,
+      'CLARO': 25,
+      'MEDIO': 40,
+      'MÉDIO': 40,
+      'ESCURO': 25
     },
-    coreDemandSizes: ['UNITARIO', 'KIT_TRIPLO'],
-    secondaryDemandSizes: ['KIT_DUPLO'],
+    coreDemandSizes: ['UNITARIO', 'KIT_TRIPLO', '30ML', '50ML', 'MEDIO', 'MÉDIO'],
+    secondaryDemandSizes: ['KIT_DUPLO', '100ML', '200ML', 'CLARO', 'ESCURO'],
     dominantTechStack: {
       primaryErp: 'Bling ERP / Tiny ERP / SAP Business One',
       primaryHub: 'Shopify Plus / VTEX IO',
@@ -421,11 +432,20 @@ export const DYNAMIC_VERTICAL_REGISTRY: Record<SupportedVerticalId, DynamicVerti
     gaussianDemandDistribution: {
       '900G': 45,
       '300G': 25,
+      '450G': 15,
+      '500G': 15,
       '1KG': 15,
+      '60CAPS': 20,
+      '120CAPS': 25,
+      'CHOCOLATE': 35,
+      'BAUNILHA': 25,
+      'MORANGO': 20,
+      'LIMAO': 15,
+      'LIMÃO': 15,
       'KIT_COMBO': 15
     },
-    coreDemandSizes: ['900G', '300G', 'UNITARIO'],
-    secondaryDemandSizes: ['1KG', 'KIT_COMBO'],
+    coreDemandSizes: ['900G', '300G', '450G', '1KG', 'CHOCOLATE', 'BAUNILHA', 'UNITARIO'],
+    secondaryDemandSizes: ['500G', '60CAPS', '120CAPS', 'MORANGO', 'LIMAO', 'KIT_COMBO'],
     dominantTechStack: {
       primaryErp: 'Bling ERP / Tiny ERP / Omie',
       primaryHub: 'Shopify / VTEX / Nuvemshop',
