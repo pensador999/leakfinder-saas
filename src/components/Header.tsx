@@ -20,13 +20,14 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faShieldHalved, 
-  faFish, 
   faWheatAwn, 
   faFire, 
   faBolt, 
   faSliders, 
   faArrowsRotate,
-  faLayerGroup
+  faLayerGroup,
+  faShirt,
+  faSprayCanSparkles
 } from '@fortawesome/free-solid-svg-icons';
 import { faShopify } from '@fortawesome/free-brands-svg-icons';
 import gsap from 'gsap';
@@ -87,17 +88,37 @@ export const Header: React.FC<HeaderProps> = ({
 
   const brandPresets: StorePreset[] = [
     {
-      key: 'fishing',
-      name: 'BRK Fishing',
-      url: 'https://www.brkfishing.com.br',
-      brandName: 'BRK Fishing',
-      niche: 'Pesca Esportiva & Vestuário',
-      aov: 220,
-      icon: faFish,
+      key: 'minimalclub',
+      name: 'Minimal Club',
+      url: 'https://www.minimalclub.com.br',
+      brandName: 'Minimal Club',
+      niche: 'Moda Masculina & Básicos Tech',
+      aov: 280,
+      icon: faShirt,
+      activeClass: 'bg-[#0AE448] text-[#0E100F] shadow-sm border border-[#0AE448] font-black'
+    },
+    {
+      key: 'sallve',
+      name: 'Sallve',
+      url: 'https://www.sallve.com.br',
+      brandName: 'Sallve',
+      niche: 'Cosméticos & Skincare',
+      aov: 165,
+      icon: faSprayCanSparkles,
       activeClass: 'bg-[#00BAE2] text-[#0E100F] shadow-sm border border-[#00BAE2] font-black'
     },
     {
-      key: 'agro',
+      key: 'insiderstore',
+      name: 'Insider Store',
+      url: 'https://www.insiderstore.com.br',
+      brandName: 'Insider Store',
+      niche: 'Vestuário Tecnológico & Performance',
+      aov: 310,
+      icon: faFire,
+      activeClass: 'bg-[#FF8709] text-[#0E100F] shadow-sm border border-[#FF8709] font-black'
+    },
+    {
+      key: 'brkagro',
       name: 'BRK Agro',
       url: 'https://www.brkagro.com.br',
       brandName: 'BRK Agro',
@@ -105,16 +126,6 @@ export const Header: React.FC<HeaderProps> = ({
       aov: 260,
       icon: faWheatAwn,
       activeClass: 'bg-[#0AE448] text-[#0E100F] shadow-sm border border-[#0AE448] font-black'
-    },
-    {
-      key: 'motors',
-      name: 'BRK Motors',
-      url: 'https://www.brkmotors.com.br',
-      brandName: 'BRK Motors',
-      niche: 'Motociclismo & Off-Road',
-      aov: 240,
-      icon: faFire,
-      activeClass: 'bg-[#FF8709] text-[#0E100F] shadow-sm border border-[#FF8709] font-black'
     }
   ];
 

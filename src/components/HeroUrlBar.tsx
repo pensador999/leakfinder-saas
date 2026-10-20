@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, ShieldCheck, Globe, Sparkles, Zap, Factory, Boxes, Tag, Bot, Info, X } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFish, faWheatAwn, faFire, faGlobe, faArrowRight as faArrowRightSolid, faSliders } from '@fortawesome/free-solid-svg-icons';
+import { faWheatAwn, faFire, faGlobe, faArrowRight as faArrowRightSolid, faSliders, faShirt, faSprayCanSparkles } from '@fortawesome/free-solid-svg-icons';
 import gsap from 'gsap';
 import { AuditInput, StoreOperationMode } from '../types';
 import { getWhiteLabelConfig, WhiteLabelConfig } from '../services/whiteLabelService';
@@ -38,16 +38,40 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
 
   const presets: CompanyPreset[] = [
     {
-      id: 'brk-fishing',
-      name: 'BRK Fishing',
-      url: 'https://www.brkfishing.com.br',
-      niche: 'Pesca Esportiva, Vestuário & Aventura',
-      aov: 220,
-      instagram: 'brkfishing',
-      icon: faFish,
+      id: 'minimal-club',
+      name: 'Minimal Club',
+      url: 'https://www.minimalclub.com.br',
+      niche: 'Moda Masculina & Básicos Tech',
+      aov: 280,
+      instagram: 'minimalclub',
+      icon: faShirt,
+      accentColor: 'text-emerald-700 border-emerald-300 bg-emerald-50 hover:bg-emerald-100',
+      badgeBg: 'bg-emerald-600',
+      operationMode: 'PHYSICAL_WAREHOUSE_STOCK'
+    },
+    {
+      id: 'sallve',
+      name: 'Sallve',
+      url: 'https://www.sallve.com.br',
+      niche: 'Cosméticos & Skincare',
+      aov: 165,
+      instagram: 'sallve',
+      icon: faSprayCanSparkles,
       accentColor: 'text-cyan-700 border-cyan-300 bg-cyan-50 hover:bg-cyan-100',
       badgeBg: 'bg-cyan-600',
-      operationMode: 'OWN_MANUFACTURING_ON_DEMAND'
+      operationMode: 'PHYSICAL_WAREHOUSE_STOCK'
+    },
+    {
+      id: 'insider-store',
+      name: 'Insider Store',
+      url: 'https://www.insiderstore.com.br',
+      niche: 'Vestuário Tecnológico & Performance',
+      aov: 310,
+      instagram: 'insiderstore',
+      icon: faFire,
+      accentColor: 'text-orange-700 border-orange-300 bg-orange-50 hover:bg-orange-100',
+      badgeBg: 'bg-orange-600',
+      operationMode: 'PHYSICAL_WAREHOUSE_STOCK'
     },
     {
       id: 'brk-agro',
@@ -59,18 +83,6 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
       icon: faWheatAwn,
       accentColor: 'text-emerald-700 border-emerald-300 bg-emerald-50 hover:bg-emerald-100',
       badgeBg: 'bg-emerald-600',
-      operationMode: 'OWN_MANUFACTURING_ON_DEMAND'
-    },
-    {
-      id: 'brk-motors',
-      name: 'BRK Motors',
-      url: 'https://www.brkmotors.com.br',
-      niche: 'Motociclismo, Off-Road & Automotivo',
-      aov: 240,
-      instagram: 'brkmotors',
-      icon: faFire,
-      accentColor: 'text-orange-700 border-orange-300 bg-orange-50 hover:bg-orange-100',
-      badgeBg: 'bg-orange-600',
       operationMode: 'OWN_MANUFACTURING_ON_DEMAND'
     }
   ];
@@ -184,7 +196,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
           <input
             type="text"
             required
-            placeholder="cole o link da loja (ex: brkagro.com.br ou concorrente)"
+            placeholder="cole o link da loja (ex: minimalclub.com.br, sallve.com.br ou concorrente)"
             value={urlInput}
             onChange={(e) => setUrlInput(e.target.value)}
             className="flex-1 px-2 py-3 bg-transparent text-sm font-semibold text-[#FFFCE1] placeholder-slate-500 outline-none w-full font-mono tracking-tight"

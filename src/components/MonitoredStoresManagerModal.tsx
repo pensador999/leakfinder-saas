@@ -133,10 +133,10 @@ export const MonitoredStoresManagerModal: React.FC<MonitoredStoresManagerModalPr
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-bold text-[#FFFCE1]">Lojas no Radar do Enxame 24h</h2>
                 <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-[#0AE448]/20 text-[#0AE448] border border-[#0AE448]/30 rounded-md">
-                  Supabase Live
+                  {isSupabaseConfigured ? 'Supabase Live' : 'Local-First Vault'}
                 </span>
               </div>
-              <p className="text-xs text-[#BBBAA6]">Gerencie as lojas auditadas diariamente às 07:00 da manhã.</p>
+              <p className="text-xs text-[#BBBAA6]">Gerencie o portfólio de lojas auditadas continuamente pelo enxame.</p>
             </div>
           </div>
 

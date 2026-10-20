@@ -11,6 +11,8 @@ import {
 import { AgentDiagnosticResult } from '../types';
 import { saveLead, formatWhatsAppMessage, generateWhatsAppLink } from '../services/whatsappLeadService';
 import { generateShopifyTelemetryAnalysis } from '../services/shopifyTelemetryService';
+import { isCatalogProductBroken } from '../services/siteInspector';
+import { getWhiteLabelConfig } from '../services/whiteLabelService';
 
 interface WhatsAppLeadCaptureModalProps {
   diagnostic: AgentDiagnosticResult;
@@ -31,6 +33,7 @@ export const WhatsAppLeadCaptureModal: React.FC<WhatsAppLeadCaptureModalProps> =
   if (!isOpen) return null;
 
   const { realSiteData, growthScore } = diagnostic;
+  const whiteLabel = getWhiteLabelConfig();
 
   const telemetry = generateShopifyTelemetryAnalysis(
     realSiteData.domain,
@@ -38,15 +41,22 @@ export const WhatsAppLeadCaptureModal: React.FC<WhatsAppLeadCaptureModalProps> =
     realSiteData.rawHtmlSnippet
   );
 
-  const reportUrl = `${window.location.origin}/#report-${realSiteData.brandName.toLowerCase()}`;
+  const estimatedMonthlyLoss = Math.round(
+    realSiteData.catalogAudit?.monthlyLossEstimateBRL ?? telemetry.totalEstimatedRevenueLoss
+  );
+
+  const brokenIssue = (realSiteData.catalogAudit?.issues || []).find(isCatalogProductBroken);
+  const reportUrl = `${window.location.origin}/?loja=${encodeURIComponent(realSiteData.domain)}`;
   
   const formattedMessage = formatWhatsAppMessage(
     name,
     realSiteData.brandName,
     realSiteData.domain,
     growthScore,
-    telemetry.totalEstimatedRevenueLoss,
-    reportUrl
+    estimatedMonthlyLoss,
+    reportUrl,
+    brokenIssue?.productTitle,
+    brokenIssue?.brokenCoreSizes?.length ? brokenIssue.brokenCoreSizes : brokenIssue?.missingSizes
   );
 
   // Phone Mask: (XX) 9XXXX-XXXX
@@ -72,10 +82,13 @@ export const WhatsAppLeadCaptureModal: React.FC<WhatsAppLeadCaptureModalProps> =
     saveLead({
       merchantName: name || 'Lojista',
       whatsappNumber: phone,
-      storeUrl: realSiteData.url,
+      storeUrl: realSiteData.url || `https://${realSiteData.domain}`,
       brandName: realSiteData.brandName,
-      estimatedLossRevenue: telemetry.totalEstimatedRevenueLoss,
-      growthScore
+      estimatedLossRevenue: estimatedMonthlyLoss,
+      growthScore,
+      source: 'WHATSAPP_FUNNEL',
+      topBrokenSku: brokenIssue ? `${brokenIssue.productTitle} (Falta: ${brokenIssue.missingSizes.join(', ')})` : undefined,
+      customPitch: formattedMessage
     });
 
     // Generate direct WhatsApp dispatch link
@@ -130,7 +143,7 @@ export const WhatsAppLeadCaptureModal: React.FC<WhatsAppLeadCaptureModalProps> =
             <div className="space-y-0.5">
               <p className="text-[10px] font-bold uppercase text-[#BBBAA6]">Vazamento Estimado Identificado</p>
               <p className="text-xl font-black text-[#0AE448] font-mono">
-                R$ {telemetry.totalEstimatedRevenueLoss.toLocaleString('pt-BR')} / mês
+                R$ {estimatedMonthlyLoss.toLocaleString('pt-BR')} / mês
               </p>
             </div>
             <span className="px-3 py-1 bg-[#0AE448]/10 border border-[#0AE448]/30 text-[#0AE448] font-black text-xs rounded-xl shadow-xs font-mono">
@@ -148,7 +161,7 @@ export const WhatsAppLeadCaptureModal: React.FC<WhatsAppLeadCaptureModalProps> =
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Ex: Marcos (BRK Fishing)"
+                placeholder={`Ex: Gestor (${realSiteData.brandName})`}
                 className="w-full px-4 py-2.5 bg-[#0E100F] border border-white/10 rounded-xl text-sm text-[#FFFCE1] placeholder-[#BBBAA6]/40 focus:outline-none focus:border-[#0AE448] font-medium transition-all"
               />
             </div>
@@ -161,17 +174,19 @@ export const WhatsAppLeadCaptureModal: React.FC<WhatsAppLeadCaptureModalProps> =
                 type="tel"
                 value={phone}
                 onChange={handlePhoneChange}
-                placeholder="(34) 99135-1122"
+                placeholder="(11) 99999-9999"
                 required
                 className="w-full px-4 py-2.5 bg-[#0E100F] border border-white/10 rounded-xl text-sm text-[#FFFCE1] placeholder-[#BBBAA6]/40 focus:outline-none focus:border-[#0AE448] font-mono font-bold transition-all"
               />
-              <button
-                type="button"
-                onClick={() => setPhone('(34) 99135-1122')}
-                className="mt-1 text-[11px] text-[#0AE448] hover:underline font-semibold cursor-pointer"
-              >
-                Usar meu WhatsApp: (34) 99135-1122
-              </button>
+              {whiteLabel.consultantWhatsApp && (
+                <button
+                  type="button"
+                  onClick={() => setPhone(whiteLabel.consultantWhatsApp)}
+                  className="mt-1 text-[11px] text-[#0AE448] hover:underline font-semibold cursor-pointer"
+                >
+                  Testar no WhatsApp da Agência: {whiteLabel.consultantWhatsApp}
+                </button>
+              )}
             </div>
 
             <button

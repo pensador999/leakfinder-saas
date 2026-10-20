@@ -50,6 +50,27 @@ export function getStoredAgencyConfig(): AgencyWhiteLabelConfig {
 
 export function saveStoredAgencyConfig(config: AgencyWhiteLabelConfig): void {
   localStorage.setItem(LOCAL_AGENCY_CONFIG_KEY, JSON.stringify(config));
+  try {
+    const existingRaw = localStorage.getItem('whitelabel_config');
+    const existing = existingRaw ? JSON.parse(existingRaw) : {};
+    localStorage.setItem(
+      'whitelabel_config',
+      JSON.stringify({
+        ...existing,
+        agencyName: config.agencyName,
+        logoUrl: config.agencyLogoUrl,
+        primaryColor: config.primaryBrandColor,
+        consultantName: config.consultantName,
+        consultantRole: config.consultantRole,
+        consultantWhatsApp: config.consultantWhatsApp,
+        consultantEmail: config.consultantEmail,
+        agencyWebsite: config.agencyWebsite
+      })
+    );
+    window.dispatchEvent(new Event('whitelabel-updated'));
+  } catch {
+    // ignore
+  }
 }
 
 /**

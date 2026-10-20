@@ -45,45 +45,45 @@ export const AuditFormModal: React.FC<AuditFormModalProps> = ({ isOpen, onClose,
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-lg overflow-y-auto animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl shadow-indigo-950/60 overflow-hidden my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200 font-sans">
+      <div className="relative w-full max-w-2xl bg-[#101211] border border-white/10 rounded-3xl shadow-2xl overflow-hidden my-8 text-[#FFFCE1]">
         
         {/* Modal Header */}
-        <div className="relative p-6 bg-gradient-to-r from-slate-950 via-indigo-950/60 to-purple-950/50 border-b border-slate-800">
+        <div className="relative p-6 bg-[#0E100F] border-b border-white/10">
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 p-1.5 text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-800 rounded-lg transition-all"
+            className="absolute top-5 right-5 p-2 text-[#BBBAA6] hover:text-[#FFFCE1] bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
           
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl text-white shadow-lg shadow-indigo-500/30">
-              <Layers className="w-6 h-6 animate-pulse" />
+            <div className="p-3 bg-[#0AE448]/10 border border-[#0AE448]/30 rounded-2xl text-[#0AE448] shadow-md shadow-[#0AE448]/10">
+              <Layers className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-black text-lg text-white font-mono">AdShield</span>
-                <span className="px-2 py-0.5 text-[9px] font-bold uppercase bg-emerald-500/20 text-[#0AE448] rounded border border-emerald-500/30">
+                <span className="font-black text-lg text-[#FFFCE1] font-mono">AdShield</span>
+                <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase bg-[#0AE448]/15 text-[#0AE448] rounded-md border border-[#0AE448]/30">
                   AUTONOMOUS AUDIT
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Configure os parâmetros da sua empresa para que o Enxame de Agentes AdShield execute a auditoria completa de receita e tráfego.
+              <p className="text-xs text-[#BBBAA6] mt-0.5">
+                Configure os parâmetros da loja para que o Enxame de Agentes AdShield execute a auditoria completa de catálogo, receita e tráfego.
               </p>
             </div>
           </div>
         </div>
 
         {/* Modal Body / Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="p-6 space-y-5 text-xs">
           
           {/* Step 1: URL & Name */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <Globe className="w-3.5 h-3.5 text-indigo-400" />
-                URL do Seu Site / Loja <span className="text-rose-400">*</span>
+              <label className="block text-xs font-bold text-[#BBBAA6] mb-1.5 flex items-center gap-1.5">
+                <Globe className="w-3.5 h-3.5 text-[#0AE448]" />
+                URL do Site / Loja <span className="text-rose-400">*</span>
               </label>
               <input
                 type="text"
@@ -91,21 +91,21 @@ export const AuditFormModal: React.FC<AuditFormModalProps> = ({ isOpen, onClose,
                 placeholder="https://suamarca.com.br"
                 value={siteUrl}
                 onChange={(e) => setSiteUrl(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl text-sm text-white placeholder-slate-500 outline-none transition-all font-mono"
+                className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 focus:border-[#0AE448] rounded-xl text-xs text-[#FFFCE1] placeholder-[#BBBAA6]/40 outline-none transition-all font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <ShoppingBag className="w-3.5 h-3.5 text-purple-400" />
+              <label className="block text-xs font-bold text-[#BBBAA6] mb-1.5 flex items-center gap-1.5">
+                <ShoppingBag className="w-3.5 h-3.5 text-[#00BAE2]" />
                 Nome da Marca
               </label>
               <input
                 type="text"
-                placeholder="Ex: Aurora Store"
+                placeholder="Ex: Minimal Club"
                 value={businessName}
                 onChange={(e) => setBusinessName(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl text-sm text-white placeholder-slate-500 outline-none transition-all"
+                className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 focus:border-[#0AE448] rounded-xl text-xs text-[#FFFCE1] placeholder-[#BBBAA6]/40 outline-none transition-all"
               />
             </div>
           </div>
@@ -113,13 +113,13 @@ export const AuditFormModal: React.FC<AuditFormModalProps> = ({ isOpen, onClose,
           {/* Step 2: Business Type & Niche */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-bold text-[#BBBAA6] mb-1.5">
                 Modelo de Negócio
               </label>
               <select
                 value={businessType}
                 onChange={(e) => setBusinessType(e.target.value as BusinessType)}
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl text-sm text-white outline-none transition-all"
+                className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 focus:border-[#0AE448] rounded-xl text-xs text-[#FFFCE1] outline-none transition-all"
               >
                 <option value="ecommerce">E-commerce / D2C (Produtos Físicos)</option>
                 <option value="saas">SaaS / Software Online</option>
@@ -130,7 +130,7 @@ export const AuditFormModal: React.FC<AuditFormModalProps> = ({ isOpen, onClose,
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-bold text-[#BBBAA6] mb-1.5">
                 Nicho / Segmento
               </label>
               <input
@@ -138,17 +138,17 @@ export const AuditFormModal: React.FC<AuditFormModalProps> = ({ isOpen, onClose,
                 placeholder="Auto-detectado pela IA (ex: Calçados, Suplementos, Moda)"
                 value={niche}
                 onChange={(e) => setNiche(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl text-sm text-white placeholder-slate-500 outline-none transition-all mb-4"
+                className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 focus:border-[#0AE448] rounded-xl text-xs text-[#FFFCE1] placeholder-[#BBBAA6]/40 outline-none transition-all mb-4"
               />
 
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <Globe className="w-3.5 h-3.5 text-blue-400" />
+              <label className="block text-xs font-bold text-[#BBBAA6] mb-1.5 flex items-center gap-1.5">
+                <Globe className="w-3.5 h-3.5 text-[#00BAE2]" />
                 Mercado Alvo (CV Engine Profile)
               </label>
               <select
                 value={targetRegion}
                 onChange={(e) => setTargetRegion(e.target.value as TargetRegion)}
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl text-sm text-white outline-none transition-all font-bold text-blue-400"
+                className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 focus:border-[#0AE448] rounded-xl text-xs text-[#0AE448] outline-none transition-all font-bold"
               >
                 <option value="Brasil">Brasil (WhatsApp + Pix Focus)</option>
                 <option value="Ásia">Ásia (High Clutter + Social Proof)</option>
@@ -159,12 +159,10 @@ export const AuditFormModal: React.FC<AuditFormModalProps> = ({ isOpen, onClose,
             </div>
           </div>
 
-          {/* Removed Step 3 (Metrics) & Main Challenge to reduce friction */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                URL do Principal Concorrente <span className="text-rose-400">*</span>
+              <label className="block text-xs font-bold text-[#BBBAA6] mb-1.5">
+                URL do Concorrente
               </label>
               <input
                 type="text"
@@ -172,10 +170,12 @@ export const AuditFormModal: React.FC<AuditFormModalProps> = ({ isOpen, onClose,
                 placeholder="https://concorrente.com.br"
                 value={competitorsUrl}
                 onChange={(e) => setCompetitorsUrl(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl text-sm text-white placeholder-slate-500 outline-none transition-all font-mono mb-4"
+                className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 focus:border-[#0AE448] rounded-xl text-xs text-[#FFFCE1] placeholder-[#BBBAA6]/40 outline-none transition-all font-mono"
               />
-              
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-[#BBBAA6] mb-1.5">
                 @ Instagram (Opcional)
               </label>
               <input
@@ -183,19 +183,21 @@ export const AuditFormModal: React.FC<AuditFormModalProps> = ({ isOpen, onClose,
                 placeholder="@loja"
                 value={instagramHandle}
                 onChange={(e) => setInstagramHandle(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl text-sm text-white placeholder-slate-500 outline-none transition-all font-mono mb-4"
+                className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 focus:border-[#0AE448] rounded-xl text-xs text-[#FFFCE1] placeholder-[#BBBAA6]/40 outline-none transition-all font-mono"
               />
-              
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex justify-between">
-                <span>CNPJ da Loja (Opcional)</span>
-                <span className="text-[10px] text-indigo-400">Ajuda a IA</span>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-[#BBBAA6] mb-1.5 flex justify-between">
+                <span>CNPJ (Opcional)</span>
+                <span className="text-[10px] text-[#0AE448]">Grounding</span>
               </label>
               <input
                 type="text"
-                placeholder="12.345.678/0001-99"
+                placeholder="00.000.000/0001-00"
                 value={manualCnpj}
                 onChange={(e) => setManualCnpj(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl text-sm text-white placeholder-slate-500 outline-none transition-all font-mono"
+                className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 focus:border-[#0AE448] rounded-xl text-xs text-[#FFFCE1] placeholder-[#BBBAA6]/40 outline-none transition-all font-mono"
               />
             </div>
           </div>
@@ -204,7 +206,7 @@ export const AuditFormModal: React.FC<AuditFormModalProps> = ({ isOpen, onClose,
           <div className="pt-2">
             <button
               type="submit"
-              className="w-full py-3.5 px-6 font-bold text-sm text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:via-purple-500 hover:to-pink-500 rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 group cursor-pointer"
+              className="w-full py-3.5 px-6 font-black text-xs uppercase tracking-wider text-slate-950 bg-[#0AE448] hover:bg-[#0AE448]/90 rounded-xl shadow-lg shadow-[#0AE448]/20 transition-all flex items-center justify-center gap-2 group cursor-pointer"
             >
               <span>Executar Auditoria AdShield de 18 Agentes</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

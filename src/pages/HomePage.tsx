@@ -72,7 +72,6 @@ const SupplyChainDiscrepancyView = lazy(() => import('../components/supplyChain/
 const AuditFormModal = lazy(() => import('../components/AuditFormModal').then(m => ({ default: m.AuditFormModal })));
 const ExecutivePdfExportModal = lazy(() => import('../components/ExecutivePdfExportModal').then(m => ({ default: m.ExecutivePdfExportModal })));
 const SettingsModal = lazy(() => import('../components/SettingsModal').then(m => ({ default: m.SettingsModal })));
-const AdminLeadsDashboard = lazy(() => import('../components/AdminLeadsDashboard').then(m => ({ default: m.AdminLeadsDashboard })));
 const TransparentCheckoutModal = lazy(() => import('../components/billing/TransparentCheckoutModal').then(m => ({ default: m.TransparentCheckoutModal })));
 const WhatsAppLeadCaptureModal = lazy(() => import('../components/WhatsAppLeadCaptureModal').then(m => ({ default: m.WhatsAppLeadCaptureModal })));
 const AdminLeadsDrawer = lazy(() => import('../components/AdminLeadsDrawer').then(m => ({ default: m.AdminLeadsDrawer })));
@@ -819,7 +818,13 @@ export function HomePage() {
         )}
 
         {activeModal === 'adminDashboard' && (
-          <AdminLeadsDashboard onClose={() => setActiveModal(null)} />
+          <AdminLeadsDrawer
+            isOpen={true}
+            onClose={() => setActiveModal(null)}
+            currentDiagnostic={diagnostic}
+            onOpenWhatsAppCapture={diagnostic ? () => setActiveModal('whatsappLead') : undefined}
+            onOpenBatchAuditor={() => setActiveModal('batchAuditor')}
+          />
         )}
 
         {activeModal === 'pricing' && (
@@ -873,6 +878,9 @@ export function HomePage() {
           <AdminLeadsDrawer
             isOpen={true}
             onClose={() => setActiveModal(null)}
+            currentDiagnostic={diagnostic}
+            onOpenWhatsAppCapture={diagnostic ? () => setActiveModal('whatsappLead') : undefined}
+            onOpenBatchAuditor={() => setActiveModal('batchAuditor')}
           />
         )}
 
@@ -881,9 +889,20 @@ export function HomePage() {
             isOpen={true}
             onClose={() => setActiveModal(null)}
             onSelectStoreToAudit={(url) => {
-              setAnalyzingUrl(url);
-              setIsAnalyzing(true);
               setActiveModal(null);
+              const { cleanUrl, brandName } = extractCleanDomainAndBrand(url);
+              handleStartRealAudit({
+                siteUrl: cleanUrl,
+                businessName: brandName,
+                businessType: 'ecommerce',
+                niche: cleanUrl.includes('agro') ? 'Agropecuária & Moda Campo' : 'Moda & Varejo E-commerce',
+                monthlyRevenue: 'R$ 50k a R$ 200k',
+                averageOrderValue: 180,
+                mainChallenge: 'low_conversion',
+                targetRegion: 'Brasil',
+                grossMargin: 45,
+                competitorsUrl: 'https://concorrente.com.br'
+              });
             }}
           />
         )}

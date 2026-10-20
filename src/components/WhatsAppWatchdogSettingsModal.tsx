@@ -17,6 +17,7 @@ import {
   WhatsAppGatewayConfig, 
   dispatchWhatsAppAlert 
 } from '../services/workers/whatsappAlertWorker';
+import { getWhiteLabelConfig } from '../services/whiteLabelService';
 
 interface WhatsAppWatchdogSettingsModalProps {
   isOpen: boolean;
@@ -27,8 +28,11 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
   isOpen,
   onClose
 }) => {
+  const whiteLabel = getWhiteLabelConfig();
   const [config, setConfig] = useState<WhatsAppGatewayConfig>(getWhatsAppGatewayConfig());
-  const [testPhone, setTestPhone] = useState<string>(getWhatsAppGatewayConfig().defaultPhone || '5534991351122');
+  const [testPhone, setTestPhone] = useState<string>(
+    getWhatsAppGatewayConfig().defaultPhone || whiteLabel.consultantWhatsApp || '5511999999999'
+  );
   const [isSendingTest, setIsSendingTest] = useState<boolean>(false);
   const [testResult, setTestResult] = useState<{ success: boolean; message: string; directUrl?: string } | null>(null);
   const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
@@ -36,8 +40,9 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
   useEffect(() => {
     if (isOpen) {
       const cfg = getWhatsAppGatewayConfig();
+      const wl = getWhiteLabelConfig();
       setConfig(cfg);
-      if (cfg.defaultPhone) setTestPhone(cfg.defaultPhone);
+      setTestPhone(cfg.defaultPhone || wl.consultantWhatsApp || '5511999999999');
       setTestResult(null);
     }
   }, [isOpen]);
@@ -58,13 +63,13 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
       message: `🛡️ *ADSHIELD VIGIA 24H • TESTE DE CONEXÃO*\n\n` +
         `✅ Seu canal de WhatsApp está ativo e conectado com sucesso!\n` +
         `⏱️ As auditorias diárias automáticas serão entregues neste número às 07:00 da manhã.\n\n` +
-        `📊 *Loja Monitorada:* BRK Agro & BRK Fishing\n` +
-        `🔍 *Diagnóstico:* Catálogo e Grade Auditados\n\n` +
-        `🔗 Painel Oficial: https://adshield.ai`,
+        `📊 *Portfólio Monitorado:* Minimal Club, Sallve, Insider Store & Clientes\n` +
+        `🔍 *Diagnóstico:* Catálogo, Grade e Tráfego Pago Auditados\n\n` +
+        `🔗 Painel Oficial: ${window.location.origin}`,
       priority: 'HIGH' as const,
       metadata: {
         storeId: 'test-store',
-        storeUrl: 'https://adshield.ai',
+        storeUrl: window.location.origin,
         score: 95
       }
     };
@@ -220,7 +225,7 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
                 Disparo Executivo Real no WhatsApp
               </h3>
               <span className="text-[10px] text-[#0AE448] font-mono font-bold bg-[#0AE448]/10 border border-[#0AE448]/30 px-2 py-0.5 rounded-md">
-                Destino: 5534991351122
+                Destino: {testPhone || whiteLabel.consultantWhatsApp}
               </span>
             </div>
 
@@ -228,7 +233,7 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
               <div className="flex gap-2">
                 <input
                   type="tel"
-                  placeholder="5534991351122"
+                  placeholder="5511999999999"
                   value={testPhone}
                   onChange={(e) => setTestPhone(e.target.value)}
                   className="flex-1 px-3 py-2 text-xs bg-[#0E100F] border border-white/10 text-[#FFFCE1] rounded-xl focus:border-[#0AE448] focus:outline-none font-mono font-bold"
@@ -243,15 +248,17 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
                 </button>
               </div>
 
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setTestPhone('5534991351122')}
-                  className="text-[11px] text-[#0AE448] hover:underline font-semibold cursor-pointer"
-                >
-                  Usar meu WhatsApp: (34) 99135-1122
-                </button>
-              </div>
+              {whiteLabel.consultantWhatsApp && (
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setTestPhone(whiteLabel.consultantWhatsApp)}
+                    className="text-[11px] text-[#0AE448] hover:underline font-semibold cursor-pointer"
+                  >
+                    Usar WhatsApp da Agência: {whiteLabel.consultantWhatsApp}
+                  </button>
+                </div>
+              )}
             </div>
 
             {testResult && (
@@ -271,7 +278,7 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
                     className="w-full px-4 py-3 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 font-black rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#0AE448]/20 cursor-pointer"
                   >
                     <FontAwesomeIcon icon={faWhatsapp} className="w-4 h-4 text-slate-950" />
-                    <span>Abrir Conversa no WhatsApp (34 99135-1122) com Alerta</span>
+                    <span>Abrir Conversa no WhatsApp ({testPhone}) com Alerta</span>
                     <ExternalLink className="w-3.5 h-3.5 ml-1 text-slate-950" />
                   </a>
                 )}
