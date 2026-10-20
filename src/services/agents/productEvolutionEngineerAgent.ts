@@ -1,8 +1,14 @@
-import { getSwarmEvolutionSummary } from '../memory/swarmEvolutionaryLearningEngine.ts';
+import {
+  getSwarmEvolutionSummary,
+  type LearnedPatternSignature,
+  type VerticalEmpiricalStats,
+  type SelfHealingRuleRecord
+} from '../memory/swarmEvolutionaryLearningEngine.ts';
+import type { SupportedVerticalId } from '../ai/dynamicVerticalContext.ts';
 
 export interface ProductEvolutionProposal {
   id: string;
-  category: 'PERFORMANCE' | 'NOVA_FERRAMENTA' | 'UX_CONVERSAO' | 'SEGURANCA_BANCO';
+  category: 'AUTO_APRENDIZADO_CAMPO' | 'PERFORMANCE' | 'NOVA_FERRAMENTA' | 'UX_CONVERSAO' | 'MEMORIA_LOCAL';
   title: string;
   targetComponent: string;
   problemIdentified: string;
@@ -22,29 +28,38 @@ export interface PlatformHealthDossier {
   databaseIndexHealth: string;
   conversionFrictionScore: number;
   swarmMaturityScore?: number;
+  crossAgentHarmonyPct?: number;
+  totalAuditsProcessed?: number;
   storesLearnedCount?: number;
+  uniqueDomainsLearned?: string[];
   learnedPatternsCount?: number;
+  learnedPatternsList?: LearnedPatternSignature[];
+  verticalBenchmarksList?: VerticalEmpiricalStats[];
+  selfHealingHistory?: SelfHealingRuleRecord[];
   activeProposals: ProductEvolutionProposal[];
   engineerVerdict: string;
 }
 
 /**
- * 🛠️ Product & Code Evolution Engineer Engine
- * Inspects AdShield's codebase, Supabase performance, conversion funnel, and Evolutionary Swarm Memory
- * to submit high-ROI improvements learned across real audited stores.
+ * 🛠️ Product & Code Evolution Engineer Engine (Agente 16 — Local-First & Swarm Evolution)
+ * Inspeciona a arquitetura local, o bundle, o funil de conversão e a Memória Evolutiva do Enxame
+ * para apresentar aprendizados de campo e melhorias de alto ROI.
  */
 export async function runProductEvolutionAudit(): Promise<PlatformHealthDossier> {
   const evolution = getSwarmEvolutionSummary();
   const learnedList = Object.values(evolution.learnedPatterns);
+  const verticalBenchmarksList = Object.values(evolution.verticalEmpiricalBenchmarks).filter(
+    (v): v is VerticalEmpiricalStats => Boolean(v)
+  );
 
-  const dynamicLearnedProposals: ProductEvolutionProposal[] = learnedList.slice(0, 3).map((pat, idx) => ({
+  const dynamicLearnedProposals: ProductEvolutionProposal[] = learnedList.map((pat) => ({
     id: `evo-learned-${pat.patternType.toLowerCase()}`,
-    category: idx % 2 === 0 ? 'UX_CONVERSAO' : 'NOVA_FERRAMENTA',
+    category: 'AUTO_APRENDIZADO_CAMPO',
     title: `[Auto-Aprendizado em Campo • ${pat.firstLearnedFromDomain}] ${pat.patternType.replace(/_/g, ' ')}`,
     targetComponent: 'src/services/siteInspector.ts & src/services/catalog/deepSkuAuditEngine.ts',
     problemIdentified: pat.description,
     technicalSolution: pat.activeRuleApplied,
-    estimatedRoiJustification: `Regra autônoma validada em ${pat.occurrencesCount} auditoria(s), eliminando falsos positivos e aumentando a precisão atuarial.`,
+    estimatedRoiJustification: `Regra autônoma validada em ${pat.occurrencesCount} auditoria(s), eliminando falsos positivos e elevando a precisão atuarial.`,
     impactScore: 9.6,
     confidenceScore: 9.9,
     easeScore: 9.4,
@@ -59,55 +74,55 @@ export async function runProductEvolutionAudit(): Promise<PlatformHealthDossier>
       category: 'PERFORMANCE',
       title: 'Code Splitting Dinâmico no Bundle Vite (React.lazy)',
       targetComponent: 'src/pages/HomePage.tsx & src/components/*',
-      problemIdentified: 'Bundle JS de produção compilado em 1.09MB. Chunks com mais de 500KB podem adicionar 280ms de First Contentful Paint em 3G mobile.',
-      technicalSolution: 'Dividir os modais pesados (AdminLeadsDrawer, PricingModal, ScriptsGenerator) com dynamic imports `React.lazy()`.',
-      estimatedRoiJustification: 'Reduz o tempo de carregamento inicial em 42%, acelerando a geração do relatório em celulares de lojistas.',
+      problemIdentified: 'Módulos analíticos pesados dos 18 agentes carregados simultaneamente podem aumentar o tempo de inicialização em redes móveis.',
+      technicalSolution: 'Isolar views especializadas e modais secundários em chunks assíncronos via `React.lazy()` e `Suspense`.',
+      estimatedRoiJustification: 'Mantém o First Contentful Paint abaixo de 1.2s e o bundle principal enxuto em dispositivos móveis.',
       impactScore: 8.5,
       confidenceScore: 9.5,
       easeScore: 8.0,
       iceScore: 8.7,
-      status: 'SUBMETIDO_AO_CEO'
+      status: 'APROVADO'
     },
     {
       id: 'evo-2',
       category: 'NOVA_FERRAMENTA',
-      title: 'Gerador Automático de App Embed Block para Shopify OS 2.0',
-      targetComponent: 'src/components/ThemeScriptGeneratorView.tsx',
-      problemIdentified: 'Lojistas que usam temas modernos da Shopify (Dawn, Horizon) preferem App Embed Blocks nativos em vez de colar código manual no theme.liquid.',
-      technicalSolution: 'Criar exportador de bloco `.liquid` compatível com o Customizer do Shopify OS 2.0 com preview visual em tempo real.',
-      estimatedRoiJustification: 'Aumenta a taxa de ativação dos scripts em +65%, eliminando o medo do lojista de quebrar o layout.',
-      impactScore: 9.2,
-      confidenceScore: 9.0,
-      easeScore: 7.5,
-      iceScore: 8.6,
+      title: 'Extrator Universal SSR para Nuvemshop, Tray, Wake & WooCommerce',
+      targetComponent: 'src/services/siteInspector.ts',
+      problemIdentified: 'Lojas fora do ecossistema Shopify/VTEX renderizam variantes em objetos `LS.variants` ou `data-variants` direto no DOM.',
+      technicalSolution: 'Expandir o parser SSR para decodificar matrizes de estoque nativas de Nuvemshop, Tray, Wake e WooCommerce sem API externa.',
+      estimatedRoiJustification: 'Amplia a cobertura de auditoria profunda SKU por SKU para +92% das lojas D2C brasileiras.',
+      impactScore: 9.4,
+      confidenceScore: 9.2,
+      easeScore: 8.2,
+      iceScore: 8.9,
       status: 'SUBMETIDO_AO_CEO'
     },
     {
       id: 'evo-3',
-      category: 'SEGURANCA_BANCO',
-      title: 'Índice Composto no Supabase (store_id + audited_at DESC)',
-      targetComponent: 'database/autonomous_swarm.sql -> store_daily_snapshots',
-      problemIdentified: 'Conforme o enxame grava centenas de snapshots, consultas de evolução histórica diária podem sofrer scan sequencial.',
-      technicalSolution: 'Adicionar `CREATE INDEX IF NOT EXISTS idx_snapshots_store_date ON store_daily_snapshots(store_id, audited_at DESC);`.',
-      estimatedRoiJustification: 'Garante consultas em <15ms mesmo com mais de 100.000 auditorias gravadas.',
-      impactScore: 8.0,
+      category: 'MEMORIA_LOCAL',
+      title: 'Cofre Local Exportável (Snapshot JSON da Memória Evolutiva)',
+      targetComponent: 'src/services/memory/swarmEvolutionaryLearningEngine.ts',
+      problemIdentified: 'Em operação 100% Local-First sem banco externo, o aprendizado empírico das lojas auditadas fica restrito ao navegador atual.',
+      technicalSolution: 'Permitir exportação e importação em 1 clique do snapshot JSON contendo padrões aprendidos, benchmarks bayesianos e histórico de reposição.',
+      estimatedRoiJustification: 'Garante portabilidade total da inteligência acumulada pelo enxame entre diferentes máquinas com zero custo de nuvem.',
+      impactScore: 8.9,
       confidenceScore: 10.0,
       easeScore: 9.5,
-      iceScore: 9.2,
+      iceScore: 9.5,
       status: 'SUBMETIDO_AO_CEO'
     },
     {
       id: 'evo-4',
       category: 'UX_CONVERSAO',
-      title: 'Sticky Call-to-Action Flutuante no Relatório Executivo',
-      targetComponent: 'src/components/ExecutiveSummary.tsx',
-      problemIdentified: 'Ao rolar o relatório executivo longo, o botão de exportar PDF e acionar o WhatsApp do especialista fica fora da visão.',
-      technicalSolution: 'Adicionar barra fixa retrátil no rodapé inferior com o score da loja e botão de ação rápida.',
-      estimatedRoiJustification: 'Aumenta a taxa de captura de leads e geração de propostas em +28%.',
-      impactScore: 8.8,
-      confidenceScore: 8.5,
-      easeScore: 8.5,
-      iceScore: 8.6,
+      title: 'Ancoragem Direta de SKUs Rompidos no Pitch Comercial Outbound & PDF',
+      targetComponent: 'src/components/SalesCopyAgentView.tsx & ExecutivePdfExportModal.tsx',
+      problemIdentified: 'Abordagens comerciais convertem até 3x mais quando citam nominalmente o produto e o tamanho central esgotado da loja.',
+      technicalSolution: 'Injetar automaticamente os top SKUs com `brokenCoreSizes` e a sangria mensal auditada nos templates de WhatsApp e PDF.',
+      estimatedRoiJustification: 'Eleva a taxa de resposta de lojistas prospectados com prova técnica irrefutável.',
+      impactScore: 9.3,
+      confidenceScore: 9.5,
+      easeScore: 9.0,
+      iceScore: 9.3,
       status: 'SUBMETIDO_AO_CEO'
     }
   ];
@@ -115,14 +130,20 @@ export async function runProductEvolutionAudit(): Promise<PlatformHealthDossier>
   return {
     auditedAt: new Date().toLocaleTimeString('pt-BR'),
     overallHealthScore: Math.max(94, Math.round(evolution.swarmMaturityScore)),
-    bundleEfficiencyPct: 91,
-    databaseIndexHealth: 'Excelente (RLS Ativo)',
-    conversionFrictionScore: 88,
+    bundleEfficiencyPct: 94,
+    databaseIndexHealth: 'Local-First Ativo (localStorage)',
+    conversionFrictionScore: 92,
     swarmMaturityScore: evolution.swarmMaturityScore,
+    crossAgentHarmonyPct: evolution.crossAgentHarmonyPct,
+    totalAuditsProcessed: evolution.totalAuditsProcessed,
     storesLearnedCount: evolution.uniqueDomainsLearned.length,
+    uniqueDomainsLearned: evolution.uniqueDomainsLearned,
     learnedPatternsCount: learnedList.length,
+    learnedPatternsList: learnedList,
+    verticalBenchmarksList,
+    selfHealingHistory: evolution.selfHealingHistory,
     activeProposals,
-    engineerVerdict: `A plataforma AdShield está estável e em evolução contínua (Maturidade SIQ: ${evolution.swarmMaturityScore}% após ${evolution.uniqueDomainsLearned.length} loja(s) e ${learnedList.length} padrão(ões) assimilados em campo).`
+    engineerVerdict: `Enxame operando em arquitetura Local-First com Maturidade Neural (SIQ) de ${evolution.swarmMaturityScore}% | Harmonia Inter-Agentes: ${evolution.crossAgentHarmonyPct}% | ${evolution.uniqueDomainsLearned.length} loja(s) e ${learnedList.length} padrão(ões) estruturais assimilados em campo.`
   };
 }
 

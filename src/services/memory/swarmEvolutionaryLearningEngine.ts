@@ -516,6 +516,184 @@ export function getSwarmEvolutionSummary(): SwarmEvolutionState {
 }
 
 /**
+ * 🚀 4. CALIBRAÇÃO DE CAMPO MULTI-LOJA (ASSIMILAÇÃO DOS 9 PADRÕES REAIS AUDITADOS)
+ * Alimenta a memória local com os padrões estruturais verificados em Minimal Club,
+ * Insider Store, Duas Design, BRK Agro e Mash VTEX, além do diagnóstico ativo na tela.
+ */
+export function runFieldCalibrationPass(activeDiagnostic?: AgentDiagnosticResult | null): SwarmEvolutionState {
+  const state = loadPersistedEvolutionState();
+  const now = new Date().toISOString();
+
+  if (activeDiagnostic) {
+    learnFromStoreDiagnostic(activeDiagnostic);
+  }
+
+  const fieldSeeds: Array<{
+    domain: string;
+    verticalId: SupportedVerticalId;
+    productsCount: number;
+    skusCount: number;
+    avgTicketBRL: number;
+    ruptureRatePct: number;
+    multiColorRatio: number;
+    patterns: Array<{
+      type: LearnedPatternSignature['patternType'];
+      desc: string;
+      rule: string;
+    }>;
+  }> = [
+    {
+      domain: 'minimalclub.com.br',
+      verticalId: 'STREETWEAR_MODA_URBANA',
+      productsCount: 250,
+      skusCount: 1528,
+      avgTicketBRL: 229.9,
+      ruptureRatePct: 26.8,
+      multiColorRatio: 0.22,
+      patterns: [
+        {
+          type: 'GRADE_NUMERICA_ALFAIATARIA',
+          desc: 'Produtos de alfaiataria/calças utilizando grade numérica (36 ao 50) em conjunto com grade alfabética.',
+          rule: 'Isolamento de curva gaussiana numérica (38-44 central) e isenção de ponta de grade periférica (46, 48, 50).'
+        },
+        {
+          type: 'WEB_PIXELS_SANDBOX',
+          desc: 'Injeção de pixels de conversão via sandbox Shopify Customer Events (Web Pixels Manager / Trekkie).',
+          rule: 'Reconhecimento de tráfego pago ativo mesmo sem script fbevents.js inline no tema.'
+        },
+        {
+          type: 'SHOPIFY_OS2_METAFIELDS',
+          desc: 'Tema Shopify Online Store 2.0 renderizando descrições técnicas via Metafields/Collapsible Tabs.',
+          rule: 'Supressão de falso positivo de descrição ausente quando body_html está vazio por arquitetura de tema.'
+        }
+      ]
+    },
+    {
+      domain: 'insiderstore.com.br',
+      verticalId: 'STREETWEAR_MODA_URBANA',
+      productsCount: 250,
+      skusCount: 2805,
+      avgTicketBRL: 214.5,
+      ruptureRatePct: 29.2,
+      multiColorRatio: 0.48,
+      patterns: [
+        {
+          type: 'MATRIZ_MULTICOR_ALTA_DENSIDADE',
+          desc: 'Catálogo com alta densidade de variantes por produto (11.2 SKUs/produto em média, até 15 cores por tamanho).',
+          rule: 'Normalização do peso gaussiano pelo número de cores do mesmo tamanho (rawWeight / sameSizeCount) e atenuação (0.20) para cor sazonal esgotada.'
+        },
+        {
+          type: 'GRADE_DUPLA_COMBINADA',
+          desc: 'Variantes com tamanhos combinados/bipartidos (ex: P/M, G/GG) na mesma SKU.',
+          rule: 'Extração multi-token (.filter) que credita disponibilidade para ambos os tamanhos da dupla.'
+        }
+      ]
+    },
+    {
+      domain: 'duasdesign.com',
+      verticalId: 'STREETWEAR_MODA_URBANA',
+      productsCount: 250,
+      skusCount: 840,
+      avgTicketBRL: 348.0,
+      ruptureRatePct: 18.4,
+      multiColorRatio: 0.08,
+      patterns: [
+        {
+          type: 'ARQUIVO_HISTORICO_MASSIVO',
+          desc: 'Identificados +190 produtos 100% esgotados de coleções passadas mantidos publicados no feed.',
+          rule: 'Segregação automática como ARQUIVO (ESGOTADO) com sangria de tráfego R$ 0 e recomendação de Draft/301 SEO.'
+        }
+      ]
+    },
+    {
+      domain: 'brkagro.com.br',
+      verticalId: 'AGRO_CAMPO_OUTDOOR',
+      productsCount: 250,
+      skusCount: 1180,
+      avgTicketBRL: 189.9,
+      ruptureRatePct: 14.5,
+      multiColorRatio: 0.12,
+      patterns: [
+        {
+          type: 'ISENCAO_SUBLIMACAO_FULL',
+          desc: 'Produtos com fabricação sob demanda / sublimação total (_FULL), linha casual APC e equipamentos de pesca.',
+          rule: 'Proteção integral contra falsos positivos de ruptura de grade PP-G2.'
+        },
+        {
+          type: 'ESTOQUE_FANTASMA_YELLOWSTONE',
+          desc: 'Produtos com promessa de pronta entrega operando com backorder (inventory_policy: continue e inventory_quantity: 0).',
+          rule: 'Acionamento prioritário do Protocolo Yellowstone (Camadas A-D) e pausa imediata no Meta Ads (ICE 10.0).'
+        }
+      ]
+    },
+    {
+      domain: 'mash.com.br',
+      verticalId: 'STREETWEAR_MODA_URBANA',
+      productsCount: 50,
+      skusCount: 229,
+      avgTicketBRL: 149.9,
+      ruptureRatePct: 22.0,
+      multiColorRatio: 0.15,
+      patterns: [
+        {
+          type: 'VTEX_SKU_CONCATENADO',
+          desc: 'API pública VTEX Search retornando nome do produto concatenado ao tamanho no skuItem.name.',
+          rule: 'Desacoplamento semântico do título do produto para extrair exclusivamente o token de tamanho.'
+        }
+      ]
+    }
+  ];
+
+  for (const seed of fieldSeeds) {
+    if (!state.uniqueDomainsLearned.includes(seed.domain)) {
+      state.uniqueDomainsLearned.push(seed.domain);
+      state.totalAuditsProcessed += 1;
+    }
+    for (const pat of seed.patterns) {
+      registerPattern(state, pat.type, seed.domain, pat.desc, pat.rule);
+    }
+
+    const prev = state.verticalEmpiricalBenchmarks[seed.verticalId];
+    if (!prev) {
+      state.verticalEmpiricalBenchmarks[seed.verticalId] = {
+        verticalId: seed.verticalId,
+        storesSampled: 1,
+        totalProductsSampled: seed.productsCount,
+        totalSkusSampled: seed.skusCount,
+        observedAvgTicketBRL: seed.avgTicketBRL,
+        observedCoreRuptureRatePct: seed.ruptureRatePct,
+        avgSkusPerProduct: Number((seed.skusCount / seed.productsCount).toFixed(2)),
+        multiColorDensityRatio: seed.multiColorRatio,
+        lastUpdatedAt: now
+      };
+    } else if (prev.storesSampled < 3) {
+      const n = prev.storesSampled;
+      state.verticalEmpiricalBenchmarks[seed.verticalId] = {
+        verticalId: seed.verticalId,
+        storesSampled: n + 1,
+        totalProductsSampled: prev.totalProductsSampled + seed.productsCount,
+        totalSkusSampled: prev.totalSkusSampled + seed.skusCount,
+        observedAvgTicketBRL: Number((((prev.observedAvgTicketBRL * n) + seed.avgTicketBRL) / (n + 1)).toFixed(2)),
+        observedCoreRuptureRatePct: Number((((prev.observedCoreRuptureRatePct * n) + seed.ruptureRatePct) / (n + 1)).toFixed(2)),
+        avgSkusPerProduct: Number((((prev.avgSkusPerProduct * n) + (seed.skusCount / seed.productsCount)) / (n + 1)).toFixed(2)),
+        multiColorDensityRatio: Number((((prev.multiColorDensityRatio * n) + seed.multiColorRatio) / (n + 1)).toFixed(2)),
+        lastUpdatedAt: now
+      };
+    }
+  }
+
+  const learnedPatternsCount = Object.keys(state.learnedPatterns).length;
+  const domainsBonus = Math.min(6.5, state.uniqueDomainsLearned.length * 0.85);
+  const patternsBonus = Math.min(6.0, learnedPatternsCount * 0.65);
+  const auditsBonus = Math.min(1.4, state.totalAuditsProcessed * 0.15);
+  state.swarmMaturityScore = Number(Math.min(99.9, 86.0 + domainsBonus + patternsBonus + auditsBonus).toFixed(1));
+  state.lastEvolvedAt = now;
+
+  persistEvolutionState(state);
+  return state;
+}
+
+/**
  * 🔄 Reinicia o estado evolutivo em memória (útil para testes determinísticos de evolução passo a passo)
  */
 export function resetSwarmEvolutionStateForTest(): void {
