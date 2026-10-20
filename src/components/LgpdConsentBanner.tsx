@@ -71,7 +71,7 @@ export const LgpdConsentBanner: React.FC = () => {
         </div>
 
         <p className="text-xs text-[#BBBAA6] leading-relaxed">
-          O AdShield utiliza cookies e metadados técnicos públicos para auditar vitrines de e-commerce e prevenir vazamento de verba em anúncios, em estrita harmonia com a Lei Geral de Proteção de Dados (<strong className="text-[#FFFCE1]">Lei 13.709/2018</strong>) e Marco Civil da Internet.
+          O AdShield Intelligence utiliza armazenamento local (<code className="text-[#0AE448]">localStorage</code>), cookies essenciais e metadados técnicos públicos para diagnosticar vitrines de e-commerce e simular sangria de tráfego pago, em estrita conformidade com a <strong className="text-[#FFFCE1]">LGPD (Lei 13.709/2018)</strong> e o Marco Civil da Internet.
         </p>
 
         <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-white/10 text-[11px]">

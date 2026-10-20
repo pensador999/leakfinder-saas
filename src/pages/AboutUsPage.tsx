@@ -111,13 +111,13 @@ export function AboutUsPage() {
             </div>
             <div>
               <h2 className="text-xl font-bold text-[#FFFCE1]">A Nossa História & Origem</h2>
-              <p className="text-xs text-[#BBBAA6]">Do ecossistema BRK Group para a elite do e-commerce brasileiro.</p>
+              <p className="text-xs text-[#BBBAA6]">Engenharia independente de inteligência analítica para o e-commerce brasileiro.</p>
             </div>
           </div>
 
           <div className="space-y-4 text-[#BBBAA6] leading-relaxed text-sm">
             <p>
-              Operando grandes marcas de moda esportiva, pesca, agro e vestuário de alta performance no Brasil, nossa equipe de engenharia e mídia descobriu um padrão crítico: <strong className="text-[#FFFCE1]">milhares de reais eram investidos diariamente em anúncios para atrair compradores qualificados, apenas para fazê-los encontrar tamanhos esgotados ou checkouts com alta fricção</strong>.
+              Auditando grandes operações de moda, vestuário, calçados e varejo D2C no Brasil, nossa equipe de engenharia e mídia identificou um padrão crítico: <strong className="text-[#FFFCE1]">milhares de reais eram investidos diariamente em anúncios para atrair compradores qualificados, apenas para fazê-los encontrar tamanhos centrais esgotados ou checkouts com alta fricção</strong>.
             </p>
             <p>
               Decidimos construir uma solução definitiva. Em vez de relatórios genéricos que apontam erros sem contexto, criamos uma <strong className="text-[#FFFCE1]">arquitetura de enxame com agentes de inteligência artificial ultra-especializados</strong>, capazes de auditar o código público, o catálogo SKU por SKU e a visão computacional em segundos.
@@ -207,11 +207,11 @@ export function AboutUsPage() {
 
       </main>
 
-      {/* Footer em Conformidade com Decreto 7.962/2013 */}
+      {/* Footer Institucional Independente */}
       <footer className="bg-[#0E100F] border-t border-white/10 py-8 px-4 text-center text-xs text-[#BBBAA6] mt-12">
         <div className="max-w-4xl mx-auto space-y-2">
-          <p className="font-bold text-[#FFFCE1] text-sm">AdShield • BRK GROUP TECNOLOGIA LTDA</p>
-          <p className="text-[#BBBAA6] font-mono text-[11px]">CNPJ: 52.894.218/0001-90 • Sede: Minas Gerais, Brasil</p>
+          <p className="font-bold text-[#FFFCE1] text-sm">AdShield Intelligence • Plataforma Independente de Auditoria de E-Commerce</p>
+          <p className="text-[#BBBAA6] font-mono text-[11px]">Auditoria 360º de Sites, Catálogos e Tráfego Pago • Marco Civil da Internet & LGPD</p>
           <div className="flex justify-center gap-4 text-[11px] text-[#BBBAA6] pt-1">
             <Link to="/terms" className="hover:text-[#0AE448] underline transition-colors">Termos de Uso</Link>
             <Link to="/privacy" className="hover:text-[#0AE448] underline transition-colors">Política de Privacidade & LGPD</Link>

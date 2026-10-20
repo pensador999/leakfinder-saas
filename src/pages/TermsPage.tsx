@@ -81,9 +81,9 @@ export function TermsPage() {
           <div className="flex flex-wrap items-center gap-4 text-xs text-[#BBBAA6] font-mono pt-3 border-t border-white/10">
             <span>Última Revisão: {new Date().toLocaleDateString('pt-BR')}</span>
             <span>•</span>
-            <span>Versão: 3.2 Enterprise (Conformidade STF / STJ)</span>
+            <span>Versão: 4.0 Enterprise (Arquitetura Local-First & 18 Agentes)</span>
             <span>•</span>
-            <span className="text-[#0AE448]">CNPJ: 52.894.218/0001-90</span>
+            <span className="text-[#0AE448]">Plataforma Independente de Auditoria Web</span>
           </div>
         </div>
 
@@ -93,13 +93,16 @@ export function TermsPage() {
           {/* Section 1 */}
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-[#FFFCE1] flex items-center gap-2">
-              <span className="text-[#0AE448] font-mono">1.</span> Qualificação das Partes, Objeto & Aceitação Vinculante
+              <span className="text-[#0AE448] font-mono">1.</span> Qualificação da Plataforma, Independência Técnica & Aceitação Vinculante
             </h2>
             <p>
-              Estes Termos de Uso e Condições Gerais regem a utilização da plataforma tecnológica <strong className="text-[#FFFCE1]">AdShield</strong>, provida pelo <strong className="text-[#FFFCE1]">BRK GROUP TECNOLOGIA LTDA</strong> (doravante designado "AdShield" ou "Licenciante"), sociedade empresária devidamente constituída e em situação regular perante a Junta Comercial do Estado de Minas Gerais e a Receita Federal do Brasil, inscrita no CNPJ sob o nº <strong className="text-[#FFFCE1]">52.894.218/0001-90</strong>.
+              Estes Termos de Uso e Condições Gerais regem a utilização da plataforma tecnológica <strong className="text-[#FFFCE1]">AdShield Intelligence (LeakFinder SaaS)</strong> (doravante designada "AdShield" ou "Plataforma"), sistema independente de software analítico voltado exclusivamente à inspeção técnica de sites, auditoria de catálogos públicos de e-commerce, ergonomia visual (CRO) e simulação paramétrica de tráfego pago.
             </p>
             <p>
-              Ao navegar, cadastrar-se, simular relatórios, auditar domínios ou contratar quaisquer planos de subscrição na plataforma, a pessoa física ou jurídica (doravante "Usuário" ou "Contratante") declara expressamente ter capacidade civil plena e anui, de forma <strong className="text-[#FFFCE1]">livre, expressa, irrevogável e informada</strong>, com a totalidade das disposições deste instrumento e da nossa Política de Privacidade.
+              <strong className="text-[#FFFCE1]">Declaração de Independência Societária:</strong> O AdShield é uma solução tecnológica autônoma de inteligência analítica e <strong className="text-[#FFFCE1]">não possui qualquer vínculo societário, comercial, de representação ou responsabilidade solidária</strong> com as lojas virtuais, marcas ou domínios inspecionados pelos usuários na ferramenta.
+            </p>
+            <p>
+              Ao navegar, simular relatórios, auditar domínios ou utilizar quaisquer funcionalidades na plataforma, a pessoa física ou jurídica (doravante "Usuário" ou "Contratante") declara expressamente ter capacidade civil plena e anui, de forma <strong className="text-[#FFFCE1]">livre, expressa, irrevogável e informada</strong>, com a totalidade das disposições deste instrumento e da nossa Política de Privacidade & Cookies.
             </p>
             <p className="text-xs text-[#BBBAA6]/80 italic">
               Caso o Usuário discorde de qualquer cláusula, diretriz ou condição ora pactuada, deverá interromper imediatamente o acesso à plataforma e abster-se de utilizar qualquer funcionalidade do ecossistema.
@@ -111,13 +114,13 @@ export function TermsPage() {
           {/* Section 2 */}
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-[#FFFCE1] flex items-center gap-2">
-              <span className="text-[#0AE448] font-mono">2.</span> Natureza do Serviço: Licença de Software SaaS por Subscrição
+              <span className="text-[#0AE448] font-mono">2.</span> Natureza do Serviço: Licença de Software SaaS & Operação Local-First
             </h2>
             <p>
-              O AdShield concede ao Contratante uma licença de uso temporária, não-exclusiva, intransferível e revogável de seu software de diagnóstico analítico de tráfego pago, catalogação e auditoria de e-commerce na modalidade <em className="text-[#FFFCE1]">Software as a Service (SaaS)</em>.
+              O AdShield concede ao Usuário uma licença de uso temporária, não-exclusiva, intransferível e revogável de seu software de diagnóstico analítico multi-agente (Enxame de 18 Agentes Especialistas), catalogação e auditoria de e-commerce na modalidade <em className="text-[#FFFCE1]">Software as a Service (SaaS)</em>.
             </p>
             <p>
-              A outorga desta licença <strong className="text-[#FFFCE1]">NÃO transfere nem cede</strong> qualquer direito de propriedade intelectual, código-fonte, arquitetura de rede neural, patentes, marcas registradas ou know-how da Licenciante, permanecendo todo o ecossistema sob a propriedade exclusiva do BRK GROUP TECNOLOGIA LTDA.
+              A plataforma opera sob arquitetura <strong className="text-[#FFFCE1]">Local-First no navegador do Usuário</strong>, processando diagnósticos, simulações de ROAS e memória evolutiva de padrões técnicos diretamente no dispositivo local, sem transferir ou ceder qualquer direito de propriedade intelectual, código-fonte, motores atuariais ou know-how da Plataforma.
             </p>
           </section>
 
@@ -244,7 +247,7 @@ export function TermsPage() {
             </p>
             <ul className="list-disc pl-5 space-y-2 text-[#BBBAA6]">
               <li>
-                <strong className="text-[#FFFCE1]">Regime Tributário (Tema 726 STF):</strong> Conforme jurisprudência vinculante do Supremo Tribunal Federal nas ADIs 5659 e 5958, sobre o licenciamento SaaS incide o Imposto Sobre Serviços de Qualquer Natureza (ISSQN) de competência municipal, afastando-se o ICMS. As Notas Fiscais de Serviços Eletrônicas (NFS-e) são emitidas pelo BRK GROUP TECNOLOGIA LTDA sob o código de atividade tributária correspondente.
+                <strong className="text-[#FFFCE1]">Regime Tributário de Software (Tema 726 STF):</strong> Conforme jurisprudência vinculante do Supremo Tribunal Federal nas ADIs 5659 e 5958, sobre o licenciamento SaaS incide o Imposto Sobre Serviços de Qualquer Natureza (ISSQN) de competência municipal, afastando-se o ICMS.
               </li>
               <li>
                 <strong className="text-[#FFFCE1]">Direito de Arrependimento Incondicional de 7 Dias:</strong> Em estrito cumprimento ao <strong className="text-[#0AE448]">Artigo 49 do Código de Defesa do Consumidor (Lei nº 8.078/1990)</strong> e ao Decreto Federal nº 7.962/2013, o Contratante poderá requerer o cancelamento da contratação inicial com <strong className="text-[#FFFCE1]">reembolso de 100% dos valores pagos</strong> no prazo de até 7 (sete) dias corridos contados da assinatura, sem qualquer questionamento ou retenção.
@@ -260,13 +263,13 @@ export function TermsPage() {
           {/* Section 9 */}
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-[#FFFCE1] flex items-center gap-2">
-              <span className="text-[#0AE448] font-mono">9.</span> Nível de Serviço (SLA), Manutenção e Caso Fortuito
+              <span className="text-[#0AE448] font-mono">9.</span> Nível de Serviço (SLA), Operação Autônoma e Caso Fortuito
             </h2>
             <p>
-              O AdShield emprega as melhores práticas globais de infraestrutura de alta disponibilidade na nuvem (CDN global, arquitetura serverless distribuída e banco de dados com redundância geográfica).
+              O AdShield emprega arquitetura resiliente com processamento determinístico local no navegador e proxies de inspeção de alta disponibilidade para leitura de vitrines públicas (Shopify, VTEX, Nuvemshop, Wake, Tray e WooCommerce).
             </p>
             <p>
-              A Licenciante envidará esforços para manter a disponibilidade mensal de 99,5% do sistema, ressalvadas paradas programadas de manutenção, falhas na rede mundial de computadores, indisponibilidade imprevista de APIs de plataformas terceiras (Shopify, Meta, Google, Stripe) e eventos de força maior ou caso fortuito (Art. 393 do Código Civil Brasileiro).
+              A Plataforma envidará esforços para manter a disponibilidade mensal de 99,5% do sistema, ressalvadas paradas programadas de manutenção, falhas na rede mundial de computadores, bloqueios de firewall impostos pelos servidores de origem das lojas inspecionadas (WAF/Cloudflare) e eventos de força maior ou caso fortuito (Art. 393 do Código Civil Brasileiro).
             </p>
           </section>
 
@@ -275,13 +278,10 @@ export function TermsPage() {
           {/* Section 10 */}
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-[#FFFCE1] flex items-center gap-2">
-              <span className="text-[#0AE448] font-mono">10.</span> Legislação Aplicável, Foro de Eleição Exclusivo & Canal de Notificações
+              <span className="text-[#0AE448] font-mono">10.</span> Legislação Aplicável, Foro & Canal Oficial de Governança
             </h2>
             <p>
-              Este Contrato é regido, interpretado e executado inteiramente segundo as leis vigentes na República Federativa do Brasil.
-            </p>
-            <p>
-              Para dirimir quaisquer controvérsias, dúvidas ou litígios oriundos deste instrumento ou do uso da plataforma, as partes <strong className="text-[#FFFCE1]">elegem exclusivamente o Foro da Comarca de Uberlândia / Belo Horizonte, Estado de Minas Gerais</strong>, com renúncia irrevogável e expressa a qualquer outro foro, por mais privilegiado que seja ou venha a ser.
+              Este Contrato é regido, interpretado e executado inteiramente segundo as leis vigentes na República Federativa do Brasil (Marco Civil da Internet — Lei nº 12.965/2014, LGPD — Lei nº 13.709/2018 e Código Civil).
             </p>
             
             <div className="p-5 bg-[#141716] border border-white/10 rounded-2xl space-y-2 text-xs text-[#BBBAA6]">
@@ -289,16 +289,16 @@ export function TermsPage() {
                 <Building2 className="w-4 h-4 text-[#0AE448]" /> Canal Oficial de Notificações Jurídicas & Compliance
               </p>
               <p>
-                Qualquer comunicação formal, interpelação, ofício judicial ou notificação extrajudicial deverá ser remetida formalmente para:
+                Qualquer comunicação formal, solicitação de esclarecimento técnico ou notificação extrajudicial deverá ser remetida para os canais oficiais da plataforma:
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
                 <div className="p-2.5 bg-black/40 rounded-xl border border-white/5">
-                  <span className="text-[#BBBAA6] block">Departamento Jurídico:</span>
+                  <span className="text-[#BBBAA6] block">Departamento Jurídico & Compliance:</span>
                   <strong className="text-[#00BAE2]">juridico@adshield.ai</strong>
                 </div>
                 <div className="p-2.5 bg-black/40 rounded-xl border border-white/5">
-                  <span className="text-[#BBBAA6] block">Ouvidoria Corporativa:</span>
-                  <strong className="text-[#0AE448]">contato@brkgroup.com.br</strong>
+                  <span className="text-[#BBBAA6] block">Suporte Institucional & DPO:</span>
+                  <strong className="text-[#0AE448]">dpo@adshield.ai</strong>
                 </div>
               </div>
             </div>
@@ -308,15 +308,15 @@ export function TermsPage() {
 
       </main>
 
-      {/* Footer em Conformidade com Decreto 7.962/2013 */}
+      {/* Footer Institucional Independente */}
       <footer className="bg-[#101211] border-t border-white/10 py-8 px-4 text-center text-xs text-[#BBBAA6] mt-12">
         <div className="max-w-4xl mx-auto space-y-2.5">
           <p className="font-bold text-[#FFFCE1] text-sm flex items-center justify-center gap-2">
             <ShieldCheck className="w-4 h-4 text-[#0AE448]" />
-            AdShield • BRK GROUP TECNOLOGIA LTDA
+            AdShield Intelligence • Plataforma Independente de Auditoria de E-Commerce
           </p>
           <p className="text-[#BBBAA6] font-mono text-[11px]">
-            CNPJ: 52.894.218/0001-90 • Sede: Minas Gerais, Brasil • Inscrição Municipal Ativa
+            Auditoria 360º de Sites, Catálogos e Tráfego Pago • Marco Civil da Internet & LGPD
           </p>
           <div className="flex justify-center gap-4 text-[11px] text-[#BBBAA6] pt-1">
             <Link to="/terms" className="hover:text-[#0AE448] underline font-bold text-[#0AE448]">Termos de Uso</Link>

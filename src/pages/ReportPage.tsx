@@ -355,11 +355,11 @@ export function ReportPage() {
         )}
       </Suspense>
 
-      {/* Footer Legal em Conformidade com Decreto 7.962/2013 */}
+      {/* Footer Legal & Institucional Independente */}
       <footer className="max-w-7xl mx-auto py-8 px-4 border-t border-white/10 mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-[#BBBAA6] gap-4">
         <div>
-          <p className="font-bold text-[#FFFCE1]">AdShield • BRK GROUP TECNOLOGIA LTDA</p>
-          <p className="text-[11px] text-[#BBBAA6] font-mono">CNPJ: 52.894.218/0001-90 • Auditoria 360º sob Marco Civil e LGPD.</p>
+          <p className="font-bold text-[#FFFCE1]">AdShield Intelligence • Plataforma Independente de Auditoria de E-Commerce</p>
+          <p className="text-[11px] text-[#BBBAA6] font-mono">Diagnóstico Técnico 360º de Sites, Catálogos e Tráfego Pago • Marco Civil e LGPD.</p>
         </div>
         <div className="flex flex-wrap items-center gap-4 text-xs">
           <button onClick={() => navigate('/about')} className="hover:text-[#0AE448] font-bold transition-colors cursor-pointer">Quem Somos</button>

@@ -57,9 +57,9 @@ export const CookieBanner: React.FC = () => {
 
         {/* Text */}
         <p className="text-xs text-[#BBBAA6] leading-relaxed">
-          Utilizamos cookies essenciais para autenticação, segurança contra ataques de força bruta e integridade da sessão. Com o seu consentimento, também utilizamos cookies analíticos para medir a performance da aplicação e telemetria de velocidade. Saiba mais na nossa{' '}
+          Utilizamos armazenamento local (<code className="text-[#0AE448]">localStorage</code>) e cookies essenciais para manter suas auditorias de sites, memória evolutiva dos 18 agentes e segurança da sessão diretamente no seu navegador, sem depender de bancos externos para operar. Com seu consentimento, também habilitamos telemetria de performance e preferências visuais. Saiba mais na nossa{' '}
           <Link to="/privacy" className="text-[#0AE448] hover:underline font-semibold">
-            Política de Privacidade & LGPD
+            Política de Privacidade, Cookies & LGPD
           </Link>{' '}
           e nos{' '}
           <Link to="/terms" className="text-[#0AE448] hover:underline font-semibold">
@@ -72,16 +72,16 @@ export const CookieBanner: React.FC = () => {
           <div className="p-3.5 bg-[#101211] border border-white/10 rounded-2xl space-y-2 text-xs">
             <div className="flex items-center justify-between py-1 border-b border-white/10">
               <div>
-                <span className="font-bold text-[#FFFCE1] block">1. Cookies Estritamente Necessários</span>
-                <span className="text-[11px] text-[#7C7C6F]">Autenticação de sessão, segurança anti-CSRF e tokens de rate-limit.</span>
+                <span className="font-bold text-[#FFFCE1] block">1. Cookies & Armazenamento Local Estritamente Necessários</span>
+                <span className="text-[11px] text-[#7C7C6F]">Estado do diagnóstico atual, segurança da sessão, histórico local de auditoria e rate-limit.</span>
               </div>
               <span className="text-[10px] font-mono font-bold bg-white/10 text-[#FFFCE1] px-2 py-0.5 rounded-md">Obrigatório</span>
             </div>
 
             <div className="flex items-center justify-between py-1 border-b border-white/10">
               <div>
-                <span className="font-bold text-[#FFFCE1] block">2. Cookies Analíticos & Performance</span>
-                <span className="text-[11px] text-[#7C7C6F]">Métricas de latência de scraping e Core Web Vitals anônimos.</span>
+                <span className="font-bold text-[#FFFCE1] block">2. Memória Evolutiva & Telemetria de Performance</span>
+                <span className="text-[11px] text-[#7C7C6F]">Calibração local de benchmarks por vertical, detecção de reposição de estoque e latência de inspeção.</span>
               </div>
               <button
                 type="button"
@@ -94,8 +94,8 @@ export const CookieBanner: React.FC = () => {
 
             <div className="flex items-center justify-between py-1">
               <div>
-                <span className="font-bold text-[#FFFCE1] block">3. Preferências de Interface & White-Label</span>
-                <span className="text-[11px] text-[#7C7C6F]">Salva paleta personalizada, preferências de visualização e filtros de loja.</span>
+                <span className="font-bold text-[#FFFCE1] block">3. Preferências de Interface & Relatórios White-Label</span>
+                <span className="text-[11px] text-[#7C7C6F]">Salva parâmetros do simulador de ROAS, identidade visual de relatórios PDF e filtros de catálogo.</span>
               </div>
               <button
                 type="button"

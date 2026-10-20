@@ -25,10 +25,10 @@ export const LegalModal: React.FC<LegalModalProps> = ({ isOpen, type, onClose })
             </div>
             <div>
               <h2 className="text-lg font-bold text-[#FFFCE1]">
-                {isPrivacy ? 'Governança de Privacidade & LGPD' : 'Termos de Uso & Condições Gerais'}
+                {isPrivacy ? 'Governança de Privacidade, Cookies & LGPD' : 'Termos de Uso & Condições Gerais SaaS'}
               </h2>
               <p className="text-[11px] text-[#BBBAA6] font-mono">
-                AdShield OS • BRK GROUP TECNOLOGIA LTDA (CNPJ 52.894.218/0001-90)
+                AdShield Intelligence OS • Plataforma Independente de Auditoria Técnica de E-Commerce
               </p>
             </div>
           </div>
@@ -60,42 +60,42 @@ export const LegalModal: React.FC<LegalModalProps> = ({ isOpen, type, onClose })
                     <ShieldCheck className="w-4 h-4" />
                     <span>Conformidade Estrita com a Lei 13.709/2018 (LGPD Brasil)</span>
                   </div>
-                  <span className="font-mono text-[10px] text-[#BBBAA6]">v3.2</span>
+                  <span className="font-mono text-[10px] text-[#BBBAA6]">v4.0</span>
                 </div>
 
                 <p>
-                  O <strong className="text-[#FFFCE1]">AdShield</strong> (operado por BRK GROUP TECNOLOGIA LTDA) atua sob princípios inquebráveis de transparência, privacidade e integridade no tratamento de metadados de e-commerce e informações cadastrais.
+                  O <strong className="text-[#FFFCE1]">AdShield Intelligence (LeakFinder SaaS)</strong> é uma plataforma tecnológica independente de auditoria analítica de sites e e-commerces, sem vínculo societário com as lojas auditadas, operando sob princípios inquebráveis de transparência, privacidade local (<em className="text-[#FFFCE1]">Local-First Storage</em>) e integridade no tratamento de metadados públicos.
                 </p>
 
                 <h3 className="text-sm font-bold text-[#FFFCE1] pt-2 flex items-center gap-2">
-                  <span className="text-[#0AE448] font-mono">1.</span> Dados de Pessoa Jurídica vs. Dados Pessoais (Art. 5º, I)
+                  <span className="text-[#0AE448] font-mono">1.</span> Dados Públicos de E-Commerce vs. Dados Pessoais (Art. 5º, I)
                 </h3>
                 <p>
-                  A legislação brasileira protege dados de <em>pessoas naturais</em>. Informações públicas de lojas virtuais (catálogos, SKUs, variantes de estoque, preços, URLs e anúncios públicos no Meta Ads) são dados mercadológicos de pessoas jurídicas e não configuram dados pessoais.
+                  A legislação brasileira protege dados de <em>pessoas naturais</em>. Informações públicas de lojas virtuais (catálogos, SKUs, variantes de estoque, preços, URLs, HTML público e anúncios públicos na Meta Ads Library) são dados mercadológicos de vitrines comerciais e não configuram dados pessoais.
                 </p>
 
                 <h3 className="text-sm font-bold text-[#FFFCE1] pt-2 flex items-center gap-2">
-                  <span className="text-[#0AE448] font-mono">2.</span> Base Legal para Notificações B2B (Art. 7º, §4º e IX)
+                  <span className="text-[#0AE448] font-mono">2.</span> Armazenamento Local (<code className="text-[#0AE448]">localStorage</code>) & Cookies Técnicos
                 </h3>
                 <p>
-                  Notificações de auditoria enviadas a contatos comerciais publicizados no rodapé do e-commerce amparam-se no <strong className="text-[#FFFCE1]">Art. 7º, §4º</strong> (dados manifestamente públicos pelo titular) e no <strong className="text-[#FFFCE1]">Legítimo Interesse (Art. 7º, IX c/c Art. 10 da LGPD)</strong> de prevenção contra perdas financeiras na operação do lojista.
+                  Os diagnósticos dos 18 agentes, calibrações de vertical, simulações de ROAS e preferências de interface são processados e armazenados prioritariamente no próprio navegador do usuário (<code className="text-[#0AE448]">localStorage</code>), garantindo soberania de dados, velocidade instantânea e zero compartilhamento com corretores de dados.
                 </p>
 
                 <h3 className="text-sm font-bold text-[#FFFCE1] pt-2 flex items-center gap-2">
-                  <span className="text-[#0AE448] font-mono">3.</span> Opt-Out Instantâneo & Blacklist Perpétua
+                  <span className="text-[#0AE448] font-mono">3.</span> Base Legal para Auditoria & Opt-Out Instantâneo
                 </h3>
                 <p>
-                  Qualquer lojista pode interromper contatos imediatamente respondendo <strong className="text-[#0AE448]">"PARAR"</strong> no WhatsApp ou enviando solicitação para <strong className="text-[#00BAE2]">dpo@adshield.ai</strong>. O número é inserido em Blacklist Permanente em até 24 horas úteis.
+                  A leitura técnica de domínios informados pelo usuário ampara-se no <strong className="text-[#FFFCE1]">Art. 7º, §4º</strong> (dados manifestamente públicos) e no <strong className="text-[#FFFCE1]">Legítimo Interesse (Art. 7º, IX c/c Art. 10 da LGPD)</strong>. Solicitações de descadastramento ou exclusão são atendidas imediatamente via <strong className="text-[#00BAE2]">dpo@adshield.ai</strong>.
                 </p>
 
                 <h3 className="text-sm font-bold text-[#FFFCE1] pt-2 flex items-center gap-2">
-                  <span className="text-[#0AE448] font-mono">4.</span> Canal Oficial do DPO / Encarregado (Art. 41 LGPD)
+                  <span className="text-[#0AE448] font-mono">4.</span> Canal Oficial de Privacidade & DPO (Art. 41 LGPD)
                 </h3>
                 <div className="p-3 bg-[#141716] border border-white/10 rounded-xl flex items-center gap-3">
                   <Mail className="w-5 h-5 text-[#0AE448] shrink-0" />
                   <div>
-                    <strong className="text-[#FFFCE1] block">Encarregado de Proteção de Dados:</strong>
-                    <span className="text-[#00BAE2] font-mono">dpo@adshield.ai • privacidade@brkgroup.com.br</span>
+                    <strong className="text-[#FFFCE1] block">Encarregado de Proteção de Dados (DPO):</strong>
+                    <span className="text-[#00BAE2] font-mono">dpo@adshield.ai • privacidade@adshield.ai</span>
                   </div>
                 </div>
               </>
@@ -104,41 +104,41 @@ export const LegalModal: React.FC<LegalModalProps> = ({ isOpen, type, onClose })
                 <div className="p-3.5 bg-[#00BAE2]/10 border border-[#00BAE2]/25 rounded-2xl flex items-center justify-between text-[#00BAE2] font-bold text-xs">
                   <div className="flex items-center gap-2">
                     <Scale className="w-4 h-4" />
-                    <span>Contrato Vinculante • Marco Civil da Internet (Lei 12.965/2014)</span>
+                    <span>Termos de Uso SaaS • Marco Civil da Internet (Lei 12.965/2014)</span>
                   </div>
-                  <span className="font-mono text-[10px] text-[#BBBAA6]">v3.2</span>
+                  <span className="font-mono text-[10px] text-[#BBBAA6]">v4.0</span>
                 </div>
 
                 <p>
-                  Bem-vindo ao <strong className="text-[#FFFCE1]">AdShield OS</strong>. O uso da plataforma implica aceitação integral e irrestrita destas Condições Gerais de Contratação SaaS.
+                  Bem-vindo ao <strong className="text-[#FFFCE1]">AdShield Intelligence OS</strong>. Somos uma ferramenta independente de análise técnica de sites, auditoria de catálogo, CRO e simulação de tráfego pago, sem qualquer vínculo societário ou comercial com as marcas inspecionadas.
                 </p>
 
                 <h3 className="text-sm font-bold text-[#FFFCE1] pt-2 flex items-center gap-2">
                   <span className="text-[#0AE448] font-mono">1.</span> Legalidade da Auditoria Técnica de Dados Públicos
                 </h3>
                 <p>
-                  O AdShield opera exclusivamente sobre informações ostensivamente públicas (HTML renderizado no navegador, metadados abertos e feeds públicos como <code className="text-[#0AE448]">/products.json</code>). A plataforma <strong className="text-[#FFFCE1]">NÃO invade dispositivos nem quebra firewalls</strong>, afastando a tipicidade do Art. 154-A do Código Penal, sob a proteção do Art. 3º, VI do Marco Civil da Internet e jurisprudência pacificada do STJ.
+                  O AdShield opera exclusivamente sobre informações ostensivamente públicas (HTML renderizado no navegador, metadados abertos e feeds públicos como <code className="text-[#0AE448]">/products.json</code>). A plataforma <strong className="text-[#FFFCE1]">NÃO invade dispositivos nem quebra firewalls</strong>, sob a proteção do Art. 3º, VI do Marco Civil da Internet.
                 </p>
 
                 <h3 className="text-sm font-bold text-[#FFFCE1] pt-2 flex items-center gap-2">
-                  <span className="text-[#0AE448] font-mono">2.</span> Limitação de Responsabilidade Civil & Grounding (Código Civil Arts. 421/421-A)
+                  <span className="text-[#0AE448] font-mono">2.</span> Protocolo de Grounding & Natureza Paramétrica das Simulações
                 </h3>
                 <p>
-                  Todo cálculo financeiro (sangria em anúncios, projeção de ganho com Pix) é <strong className="text-[#FFFCE1]">estritamente paramétrico e estimativo</strong>. O AdShield <strong className="text-[#FFFCE1]">não garante faturamento mínimo</strong> nem se responsabiliza por decisões comerciais, lucros cessantes ou flutuações de leilão de mídia tomada pelo contratante.
+                  Dados técnicos de catálogo e DOM são extraídos ao vivo, enquanto cálculos financeiros (sangria estimada em anúncios, projeções de ROAS e ganho no Pix) são <strong className="text-[#FFFCE1]">simulações matemáticas baseadas em benchmarks de mercado</strong>, parametrizáveis pelo próprio usuário.
                 </p>
 
                 <h3 className="text-sm font-bold text-[#FFFCE1] pt-2 flex items-center gap-2">
-                  <span className="text-[#0AE448] font-mono">3.</span> Uso Nominativo de Marcas de Terceiros (LPI Art. 132, IV)
+                  <span className="text-[#0AE448] font-mono">3.</span> Independência Técnica & Uso Nominativo (LPI Art. 132, IV)
                 </h3>
                 <p>
-                  A citação de marcas em relatórios comparativos tem natureza estritamente referencial e de compatibilidade mercadológica, sem intenção de apropriação ou concorrência desleal.
+                  O AdShield não possui vínculo com as lojas analisadas. Qualquer menção a domínios, plataformas (Shopify, VTEX, Nuvemshop) ou marcas em diagnósticos possui caráter estritamente técnico, descritivo e nominativo.
                 </p>
 
                 <h3 className="text-sm font-bold text-[#FFFCE1] pt-2 flex items-center gap-2">
-                  <span className="text-[#0AE448] font-mono">4.</span> Arrependimento de 7 Dias (CDC Art. 49) & Foro de Eleição
+                  <span className="text-[#0AE448] font-mono">4.</span> Direito de Arrependimento (CDC Art. 49) & Governança
                 </h3>
                 <p>
-                  Garantia incondicional de reembolso integral em até 7 dias corridos da assinatura inicial. Foro exclusivo eleito da Comarca da sede da empresa em Minas Gerais, Brasil.
+                  Garantia incondicional de reembolso integral em até 7 dias corridos da contratação inicial, em total conformidade com a legislação brasileira aplicável a softwares SaaS.
                 </p>
               </>
             )}

@@ -73,17 +73,17 @@ export function PrivacyPage() {
           </div>
 
           <h1 className="text-2xl sm:text-4xl font-extrabold text-[#FFFCE1] tracking-tight">
-            Política de Privacidade, Tratamento de Dados & DPO
+            Política de Privacidade, Cookies, Armazenamento Local & LGPD
           </h1>
 
           <p className="text-xs sm:text-sm text-[#BBBAA6] leading-relaxed max-w-3xl">
-            Este documento formaliza as práticas transparentes de governança, coleta de metadados, bases legais de tratamento, protocolos de opt-out imediato e direitos dos titulares perante a <strong className="text-[#FFFCE1]">Autoridade Nacional de Proteção de Dados (ANPD)</strong>.
+            Este documento formaliza as práticas transparentes de governança, leitura de metadados públicos, armazenamento local (<code className="text-[#0AE448]">localStorage</code>), política de cookies, protocolos de opt-out imediato e direitos dos titulares perante a <strong className="text-[#FFFCE1]">Autoridade Nacional de Proteção de Dados (ANPD)</strong>.
           </p>
 
           <div className="flex flex-wrap items-center gap-4 text-xs text-[#BBBAA6] font-mono pt-3 border-t border-white/10">
             <span>Última Revisão: {new Date().toLocaleDateString('pt-BR')}</span>
             <span>•</span>
-            <span>Criptografia: AES-256 & TLS 1.3</span>
+            <span>Arquitetura: Local-First & TLS 1.3</span>
             <span>•</span>
             <span className="text-[#0AE448]">Canal DPO: dpo@adshield.ai</span>
           </div>
@@ -95,13 +95,13 @@ export function PrivacyPage() {
           {/* Section 1 */}
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-[#FFFCE1] flex items-center gap-2">
-              <span className="text-[#0AE448] font-mono">1.</span> Identificação do Controlador de Dados & Compromisso com a Privacidade
+              <span className="text-[#0AE448] font-mono">1.</span> Identificação da Plataforma, Independência & Privacidade por Design
             </h2>
             <p>
-              A presente Política de Privacidade regula o tratamento de informações e dados realizado pela plataforma <strong className="text-[#FFFCE1]">AdShield</strong>, de titularidade do <strong className="text-[#FFFCE1]">BRK GROUP TECNOLOGIA LTDA</strong>, sociedade inscrita no CNPJ sob o nº <strong className="text-[#FFFCE1]">52.894.218/0001-90</strong>, na condição de <strong className="text-[#FFFCE1]">Controladora de Dados</strong> nos termos do Art. 5º, inciso VI da Lei nº 13.709/2018 (LGPD).
+              A presente Política de Privacidade e Cookies regula o tratamento de informações e metadados realizado pela plataforma <strong className="text-[#FFFCE1]">AdShield Intelligence (LeakFinder SaaS)</strong>, ferramenta tecnológica independente voltada exclusivamente à análise técnica de sites e diagnóstico de e-commerces, atuando nos termos da Lei nº 13.709/2018 (LGPD).
             </p>
             <p>
-              Nossa operação de software foi concebida sob os princípios do <em className="text-[#FFFCE1]">Privacy by Design</em> e <em className="text-[#FFFCE1]">Privacy by Default</em>, assegurando que o tratamento de dados se restrinja ao estritamente necessário para o cumprimento das finalidades legítimas de auditoria técnica e prevenção contra perdas operacionais no comércio eletrônico.
+              <strong className="text-[#FFFCE1]">Isenção de Vínculo com Lojas Analisadas:</strong> O AdShield não possui vínculo societário ou comercial com nenhuma loja virtual inspecionada. Nossa operação foi concebida sob os princípios do <em className="text-[#FFFCE1]">Privacy by Design</em>, <em className="text-[#FFFCE1]">Privacy by Default</em> e <em className="text-[#FFFCE1]">Local-First Storage</em>, assegurando que os diagnósticos fiquem sob controle direto do usuário em seu navegador, sem necessidade de envio a bancos de dados externos para funcionamento.
             </p>
           </section>
 
@@ -244,14 +244,22 @@ export function PrivacyPage() {
           {/* Section 6 */}
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-[#FFFCE1] flex items-center gap-2">
-              <span className="text-[#0AE448] font-mono">6.</span> Política de Cookies & Tecnologias de Monitoramento do Navegador
+              <span className="text-[#0AE448] font-mono">6.</span> Política Detalhada de Cookies & Armazenamento Local (<code className="text-[#0AE448]">localStorage</code>)
             </h2>
             <p>
-              Utilizamos cookies e tecnologias similares estritamente necessárias para a autenticação de sessão, segurança contra ataques de Cross-Site Request Forgery (CSRF) e medição anônima de telemetria de performance da aplicação.
+              Para garantir performance instantânea e funcionamento autônomo sem depender de conexões obrigatórias com bancos de dados externos, o AdShield utiliza chaves transparentes no armazenamento local do navegador (<code className="text-[#0AE448]">localStorage</code>) e cookies técnicos divididos em 3 categorias:
             </p>
-            <p>
-              O Usuário pode, a qualquer tempo, gerenciar ou recusar os cookies através das configurações do seu navegador ou através de nosso banner de preferências de privacidade.
-            </p>
+            <ul className="list-disc pl-5 space-y-2 text-[#BBBAA6] text-xs">
+              <li>
+                <strong className="text-[#FFFCE1]">1. Estritamente Necessários (<code className="text-[#0AE448]">adshield_cookie_consent</code>, <code className="text-[#0AE448]">adshield_audit_cache</code>):</strong> Mantêm o registro do seu consentimento LGPD, a integridade da sessão atual e o cache local do diagnóstico em andamento para evitar requisições repetidas ao site auditado.
+              </li>
+              <li>
+                <strong className="text-[#FFFCE1]">2. Memória Evolutiva & Contexto de Loja (<code className="text-[#0AE448]">ADSHIELD_SWARM_EVOLUTION_MEMORY_V1</code>, <code className="text-[#0AE448]">ADSHIELD_STORE_CONTEXT_MEMORY_V1</code>):</strong> Armazenam localmente os padrões técnicos aprendidos pelo enxame de 18 agentes (ex: grades numéricas, matrizes multi-cor, calibração bayesiana por vertical e histórico de reposição de tamanhos entre auditorias).
+              </li>
+              <li>
+                <strong className="text-[#FFFCE1]">3. Preferências de Interface & White-Label:</strong> Salvam customizações do simulador de ROAS, identidade visual de relatórios PDF e filtros da vitrine de SKUs. O Usuário pode limpar ou revogar essas chaves a qualquer momento pelo banner de cookies ou pelas configurações do navegador.
+              </li>
+            </ul>
           </section>
 
           <hr className="border-white/10" />
@@ -262,7 +270,7 @@ export function PrivacyPage() {
               <span className="text-[#0AE448] font-mono">7.</span> Encarregado pelo Tratamento de Dados Pessoais (DPO)
             </h2>
             <p>
-              Em estrito cumprimento ao <strong className="text-[#FFFCE1]">Artigo 41 da Lei nº 13.709/2018 (LGPD)</strong>, a Controladora nomeou formalmente seu Encarregado de Dados (DPO), que permanece à disposição para atendimento aos titulares e para interlocução oficial com a Autoridade Nacional de Proteção de Dados (ANPD):
+              Em estrito cumprimento ao <strong className="text-[#FFFCE1]">Artigo 41 da Lei nº 13.709/2018 (LGPD)</strong>, disponibilizamos nosso canal direto do Encarregado de Proteção de Dados (DPO) para atendimento a titulares, lojistas e interlocução com a Autoridade Nacional de Proteção de Dados (ANPD):
             </p>
             
             <div className="p-5 bg-[#141716] border border-white/10 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center gap-4 text-xs text-[#BBBAA6]">
@@ -271,9 +279,9 @@ export function PrivacyPage() {
               </div>
               <div className="space-y-1">
                 <p className="font-bold text-[#FFFCE1] text-sm">Encarregado pelo Tratamento de Dados Pessoais (DPO Oficial)</p>
-                <p className="text-[#0AE448] font-mono font-bold text-xs">dpo@adshield.ai • privacidade@brkgroup.com.br</p>
+                <p className="text-[#0AE448] font-mono font-bold text-xs">dpo@adshield.ai • privacidade@adshield.ai</p>
                 <p className="text-[11px] text-[#BBBAA6]/70">
-                  Prazo regulamentar de resposta: em até 48 horas úteis para solicitações de titulares ou notificações da ANPD.
+                  Prazo regulamentar de resposta: em até 48 horas úteis para solicitações de titulares, descadastramento ou esclarecimentos técnicos.
                 </p>
               </div>
             </div>
@@ -283,15 +291,15 @@ export function PrivacyPage() {
 
       </main>
 
-      {/* Footer em Conformidade com Decreto 7.962/2013 */}
+      {/* Footer Institucional Independente */}
       <footer className="bg-[#101211] border-t border-white/10 py-8 px-4 text-center text-xs text-[#BBBAA6] mt-12">
         <div className="max-w-4xl mx-auto space-y-2.5">
           <p className="font-bold text-[#FFFCE1] text-sm flex items-center justify-center gap-2">
             <ShieldCheck className="w-4 h-4 text-[#0AE448]" />
-            AdShield • BRK GROUP TECNOLOGIA LTDA
+            AdShield Intelligence • Plataforma Independente de Auditoria de E-Commerce
           </p>
           <p className="text-[#BBBAA6] font-mono text-[11px]">
-            CNPJ: 52.894.218/0001-90 • Sede: Minas Gerais, Brasil • Encarregado LGPD Nomeado
+            Auditoria 360º de Sites, Catálogos e Tráfego Pago • Marco Civil da Internet & LGPD
           </p>
           <div className="flex justify-center gap-4 text-[11px] text-[#BBBAA6] pt-1">
             <Link to="/terms" className="hover:text-[#0AE448] underline">Termos de Uso</Link>
