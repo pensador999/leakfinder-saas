@@ -20,8 +20,6 @@ import {
   Zap,
   Download
 } from 'lucide-react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShopify } from '@fortawesome/free-brands-svg-icons';
 import { AgentDiagnosticResult } from '../types';
 import { generateShopifyTelemetryAnalysis } from '../services/shopifyTelemetryService';
 import { isCatalogProductBroken } from '../services/siteInspector';
@@ -131,7 +129,7 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
               className="px-3 py-2 bg-[#141716] hover:bg-[#191C1B] text-[#FFFCE1] border border-white/10 rounded-xl text-xs font-bold font-mono transition-all flex items-center gap-1.5 shadow-xs hover:border-[#0AE448]/40 cursor-pointer"
               title="Abrir painel administrativo da Shopify desta loja"
             >
-              <FontAwesomeIcon icon={faShopify} className="w-3.5 h-3.5 text-[#0AE448]" />
+              <ShoppingBag className="w-3.5 h-3.5 text-[#0AE448]" />
               <span>Shopify Admin ({shopSlug})</span>
             </a>
           )}

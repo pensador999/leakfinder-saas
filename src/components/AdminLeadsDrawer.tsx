@@ -9,7 +9,9 @@ import {
   Plus,
   Layers,
   Copy,
-  Check
+  Check,
+  ExternalLink,
+  Share2
 } from 'lucide-react';
 import {
   getStoredLeads,
@@ -28,6 +30,7 @@ interface AdminLeadsDrawerProps {
   currentDiagnostic?: AgentDiagnosticResult | null;
   onOpenWhatsAppCapture?: () => void;
   onOpenBatchAuditor?: () => void;
+  onSelectStoreToAudit?: (storeUrl: string) => void;
 }
 
 export const AdminLeadsDrawer: React.FC<AdminLeadsDrawerProps> = ({
@@ -35,7 +38,8 @@ export const AdminLeadsDrawer: React.FC<AdminLeadsDrawerProps> = ({
   onClose,
   currentDiagnostic,
   onOpenWhatsAppCapture,
-  onOpenBatchAuditor
+  onOpenBatchAuditor,
+  onSelectStoreToAudit
 }) => {
   const [leads, setLeads] = useState<CapturedLead[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -45,6 +49,7 @@ export const AdminLeadsDrawer: React.FC<AdminLeadsDrawerProps> = ({
   const [newPhone, setNewPhone] = useState('');
   const [newStoreUrl, setNewStoreUrl] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -115,11 +120,21 @@ export const AdminLeadsDrawer: React.FC<AdminLeadsDrawerProps> = ({
   };
 
   const handleCopyPitch = (lead: CapturedLead) => {
+    const cleanDomain = lead.storeUrl.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+    const publicDossierUrl = `${window.location.origin}/?dossier=${encodeURIComponent(cleanDomain)}`;
     const pitch = lead.customPitch ||
-      `Olá ${lead.merchantName}! Analisamos a loja *${lead.brandName}* (${lead.storeUrl}) no AdShield (Score: ${lead.growthScore}/100) e identificamos ~R$ ${lead.estimatedLossRevenue.toLocaleString('pt-BR')}/mês em risco de conversão e ruptura de grade${lead.topBrokenSku ? ` (${lead.topBrokenSku})` : ''}. Posso te enviar o dossiê completo por aqui?`;
+      `Olá ${lead.merchantName}! Analisamos a loja *${lead.brandName}* (${lead.storeUrl}) no AdShield (Score: ${lead.growthScore}/100) e identificamos ~R$ ${lead.estimatedLossRevenue.toLocaleString('pt-BR')}/mês em risco de conversão e ruptura de grade${lead.topBrokenSku ? ` (${lead.topBrokenSku})` : ''}.\n\n🔗 Dossiê ao vivo: ${publicDossierUrl}\n\nPosso te mostrar como estancar essa perda?`;
     navigator.clipboard.writeText(pitch);
     setCopiedId(lead.id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleCopyPublicDossierLink = (lead: CapturedLead) => {
+    const cleanDomain = lead.storeUrl.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+    const publicDossierUrl = `${window.location.origin}/?dossier=${encodeURIComponent(cleanDomain)}`;
+    navigator.clipboard.writeText(publicDossierUrl);
+    setCopiedLinkId(lead.id);
+    setTimeout(() => setCopiedLinkId(null), 2000);
   };
 
   const handleExportCsv = () => {
@@ -411,10 +426,30 @@ export const AdminLeadsDrawer: React.FC<AdminLeadsDrawerProps> = ({
                         </td>
                         <td className="p-3 text-right font-sans">
                           <div className="inline-flex items-center gap-1.5">
+                            {onSelectStoreToAudit && (
+                              <button
+                                onClick={() => {
+                                  onClose();
+                                  onSelectStoreToAudit(lead.storeUrl);
+                                }}
+                                className="px-2.5 py-1.5 bg-[#00BAE2]/15 hover:bg-[#00BAE2]/25 text-[#00BAE2] border border-[#00BAE2]/30 rounded-xl text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer"
+                                title="Abrir Dossiê da Loja (Cache 0ms ou Auditoria ao Vivo)"
+                              >
+                                <ExternalLink className="w-3 h-3" />
+                                <span>Dossiê</span>
+                              </button>
+                            )}
+                            <button
+                              onClick={() => handleCopyPublicDossierLink(lead)}
+                              className="p-1.5 bg-white/5 hover:bg-white/10 text-[#00BAE2] hover:text-[#FFFCE1] border border-white/10 rounded-xl transition-all cursor-pointer"
+                              title="Copiar Link Público do Dossiê (?dossier=)"
+                            >
+                              {copiedLinkId === lead.id ? <Check className="w-3.5 h-3.5 text-[#0AE448]" /> : <Share2 className="w-3.5 h-3.5" />}
+                            </button>
                             <button
                               onClick={() => handleCopyPitch(lead)}
                               className="p-1.5 bg-white/5 hover:bg-white/10 text-[#BBBAA6] hover:text-[#FFFCE1] border border-white/10 rounded-xl transition-all cursor-pointer"
-                              title="Copiar Pitch de WhatsApp"
+                              title="Copiar Pitch de WhatsApp com Link do Dossiê"
                             >
                               {copiedId === lead.id ? <Check className="w-3.5 h-3.5 text-[#0AE448]" /> : <Copy className="w-3.5 h-3.5" />}
                             </button>

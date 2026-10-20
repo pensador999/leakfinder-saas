@@ -15,21 +15,12 @@ import {
   Activity,
   Sparkles,
   Radio,
-  ExternalLink
+  ExternalLink,
+  Shirt,
+  Flame,
+  Sprout,
+  ShoppingBag
 } from 'lucide-react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faShieldHalved, 
-  faWheatAwn, 
-  faFire, 
-  faBolt, 
-  faSliders, 
-  faArrowsRotate,
-  faLayerGroup,
-  faShirt,
-  faSprayCanSparkles
-} from '@fortawesome/free-solid-svg-icons';
-import { faShopify } from '@fortawesome/free-brands-svg-icons';
 import gsap from 'gsap';
 import { useNavigate } from 'react-router-dom';
 import { AgentDiagnosticResult } from '../types';
@@ -103,7 +94,7 @@ export const Header: React.FC<HeaderProps> = ({
       brandName: 'Minimal Club',
       niche: 'Moda Masculina & Básicos Tech',
       aov: 280,
-      icon: faShirt,
+      icon: Shirt,
       activeClass: 'bg-[#0AE448] text-[#0E100F] shadow-sm border border-[#0AE448] font-black'
     },
     {
@@ -113,7 +104,7 @@ export const Header: React.FC<HeaderProps> = ({
       brandName: 'Sallve',
       niche: 'Cosméticos & Skincare',
       aov: 165,
-      icon: faSprayCanSparkles,
+      icon: Sparkles,
       activeClass: 'bg-[#00BAE2] text-[#0E100F] shadow-sm border border-[#00BAE2] font-black'
     },
     {
@@ -123,7 +114,7 @@ export const Header: React.FC<HeaderProps> = ({
       brandName: 'Insider Store',
       niche: 'Vestuário Tecnológico & Performance',
       aov: 310,
-      icon: faFire,
+      icon: Flame,
       activeClass: 'bg-[#FF8709] text-[#0E100F] shadow-sm border border-[#FF8709] font-black'
     },
     {
@@ -133,7 +124,7 @@ export const Header: React.FC<HeaderProps> = ({
       brandName: 'BRK Agro',
       niche: 'Agropecuária & Moda Campo',
       aov: 260,
-      icon: faWheatAwn,
+      icon: Sprout,
       activeClass: 'bg-[#0AE448] text-[#0E100F] shadow-sm border border-[#0AE448] font-black'
     }
   ];
@@ -394,6 +385,7 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
             <div className="flex items-center gap-1.5 flex-wrap">
               {brandPresets.map((preset) => {
+                const PresetIcon = preset.icon;
                 const isActive = currentDomain.toLowerCase().includes(preset.key);
                 const cachedEntry = recentStores.find(r => r.domain.toLowerCase().includes(preset.key));
                 return (
@@ -407,7 +399,7 @@ export const Header: React.FC<HeaderProps> = ({
                     }`}
                     title={cachedEntry ? `Alternar em 0ms (Cache LRU: ${cachedEntry.growthScore} pts)` : `Auditar catálogo oficial de ${preset.name} (${preset.niche})`}
                   >
-                    <FontAwesomeIcon icon={preset.icon} className="w-3.5 h-3.5" />
+                    <PresetIcon className="w-3.5 h-3.5" />
                     <span>{preset.name}</span>
                     {cachedEntry && !isActive && (
                       <span className="px-1.5 py-0.2 rounded bg-[#0AE448]/15 text-[#0AE448] font-mono text-[9px] font-bold">
@@ -442,7 +434,7 @@ export const Header: React.FC<HeaderProps> = ({
                           brandName: recent.brandName,
                           niche: recent.niche,
                           aov: 220,
-                          icon: faBolt,
+                          icon: Zap,
                           activeClass: 'bg-[#00BAE2] text-[#0E100F] shadow-sm border border-[#00BAE2] font-black'
                         })
                       }
@@ -453,7 +445,7 @@ export const Header: React.FC<HeaderProps> = ({
                       }`}
                       title={`Alternar instantaneamente para ${recent.brandName} (${recent.domain} • ${recent.growthScore} pts)`}
                     >
-                      <FontAwesomeIcon icon={faBolt} className="w-3 h-3 text-[#00BAE2]" />
+                      <Zap className="w-3 h-3 text-[#00BAE2]" />
                       <span>{recent.brandName}</span>
                       <span className={`px-1.5 py-0.2 rounded font-mono text-[9px] font-bold ${
                         isActive ? 'bg-slate-950/20 text-slate-950' : 'bg-[#00BAE2]/15 text-[#00BAE2]'
@@ -476,7 +468,7 @@ export const Header: React.FC<HeaderProps> = ({
                 className="px-3 py-1.5 bg-[#191C1B] hover:bg-white/10 text-[#FFFCE1] border border-white/10 rounded-xl font-mono text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-xs hover:scale-105 active:scale-95 cursor-pointer"
                 title={`Acessar painel administrativo da Shopify da loja ativa (${activeShopSlug})`}
               >
-                <FontAwesomeIcon icon={faShopify} className="w-3.5 h-3.5 text-[#0AE448]" />
+                <ShoppingBag className="w-3.5 h-3.5 text-[#0AE448]" />
                 <span>Shopify Admin ({activeShopSlug})</span>
               </a>
             </div>

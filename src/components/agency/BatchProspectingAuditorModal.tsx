@@ -15,8 +15,7 @@ import {
   Trash2,
   ShieldAlert
 } from 'lucide-react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import { WhatsAppIcon } from '../common/WhatsAppIcon';
 import { 
   parseDomainListInput, 
   runBatchProspectingAudit, 
@@ -422,7 +421,7 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
                               className="px-2.5 py-1.5 bg-[#0AE448]/10 hover:bg-[#0AE448]/20 text-[#0AE448] border border-[#0AE448]/30 rounded-xl font-bold text-[11px] transition-all flex items-center gap-1.5 cursor-pointer"
                               title="Copiar Script WhatsApp ancorado no SKU real"
                             >
-                              {copiedLeadId === lead.id ? <Check className="w-3 h-3 text-[#0AE448]" /> : <FontAwesomeIcon icon={faWhatsapp} className="w-3 h-3 text-[#0AE448]" />}
+                              {copiedLeadId === lead.id ? <Check className="w-3 h-3 text-[#0AE448]" /> : <WhatsAppIcon className="w-3 h-3 text-[#0AE448]" />}
                               <span>{copiedLeadId === lead.id ? 'Copiado!' : 'Copiar Pitch'}</span>
                             </button>
 
@@ -431,7 +430,7 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
                               className="px-2.5 py-1.5 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 rounded-xl font-black text-[11px] transition-all flex items-center gap-1 cursor-pointer"
                               title="Abrir no WhatsApp Web"
                             >
-                              <FontAwesomeIcon icon={faWhatsapp} className="w-3 h-3" />
+                              <WhatsAppIcon className="w-3 h-3" />
                               <span>WhatsApp</span>
                             </button>
 

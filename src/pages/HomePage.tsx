@@ -810,6 +810,29 @@ export function HomePage() {
             currentDiagnostic={diagnostic}
             onOpenWhatsAppCapture={diagnostic ? () => setActiveModal('whatsappLead') : undefined}
             onOpenBatchAuditor={() => setActiveModal('batchAuditor')}
+            onSelectStoreToAudit={(url) => {
+              setActiveModal(null);
+              const cached = getCachedAuditByDomain(url);
+              if (cached) {
+                setDiagnostic(cached);
+                const isMkt = cached.realSiteData.isMarketplaceSeller || detectMarketplace(cached.realSiteData.url, cached.realSiteData.domain).isMarketplace;
+                setActiveTab(isMkt ? 'marketplace' : 'summary');
+                return;
+              }
+              const { cleanUrl, brandName } = extractCleanDomainAndBrand(url);
+              handleStartRealAudit({
+                siteUrl: cleanUrl,
+                businessName: brandName,
+                businessType: 'ecommerce',
+                niche: cleanUrl.includes('agro') ? 'Agropecuária & Moda Campo' : 'Moda & Varejo E-commerce',
+                monthlyRevenue: 'R$ 50k a R$ 200k',
+                averageOrderValue: 180,
+                mainChallenge: 'low_conversion',
+                targetRegion: 'Brasil',
+                grossMargin: 45,
+                competitorsUrl: 'https://concorrente.com.br'
+              });
+            }}
           />
         )}
 
@@ -829,6 +852,13 @@ export function HomePage() {
             onClose={() => setActiveModal(null)}
             onOpenStoreDossier={(domain) => {
               setActiveModal(null);
+              const cached = getCachedAuditByDomain(domain);
+              if (cached) {
+                setDiagnostic(cached);
+                const isMkt = cached.realSiteData.isMarketplaceSeller || detectMarketplace(cached.realSiteData.url, cached.realSiteData.domain).isMarketplace;
+                setActiveTab(isMkt ? 'marketplace' : 'summary');
+                return;
+              }
               const { cleanUrl, brandName } = extractCleanDomainAndBrand(domain);
               handleStartRealAudit({
                 siteUrl: cleanUrl,
@@ -867,6 +897,29 @@ export function HomePage() {
             currentDiagnostic={diagnostic}
             onOpenWhatsAppCapture={diagnostic ? () => setActiveModal('whatsappLead') : undefined}
             onOpenBatchAuditor={() => setActiveModal('batchAuditor')}
+            onSelectStoreToAudit={(url) => {
+              setActiveModal(null);
+              const cached = getCachedAuditByDomain(url);
+              if (cached) {
+                setDiagnostic(cached);
+                const isMkt = cached.realSiteData.isMarketplaceSeller || detectMarketplace(cached.realSiteData.url, cached.realSiteData.domain).isMarketplace;
+                setActiveTab(isMkt ? 'marketplace' : 'summary');
+                return;
+              }
+              const { cleanUrl, brandName } = extractCleanDomainAndBrand(url);
+              handleStartRealAudit({
+                siteUrl: cleanUrl,
+                businessName: brandName,
+                businessType: 'ecommerce',
+                niche: cleanUrl.includes('agro') ? 'Agropecuária & Moda Campo' : 'Moda & Varejo E-commerce',
+                monthlyRevenue: 'R$ 50k a R$ 200k',
+                averageOrderValue: 180,
+                mainChallenge: 'low_conversion',
+                targetRegion: 'Brasil',
+                grossMargin: 45,
+                competitorsUrl: 'https://concorrente.com.br'
+              });
+            }}
           />
         )}
 
@@ -876,6 +929,13 @@ export function HomePage() {
             onClose={() => setActiveModal(null)}
             onSelectStoreToAudit={(url) => {
               setActiveModal(null);
+              const cached = getCachedAuditByDomain(url);
+              if (cached) {
+                setDiagnostic(cached);
+                const isMkt = cached.realSiteData.isMarketplaceSeller || detectMarketplace(cached.realSiteData.url, cached.realSiteData.domain).isMarketplace;
+                setActiveTab(isMkt ? 'marketplace' : 'summary');
+                return;
+              }
               const { cleanUrl, brandName } = extractCleanDomainAndBrand(url);
               handleStartRealAudit({
                 siteUrl: cleanUrl,

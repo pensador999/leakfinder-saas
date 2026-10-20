@@ -17,10 +17,9 @@ import {
   Check,
   Lock,
   Layers,
-  Radio
+  Radio,
+  Globe
 } from 'lucide-react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShopify, faWordpress } from '@fortawesome/free-brands-svg-icons';
 import { 
   getStoredIntegrations, 
   saveStoredIntegrations, 
@@ -159,7 +158,7 @@ export const EcommerceIntegrationsHubModal: React.FC<EcommerceIntegrationsHubMod
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="p-2 bg-[#0AE448]/10 text-[#0AE448] rounded-xl font-bold font-mono text-xs flex items-center gap-1.5 border border-[#0AE448]/20">
-                    <FontAwesomeIcon icon={faShopify} className="w-4 h-4" />
+                    <ShoppingBag className="w-4 h-4" />
                     <span>Shopify</span>
                   </div>
                   <span className="px-2 py-0.5 text-[9px] font-bold rounded-md bg-[#0AE448]/20 text-[#0AE448]">
@@ -175,12 +174,12 @@ export const EcommerceIntegrationsHubModal: React.FC<EcommerceIntegrationsHubMod
               <button
                 onClick={() => {
                   setActivePlatformModal('SHOPIFY');
-                  setNewStoreDomain('brk-agro.myshopify.com');
-                  setNewStoreName('BRK Agro');
+                  setNewStoreDomain('minimalclub.myshopify.com');
+                  setNewStoreName('Minimal Club');
                 }}
                 className="w-full py-2.5 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-lg shadow-[#0AE448]/20"
               >
-                <FontAwesomeIcon icon={faShopify} className="w-3.5 h-3.5" />
+                <ShoppingBag className="w-3.5 h-3.5" />
                 <span>Conectar Shopify</span>
               </button>
             </div>
@@ -221,7 +220,7 @@ export const EcommerceIntegrationsHubModal: React.FC<EcommerceIntegrationsHubMod
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="p-2 bg-purple-500/10 text-purple-300 rounded-xl font-bold font-mono text-xs flex items-center gap-1.5 border border-purple-500/20">
-                    <FontAwesomeIcon icon={faWordpress} className="w-4 h-4" />
+                    <Globe className="w-4 h-4" />
                     <span>WooCommerce</span>
                   </div>
                   <span className="px-2 py-0.5 text-[9px] font-bold rounded-md bg-purple-500/20 text-purple-300">
@@ -242,7 +241,7 @@ export const EcommerceIntegrationsHubModal: React.FC<EcommerceIntegrationsHubMod
                 }}
                 className="w-full py-2.5 bg-white/5 hover:bg-white/10 text-purple-300 border border-white/10 rounded-xl font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <FontAwesomeIcon icon={faWordpress} className="w-3.5 h-3.5" />
+                <Globe className="w-3.5 h-3.5" />
                 <span>Conectar WooCommerce</span>
               </button>
             </div>

@@ -18,24 +18,18 @@ import {
   Layers,
   Zap,
   ShoppingBag,
-  Info
+  Info,
+  ShieldCheck,
+  AlertCircle
 } from 'lucide-react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faShieldHalved, 
-  faSliders, 
-  faCircleExclamation, 
-  faCheck, 
-  faChartLine, 
-  faBolt, 
-  faTriangleExclamation 
-} from '@fortawesome/free-solid-svg-icons';
-import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { AgentDiagnosticResult } from '../../types';
 import { calculateStoreFinancialGrounding, formatBRL } from '../../services/ai/storeFinancialGroundingEngine';
 import { auditSupplyChainDiscrepancy } from '../../services/supplyChain/erpHubDiscrepancyEngine';
 import { isCatalogProductBroken } from '../../services/siteInspector';
 import { AuditScoreEvolutionTimeline } from '../history/AuditScoreEvolutionTimeline';
+import { getWhiteLabelConfig } from '../../services/whiteLabelService';
+import { ProductImageWithFallback } from '../common/ProductImageWithFallback';
+import { WhatsAppIcon } from '../common/WhatsAppIcon';
 
 interface MerchantTripleImpactDossierProps {
   diagnostic: AgentDiagnosticResult;
@@ -73,12 +67,17 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
   const formattedDynamicLoss = formatBRL(dynamicTotalLoss);
   const formattedDynamicAnnualLoss = formatBRL(dynamicAnnualLoss);
 
+  const whiteLabel = getWhiteLabelConfig();
+  const cleanConsultantPhone = (whiteLabel.consultantWhatsApp || '5511999999999').replace(/\D/g, '');
+  const phoneWithCountry = cleanConsultantPhone.startsWith('55') ? cleanConsultantPhone : `55${cleanConsultantPhone}`;
+  const agencyBrand = whiteLabel.agencyName || 'AdShield AI';
+
   const whatsappMessage = encodeURIComponent(
     brokenSkus.length > 0
-      ? `Olá! Acabei de gerar o Dossiê Executivo da ${realSiteData.brandName} (${realSiteData.domain}) no AdShield AI. Identificamos ${formatBRL(dynamicAdWaste)}/mês em risco por produtos com grade furada em anúncios ativos. Gostaria de falar com um especialista sobre a blindagem e monitoramento 24h.`
-      : `Olá! Acabei de gerar o Dossiê Executivo da ${realSiteData.brandName} (${realSiteData.domain}) no AdShield AI e confirmei que nosso catálogo está 100% íntegro (R$ 0 em perda de anúncios). Gostaria de conhecer o monitoramento contínuo 24h para manter nossa operação blindada.`
+      ? `Olá ${whiteLabel.consultantName || agencyBrand}! Acabei de gerar o Dossiê Executivo da ${realSiteData.brandName} (${realSiteData.domain}) no ${agencyBrand}. Identificamos ${formatBRL(dynamicAdWaste)}/mês em risco por produtos com grade furada em anúncios ativos. Gostaria de falar com um especialista sobre a blindagem e monitoramento 24h.`
+      : `Olá ${whiteLabel.consultantName || agencyBrand}! Acabei de gerar o Dossiê Executivo da ${realSiteData.brandName} (${realSiteData.domain}) no ${agencyBrand} e confirmei que nosso catálogo está 100% íntegro (R$ 0 em perda de anúncios). Gostaria de conhecer o monitoramento contínuo 24h para manter nossa operação blindada.`
   );
-  const whatsappUrl = `https://wa.me/5534991351122?text=${whatsappMessage}`;
+  const whatsappUrl = `https://wa.me/${phoneWithCountry}?text=${whatsappMessage}`;
 
   const trafficAlertScript = brokenSkus.length > 0
     ? `*RELATÓRIO DE AUDITORIA: TRÁFEGO & ESTOQUE • ADSHIELD*\n\nTime, identificamos ${brokenSkus.length} produto(s) com anúncios ativos na Meta Ads Library, porém com as variantes centrais esgotadas na loja (${realSiteData.domain}).\n\n*Impacto Estimado:* ~${formatBRL(dynamicAdWaste)}/mês em cliques perdidos (baseado em ${formatBRL(activeSpend)}/mês de investimento).\n*Ação Recomendada:* Pausar os criativos dos SKUs rompidos ou substituir a URL de destino para coleções com grade completa.`
@@ -108,7 +107,7 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
           className="px-4 py-1.5 bg-[#191C1B] hover:bg-white/10 text-[#FFFCE1] rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border border-white/10 shadow-xs"
         >
           <Cpu className="w-3.5 h-3.5 text-[#00BAE2]" />
-          <span>Abrir Modo War Room (12 Agentes de IA)</span>
+          <span>Abrir Modo War Room (18 Agentes de IA)</span>
           <ArrowRight className="w-3 h-3 text-[#7C7C6F]" />
         </button>
       </div>
@@ -118,7 +117,7 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
         <div className="flex items-center justify-between flex-wrap gap-2 border-b border-white/10 pb-4">
           <div className="flex items-center gap-2">
             <span className="px-3 py-1 bg-[#FF4757]/15 text-[#FF4757] border border-[#FF4757]/30 rounded-full text-xs font-mono font-bold flex items-center gap-1.5">
-              <FontAwesomeIcon icon={faShieldHalved} className="w-3.5 h-3.5 text-[#FF4757]" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[#FF4757]" />
               <span>Diagnóstico de Risco Financeiro</span>
             </span>
             <span className="px-2.5 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/20 rounded-full text-[10px] font-mono font-bold">
@@ -277,7 +276,7 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
 
         <div className="p-3.5 bg-[#141716] rounded-xl border border-white/10 text-xs text-[#A0A090] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <FontAwesomeIcon icon={faShieldHalved} className="w-3.5 h-3.5 text-[#0AE448]" />
+            <ShieldCheck className="w-3.5 h-3.5 text-[#0AE448] shrink-0" />
             <span><strong>Origem Auditada do Cálculo:</strong> {finances.financialRisk.methodologyExplanation}</span>
           </div>
           <span className="px-2 py-0.5 bg-[#0AE448]/15 text-[#0AE448] border border-[#0AE448]/30 rounded text-[10px] font-mono font-bold shrink-0">
@@ -308,18 +307,17 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
               <div key={idx} className="p-4 rounded-2xl bg-[#191C1B] border border-white/10 space-y-3 flex flex-col justify-between hover:border-white/20 transition-all">
                 <div className="space-y-2">
                   <div className="flex items-start gap-3">
-                    {skuItem.imageSrc ? (
-                      <img src={skuItem.imageSrc} alt="" className="w-14 h-14 object-cover rounded-xl border border-white/10 shrink-0" />
-                    ) : (
-                      <div className="w-14 h-14 bg-white/5 rounded-xl flex items-center justify-center text-xs font-mono text-[#7C7C6F] shrink-0 border border-white/5">
-                        Foto
-                      </div>
-                    )}
+                    <ProductImageWithFallback
+                      src={skuItem.imageSrc}
+                      alt={skuItem.productTitle}
+                      category={input.niche}
+                      className="w-14 h-14"
+                    />
                     <div className="min-w-0 flex-1">
                       <span className="text-[10px] font-mono font-bold text-[#7C7C6F] uppercase block">SKU: {skuItem.sku}</span>
                       <h4 className="text-xs font-bold text-[#FFFCE1] truncate">{skuItem.productTitle}</h4>
                       <span className="text-xs font-bold text-[#0AE448] font-mono block mt-0.5">
-                        R$ 189,90
+                        {skuItem.price && skuItem.price > 0 ? formatBRL(skuItem.price) : finances.formattedAverageTicket}
                       </span>
                     </div>
                   </div>
@@ -327,7 +325,7 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
                   {/* Missing sizes badge */}
                   <div className="p-2.5 bg-[#FF4757]/10 rounded-xl border border-[#FF4757]/20 text-xs space-y-1">
                     <span className="text-[10px] font-bold text-[#FF4757] uppercase font-mono flex items-center gap-1.5">
-                      <FontAwesomeIcon icon={faCircleExclamation} className="w-3 h-3 text-[#FF4757]" />
+                      <AlertCircle className="w-3 h-3 text-[#FF4757] shrink-0" />
                       <span>Variantes Esgotadas na Vitrine:</span>
                     </span>
                     <div className="flex flex-wrap gap-1">
@@ -390,7 +388,7 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
           >
             <div className="flex items-center gap-2.5">
               <div className="p-2 bg-black/15 rounded-xl text-[#0E100F] flex items-center justify-center">
-                <FontAwesomeIcon icon={faWhatsapp} className="w-5 h-5 text-[#0E100F]" />
+                <WhatsAppIcon className="w-5 h-5 text-[#0E100F]" />
               </div>
               <div className="text-left">
                 <span className="text-[10px] text-[#0E100F]/80 uppercase tracking-wider font-mono block font-extrabold">Canal Direto</span>

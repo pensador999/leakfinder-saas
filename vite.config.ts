@@ -112,9 +112,6 @@ export default defineConfig({
             if (id.includes('lucide-react')) {
               return 'vendor-icons';
             }
-            if (id.includes('@fortawesome')) {
-              return 'vendor-fontawesome';
-            }
             if (id.includes('recharts') || id.includes('d3')) {
               return 'vendor-charts';
             }

@@ -12,14 +12,13 @@ import {
   Flame,
   Clock,
   ShieldCheck,
-  Zap
+  Zap,
+  Check
 } from 'lucide-react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShieldHalved, faCheck, faBolt } from '@fortawesome/free-solid-svg-icons';
-import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { AgentDiagnosticResult } from '../types';
 import { calculateStoreFinancialGrounding } from '../services/ai/storeFinancialGroundingEngine';
 import { getWhiteLabelConfig } from '../services/whiteLabelService';
+import { WhatsAppIcon } from './common/WhatsAppIcon';
 
 interface PublicDossierMerchantHeaderProps {
   diagnostic: AgentDiagnosticResult;
@@ -64,7 +63,7 @@ export const PublicDossierMerchantHeader: React.FC<PublicDossierMerchantHeaderPr
               <span>Dossiê Confidencial de Auditoria</span>
             </span>
             <span className="px-2.5 py-0.5 bg-[#0AE448]/15 text-[#0AE448] border border-[#0AE448]/30 rounded-full text-xs font-mono font-bold flex items-center gap-1.5">
-              <FontAwesomeIcon icon={faCheck} className="w-3 h-3 text-[#0AE448]" />
+              <Check className="w-3 h-3 text-[#0AE448]" />
               <span>Catálogo & Preços Auditados ao Vivo</span>
             </span>
             <span className="px-2.5 py-0.5 bg-[#00BAE2]/15 text-[#00BAE2] border border-[#00BAE2]/30 rounded-full text-xs font-mono font-bold">
@@ -121,7 +120,7 @@ export const PublicDossierMerchantHeader: React.FC<PublicDossierMerchantHeaderPr
             </p>
 
             <div className="p-2.5 bg-[#141716] rounded-xl border border-white/10 text-[11px] text-[#BBBAA6] flex items-start gap-2">
-              <FontAwesomeIcon icon={faShieldHalved} className="w-3.5 h-3.5 text-[#0AE448] shrink-0 mt-0.5" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[#0AE448] shrink-0 mt-0.5" />
               <span><strong className="text-[#FFFCE1]">Protocolo de Transparência:</strong> Preços e estoque são dados reais extraídos do DOM. Valores de faturamento e verba de mídia são simulações projetadas pelo porte do nicho.</span>
             </div>
           </div>
@@ -169,7 +168,7 @@ export const PublicDossierMerchantHeader: React.FC<PublicDossierMerchantHeaderPr
               onClick={onOpenWhatsApp}
               className="px-5 py-2.5 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 font-black rounded-xl text-xs transition-all shadow-lg shadow-[#0AE448]/20 flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto text-center"
             >
-              <FontAwesomeIcon icon={faWhatsapp} className="w-4 h-4 text-slate-950 shrink-0" />
+              <WhatsAppIcon className="w-4 h-4 text-slate-950 shrink-0" />
               <span>Receber Raio-X no WhatsApp</span>
               <ArrowRight className="w-3.5 h-3.5 text-slate-950" />
             </button>

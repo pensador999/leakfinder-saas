@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowRight, ShieldCheck, Globe, Sparkles, Zap, Factory, Boxes, Tag, Bot, Info, X } from 'lucide-react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWheatAwn, faFire, faGlobe, faArrowRight as faArrowRightSolid, faSliders, faShirt, faSprayCanSparkles } from '@fortawesome/free-solid-svg-icons';
+import { ArrowRight, ShieldCheck, Globe, Sparkles, Zap, Factory, Boxes, Tag, Bot, Info, X, Shirt, Flame, Sprout, SlidersHorizontal } from 'lucide-react';
 import gsap from 'gsap';
 import { AuditInput, StoreOperationMode } from '../types';
 import { getWhiteLabelConfig, WhiteLabelConfig } from '../services/whiteLabelService';
@@ -44,7 +42,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
       niche: 'Moda Masculina & Básicos Tech',
       aov: 280,
       instagram: 'minimalclub',
-      icon: faShirt,
+      icon: Shirt,
       accentColor: 'text-emerald-700 border-emerald-300 bg-emerald-50 hover:bg-emerald-100',
       badgeBg: 'bg-emerald-600',
       operationMode: 'PHYSICAL_WAREHOUSE_STOCK'
@@ -56,7 +54,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
       niche: 'Cosméticos & Skincare',
       aov: 165,
       instagram: 'sallve',
-      icon: faSprayCanSparkles,
+      icon: Sparkles,
       accentColor: 'text-cyan-700 border-cyan-300 bg-cyan-50 hover:bg-cyan-100',
       badgeBg: 'bg-cyan-600',
       operationMode: 'PHYSICAL_WAREHOUSE_STOCK'
@@ -68,7 +66,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
       niche: 'Vestuário Tecnológico & Performance',
       aov: 310,
       instagram: 'insiderstore',
-      icon: faFire,
+      icon: Flame,
       accentColor: 'text-orange-700 border-orange-300 bg-orange-50 hover:bg-orange-100',
       badgeBg: 'bg-orange-600',
       operationMode: 'PHYSICAL_WAREHOUSE_STOCK'
@@ -80,7 +78,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
       niche: 'Agropecuária, Proteção Solar & Campo',
       aov: 260,
       instagram: 'brkagro',
-      icon: faWheatAwn,
+      icon: Sprout,
       accentColor: 'text-emerald-700 border-emerald-300 bg-emerald-50 hover:bg-emerald-100',
       badgeBg: 'bg-emerald-600',
       operationMode: 'OWN_MANUFACTURING_ON_DEMAND'
@@ -329,6 +327,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-[11px] font-mono text-slate-500 uppercase font-semibold">Atalhos:</span>
             {presets.map((preset) => {
+              const PresetIcon = preset.icon;
               const isCurrent = urlInput.includes(preset.url.replace('https://', ''));
 
               return (
@@ -344,7 +343,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
                   }`}
                   title={`Auditoria instantânea de ${preset.name}`}
                 >
-                  <FontAwesomeIcon icon={preset.icon} className="w-3 h-3 text-[#0AE448]" />
+                  <PresetIcon className="w-3 h-3 text-[#0AE448]" />
                   <span>{preset.name}</span>
                 </button>
               );
@@ -356,7 +355,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
             onClick={() => setShowAdvanced(!showAdvanced)}
             className="text-[11px] font-semibold text-[#0AE448] hover:text-[#09c93f] transition-colors cursor-pointer flex items-center gap-1 font-mono"
           >
-            <FontAwesomeIcon icon={faSliders} className="w-2.5 h-2.5" />
+            <SlidersHorizontal className="w-2.5 h-2.5" />
             <span>{showAdvanced ? 'Ocultar parâmetros' : 'Parâmetros de nicho'}</span>
           </button>
         </div>

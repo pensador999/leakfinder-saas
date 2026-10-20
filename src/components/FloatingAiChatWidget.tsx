@@ -19,8 +19,7 @@ import {
   Clock,
   UserCheck
 } from 'lucide-react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import { WhatsAppIcon } from './common/WhatsAppIcon';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { askConciergeMasterBrain, getFreshNonRepetitiveQuickReplies } from '../services/agents/conciergeNeuralMasterBrain';
 import { buildWhatsAppClickToChatUrl } from '../services/prospecting/leadSniperEngine';
@@ -287,9 +286,9 @@ export const FloatingAiChatWidget: React.FC = () => {
               <button
                 onClick={() => handleOpenWhatsAppWithLucas()}
                 className="p-2 text-[#0AE448] hover:text-white hover:bg-white/5 rounded-xl transition-all cursor-pointer flex items-center justify-center"
-                title="Abrir WhatsApp oficial do Lucas (34 99135-1122)"
+                title="Abrir WhatsApp oficial do Especialista"
               >
-                <FontAwesomeIcon icon={faWhatsapp} className="w-4 h-4 text-[#0AE448]" />
+                <WhatsAppIcon className="w-4 h-4 text-[#0AE448]" />
               </button>
               <button
                 onClick={() => setIsOpen(false)}
@@ -318,7 +317,7 @@ export const FloatingAiChatWidget: React.FC = () => {
               onClick={() => handleOpenWhatsAppWithLucas()}
               className="px-3 py-1 bg-[#0AE448]/15 hover:bg-[#0AE448]/25 text-[#0AE448] border border-[#0AE448]/30 rounded-xl text-[11px] transition-all flex items-center gap-1 cursor-pointer"
             >
-              <FontAwesomeIcon icon={faWhatsapp} className="w-3.5 h-3.5 text-[#0AE448]" />
+              <WhatsAppIcon className="w-3.5 h-3.5 text-[#0AE448]" />
               <span>WhatsApp Direto</span>
             </button>
           </div>
@@ -396,7 +395,7 @@ export const FloatingAiChatWidget: React.FC = () => {
                         onClick={() => handleOpenWhatsAppWithLucas(`Olá Lucas! Fiz a simulação de ROI no AdShield: invisto R$ ${msg.roiData?.spend.toLocaleString('pt-BR')} e vi que posso salvar ~R$ ${msg.roiData?.savedMonthly.toLocaleString('pt-BR')}/mês. Gostaria de ativar a proteção!`)}
                         className="px-3 py-1 bg-[#0AE448] hover:bg-[#09c93f] text-[#0E100F] text-[11px] font-bold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer"
                       >
-                        <FontAwesomeIcon icon={faWhatsapp} className="w-3 h-3 text-[#0E100F]" />
+                        <WhatsAppIcon className="w-3 h-3 text-[#0E100F]" />
                         <span>Ativar no WhatsApp</span>
                       </button>
                     </div>

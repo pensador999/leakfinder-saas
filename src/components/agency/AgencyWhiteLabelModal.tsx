@@ -39,6 +39,7 @@ export const AgencyWhiteLabelModal: React.FC<AgencyWhiteLabelModalProps> = ({
 }) => {
   const [config, setConfig] = useState<AgencyWhiteLabelConfig>(getStoredAgencyConfig());
   const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
+  const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -57,6 +58,15 @@ export const AgencyWhiteLabelModal: React.FC<AgencyWhiteLabelModalProps> = ({
   const handlePrintPdf = () => {
     saveStoredAgencyConfig(config);
     printDossierDirectly(diagnostic, config);
+  };
+
+  const handleCopyPublicDossierUrl = () => {
+    saveStoredAgencyConfig(config);
+    const domain = diagnostic.realSiteData.domain || diagnostic.input.siteUrl;
+    const shareUrl = `${window.location.origin}/?dossier=${encodeURIComponent(domain)}`;
+    navigator.clipboard.writeText(shareUrl);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2500);
   };
 
   if (!isOpen) return null;
@@ -204,6 +214,40 @@ export const AgencyWhiteLabelModal: React.FC<AgencyWhiteLabelModalProps> = ({
                 )}
               </div>
 
+              {/* External Checkout Gateway Links (Synced with TransparentCheckoutModal) */}
+              <div className="p-4 rounded-2xl bg-[#141716] border border-white/10 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[#FFFCE1] flex items-center gap-1.5">
+                    <DollarSign className="w-3.5 h-3.5 text-[#0AE448]" />
+                    <span>Links de Checkout Externo (Asaas / Kiwify / Stripe)</span>
+                  </span>
+                  <span className="text-[10px] font-mono text-[#7C7C6F]">Opcional</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <input
+                    type="url"
+                    placeholder="Starter (R$ 297) URL"
+                    value={config.checkoutUrlStarter || ''}
+                    onChange={(e) => setConfig({ ...config, checkoutUrlStarter: e.target.value })}
+                    className="w-full px-2.5 py-1.5 text-[11px] bg-[#0E100F] border border-white/10 rounded-xl text-[#FFFCE1] placeholder-[#BBBAA6]/40 font-mono focus:border-[#0AE448] focus:outline-none"
+                  />
+                  <input
+                    type="url"
+                    placeholder="Growth Pro (R$ 497) URL"
+                    value={config.checkoutUrlPro || ''}
+                    onChange={(e) => setConfig({ ...config, checkoutUrlPro: e.target.value })}
+                    className="w-full px-2.5 py-1.5 text-[11px] bg-[#0E100F] border border-white/10 rounded-xl text-[#FFFCE1] placeholder-[#BBBAA6]/40 font-mono focus:border-[#0AE448] focus:outline-none"
+                  />
+                  <input
+                    type="url"
+                    placeholder="Agency (R$ 1.497) URL"
+                    value={config.checkoutUrlAgency || ''}
+                    onChange={(e) => setConfig({ ...config, checkoutUrlAgency: e.target.value })}
+                    className="w-full px-2.5 py-1.5 text-[11px] bg-[#0E100F] border border-white/10 rounded-xl text-[#FFFCE1] placeholder-[#BBBAA6]/40 font-mono focus:border-[#0AE448] focus:outline-none"
+                  />
+                </div>
+              </div>
+
               <button
                 type="submit"
                 className="px-4 py-2 bg-white/5 hover:bg-white/10 text-[#FFFCE1] border border-white/10 rounded-xl font-bold transition-all cursor-pointer"
@@ -234,7 +278,7 @@ export const AgencyWhiteLabelModal: React.FC<AgencyWhiteLabelModalProps> = ({
                   <div className="text-right">
                     <span className="text-[9px] text-[#BBBAA6] uppercase font-mono block">Rupturas no Estoque</span>
                     <span className="text-base font-black font-mono text-rose-400">
-                      {diagnostic.realSiteData.catalogAudit?.issues.length || 2} SKUs
+                      {diagnostic.realSiteData.catalogAudit?.productsWithBrokenGrid ?? diagnostic.realSiteData.catalogAudit?.issues.length ?? 0} SKUs
                     </span>
                   </div>
                 </div>
@@ -244,14 +288,25 @@ export const AgencyWhiteLabelModal: React.FC<AgencyWhiteLabelModalProps> = ({
                 </p>
               </div>
 
-              {/* Big Print / Download Action Button */}
-              <button
-                onClick={handlePrintPdf}
-                className="w-full py-3.5 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#0AE448]/20 cursor-pointer"
-              >
-                <Printer className="w-5 h-5 text-slate-950" />
-                <span>Gerar / Salvar PDF em Alta Resolução</span>
-              </button>
+              {/* Action Buttons: Share Public Link & Print High-Res PDF */}
+              <div className="space-y-2.5">
+                <button
+                  type="button"
+                  onClick={handleCopyPublicDossierUrl}
+                  className="w-full py-3 bg-[#00BAE2]/15 hover:bg-[#00BAE2]/25 text-[#00BAE2] border border-[#00BAE2]/40 font-black rounded-2xl text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {copiedLink ? <Check className="w-4 h-4 text-[#0AE448]" /> : <ExternalLink className="w-4 h-4" />}
+                  <span>{copiedLink ? 'Link Público (?dossier=) Copiado!' : 'Copiar Link Público do Dossiê (?dossier=)'}</span>
+                </button>
+
+                <button
+                  onClick={handlePrintPdf}
+                  className="w-full py-3.5 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#0AE448]/20 cursor-pointer"
+                >
+                  <Printer className="w-5 h-5 text-slate-950" />
+                  <span>Gerar / Salvar PDF em Alta Resolução</span>
+                </button>
+              </div>
 
             </div>
 

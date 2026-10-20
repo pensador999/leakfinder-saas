@@ -6,6 +6,7 @@
 import { AgentDiagnosticResult } from '../../types';
 import { calculateStoreFinancialGrounding } from '../ai/storeFinancialGroundingEngine';
 import { auditSupplyChainDiscrepancy } from '../supplyChain/erpHubDiscrepancyEngine';
+import { getWhiteLabelConfig, setWhiteLabelConfig } from '../whiteLabelService';
 
 export interface AgencyWhiteLabelConfig {
   agencyName: string;
@@ -19,55 +20,63 @@ export interface AgencyWhiteLabelConfig {
   includeCommercialProposal: boolean;
   proposedRetainerValue: number;
   customNotesToClient: string;
+  checkoutUrlStarter?: string;
+  checkoutUrlPro?: string;
+  checkoutUrlAgency?: string;
 }
 
 const LOCAL_AGENCY_CONFIG_KEY = 'adshield_agency_whitelabel_config_v1';
 
 export function getStoredAgencyConfig(): AgencyWhiteLabelConfig {
+  const wl = getWhiteLabelConfig();
   const stored = localStorage.getItem(LOCAL_AGENCY_CONFIG_KEY);
+  let parsed: Partial<AgencyWhiteLabelConfig> = {};
   if (stored) {
     try {
-      return JSON.parse(stored);
+      parsed = JSON.parse(stored);
     } catch {
       // fallback
     }
   }
 
   return {
-    agencyName: 'Sua Agência Growth & CRO',
-    agencyLogoUrl: '',
-    consultantName: 'Especialista em Performance',
-    consultantRole: 'Head de Conversão & Mídia Paga',
-    consultantWhatsApp: '5511999999999',
-    consultantEmail: 'contato@suaagencia.com.br',
-    agencyWebsite: 'https://www.suaagencia.com.br',
-    primaryBrandColor: '#2563eb', // Blue-600
-    includeCommercialProposal: true,
-    proposedRetainerValue: 3500,
-    customNotesToClient: 'Este diagnóstico executivo foi elaborado com exclusividade para a diretoria da loja, identificando as principais oportunidades de ganho imediato de margem e conversão.'
+    agencyName: wl.agencyName || parsed.agencyName || 'AdShield Intelligence',
+    agencyLogoUrl: wl.logoUrl || parsed.agencyLogoUrl || '',
+    consultantName: wl.consultantName || parsed.consultantName || 'Especialista em Performance',
+    consultantRole: wl.consultantRole || parsed.consultantRole || 'Head de Conversão & Mídia Paga',
+    consultantWhatsApp: wl.consultantWhatsApp || parsed.consultantWhatsApp || '5511999999999',
+    consultantEmail: wl.consultantEmail || parsed.consultantEmail || 'contato@suaagencia.com.br',
+    agencyWebsite: wl.agencyWebsite || parsed.agencyWebsite || 'https://www.suaagencia.com.br',
+    primaryBrandColor: wl.primaryColor || parsed.primaryBrandColor || '#0AE448',
+    includeCommercialProposal: parsed.includeCommercialProposal ?? true,
+    proposedRetainerValue: parsed.proposedRetainerValue ?? 3500,
+    customNotesToClient:
+      parsed.customNotesToClient ||
+      'Este diagnóstico executivo foi elaborado com exclusividade para a diretoria da loja, identificando as principais oportunidades de ganho imediato de margem e conversão.',
+    checkoutUrlStarter: wl.checkoutUrlStarter || parsed.checkoutUrlStarter || '',
+    checkoutUrlPro: wl.checkoutUrlPro || parsed.checkoutUrlPro || '',
+    checkoutUrlAgency: wl.checkoutUrlAgency || parsed.checkoutUrlAgency || ''
   };
 }
 
 export function saveStoredAgencyConfig(config: AgencyWhiteLabelConfig): void {
   localStorage.setItem(LOCAL_AGENCY_CONFIG_KEY, JSON.stringify(config));
   try {
-    const existingRaw = localStorage.getItem('whitelabel_config');
-    const existing = existingRaw ? JSON.parse(existingRaw) : {};
-    localStorage.setItem(
-      'whitelabel_config',
-      JSON.stringify({
-        ...existing,
-        agencyName: config.agencyName,
-        logoUrl: config.agencyLogoUrl,
-        primaryColor: config.primaryBrandColor,
-        consultantName: config.consultantName,
-        consultantRole: config.consultantRole,
-        consultantWhatsApp: config.consultantWhatsApp,
-        consultantEmail: config.consultantEmail,
-        agencyWebsite: config.agencyWebsite
-      })
-    );
-    window.dispatchEvent(new Event('whitelabel-updated'));
+    const existing = getWhiteLabelConfig();
+    setWhiteLabelConfig({
+      ...existing,
+      agencyName: config.agencyName,
+      logoUrl: config.agencyLogoUrl,
+      primaryColor: config.primaryBrandColor,
+      consultantName: config.consultantName,
+      consultantRole: config.consultantRole,
+      consultantWhatsApp: config.consultantWhatsApp,
+      consultantEmail: config.consultantEmail,
+      agencyWebsite: config.agencyWebsite,
+      checkoutUrlStarter: config.checkoutUrlStarter ?? existing.checkoutUrlStarter,
+      checkoutUrlPro: config.checkoutUrlPro ?? existing.checkoutUrlPro,
+      checkoutUrlAgency: config.checkoutUrlAgency ?? existing.checkoutUrlAgency
+    });
   } catch {
     // ignore
   }

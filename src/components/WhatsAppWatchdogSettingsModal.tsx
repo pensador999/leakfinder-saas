@@ -9,8 +9,7 @@ import {
   ExternalLink, 
   ShieldCheck 
 } from 'lucide-react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import { WhatsAppIcon } from './common/WhatsAppIcon';
 import { 
   getWhatsAppGatewayConfig, 
   saveWhatsAppGatewayConfig, 
@@ -277,7 +276,7 @@ export const WhatsAppWatchdogSettingsModal: React.FC<WhatsAppWatchdogSettingsMod
                     rel="noopener noreferrer"
                     className="w-full px-4 py-3 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 font-black rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#0AE448]/20 cursor-pointer"
                   >
-                    <FontAwesomeIcon icon={faWhatsapp} className="w-4 h-4 text-slate-950" />
+                    <WhatsAppIcon className="w-4 h-4 text-slate-950" />
                     <span>Abrir Conversa no WhatsApp ({testPhone}) com Alerta</span>
                     <ExternalLink className="w-3.5 h-3.5 ml-1 text-slate-950" />
                   </a>
