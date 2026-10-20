@@ -112,6 +112,9 @@ export default defineConfig({
             if (id.includes('lucide-react')) {
               return 'vendor-icons';
             }
+            if (id.includes('@fortawesome')) {
+              return 'vendor-fontawesome';
+            }
             if (id.includes('recharts') || id.includes('d3')) {
               return 'vendor-charts';
             }
@@ -124,6 +127,13 @@ export default defineConfig({
             if (id.includes('canvas-confetti')) {
               return 'vendor-confetti';
             }
+          }
+          if (
+            id.includes('/src/services/catalog/') ||
+            id.includes('/src/services/supplyChain/') ||
+            id.includes('/src/services/audits/')
+          ) {
+            return 'engine-catalog-auditors';
           }
         }
       }

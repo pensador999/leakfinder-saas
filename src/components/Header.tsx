@@ -37,6 +37,7 @@ import { getWhiteLabelConfig, WhiteLabelConfig } from '../services/whiteLabelSer
 import { SupabaseStatusIndicator } from './common/SupabaseStatusIndicator';
 import { OneClickMitigationService } from '../services/actions/oneClickMitigationService';
 import { getActiveLicense } from '../services/billing/checkoutService';
+import { getRecentAuditedStoresList, RecentAuditedStoreSummary } from '../services/history/storeAuditHistoryService';
 
 export interface StorePreset {
   key: string;
@@ -76,10 +77,18 @@ export const Header: React.FC<HeaderProps> = ({
   const [whiteLabel, setWhiteLabel] = useState<WhiteLabelConfig>(getWhiteLabelConfig());
   const navigate = useNavigate();
   const [hasLicense, setHasLicense] = useState(false);
+  const [recentStores, setRecentStores] = useState<RecentAuditedStoreSummary[]>(() => getRecentAuditedStoresList());
 
   useEffect(() => {
     setHasLicense(Boolean(getActiveLicense()));
   }, []);
+
+  useEffect(() => {
+    const syncRecent = () => setRecentStores(getRecentAuditedStoresList());
+    syncRecent();
+    window.addEventListener('recent-audits-updated', syncRecent);
+    return () => window.removeEventListener('recent-audits-updated', syncRecent);
+  }, [diagnostic]);
 
   const headerRef = useRef<HTMLElement>(null);
   const logoIconRef = useRef<HTMLDivElement>(null);
@@ -386,6 +395,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center gap-1.5 flex-wrap">
               {brandPresets.map((preset) => {
                 const isActive = currentDomain.toLowerCase().includes(preset.key);
+                const cachedEntry = recentStores.find(r => r.domain.toLowerCase().includes(preset.key));
                 return (
                   <button
                     key={preset.key}
@@ -395,10 +405,15 @@ export const Header: React.FC<HeaderProps> = ({
                         ? preset.activeClass 
                         : 'bg-[#141716] text-[#BBBAA6] hover:text-[#FFFCE1] border-white/10 hover:border-white/20 hover:bg-[#191C1B] shadow-xs hover:scale-[1.02]'
                     }`}
-                    title={`Auditar catálogo oficial de ${preset.name} (${preset.niche})`}
+                    title={cachedEntry ? `Alternar em 0ms (Cache LRU: ${cachedEntry.growthScore} pts)` : `Auditar catálogo oficial de ${preset.name} (${preset.niche})`}
                   >
                     <FontAwesomeIcon icon={preset.icon} className="w-3.5 h-3.5" />
                     <span>{preset.name}</span>
+                    {cachedEntry && !isActive && (
+                      <span className="px-1.5 py-0.2 rounded bg-[#0AE448]/15 text-[#0AE448] font-mono text-[9px] font-bold">
+                        {cachedEntry.growthScore}pts
+                      </span>
+                    )}
                     {isActive && (
                       <span className="w-1.5 h-1.5 rounded-full bg-white inline-block ml-0.5 animate-pulse" />
                     )}
@@ -408,6 +423,46 @@ export const Header: React.FC<HeaderProps> = ({
                   </button>
                 );
               })}
+
+              {/* Custom Recently Audited Stores (Instant 0ms Switch) */}
+              {recentStores
+                .filter(r => !brandPresets.some(p => r.domain.toLowerCase().includes(p.key)))
+                .slice(0, 4)
+                .map((recent) => {
+                  const isActive = currentDomain.toLowerCase().includes(recent.domain.toLowerCase());
+                  return (
+                    <button
+                      key={recent.domain}
+                      onClick={() =>
+                        onSelectStorePreset &&
+                        onSelectStorePreset({
+                          key: recent.domain,
+                          name: recent.brandName,
+                          url: recent.url,
+                          brandName: recent.brandName,
+                          niche: recent.niche,
+                          aov: 220,
+                          icon: faBolt,
+                          activeClass: 'bg-[#00BAE2] text-[#0E100F] shadow-sm border border-[#00BAE2] font-black'
+                        })
+                      }
+                      className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all duration-200 cursor-pointer border ${
+                        isActive
+                          ? 'bg-[#00BAE2] text-[#0E100F] shadow-sm border border-[#00BAE2] font-black'
+                          : 'bg-[#141716] text-[#BBBAA6] hover:text-[#FFFCE1] border-white/10 hover:border-[#00BAE2]/40 hover:bg-[#191C1B] shadow-xs'
+                      }`}
+                      title={`Alternar instantaneamente para ${recent.brandName} (${recent.domain} • ${recent.growthScore} pts)`}
+                    >
+                      <FontAwesomeIcon icon={faBolt} className="w-3 h-3 text-[#00BAE2]" />
+                      <span>{recent.brandName}</span>
+                      <span className={`px-1.5 py-0.2 rounded font-mono text-[9px] font-bold ${
+                        isActive ? 'bg-slate-950/20 text-slate-950' : 'bg-[#00BAE2]/15 text-[#00BAE2]'
+                      }`}>
+                        {recent.growthScore}pts
+                      </span>
+                    </button>
+                  );
+                })}
             </div>
           </div>
 

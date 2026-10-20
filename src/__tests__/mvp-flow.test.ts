@@ -340,6 +340,29 @@ describe('MVP Core Flow Validation', () => {
     expect(dossierHtml).toContain('Alpha Growth Partners');
     expect(dossierHtml).toContain('Lucas Lima • Head CRO');
     expect(dossierHtml).toContain('5511977778888');
+
+    // 5. Instant LRU Store Audit Cache (0ms Switch) & Grounded Theme Scripts
+    const { saveAuditToDatabase, getCachedAuditByDomain, getRecentAuditedStoresList } = await import('../services/history/storeAuditHistoryService');
+    const { generateShopifyThemeScripts } = await import('../services/shopifyThemeScriptGenerator');
+
+    fullMockDiag.realSiteData.metaPixelId = '998877665544';
+    fullMockDiag.realSiteData.legalCompliance = { hasCnpjInFooter: true, detectedCnpj: '12.345.678/0001-99' };
+
+    await saveAuditToDatabase(fullMockDiag);
+    const cachedDiag = getCachedAuditByDomain('https://www.minimalclub.com.br');
+    expect(cachedDiag).not.toBeNull();
+    expect(cachedDiag?.growthScore).toBe(84);
+
+    const recentList = getRecentAuditedStoresList();
+    expect(recentList.some(r => r.domain === 'minimalclub.com.br' && r.growthScore === 84)).toBe(true);
+
+    const scripts = generateShopifyThemeScripts('minimalclub.com.br', 'Minimal Club', fullMockDiag.realSiteData);
+    expect(scripts.length).toBe(6);
+    const stockShieldSnippet = scripts.find(s => s.category === 'STOCK_SHIELD');
+    expect(stockShieldSnippet).toBeDefined();
+    expect(stockShieldSnippet?.code).toContain('camiseta-pima-preta');
+    expect(stockShieldSnippet?.code).toContain('998877665544');
+    expect(stockShieldSnippet?.code).toContain('Camiseta Pima Preta');
   });
 });
 

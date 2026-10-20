@@ -9,10 +9,13 @@ import {
   FileCode, 
   Sparkles, 
   Ruler, 
-  Info 
+  Info,
+  Flame,
+  TableProperties
 } from 'lucide-react';
 import { AgentDiagnosticResult } from '../types';
 import { generateShopifyThemeScripts } from '../services/shopifyThemeScriptGenerator';
+import { isCatalogProductBroken } from '../services/siteInspector';
 
 interface ThemeScriptGeneratorViewProps {
   diagnostic: AgentDiagnosticResult;
@@ -23,7 +26,9 @@ export const ThemeScriptGeneratorView: React.FC<ThemeScriptGeneratorViewProps> =
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>('ALL');
 
-  const snippets = generateShopifyThemeScripts(realSiteData.domain, realSiteData.brandName);
+  const snippets = generateShopifyThemeScripts(realSiteData.domain, realSiteData.brandName, realSiteData);
+  const brokenItems = (realSiteData.catalogAudit?.issues || []).filter(isCatalogProductBroken);
+  const topBroken = brokenItems[0];
 
   const handleCopyCode = (id: string, code: string) => {
     navigator.clipboard.writeText(code);
@@ -46,14 +51,14 @@ export const ThemeScriptGeneratorView: React.FC<ThemeScriptGeneratorViewProps> =
             <Code2 className="w-8 h-8" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-[#FFFCE1]">Gerador de Scripts de Correção (.liquid & CSS)</h2>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-xl font-bold text-[#FFFCE1]">Gerador de Scripts de Correção (.liquid, JS & CSS)</h2>
               <span className="px-2.5 py-0.5 text-xs font-mono font-bold bg-[#0AE448]/10 text-[#0AE448] border border-[#0AE448]/20 rounded-full">
-                Pronto para Copiar & Colar
+                Injetado com SKUs & Pixel Reais
               </span>
             </div>
             <p className="text-xs text-[#BBBAA6] mt-1 max-w-2xl leading-relaxed">
-              Códigos otimizados e customizados com a paleta visual de <strong className="text-[#FFFCE1]">{realSiteData.brandName}</strong> para resolver na hora os gargalos identificados na auditoria.
+              Códigos customizados com os SKUs em ruptura, Meta Pixel e paleta de <strong className="text-[#FFFCE1]">{realSiteData.brandName}</strong> para estancar na hora os gargalos detectados na auditoria.
             </p>
           </div>
         </div>
@@ -65,11 +70,39 @@ export const ThemeScriptGeneratorView: React.FC<ThemeScriptGeneratorViewProps> =
             <p className="text-2xl font-black text-[#0AE448] leading-none mt-0.5 font-mono">
               {snippets.length} Soluções
             </p>
-            <p className="text-[10px] text-[#BBBAA6] mt-1 font-mono">Shopify Liquid & CSS</p>
+            <p className="text-[10px] text-[#BBBAA6] mt-1 font-mono">
+              {brokenItems.length} SKUs Críticos Injetados
+            </p>
           </div>
           <div className="w-10 h-10 rounded-xl bg-[#0AE448]/10 border border-[#0AE448]/20 flex items-center justify-center text-[#0AE448]">
             <Sparkles className="w-5 h-5" />
           </div>
+        </div>
+      </div>
+
+      {/* Live Grounding Context Strip */}
+      <div className="p-4 rounded-2xl bg-[#141716] border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="px-2 py-0.5 rounded bg-[#0AE448]/15 text-[#0AE448] border border-[#0AE448]/30 font-mono text-[10px] font-bold">
+            GROUNDING ATIVO
+          </span>
+          <span className="text-[#BBBAA6]">
+            Top SKU Injetado no Stock-Shield:{' '}
+            <strong className="text-[#FFFCE1] font-mono">
+              {topBroken ? `${topBroken.productTitle} (${topBroken.sku})` : 'Catálogo 100% em Estoque (Modo Preventivo)'}
+            </strong>
+          </span>
+        </div>
+        <div className="flex items-center gap-3 font-mono text-[11px] text-[#BBBAA6]">
+          <span>
+            Meta Pixel: <strong className="text-[#00BAE2]">{realSiteData.metaPixelId || (realSiteData.hasMetaPixel ? 'Detectado' : 'Configurável')}</strong>
+          </span>
+          <span>•</span>
+          <span>
+            CNPJ Rodapé: <strong className={realSiteData.legalCompliance?.hasCnpjInFooter !== false ? 'text-[#0AE448]' : 'text-amber-400'}>
+              {realSiteData.legalCompliance?.cnpjFound || (realSiteData.legalCompliance?.hasCnpjInFooter !== false ? 'OK' : 'Pendente')}
+            </strong>
+          </span>
         </div>
       </div>
 
@@ -84,6 +117,26 @@ export const ThemeScriptGeneratorView: React.FC<ThemeScriptGeneratorViewProps> =
           }`}
         >
           Todos os Scripts ({snippets.length})
+        </button>
+        <button
+          onClick={() => setActiveCategory('STOCK_SHIELD')}
+          className={`px-3.5 py-2 rounded-xl font-bold transition-all cursor-pointer flex items-center gap-1.5 border ${
+            activeCategory === 'STOCK_SHIELD' 
+              ? 'bg-[#0AE448] text-slate-950 border-[#0AE448] font-black shadow-lg shadow-[#0AE448]/20' 
+              : 'bg-[#141716] border-white/10 text-[#BBBAA6] hover:text-[#FFFCE1] hover:bg-white/5'
+          }`}
+        >
+          <Flame className="w-3.5 h-3.5" /> Stock-Shield & Pixel
+        </button>
+        <button
+          onClick={() => setActiveCategory('SIZE_GUIDE')}
+          className={`px-3.5 py-2 rounded-xl font-bold transition-all cursor-pointer flex items-center gap-1.5 border ${
+            activeCategory === 'SIZE_GUIDE' 
+              ? 'bg-[#0AE448] text-slate-950 border-[#0AE448] font-black shadow-lg shadow-[#0AE448]/20' 
+              : 'bg-[#141716] border-white/10 text-[#BBBAA6] hover:text-[#FFFCE1] hover:bg-white/5'
+          }`}
+        >
+          <TableProperties className="w-3.5 h-3.5" /> Tabela de Medidas
         </button>
         <button
           onClick={() => setActiveCategory('MOBILE_UX')}
@@ -123,7 +176,7 @@ export const ThemeScriptGeneratorView: React.FC<ThemeScriptGeneratorViewProps> =
               : 'bg-[#141716] border-white/10 text-[#BBBAA6] hover:text-[#FFFCE1] hover:bg-white/5'
           }`}
         >
-          <ShieldCheck className="w-3.5 h-3.5" /> Segurança Tabnabbing
+          <ShieldCheck className="w-3.5 h-3.5" /> Segurança & CNPJ
         </button>
       </div>
 
@@ -172,7 +225,7 @@ export const ThemeScriptGeneratorView: React.FC<ThemeScriptGeneratorViewProps> =
               <div className="p-3.5 bg-[#141716] border border-amber-500/30 rounded-2xl text-xs text-amber-300 flex items-start gap-2.5">
                 <Info className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <div className="leading-relaxed">
-                  <strong className="text-amber-200">Instrução no Tema Shopify:</strong> {snippet.installLocation}
+                  <strong className="text-amber-200">Instrução no Tema:</strong> {snippet.installLocation}
                 </div>
               </div>
 

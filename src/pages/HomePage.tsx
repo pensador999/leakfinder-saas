@@ -2,9 +2,6 @@ import React, { useState, useEffect, Suspense, lazy } from 'react';
 import confetti from 'canvas-confetti';
 import { Header, StorePreset } from '../components/Header';
 import { HeroUrlBar } from '../components/HeroUrlBar';
-import { ExecutiveSummary } from '../components/ExecutiveSummary';
-import { MitigationHistoryDrawer } from '../components/actions/MitigationHistoryDrawer';
-import { MerchantTripleImpactDossier } from '../components/merchant/MerchantTripleImpactDossier';
 import { AnalysisLoadingState } from '../components/AnalysisLoadingState';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { CookieBanner } from '../components/CookieBanner';
@@ -15,7 +12,7 @@ import { runAgentDiagnosticAsync } from '../services/agentEngine';
 import { extractCleanDomainAndBrand } from '../services/siteInspector';
 import { AuditInput, AgentDiagnosticResult } from '../types';
 import { detectMarketplace } from '../services/marketplaceInspector';
-import { saveAuditToDatabase } from '../services/history/storeAuditHistoryService';
+import { saveAuditToDatabase, getCachedAuditByDomain } from '../services/history/storeAuditHistoryService';
 import { useAuditStore } from '../store/auditStore';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
@@ -28,6 +25,9 @@ import {
 import { SimplifiedPillarNav, MainNavPillar } from '../components/navigation/SimplifiedPillarNav';
 
 // ⚡ LAZY LOADED ANALYTICAL TABS (Demanded only when tab is active)
+const ExecutiveSummary = lazy(() => import('../components/ExecutiveSummary').then(m => ({ default: m.ExecutiveSummary })));
+const MerchantTripleImpactDossier = lazy(() => import('../components/merchant/MerchantTripleImpactDossier').then(m => ({ default: m.MerchantTripleImpactDossier })));
+const MitigationHistoryDrawer = lazy(() => import('../components/actions/MitigationHistoryDrawer').then(m => ({ default: m.MitigationHistoryDrawer })));
 const ComputerVisionInspectionView = lazy(() => import('../components/agents/ComputerVisionInspectionView').then(m => ({ default: m.ComputerVisionInspectionView })));
 const BlindspotAuditView = lazy(() => import('../components/BlindspotAuditView').then(m => ({ default: m.BlindspotAuditView })));
 const SecurityAgentView = lazy(() => import('../components/agents/SecurityAgentView').then(m => ({ default: m.SecurityAgentView })));
@@ -304,6 +304,13 @@ export function HomePage() {
         onOpenPricing={() => setActiveModal('pricing')}
         onOpenWhatsAppLeadModal={() => setActiveModal('whatsappLead')}
         onSelectStorePreset={(preset: StorePreset) => {
+          const cached = getCachedAuditByDomain(preset.url);
+          if (cached) {
+            setDiagnostic(cached);
+            const isMkt = cached.realSiteData.isMarketplaceSeller || detectMarketplace(cached.realSiteData.url, cached.realSiteData.domain).isMarketplace;
+            setActiveTab(isMkt ? 'marketplace' : 'summary');
+            return;
+          }
           handleStartRealAudit({
             siteUrl: preset.url,
             businessName: preset.brandName,
@@ -615,28 +622,28 @@ export function HomePage() {
                   </Suspense>
                 ) : (
                   <>
-                    {activeTab === 'summary' && (
-                      viewMode === 'merchant' ? (
-                    <MerchantTripleImpactDossier
-                      diagnostic={diagnostic}
-                      onOpenPricing={() => setActiveModal('pricing')}
-                      onOpenWhatsAppLead={() => setActiveModal('whatsappLead')}
-                      onOpenMetaAutoKill={() => setActiveModal('metaAutoKill')}
-                      onSwitchToWarRoom={() => {
-                        setViewMode('war_room');
-                        setActiveTab('tree_of_thought');
-                      }}
-                    />
-                  ) : (
-                    <ExecutiveSummary
-                      diagnostic={diagnostic}
-                      onSelectAgentTab={(tab) => setActiveTab(tab)}
-                    />
-                  )
-                )}
-
                 {/* Lazy Loaded Analytical Tabs with Skeleton Fallback */}
                 <Suspense fallback={<TabLoadingSkeleton />}>
+                  {activeTab === 'summary' && (
+                    viewMode === 'merchant' ? (
+                      <MerchantTripleImpactDossier
+                        diagnostic={diagnostic}
+                        onOpenPricing={() => setActiveModal('pricing')}
+                        onOpenWhatsAppLead={() => setActiveModal('whatsappLead')}
+                        onOpenMetaAutoKill={() => setActiveModal('metaAutoKill')}
+                        onSwitchToWarRoom={() => {
+                          setViewMode('war_room');
+                          setActiveTab('tree_of_thought');
+                        }}
+                      />
+                    ) : (
+                      <ExecutiveSummary
+                        diagnostic={diagnostic}
+                        onSelectAgentTab={(tab) => setActiveTab(tab)}
+                      />
+                    )
+                  )}
+
                   {activeTab === 'founder_hq' && (
                     <FounderMasterHqView />
                   )}
