@@ -11,7 +11,9 @@ import {
   RefreshCw,
   TrendingDown,
   Zap,
-  UserPlus
+  UserPlus,
+  Trash2,
+  ShieldAlert
 } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
@@ -19,16 +21,33 @@ import {
   parseDomainListInput, 
   runBatchProspectingAudit, 
   getSavedBatchProspectingLeads,
+  clearSavedBatchProspectingLeads,
   saveBatchLeadToLocalCrm,
   BatchProspectingLead, 
   BatchAuditProgress 
 } from '../../services/agency/batchAuditorService';
 import { formatBRL } from '../../services/ai/storeFinancialGroundingEngine';
+import { getWhiteLabelConfig } from '../../services/whiteLabelService';
 
 interface BatchProspectingAuditorModalProps {
   onClose: () => void;
   onOpenStoreDossier?: (domain: string) => void;
 }
+
+const PRESET_LISTS = [
+  {
+    label: 'Top D2C Moda & Tech',
+    domains: 'minimalclub.com.br\ninsiderstore.com.br\nmash.com.br\nduasdesign.com'
+  },
+  {
+    label: 'Cosméticos & Suplementos',
+    domains: 'sallve.com.br\nprincipiaskin.com\ngocase.com.br\nboldsnacks.com.br'
+  },
+  {
+    label: 'Agro, Pesca & Botas',
+    domains: 'brkagro.com.br\nbrkfishing.com.br\n7mboots.com.br\ncountrybull.com.br'
+  }
+];
 
 export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModalProps> = ({
   onClose,
@@ -37,13 +56,14 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
   const [rawInput, setRawInput] = useState(
     'minimalclub.com.br\nsallve.com.br\ninsiderstore.com.br\nduasdesign.com\nmash.com.br'
   );
-  const [agencyName, setAgencyName] = useState('AdShield Intelligence');
+  const [agencyName, setAgencyName] = useState(() => getWhiteLabelConfig().agencyName || 'AdShield Intelligence');
   const [isAuditing, setIsAuditing] = useState(false);
   const [progress, setProgress] = useState<BatchAuditProgress | null>(null);
   const [leads, setLeads] = useState<BatchProspectingLead[]>(() => getSavedBatchProspectingLeads());
   const [copiedLeadId, setCopiedLeadId] = useState<string | null>(null);
   const [savedCrmIds, setSavedCrmIds] = useState<string[]>([]);
   const [copiedCsv, setCopiedCsv] = useState(false);
+  const [savedAllBulk, setSavedAllBulk] = useState(false);
 
   const handleStartBatchAudit = async () => {
     const domains = parseDomainListInput(rawInput);
@@ -54,6 +74,7 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
 
     setIsAuditing(true);
     setLeads([]);
+    setSavedAllBulk(false);
     setProgress({
       total: domains.length,
       completed: 0,
@@ -68,7 +89,10 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
         agencyName,
         (prog, currentLead) => {
           setProgress(prog);
-          setLeads(prev => [currentLead, ...prev.filter(l => l.id !== currentLead.id)]);
+          setLeads(prev => {
+            const next = [currentLead, ...prev.filter(l => l.id !== currentLead.id)];
+            return next.sort((a, b) => b.monthlyAdWasteBRL - a.monthlyAdWasteBRL);
+          });
         }
       );
       setLeads(finalLeads);
@@ -97,11 +121,31 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
     }
   };
 
+  const handleSaveAllToLocalCrm = () => {
+    const allIds: string[] = [];
+    leads.forEach(lead => {
+      if (lead.status === 'COMPLETED') {
+        saveBatchLeadToLocalCrm(lead);
+        allIds.push(lead.id);
+      }
+    });
+    setSavedCrmIds(prev => Array.from(new Set([...prev, ...allIds])));
+    setSavedAllBulk(true);
+    setTimeout(() => setSavedAllBulk(false), 3000);
+  };
+
+  const handleClearBatch = () => {
+    clearSavedBatchProspectingLeads();
+    setLeads([]);
+    setProgress(null);
+    setSavedCrmIds([]);
+  };
+
   const handleExportCsv = () => {
     if (leads.length === 0) return;
-    const headers = 'Marca,Dominio,Plataforma,Vertical,SKUs_Auditados,Desperdicio_Mensal_BRL,Produtos_Rompidos,Top_SKU_Quebrado,Tamanhos_Faltantes,Prioridade,Pitch_WhatsApp\n';
+    const headers = 'Marca,Dominio,Plataforma,Vertical,SKUs_Auditados,Desperdicio_Mensal_BRL,Produtos_Rompidos,Top_SKU_Quebrado,Tamanhos_Faltantes,CNPJ_Rodape,Prioridade,Pitch_WhatsApp\n';
     const rows = leads.map(l => 
-      `"${l.brandName}","${l.domain}","${l.platform}","${l.verticalLabel || ''}","${l.totalSkusAudited || 0}","${l.monthlyAdWasteBRL}","${l.brokenSkusCount}","${(l.topBrokenProductTitle || '').replace(/"/g, '""')}","${(l.topBrokenSizes || []).join('/')}","${l.dealPriority}","${l.whatsAppPitchScript.replace(/"/g, '""')}"`
+      `"${l.brandName}","${l.domain}","${l.platform}","${l.verticalLabel || ''}","${l.totalSkusAudited || 0}","${l.monthlyAdWasteBRL}","${l.brokenSkusCount}","${(l.topBrokenProductTitle || '').replace(/"/g, '""')}","${(l.topBrokenSizes || []).join('/')}","${l.hasCnpjInFooter ? 'OK' : 'AUSENTE'}","${l.dealPriority}","${l.whatsAppPitchScript.replace(/"/g, '""')}"`
     ).join('\n');
 
     const blob = new Blob([headers + rows], { type: 'text/csv;charset=utf-8;' });
@@ -128,11 +172,11 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
               <div className="flex items-center gap-2">
                 <h3 className="font-black text-sm tracking-tight text-[#FFFCE1]">Máquina de Prospecção em Lote & Ranking de Sangria (Local-First)</h3>
                 <span className="px-2 py-0.5 bg-[#0AE448]/20 text-[#0AE448] border border-[#0AE448]/30 rounded-full text-[10px] font-mono font-bold">
-                  B2B Mass Auditor
+                  B2B Mass Auditor • Concorrência 2x
                 </span>
               </div>
               <p className="text-[11px] text-[#BBBAA6]">
-                Audite até 50 e-commerces simultaneamente, ranqueie por perda real de catálogo e dispare o pitch ancorado no SKU #1 quebrado.
+                Audite até 50 e-commerces em paralelo, ranqueie por perda real de catálogo e dispare o pitch ancorado no SKU #1 quebrado.
               </p>
             </div>
           </div>
@@ -162,24 +206,34 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
                 />
               </div>
 
-              <div className="flex items-end justify-between gap-2">
-                <div className="text-xs text-[#BBBAA6]">
-                  <span>Limite do lote: <strong className="text-[#FFFCE1]">até 50 lojas simultâneas</strong></span>
+              <div>
+                <label className="block text-xs font-bold text-[#BBBAA6] mb-1">
+                  Listas Rápidas Multi-Vertical (1 Clique):
+                </label>
+                <div className="flex flex-wrap gap-1.5">
+                  {PRESET_LISTS.map((preset) => (
+                    <button
+                      key={preset.label}
+                      type="button"
+                      onClick={() => setRawInput(preset.domains)}
+                      className="px-2.5 py-1.5 bg-[#0E100F] hover:bg-[#0AE448]/15 border border-white/10 hover:border-[#0AE448]/40 rounded-lg text-[10px] font-bold text-[#FFFCE1] hover:text-[#0AE448] transition-all cursor-pointer"
+                    >
+                      + {preset.label}
+                    </button>
+                  ))}
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setRawInput('minimalclub.com.br\nsallve.com.br\ninsiderstore.com.br\nduasdesign.com\nmash.com.br')}
-                  className="text-xs text-[#0AE448] hover:underline font-bold cursor-pointer"
-                >
-                  Carregar Portfólio Multi-Vertical Real
-                </button>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#BBBAA6] mb-1">
-                Cole a lista de domínios ou URLs (uma por linha ou separadas por vírgula):
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-bold text-[#BBBAA6]">
+                  Cole a lista de domínios ou URLs (uma por linha ou separadas por vírgula — até 50 lojas):
+                </label>
+                <span className="text-[11px] font-mono text-[#0AE448] font-bold">
+                  {parseDomainListInput(rawInput).length} domínio(s) detectado(s)
+                </span>
+              </div>
               <textarea
                 rows={3}
                 value={rawInput}
@@ -230,7 +284,7 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
               </div>
 
               <div className="flex items-center justify-between text-[11px] text-[#BBBAA6]">
-                <span>Analisando agora: <strong className="text-[#FFFCE1] font-mono">{progress.currentDomain}</strong></span>
+                <span>Último domínio inspecionado: <strong className="text-[#FFFCE1] font-mono">{progress.currentDomain}</strong></span>
                 <span className="text-[#0AE448] font-bold">{progress.highPriorityDealsCount} Oportunidades Quentes para Fechamento</span>
               </div>
             </div>
@@ -245,13 +299,31 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
                   <p className="text-xs text-[#BBBAA6]">Pitches gerados com o SKU real #1 em ruptura de cada loja auditada.</p>
                 </div>
 
-                <button
-                  onClick={handleExportCsv}
-                  className="px-3.5 py-2 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 text-xs font-black rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-[#0AE448]/20"
-                >
-                  <FileSpreadsheet className="w-3.5 h-3.5 text-slate-950" />
-                  <span>{copiedCsv ? 'Baixando CSV...' : 'Exportar Planilha CSV Completa'}</span>
-                </button>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    onClick={handleSaveAllToLocalCrm}
+                    className="px-3 py-2 bg-[#00BAE2]/15 hover:bg-[#00BAE2]/25 text-[#00BAE2] border border-[#00BAE2]/30 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
+                  >
+                    {savedAllBulk ? <Check className="w-3.5 h-3.5 text-[#0AE448]" /> : <UserPlus className="w-3.5 h-3.5" />}
+                    <span>{savedAllBulk ? 'Todos Salvos no CRM!' : `Salvar Todos no CRM (${leads.length})`}</span>
+                  </button>
+
+                  <button
+                    onClick={handleExportCsv}
+                    className="px-3.5 py-2 bg-[#0AE448] hover:bg-[#0AE448]/90 text-slate-950 text-xs font-black rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-[#0AE448]/20"
+                  >
+                    <FileSpreadsheet className="w-3.5 h-3.5 text-slate-950" />
+                    <span>{copiedCsv ? 'Baixando CSV...' : 'Exportar Planilha CSV Completa'}</span>
+                  </button>
+
+                  <button
+                    onClick={handleClearBatch}
+                    className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl transition-all cursor-pointer"
+                    title="Limpar resultados do lote"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
 
               <div className="border border-white/10 rounded-2xl overflow-x-auto bg-[#141716]">
@@ -269,7 +341,17 @@ export const BatchProspectingAuditorModal: React.FC<BatchProspectingAuditorModal
                     {leads.map((lead) => (
                       <tr key={lead.id} className="hover:bg-white/5 transition-colors">
                         <td className="p-3">
-                          <div className="font-bold text-[#FFFCE1]">{lead.brandName}</div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-bold text-[#FFFCE1]">{lead.brandName}</span>
+                            {lead.hasCnpjInFooter === false && (
+                              <span
+                                className="px-1.5 py-0.5 bg-amber-500/15 text-amber-300 border border-amber-500/30 rounded text-[9px] font-mono font-bold inline-flex items-center gap-0.5"
+                                title="CNPJ ausente no rodapé HTML (Risco Decreto 7.962/13)"
+                              >
+                                <ShieldAlert className="w-2.5 h-2.5" /> Sem CNPJ
+                              </span>
+                            )}
+                          </div>
                           <div className="text-[10px] text-[#BBBAA6] font-mono flex items-center gap-1 flex-wrap">
                             <span>{lead.domain}</span>
                             <span>•</span>

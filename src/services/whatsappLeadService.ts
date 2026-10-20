@@ -19,12 +19,31 @@ const PRIMARY_STORAGE_KEY = 'ADSHIELD_CAPTURED_LEADS';
 const LEGACY_STORAGE_KEY = 'LEAKFINDER_CAPTURED_LEADS';
 const PROSPECT_STORAGE_KEY = 'adshield_custom_prospect_leads';
 
+const memoryLeadStore = new Map<string, string>();
+
+function safeGetStorageItem(key: string): string | null {
+  try {
+    if (typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function') {
+      return localStorage.getItem(key);
+    }
+  } catch {}
+  return memoryLeadStore.get(key) ?? null;
+}
+
+function safeSetStorageItem(key: string, value: string): void {
+  memoryLeadStore.set(key, value);
+  try {
+    if (typeof localStorage !== 'undefined' && typeof localStorage.setItem === 'function') {
+      localStorage.setItem(key, value);
+    }
+  } catch {}
+}
+
 export function getStoredLeads(): CapturedLead[] {
-  if (typeof localStorage === 'undefined') return [];
   const mergedMap = new Map<string, CapturedLead>();
 
   try {
-    const rawPrimary = localStorage.getItem(PRIMARY_STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
+    const rawPrimary = safeGetStorageItem(PRIMARY_STORAGE_KEY) || safeGetStorageItem(LEGACY_STORAGE_KEY);
     if (rawPrimary) {
       const primaryList: CapturedLead[] = JSON.parse(rawPrimary);
       if (Array.isArray(primaryList)) {
@@ -43,7 +62,7 @@ export function getStoredLeads(): CapturedLead[] {
 
   // Também unifica os leads salvos via Scanner em Lote / Lead Sniper / Founder HQ (adshield_custom_prospect_leads)
   try {
-    const rawProspects = localStorage.getItem(PROSPECT_STORAGE_KEY);
+    const rawProspects = safeGetStorageItem(PROSPECT_STORAGE_KEY);
     if (rawProspects) {
       const prospectList: any[] = JSON.parse(rawProspects);
       if (Array.isArray(prospectList)) {
@@ -82,18 +101,14 @@ export function getStoredLeads(): CapturedLead[] {
 export function updateLeadStatus(leadId: string, status: CapturedLead['status']): CapturedLead[] {
   const current = getStoredLeads();
   const updated = current.map(item => item.id === leadId ? { ...item, status } : item);
-  if (typeof localStorage !== 'undefined') {
-    localStorage.setItem(PRIMARY_STORAGE_KEY, JSON.stringify(updated));
-  }
+  safeSetStorageItem(PRIMARY_STORAGE_KEY, JSON.stringify(updated));
   return updated;
 }
 
 export function deleteStoredLead(leadId: string): CapturedLead[] {
   const current = getStoredLeads();
   const updated = current.filter(item => item.id !== leadId);
-  if (typeof localStorage !== 'undefined') {
-    localStorage.setItem(PRIMARY_STORAGE_KEY, JSON.stringify(updated));
-  }
+  safeSetStorageItem(PRIMARY_STORAGE_KEY, JSON.stringify(updated));
   return updated;
 }
 
@@ -112,9 +127,7 @@ export function saveLead(lead: Omit<CapturedLead, 'id' | 'capturedAt' | 'status'
     item => (item.storeUrl || '').toLowerCase().replace(/^https?:\/\//, '').replace(/\/$/, '') !== cleanDomain
   );
   const updated = [newLead, ...filtered];
-  if (typeof localStorage !== 'undefined') {
-    localStorage.setItem(PRIMARY_STORAGE_KEY, JSON.stringify(updated));
-  }
+  safeSetStorageItem(PRIMARY_STORAGE_KEY, JSON.stringify(updated));
 
   if (isSupabaseConfigured) {
     let storeDomain = lead.storeUrl;
@@ -122,17 +135,19 @@ export function saveLead(lead: Omit<CapturedLead, 'id' | 'capturedAt' | 'status'
       storeDomain = new URL(lead.storeUrl.startsWith('http') ? lead.storeUrl : `https://${lead.storeUrl}`).hostname;
     } catch {}
 
-    supabase.from('leads').insert({
-      store_url: lead.storeUrl,
-      store_domain: storeDomain,
-      contact_name: lead.merchantName,
-      contact_phone: lead.whatsappNumber,
-      contact_email: '', 
-      source: 'manual',
-      notes: `Brand: ${lead.brandName} | Score: ${lead.growthScore} | Loss: ${lead.estimatedLossRevenue}`,
-    }).then(({ error }: { error: any }) => {
-      if (error) console.warn('[LeadService] Supabase save failed:', error.message);
-    });
+    try {
+      Promise.resolve(
+        supabase.from('leads').insert({
+          store_url: lead.storeUrl,
+          store_domain: storeDomain,
+          contact_name: lead.merchantName,
+          contact_phone: lead.whatsappNumber,
+          contact_email: '', 
+          source: 'manual',
+          notes: `Brand: ${lead.brandName} | Score: ${lead.growthScore} | Loss: ${lead.estimatedLossRevenue}`,
+        })
+      ).catch(() => {});
+    } catch {}
   }
 
   return newLead;

@@ -8,6 +8,26 @@ const LOCAL_SNAPSHOTS_KEY = 'adshield_local_store_snapshots';
 const LOCAL_MONITORED_STORES_KEY = 'adshield_local_monitored_stores';
 const LOCAL_JOB_LOGS_KEY = 'adshield_local_swarm_job_logs';
 
+const memorySwarmStore = new Map<string, string>();
+
+function safeGetLocal(key: string): string | null {
+  try {
+    if (typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function') {
+      return localStorage.getItem(key);
+    }
+  } catch {}
+  return memorySwarmStore.get(key) ?? null;
+}
+
+function safeSetLocal(key: string, value: string): void {
+  memorySwarmStore.set(key, value);
+  try {
+    if (typeof localStorage !== 'undefined' && typeof localStorage.setItem === 'function') {
+      localStorage.setItem(key, value);
+    }
+  } catch {}
+}
+
 export interface LocalStoreSnapshotRecord {
   id: string;
   store_id: string;
@@ -120,12 +140,17 @@ export async function getMonitoredStores(): Promise<MonitoredStore[]> {
     }
   }
 
-  // Local Storage Stores (Respeita exclusões manuais feitas pelo usuário)
+  // Local Storage Stores (Respeita exclusões manuais feitas pelo usuário, mas migra seed legado exclusivo BRK)
   let localStores: MonitoredStore[] = [];
-  const local = typeof localStorage !== 'undefined' ? localStorage.getItem(LOCAL_MONITORED_STORES_KEY) : null;
+  const local = safeGetLocal(LOCAL_MONITORED_STORES_KEY);
   if (local !== null) {
     try {
-      localStores = JSON.parse(local);
+      const parsed: MonitoredStore[] = JSON.parse(local);
+      const isLegacyBrkOnlySeed =
+        Array.isArray(parsed) &&
+        parsed.length > 0 &&
+        parsed.every(s => s.storeUrl.toLowerCase().includes('brk'));
+      localStores = isLegacyBrkOnlySeed ? [...seedStores, ...parsed] : parsed;
     } catch {
       localStores = seedStores;
     }
@@ -139,9 +164,7 @@ export async function getMonitoredStores(): Promise<MonitoredStore[]> {
   supabaseStores.forEach(s => map.set(s.storeUrl.toLowerCase().replace(/\/$/, ''), s));
 
   const allMerged = Array.from(map.values());
-  if (typeof localStorage !== 'undefined') {
-    localStorage.setItem(LOCAL_MONITORED_STORES_KEY, JSON.stringify(allMerged));
-  }
+  safeSetLocal(LOCAL_MONITORED_STORES_KEY, JSON.stringify(allMerged));
   return allMerged;
 }
 
@@ -149,12 +172,12 @@ export async function getMonitoredStores(): Promise<MonitoredStore[]> {
  * Remove uma loja do monitoramento
  */
 export async function deleteMonitoredStore(storeId: string, storeUrl: string): Promise<boolean> {
-  const local = localStorage.getItem(LOCAL_MONITORED_STORES_KEY);
+  const local = safeGetLocal(LOCAL_MONITORED_STORES_KEY);
   if (local) {
     try {
       const stores: MonitoredStore[] = JSON.parse(local);
       const filtered = stores.filter(s => s.id !== storeId && s.storeUrl.toLowerCase().replace(/\/$/, '') !== storeUrl.toLowerCase().replace(/\/$/, ''));
-      localStorage.setItem(LOCAL_MONITORED_STORES_KEY, JSON.stringify(filtered));
+      safeSetLocal(LOCAL_MONITORED_STORES_KEY, JSON.stringify(filtered));
     } catch {}
   }
 
@@ -204,46 +227,44 @@ export async function saveStoreSnapshot(
     audited_at: new Date().toISOString()
   };
 
-  if (isSupabaseConfigured) {
+  // 1. SEMPRE salva primeiro no Cofre Local (Local-First) sem raw_diagnostic_json gigante para evitar QuotaExceededError
+  try {
+    const existing = safeGetLocal(LOCAL_SNAPSHOTS_KEY);
+    const snapshots: LocalStoreSnapshotRecord[] = existing ? JSON.parse(existing) : [];
+    snapshots.unshift({
+      id: `snap-${Date.now()}`,
+      ...snapshotRecord,
+      delta,
+      top_broken_skus_summary: topBrokenSummary
+    });
+    safeSetLocal(LOCAL_SNAPSHOTS_KEY, JSON.stringify(snapshots.slice(0, 50)));
+  } catch {
     try {
-      const { error } = await supabase.from('store_daily_snapshots').insert([
-        { ...snapshotRecord, raw_diagnostic_json: diagnostic }
-      ]);
-      if (!error) return true;
+      const compactList: LocalStoreSnapshotRecord[] = [
+        {
+          id: `snap-${Date.now()}`,
+          ...snapshotRecord,
+          delta,
+          top_broken_skus_summary: topBrokenSummary
+        }
+      ];
+      safeSetLocal(LOCAL_SNAPSHOTS_KEY, JSON.stringify(compactList));
     } catch {
-      // Fallback
+      // Safe to ignore
     }
   }
 
-  // Local Storage Fallback (Compactado sem raw_diagnostic_json gigante para evitar QuotaExceededError)
-  if (typeof localStorage !== 'undefined') {
+  // 2. Sincronização opcional em segundo plano com Supabase (se configurado)
+  if (isSupabaseConfigured) {
     try {
-      const existing = localStorage.getItem(LOCAL_SNAPSHOTS_KEY);
-      const snapshots: LocalStoreSnapshotRecord[] = existing ? JSON.parse(existing) : [];
-      snapshots.unshift({
-        id: `snap-${Date.now()}`,
-        ...snapshotRecord,
-        delta,
-        top_broken_skus_summary: topBrokenSummary
-      });
-      localStorage.setItem(LOCAL_SNAPSHOTS_KEY, JSON.stringify(snapshots.slice(0, 50)));
+      await supabase.from('store_daily_snapshots').insert([
+        { ...snapshotRecord, raw_diagnostic_json: diagnostic }
+      ]);
     } catch {
-      try {
-        // Fallback em caso de armazenamento quase cheio: mantém apenas os 15 mais recentes
-        const compactList: LocalStoreSnapshotRecord[] = [
-          {
-            id: `snap-${Date.now()}`,
-            ...snapshotRecord,
-            delta,
-            top_broken_skus_summary: topBrokenSummary
-          }
-        ];
-        localStorage.setItem(LOCAL_SNAPSHOTS_KEY, JSON.stringify(compactList));
-      } catch {
-        // Safe to ignore
-      }
+      // Non-fatal in Local-First mode
     }
   }
+
   return true;
 }
 
@@ -251,9 +272,8 @@ export async function saveStoreSnapshot(
  * 2.1. Recupera o histórico local de Snapshots (Antes vs. Depois)
  */
 export function getLocalStoreSnapshots(storeId?: string): LocalStoreSnapshotRecord[] {
-  if (typeof localStorage === 'undefined') return [];
   try {
-    const existing = localStorage.getItem(LOCAL_SNAPSHOTS_KEY);
+    const existing = safeGetLocal(LOCAL_SNAPSHOTS_KEY);
     if (!existing) return [];
     const parsed: LocalStoreSnapshotRecord[] = JSON.parse(existing);
     if (!Array.isArray(parsed)) return [];
@@ -280,25 +300,25 @@ export async function recordSwarmJobLog(jobResult: SwarmJobResult): Promise<bool
     created_at: new Date().toISOString()
   };
 
+  // 1. SEMPRE grava primeiro no Cofre Local (Local-First)
+  try {
+    const existing = safeGetLocal(LOCAL_JOB_LOGS_KEY);
+    const logs: LocalSwarmJobLogRecord[] = existing ? JSON.parse(existing) : [];
+    logs.unshift({ id: `log-${Date.now()}`, ...logEntry });
+    safeSetLocal(LOCAL_JOB_LOGS_KEY, JSON.stringify(logs.slice(0, 50)));
+  } catch {
+    // Safe fallback
+  }
+
+  // 2. Sincronização opcional com Supabase
   if (isSupabaseConfigured) {
     try {
-      const { error } = await supabase.from('swarm_job_logs').insert([logEntry]);
-      if (!error) return true;
+      await supabase.from('swarm_job_logs').insert([logEntry]);
     } catch {
-      // Fallback
+      // Non-fatal in Local-First mode
     }
   }
 
-  if (typeof localStorage !== 'undefined') {
-    try {
-      const existing = localStorage.getItem(LOCAL_JOB_LOGS_KEY);
-      const logs: LocalSwarmJobLogRecord[] = existing ? JSON.parse(existing) : [];
-      logs.unshift({ id: `log-${Date.now()}`, ...logEntry });
-      localStorage.setItem(LOCAL_JOB_LOGS_KEY, JSON.stringify(logs.slice(0, 50)));
-    } catch {
-      // Safe fallback
-    }
-  }
   return true;
 }
 
@@ -306,9 +326,8 @@ export async function recordSwarmJobLog(jobResult: SwarmJobResult): Promise<bool
  * 3.1. Recupera os logs locais de execução do Enxame
  */
 export function getLocalSwarmJobLogs(): LocalSwarmJobLogRecord[] {
-  if (typeof localStorage === 'undefined') return [];
   try {
-    const existing = localStorage.getItem(LOCAL_JOB_LOGS_KEY);
+    const existing = safeGetLocal(LOCAL_JOB_LOGS_KEY);
     if (!existing) return [];
     const parsed: LocalSwarmJobLogRecord[] = JSON.parse(existing);
     return Array.isArray(parsed) ? parsed : [];

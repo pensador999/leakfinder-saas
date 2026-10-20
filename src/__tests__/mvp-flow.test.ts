@@ -185,6 +185,125 @@ describe('MVP Core Flow Validation', () => {
     expect(auditedSupp.skus[0].sizeDemandWeight).toBe(45);
     expect(auditedSupp.skus[0].operationalAction).toContain('Bling ERP');
   });
+
+  // Test 9: Frentes 1, 2 & 3 Local-First End-to-End Verification
+  it('validates Frente 1 (Batch Auditor -> Local CRM), Frente 2 (Mem0 Restock & Snapshots), and Frente 3 (Multi-Vertical Portfolio & Quota Protection)', async () => {
+    const { parseDomainListInput, saveBatchLeadToLocalCrm } = await import('../services/agency/batchAuditorService');
+    const { getStoredLeads } = await import('../services/whatsappLeadService');
+    const { recordStoreInspection, formatRestockCelebrationMessage } = await import('../services/memory/storeContextMemory');
+    const { getMonitoredStores, saveStoreSnapshot, getLocalStoreSnapshots } = await import('../services/database/swarmDatabaseService');
+
+    // 1. Frente 1: Parser de domínios em lote + unificação com CRM Local
+    const parsedDomains = parseDomainListInput('https://www.minimalclub.com.br/produtos\nsallve.com.br, minimalclub.com.br');
+    expect(parsedDomains).toEqual(['minimalclub.com.br', 'sallve.com.br']);
+
+    await saveBatchLeadToLocalCrm({
+      id: 'lead-1-minimalclub.com.br',
+      domain: 'minimalclub.com.br',
+      url: 'https://minimalclub.com.br',
+      brandName: 'Minimal Club',
+      status: 'COMPLETED',
+      platform: 'Shopify',
+      verticalLabel: 'Moda & Vestuário',
+      totalProductsScanned: 24,
+      totalSkusAudited: 120,
+      monthlyAdWasteBRL: 3450,
+      brokenSkusCount: 3,
+      topBrokenProductTitle: 'Camiseta Pima Preta',
+      topBrokenProductUrl: 'https://minimalclub.com.br/products/camiseta-pima-preta',
+      topBrokenSizes: ['M', 'G'],
+      hasCnpjInFooter: true,
+      dealPriority: 'ALTÍSSIMA_OPORTUNIDADE',
+      closingArgument: 'Ruptura real drenando R$ 3.450/mês',
+      whatsAppPitchScript: 'Pitch customizado com SKU real Camiseta Pima Preta',
+      pdfDossierUrl: 'https://minimalclub.com.br/products/camiseta-pima-preta'
+    });
+
+    const crmLeads = getStoredLeads();
+    expect(crmLeads.length).toBeGreaterThan(0);
+    expect(crmLeads[0].source).toBe('BATCH_AUDITOR');
+    expect(crmLeads[0].topBrokenSku).toContain('Camiseta Pima Preta (M, G)');
+    expect(crmLeads[0].customPitch).toContain('Pitch customizado com SKU real');
+
+    // 2. Frente 2: Detector de Reposição Mem0 (Antes vs. Depois)
+    recordStoreInspection('minimalclub.com.br', {
+      brandName: 'Minimal Club',
+      products: [
+        {
+          handle: 'camiseta-pima-preta',
+          title: 'Camiseta Pima Preta',
+          url: 'https://minimalclub.com.br/products/camiseta-pima-preta',
+          brokenSizes: ['M', 'G'],
+          availableSizes: ['P', 'GG']
+        }
+      ]
+    });
+
+    const updatedMem = recordStoreInspection('minimalclub.com.br', {
+      brandName: 'Minimal Club',
+      products: [
+        {
+          handle: 'camiseta-pima-preta',
+          title: 'Camiseta Pima Preta',
+          url: 'https://minimalclub.com.br/products/camiseta-pima-preta',
+          brokenSizes: [],
+          availableSizes: ['P', 'M', 'G', 'GG']
+        }
+      ]
+    });
+
+    expect(updatedMem.restockEvents.length).toBeGreaterThan(0);
+    expect(updatedMem.restockEvents[0].restockedSizes).toEqual(['M', 'G']);
+    expect(updatedMem.profile.recentRestocks.length).toBeGreaterThan(0);
+    const restockMsg = formatRestockCelebrationMessage({
+      storeDomain: 'minimalclub.com.br',
+      merchantName: 'Minimal Club',
+      restockEvents: updatedMem.restockEvents
+    });
+    expect(restockMsg).toContain('Camiseta Pima Preta');
+
+    // 3. Frente 3: Portfólio Multi-Vertical & Proteção de Quota nos Snapshots
+    const monitoredStores = await getMonitoredStores();
+    expect(monitoredStores.some(s => s.brandName === 'Minimal Club')).toBe(true);
+    expect(monitoredStores.some(s => s.brandName === 'Sallve')).toBe(true);
+    expect(monitoredStores.some(s => s.brandName === 'Insider Store')).toBe(true);
+
+    const mockDiag: any = {
+      growthScore: 84,
+      estimatedRevenueLiftMin: 12,
+      estimatedRevenueLiftMax: 25,
+      visionAnalysis: { contrastAudit: { contrastRatio: 7.5, wcagAaPassed: true } },
+      realSiteData: {
+        catalogAudit: {
+          totalProductsScanned: 24,
+          monthlyLossEstimateBRL: 2800,
+          issues: [
+            {
+              sku: 'SKU-PIMA-01',
+              productTitle: 'Camiseta Pima Preta',
+              productUrl: 'https://minimalclub.com.br/products/camiseta-pima-preta',
+              missingSizes: ['M', 'G'],
+              availableSizes: ['P', 'GG'],
+              isFullSizeGridRequired: true
+            }
+          ]
+        }
+      }
+    };
+
+    await saveStoreSnapshot('store-minimalclub-com-br', mockDiag, {
+      hasPreviousSnapshot: true,
+      scoreDelta: 4,
+      brokenSkusDelta: -1,
+      monthlyLossDelta: -650,
+      evolutionSummary: 'Score subiu +4 pts'
+    });
+
+    const snaps = getLocalStoreSnapshots('store-minimalclub-com-br');
+    expect(snaps.length).toBe(1);
+    expect(snaps[0].top_broken_skus_summary?.[0].title).toBe('Camiseta Pima Preta');
+    expect((snaps[0] as any).raw_diagnostic_json).toBeUndefined();
+  });
 });
 
 

@@ -194,6 +194,52 @@ export const AutonomousSwarmControlView: React.FC<AutonomousSwarmControlViewProp
     setTimeout(() => setCopiedRestock(false), 2000);
   };
 
+  const handleSimulateRestockEvent = () => {
+    const catalogIssues = realSiteData.catalogAudit?.issues || [];
+    const firstBroken = catalogIssues.find(i => i.missingSizes && i.missingSizes.length > 0) || catalogIssues[0];
+    if (!firstBroken) return;
+
+    // Ensure baseline broken state is recorded first
+    recordStoreInspection(realSiteData.domain, {
+      brandName: realSiteData.brandName,
+      products: catalogIssues.map(issue => ({
+        handle: issue.sku,
+        title: issue.productTitle,
+        url: issue.productUrl,
+        brokenSizes: issue.missingSizes.length > 0 ? issue.missingSizes : ['M', 'G'],
+        availableSizes: issue.availableSizes
+      }))
+    });
+
+    // Now simulate that the top broken SKU had its core sizes restocked in the warehouse
+    const restockedSizes = firstBroken.missingSizes.length > 0
+      ? firstBroken.missingSizes.filter(s => s !== 'ARQUIVO (ESGOTADO)').slice(0, 2)
+      : ['M', 'G'];
+
+    recordStoreInspection(realSiteData.domain, {
+      brandName: realSiteData.brandName,
+      products: catalogIssues.map((issue, idx) =>
+        idx === 0 || issue.sku === firstBroken.sku
+          ? {
+              handle: issue.sku,
+              title: issue.productTitle,
+              url: issue.productUrl,
+              brokenSizes: [],
+              availableSizes: Array.from(new Set([...(issue.availableSizes || []), ...restockedSizes]))
+            }
+          : {
+              handle: issue.sku,
+              title: issue.productTitle,
+              url: issue.productUrl,
+              brokenSizes: issue.missingSizes,
+              availableSizes: issue.availableSizes
+            }
+      )
+    });
+
+    loadDatabaseTelemetry();
+  };
+
   const knownSkuEntries = Object.values(storeMemory.knownSkus);
 
   return (
@@ -370,15 +416,25 @@ export const AutonomousSwarmControlView: React.FC<AutonomousSwarmControlViewProp
                   </p>
                 </div>
               </div>
-              {storeMemory.recentRestocks.length > 0 && (
+              <div className="flex items-center gap-2 flex-wrap">
                 <button
-                  onClick={handleCopyRestockCelebration}
-                  className="px-3 py-1.5 bg-[#0AE448]/15 hover:bg-[#0AE448]/25 text-[#0AE448] border border-[#0AE448]/30 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                  onClick={handleSimulateRestockEvent}
+                  className="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-[#00BAE2] border border-[#00BAE2]/30 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                  title="Simular reposição de grade no SKU #1 para testar o gatilho de reativação de campanha Meta Ads"
                 >
-                  {copiedRestock ? <Check className="w-3.5 h-3.5" /> : <Send className="w-3.5 h-3.5" />}
-                  <span>{copiedRestock ? 'Alerta de Reposição Copiado!' : 'Copiar Alerta de Reposição WhatsApp'}</span>
+                  <PackageCheck className="w-3.5 h-3.5" />
+                  <span>Simular Evento de Reposição (Teste Mem0)</span>
                 </button>
-              )}
+                {storeMemory.recentRestocks.length > 0 && (
+                  <button
+                    onClick={handleCopyRestockCelebration}
+                    className="px-3 py-1.5 bg-[#0AE448]/15 hover:bg-[#0AE448]/25 text-[#0AE448] border border-[#0AE448]/30 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    {copiedRestock ? <Check className="w-3.5 h-3.5" /> : <Send className="w-3.5 h-3.5" />}
+                    <span>{copiedRestock ? 'Alerta de Reposição Copiado!' : 'Copiar Alerta de Reposição WhatsApp'}</span>
+                  </button>
+                )}
+              </div>
             </div>
 
             {storeMemory.recentRestocks.length > 0 ? (
@@ -461,6 +517,18 @@ export const AutonomousSwarmControlView: React.FC<AutonomousSwarmControlViewProp
                       <p className="text-xs text-[#BBBAA6]">
                         {snap.delta?.evolutionSummary || 'Snapshot de linha de base (Marco Zero) registrado no cofre local.'}
                       </p>
+                      {snap.top_broken_skus_summary && snap.top_broken_skus_summary.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {snap.top_broken_skus_summary.slice(0, 3).map((item, idx) => (
+                            <span
+                              key={`${item.sku}-${idx}`}
+                              className="px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 text-[10px] font-mono text-rose-300"
+                            >
+                              {item.title.slice(0, 28)}{item.title.length > 28 ? '…' : ''} [{item.missingSizes.slice(0, 3).join(', ')}]
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-4 text-xs font-mono shrink-0">
