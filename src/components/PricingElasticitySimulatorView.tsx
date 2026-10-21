@@ -12,6 +12,7 @@ import {
 import { AgentDiagnosticResult } from '../types';
 import { calculatePricingElasticity, PricingElasticityResult } from '../services/pricingElasticityEngine';
 import { calculateStoreFinancialGrounding } from '../services/ai/storeFinancialGroundingEngine';
+import { useAuditStore } from '../store/auditStore';
 
 interface PricingElasticitySimulatorViewProps {
   diagnostic: AgentDiagnosticResult;
@@ -19,9 +20,10 @@ interface PricingElasticitySimulatorViewProps {
 
 export const PricingElasticitySimulatorView: React.FC<PricingElasticitySimulatorViewProps> = ({ diagnostic }) => {
   const { realSiteData, input, social } = diagnostic;
+  const customMonthlyAdSpend = useAuditStore(state => state.customMonthlyAdSpend);
   const [copiedCode, setCopiedCode] = useState(false);
 
-  const finances = calculateStoreFinancialGrounding(realSiteData, input, social);
+  const finances = calculateStoreFinancialGrounding(realSiteData, input, social, customMonthlyAdSpend);
 
   // Sliders State grounded in store's real average ticket and revenue tier
   const groundedTicket = Number(input.averageOrderValue) || finances.groundedAverageTicket || 165;

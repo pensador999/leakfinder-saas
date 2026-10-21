@@ -118,9 +118,6 @@ export default defineConfig({
             if (id.includes('gsap')) {
               return 'vendor-animation';
             }
-            if (id.includes('@supabase')) {
-              return 'vendor-supabase';
-            }
             if (id.includes('canvas-confetti')) {
               return 'vendor-confetti';
             }

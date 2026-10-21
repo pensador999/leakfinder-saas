@@ -1,12 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calculator, ShieldCheck, AlertCircle, Sparkles } from 'lucide-react';
+import { useAuditStore } from '../../store/auditStore';
+import { calculateStoreFinancialGrounding } from '../../services/ai/storeFinancialGroundingEngine';
 
 export const RoasCalculator: React.FC = () => {
-  const [adSpend, setAdSpend] = useState(5000);
+  const diagnostic = useAuditStore(state => state.diagnostic);
+  const customMonthlyAdSpend = useAuditStore(state => state.customMonthlyAdSpend);
+  const setCustomMonthlyAdSpend = useAuditStore(state => state.setCustomMonthlyAdSpend);
+
+  const finances = diagnostic
+    ? calculateStoreFinancialGrounding(diagnostic.realSiteData, diagnostic.input, diagnostic.social, customMonthlyAdSpend)
+    : null;
+
+  const initialSpend = finances ? Math.round(finances.estimatedAdSpend.monthly) : 5000;
+  const initialAov = finances ? Math.round(finances.groundedAverageTicket) : 180;
+
+  const [adSpend, setAdSpendState] = useState(initialSpend);
   const [cpc, setCpc] = useState(1.50);
   const [conversionRate, setConversionRate] = useState(1.8);
-  const [aov, setAov] = useState(180);
+  const [aov, setAov] = useState(initialAov);
   const [marginPercent, setMarginPercent] = useState(60);
+
+  useEffect(() => {
+    if (finances) {
+      setAdSpendState(Math.round(finances.estimatedAdSpend.monthly));
+      setAov(Math.round(finances.groundedAverageTicket));
+    }
+  }, [diagnostic?.realSiteData.domain, customMonthlyAdSpend]);
+
+  const setAdSpend = (val: number) => {
+    setAdSpendState(val);
+    setCustomMonthlyAdSpend(val);
+  };
 
   // Dynamic calculations with exact cents precision
   const estimatedClicks = Math.round(adSpend / (cpc || 1));

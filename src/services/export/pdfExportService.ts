@@ -8,6 +8,7 @@ import { calculateStoreFinancialGrounding } from '../ai/storeFinancialGroundingE
 import { auditSupplyChainDiscrepancy } from '../supplyChain/erpHubDiscrepancyEngine.ts';
 import { getWhiteLabelConfig, WhiteLabelConfig } from '../whiteLabelService.ts';
 import { isCatalogProductBroken } from '../siteInspector.ts';
+import { useAuditStore } from '../../store/auditStore.ts';
 
 export interface PdfExportOptions {
   agencyName?: string;
@@ -15,6 +16,7 @@ export interface PdfExportOptions {
   consultantPhone?: string;
   accentColor?: 'indigo' | 'blue' | 'emerald' | 'black';
   filename?: string;
+  customMonthlyAdSpend?: number | null;
 }
 
 export class PdfExportService {
@@ -127,7 +129,11 @@ export class PdfExportService {
     const phone = options?.consultantPhone || wl.consultantWhatsApp || '(11) 98765-4321';
 
     const { realSiteData, growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax, visionAnalysis } = diagnostic;
-    const finances = calculateStoreFinancialGrounding(realSiteData, diagnostic.input, diagnostic.social);
+    const activeSpendOverride =
+      options?.customMonthlyAdSpend !== undefined
+        ? options.customMonthlyAdSpend
+        : useAuditStore.getState().customMonthlyAdSpend;
+    const finances = calculateStoreFinancialGrounding(realSiteData, diagnostic.input, diagnostic.social, activeSpendOverride);
     const supplyChain = auditSupplyChainDiscrepancy(realSiteData, diagnostic.input);
     const rawIssues = realSiteData.catalogAudit?.issues || [];
     const brokenIssues = rawIssues.filter(isCatalogProductBroken);

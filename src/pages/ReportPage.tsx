@@ -21,7 +21,7 @@ const SeoAgentView = lazy(() => import('../components/agents/SeoAgentView').then
 const AdsAgentView = lazy(() => import('../components/agents/AdsAgentView').then(m => ({ default: m.AdsAgentView })));
 const SalesCopyAgentView = lazy(() => import('../components/agents/SalesCopyAgentView').then(m => ({ default: m.SalesCopyAgentView })));
 const PmGrowthAgentView = lazy(() => import('../components/agents/PmGrowthAgentView').then(m => ({ default: m.PmGrowthAgentView })));
-const CompetitorAgentView = lazy(() => import('../components/agents/CompetitorAgentView').then(m => ({ default: m.CompetitorAgentView })));
+const VectorMemoryCompetitorRadarView = lazy(() => import('../components/agents/VectorMemoryCompetitorRadarView').then(m => ({ default: m.VectorMemoryCompetitorRadarView })));
 const ActionPlanKanban = lazy(() => import('../components/agents/ActionPlanKanban').then(m => ({ default: m.ActionPlanKanban })));
 const AgentChatView = lazy(() => import('../components/agents/AgentChatView').then(m => ({ default: m.AgentChatView })));
 const RoasCalculator = lazy(() => import('../components/tools/RoasCalculator').then(m => ({ default: m.RoasCalculator })));
@@ -40,7 +40,7 @@ const AutonomousSwarmControlView = lazy(() => import('../components/AutonomousSw
 // ⚡ LAZY LOADED MODALS
 const ExecutivePdfExportModal = lazy(() => import('../components/ExecutivePdfExportModal').then(m => ({ default: m.ExecutivePdfExportModal })));
 const SettingsModal = lazy(() => import('../components/SettingsModal').then(m => ({ default: m.SettingsModal })));
-const AdminLeadsDashboard = lazy(() => import('../components/AdminLeadsDashboard').then(m => ({ default: m.AdminLeadsDashboard })));
+const AdminLeadsDrawer = lazy(() => import('../components/AdminLeadsDrawer').then(m => ({ default: m.AdminLeadsDrawer })));
 
 export function ReportPage() {
   const { id } = useParams();
@@ -306,7 +306,7 @@ export function ReportPage() {
                   )}
 
                   {activeTab === 'competitor' && (
-                    <CompetitorAgentView diagnostic={diagnostic} />
+                    <VectorMemoryCompetitorRadarView diagnostic={diagnostic} />
                   )}
 
                   {activeTab === 'kanban' && (
@@ -366,7 +366,7 @@ export function ReportPage() {
         )}
 
         {isAdminDashboardOpen && (
-          <AdminLeadsDashboard onClose={() => setIsAdminDashboardOpen(false)} />
+          <AdminLeadsDrawer isOpen={isAdminDashboardOpen} onClose={() => setIsAdminDashboardOpen(false)} />
         )}
       </Suspense>
 

@@ -23,6 +23,8 @@ import { OfficialIntegrationConnectModal } from './OfficialIntegrationConnectMod
 import { PdfExportService } from '../services/export/pdfExportService';
 import { isCatalogProductBroken } from '../services/siteInspector';
 import { getWhiteLabelConfig, setWhiteLabelConfig } from '../services/whiteLabelService';
+import { calculateStoreFinancialGrounding } from '../services/ai/storeFinancialGroundingEngine';
+import { useAuditStore } from '../store/auditStore';
 
 interface ExecutivePdfExportModalProps {
   isOpen: boolean;
@@ -124,11 +126,18 @@ export const ExecutivePdfExportModal: React.FC<ExecutivePdfExportModalProps> = (
       ? sampleBroken.missingSizes
       : ['M', 'G'];
 
+  const customMonthlyAdSpend = useAuditStore(state => state.customMonthlyAdSpend);
+  const finances = calculateStoreFinancialGrounding(realSiteData, input, diagnostic.social, customMonthlyAdSpend);
   const monthlyLoss =
-    realSiteData.catalogAudit?.monthlyLossEstimateBRL !== undefined
-      ? Number(realSiteData.catalogAudit.monthlyLossEstimateBRL.toFixed(2))
-      : Number((brokenItems.length * 1384.65).toFixed(2));
-  const pixEstimatedGain = Math.max(2800, Math.round(monthlyLoss * 0.85));
+    brokenItems.length > 0
+      ? finances.financialRisk.adWasteMonthly > 0
+        ? finances.financialRisk.adWasteMonthly
+        : Number((realSiteData.catalogAudit?.monthlyLossEstimateBRL || brokenItems.length * 1384.65).toFixed(2))
+      : 0;
+  const pixEstimatedGain = Math.max(
+    Math.round(finances.financialRisk.checkoutFrictionMonthly || 1200),
+    Math.round(monthlyLoss * 0.85)
+  );
 
   const handlePrint = () => {
     window.print();
