@@ -27,6 +27,7 @@ import { calculateStoreFinancialGrounding } from '../services/ai/storeFinancialG
 import { AuditScoreEvolutionTimeline } from './history/AuditScoreEvolutionTimeline';
 import { OneClickMitigationService } from '../services/actions/oneClickMitigationService';
 import { PdfExportService } from '../services/export/pdfExportService';
+import { useAuditStore } from '../store/auditStore';
 
 interface ExecutiveSummaryProps {
   diagnostic: AgentDiagnosticResult;
@@ -35,6 +36,7 @@ interface ExecutiveSummaryProps {
 
 export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, onSelectAgentTab }) => {
   const { growthScore, estimatedRevenueLiftMin, estimatedRevenueLiftMax, realSiteData, visionAnalysis, social } = diagnostic;
+  const customMonthlyAdSpend = useAuditStore(state => state.customMonthlyAdSpend);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
 
@@ -46,7 +48,7 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ diagnostic, 
     };
   }, []);
 
-  const finances = calculateStoreFinancialGrounding(realSiteData, diagnostic.input, social);
+  const finances = calculateStoreFinancialGrounding(realSiteData, diagnostic.input, social, customMonthlyAdSpend);
 
   const telemetryData = generateShopifyTelemetryAnalysis(
     realSiteData.domain,

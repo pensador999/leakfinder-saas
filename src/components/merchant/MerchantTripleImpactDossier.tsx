@@ -28,6 +28,7 @@ import { auditSupplyChainDiscrepancy } from '../../services/supplyChain/erpHubDi
 import { isCatalogProductBroken } from '../../services/siteInspector';
 import { AuditScoreEvolutionTimeline } from '../history/AuditScoreEvolutionTimeline';
 import { getWhiteLabelConfig } from '../../services/whiteLabelService';
+import { useAuditStore } from '../../store/auditStore';
 import { ProductImageWithFallback } from '../common/ProductImageWithFallback';
 import { WhatsAppIcon } from '../common/WhatsAppIcon';
 
@@ -47,25 +48,26 @@ export const MerchantTripleImpactDossier: React.FC<MerchantTripleImpactDossierPr
   onOpenMetaAutoKill
 }) => {
   const { realSiteData, input, growthScore, estimatedRevenueLiftMin } = diagnostic;
-  const finances = calculateStoreFinancialGrounding(realSiteData, input, diagnostic.social);
+  const customAdSpend = useAuditStore(state => state.customMonthlyAdSpend);
+  const setCustomAdSpend = useAuditStore(state => state.setCustomMonthlyAdSpend);
+
+  const finances = calculateStoreFinancialGrounding(realSiteData, input, diagnostic.social, customAdSpend);
   const supplyChainAudit = auditSupplyChainDiscrepancy(realSiteData, input);
 
   const [copiedScript, setCopiedScript] = useState(false);
   const [showAdvancedScripts, setShowAdvancedScripts] = useState(false);
-  const [customAdSpend, setCustomAdSpend] = useState<number>(finances.estimatedAdSpend.monthly);
   const [showMathFormula, setShowMathFormula] = useState<boolean>(false);
 
   const brokenSkus = (realSiteData.catalogAudit?.issues || []).filter(isCatalogProductBroken);
 
-  // Cálculo transparente e reativo da perda com base na verba informada pelo lojista
-  const activeSpend = customAdSpend > 0 ? customAdSpend : finances.estimatedAdSpend.monthly;
-  const brokenRatio = brokenSkus.length > 0 ? Math.min(0.45, (brokenSkus.length / Math.max(1, finances.catalogVolumeCount)) * 1.5) : 0;
-  // Regra de 65% de compras perdidas na falta de grade central M/G
-  const dynamicAdWaste = brokenSkus.length > 0 ? Number((activeSpend * brokenRatio * 0.65).toFixed(2)) : 0;
-  const dynamicTotalLoss = Number((dynamicAdWaste + finances.financialRisk.checkoutFrictionMonthly).toFixed(2));
-  const dynamicAnnualLoss = Number((dynamicTotalLoss * 12).toFixed(2));
-  const formattedDynamicLoss = formatBRL(dynamicTotalLoss);
-  const formattedDynamicAnnualLoss = formatBRL(dynamicAnnualLoss);
+  // Fonte Única da Verdade Financeira (100% sincronizada com Header, Resumo Executivo, ToT e PDF)
+  const activeSpend = finances.estimatedAdSpend.monthly;
+  const brokenRatio = finances.financialRisk.brokenRatio;
+  const dynamicAdWaste = finances.financialRisk.adWasteMonthly;
+  const dynamicTotalLoss = finances.financialRisk.totalMonthlyLoss;
+  const dynamicAnnualLoss = finances.financialRisk.annualizedLoss;
+  const formattedDynamicLoss = finances.financialRisk.formattedMonthlyLoss;
+  const formattedDynamicAnnualLoss = finances.financialRisk.formattedAnnualizedLoss;
 
   const whiteLabel = getWhiteLabelConfig();
   const cleanConsultantPhone = (whiteLabel.consultantWhatsApp || '5511999999999').replace(/\D/g, '');

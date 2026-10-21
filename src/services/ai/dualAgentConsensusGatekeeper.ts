@@ -7,6 +7,7 @@
 
 import type { AgentDiagnosticResult } from '../../types/index.ts';
 import { isCatalogProductBroken } from '../siteInspector.ts';
+import { calculateStoreFinancialGrounding } from './storeFinancialGroundingEngine.ts';
 
 export interface VerifiedFindingConsensus {
   id: string;
@@ -59,6 +60,7 @@ export function executeDualAgentCrossVerification(
   const issues = realSiteData.catalogAudit?.issues || [];
   const brokenIssues = issues.filter(isCatalogProductBroken);
   const brokenCount = brokenIssues.length;
+  const finances = calculateStoreFinancialGrounding(realSiteData, diagnostic?.input, diagnostic?.social);
   
   const snippet = (realSiteData.rawHtmlSnippet || '').toLowerCase();
   const hasPix = snippet.includes('pix');
@@ -96,9 +98,11 @@ export function executeDualAgentCrossVerification(
       consensusStatus: 'APROVADO_DUPLO_CONSENSO',
       consensusScorePct: 98.5,
       rawEvidenceVerified: `${brokenCount} produto(s) com variantes centrais [${firstBroken?.missingSizes?.slice(0, 3).join(', ')}] esgotadas`,
-      financialImpactMonthly: (realSiteData.catalogAudit?.monthlyLossEstimateBRL !== undefined && realSiteData.catalogAudit.monthlyLossEstimateBRL > 0)
-        ? realSiteData.catalogAudit.monthlyLossEstimateBRL
-        : Math.round(estimatedRevenueLiftMin * 240)
+      financialImpactMonthly: finances.financialRisk.adWasteMonthly > 0
+        ? finances.financialRisk.adWasteMonthly
+        : (realSiteData.catalogAudit?.monthlyLossEstimateBRL !== undefined && realSiteData.catalogAudit.monthlyLossEstimateBRL > 0)
+          ? realSiteData.catalogAudit.monthlyLossEstimateBRL
+          : Math.round(estimatedRevenueLiftMin * 240)
     });
   } else {
     verifiedFindings.push({

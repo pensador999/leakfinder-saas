@@ -15,9 +15,10 @@ export interface AuditStoreState {
   analyzingUrl: string;
   auditError: string | null;
   
-  // Navigation
+  // Navigation & Shared Simulation Parameters
   activeTab: string;
   isAdvancedMode: boolean;
+  customMonthlyAdSpend: number | null;
   
   // Actions
   setDiagnostic: (result: AgentDiagnosticResult | null) => void;
@@ -26,6 +27,7 @@ export interface AuditStoreState {
   setAuditError: (error: string | null) => void;
   setActiveTab: (tab: string) => void;
   setIsAdvancedMode: (advanced: boolean) => void;
+  setCustomMonthlyAdSpend: (spend: number | null) => void;
   clearAudit: () => void;
 }
 
@@ -126,20 +128,23 @@ export const useAuditStore = create<AuditStoreState>()(
       auditError: null,
       activeTab: 'summary',
       isAdvancedMode: false,
+      customMonthlyAdSpend: null,
 
       // Actions
-      setDiagnostic: (result) => set({ diagnostic: result, auditError: null }),
+      setDiagnostic: (result) => set({ diagnostic: result, auditError: null, customMonthlyAdSpend: null }),
       setIsAnalyzing: (analyzing) => set({ isAnalyzing: analyzing }),
       setAnalyzingUrl: (url) => set({ analyzingUrl: url }),
       setAuditError: (error) => set({ auditError: error, isAnalyzing: false }),
       setActiveTab: (tab) => set({ activeTab: tab }),
       setIsAdvancedMode: (advanced) => set({ isAdvancedMode: advanced }),
+      setCustomMonthlyAdSpend: (spend) => set({ customMonthlyAdSpend: spend }),
       clearAudit: () => set({ 
         diagnostic: null, 
         auditError: null, 
         isAnalyzing: false, 
         analyzingUrl: '',
-        activeTab: 'summary'
+        activeTab: 'summary',
+        customMonthlyAdSpend: null
       }),
     }),
     {

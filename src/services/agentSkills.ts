@@ -1,8 +1,10 @@
 import { AgentDiagnosticResult, CroFinding, SeoKeyword, AdCreativeBlueprint, SalesOffer, ObjectionItem, IceIdea, AuditInput, CompetitorAnalysis } from '../types';
 import { WorkerInspectionResult } from './siteInspectorWorker';
+import { isCatalogProductBroken } from './siteInspector';
 import { askGeminiAgent } from './llmService';
 import { agentKnowledgeBases, getVerticalizedAgentPrompt } from '../agents';
 import { resolveDynamicVertical } from './ai/dynamicVerticalContext';
+import { calculateStoreFinancialGrounding, formatBRL } from './ai/storeFinancialGroundingEngine';
 
 function buildNicheContextString(worker: WorkerInspectionResult, input: AuditInput): string {
   const primaryContext = `${worker.detectedNiche || ''} ${input.niche || ''} ${worker.siteData.domain || ''} ${worker.siteData.title || ''}`.toLowerCase();
@@ -19,6 +21,19 @@ export async function buildCroAgentSkill(worker: WorkerInspectionResult, input: 
   const vertical = resolveDynamicVertical(nicheContext);
   const verticalPrompt = getVerticalizedAgentPrompt('agent-10', nicheContext, agentKnowledgeBases.cro.systemPrompt);
 
+  const catalogIssues = worker.siteData.catalogAudit?.issues || [];
+  const brokenIssues = catalogIssues.filter(isCatalogProductBroken);
+  const topBroken = brokenIssues[0];
+  const loadTimeSec = worker.siteData.estimatedLoadTime || 2.1;
+  const hasPixHighlight = Boolean(worker.siteData.detectedCheckoutTerms?.hasPix);
+
+  const baseCroScore = hasPixHighlight ? 84 : 78;
+  const brokenPenalty = Math.min(18, brokenIssues.length * 4);
+  const speedPenalty = loadTimeSec > 3.0 ? 8 : loadTimeSec > 2.4 ? 4 : 0;
+  const legalPenalty = worker.siteData.legalCompliance && !worker.siteData.legalCompliance.cnpjFound ? 5 : 0;
+  const dynamicCroScore = Math.max(42, Math.min(96, baseCroScore - brokenPenalty - speedPenalty - legalPenalty));
+  const dynamicFrictionScore = Math.max(8, Math.min(65, 100 - dynamicCroScore));
+
   const llmResponse = await askGeminiAgent<{ findings: CroFinding[] }>(
     verticalPrompt,
     input,
@@ -28,15 +43,40 @@ export async function buildCroAgentSkill(worker: WorkerInspectionResult, input: 
 
   if (llmResponse && llmResponse.findings && Array.isArray(llmResponse.findings)) {
     return {
-      score: 85,
+      score: dynamicCroScore,
       findings: llmResponse.findings,
       quickWins: llmResponse.findings.filter(f => f.impact === 'CRÍTICO').map(f => f.title),
-      mobileSpeedMs: worker.siteData.estimatedLoadTime ? worker.siteData.estimatedLoadTime * 1000 : 2500,
-      checkoutFrictionScore: 20
+      mobileSpeedMs: Math.round(loadTimeSec * 1000),
+      checkoutFrictionScore: dynamicFrictionScore
     };
   }
 
   let specificFindings: CroFinding[] = [];
+  const groundedPrefixFindings: CroFinding[] = [];
+
+  if (topBroken) {
+    groundedPrefixFindings.push({
+      id: 'cro-live-rupture',
+      category: 'Checkout',
+      title: `Estancar Fuga de Conversão em "${topBroken.productTitle}" (${brokenIssues.length} SKU${brokenIssues.length > 1 ? 's' : ''} c/ Grade Furada)`,
+      description: `Auditoria ao vivo em ${worker.siteData.domain} detectou indisponibilidade nas variantes [${topBroken.missingSizes.slice(0, 4).join(', ') || 'Centrais'}]. Visitantes vindos de tráfego pago encontram a grade furada e abandonam a sessão.`,
+      impact: 'CRÍTICO',
+      effort: 'FÁCIL',
+      recommendation: `Redirecionar campanhas ativas de "${topBroken.productTitle}" para produtos Curva A com grade 100% disponível ou ativar captura "Avise-me" no tamanho esgotado.`
+    });
+  }
+
+  if (!hasPixHighlight) {
+    groundedPrefixFindings.push({
+      id: 'cro-live-pix',
+      category: 'Checkout',
+      title: `Destaque de Preço com Desconto no Pix Ausente Acima da Dobra (${worker.siteData.brandName})`,
+      description: `Não identificamos badge explícito de economia via Pix ao lado do seletor de compra em ${worker.siteData.domain}, reduzindo a conversão imediata à vista.`,
+      impact: 'ALTO',
+      effort: 'FÁCIL',
+      recommendation: 'Inserir micro-copy verde "5% a 7% OFF no Pix com Aprovação Imediata" logo abaixo do preço principal.'
+    });
+  }
 
   switch (vertical.verticalId) {
     case 'CALCADOS_COURO':
@@ -258,12 +298,14 @@ export async function buildCroAgentSkill(worker: WorkerInspectionResult, input: 
       break;
   }
 
+  const combinedFindings = [...groundedPrefixFindings, ...specificFindings].slice(0, 4);
+
   return {
-    score: vertical.verticalId === 'CALCADOS_COURO' ? 68 : 74,
-    findings: specificFindings,
-    quickWins: specificFindings.map(f => f.title),
-    mobileSpeedMs: worker.siteData.estimatedLoadTime ? Math.round(worker.siteData.estimatedLoadTime * 1000) : 2200,
-    checkoutFrictionScore: vertical.verticalId === 'CALCADOS_COURO' ? 28 : 22
+    score: dynamicCroScore,
+    findings: combinedFindings,
+    quickWins: combinedFindings.map(f => f.title),
+    mobileSpeedMs: Math.round(loadTimeSec * 1000),
+    checkoutFrictionScore: dynamicFrictionScore
   };
 }
 
@@ -288,16 +330,21 @@ export async function buildCopyAgentSkill(worker: WorkerInspectionResult, input:
   }
 
   const brand = worker.siteData.brandName || input.businessName || 'Sua Marca';
+  const finances = calculateStoreFinancialGrounding(worker.siteData, input, worker.social);
+  const catalogIssues = worker.siteData.catalogAudit?.issues || [];
+  const heroProduct = catalogIssues.find(i => !isCatalogProductBroken(i)) || catalogIssues[0];
   const terms = vertical.vocabulary.industryTerms;
   const feature = vertical.mandatoryProductFeatures[0] || 'Garantia Oficial';
-  const bundlePrice = `R$ ${Math.round(vertical.averageTicketBRL * 1.65)},90`;
+  const bundlePrice = formatBRL(Number((finances.groundedAverageTicket * 1.75).toFixed(2)));
 
   return {
     headlineFrameworks: [
       {
         framework: `Problema-Agitação-Solução (${vertical.label})`,
-        headline: `Descubra o Padrão ${brand} em ${vertical.label}: ${terms[0] ? terms[0].charAt(0).toUpperCase() + terms[0].slice(1) : 'Alta Performance'} com Pronta Entrega`,
-        subheadline: `Desenvolvido para quem exige ${terms.slice(0, 3).join(', ')} e ${feature.toLowerCase()}.`
+        headline: heroProduct
+          ? `${heroProduct.productTitle} — Padrão Oficial ${brand} com Pronta Entrega Auditada`
+          : `Descubra o Padrão ${brand} em ${vertical.label}: ${terms[0] ? terms[0].charAt(0).toUpperCase() + terms[0].slice(1) : 'Alta Performance'} com Pronta Entrega`,
+        subheadline: `Desenvolvido para quem exige ${terms.slice(0, 3).join(', ')} e ${feature.toLowerCase()}. Ticket médio da linha: ${finances.formattedAverageTicket}.`
       },
       {
         framework: 'Benefício Direto + Garantia Incondicional',
@@ -351,24 +398,34 @@ export async function buildAdsAgentSkill(worker: WorkerInspectionResult, input: 
     return llmResponse;
   }
 
-  const aov = input.averageOrderValue || vertical.averageTicketBRL || 220;
+  const finances = calculateStoreFinancialGrounding(worker.siteData, input, worker.social);
+  const aov = finances.groundedAverageTicket;
   const brand = worker.siteData.brandName || input.businessName || 'Sua Marca';
   const terms = vertical.vocabulary.industryTerms;
+  const catalogIssues = worker.siteData.catalogAudit?.issues || [];
+  const brokenIssues = catalogIssues.filter(isCatalogProductBroken);
+  const healthyHero = catalogIssues.find(i => !isCatalogProductBroken(i)) || catalogIssues[0];
 
   const creatives: AdCreativeBlueprint[] = [
     {
-      angleName: `Prova Real & Demonstração Técnica (${vertical.label})`,
+      angleName: `Prova Real & Demonstração Técnica (${healthyHero ? healthyHero.productTitle : vertical.label})`,
       targetAudience: vertical.targetDemographics,
       format: 'Vídeo UGC',
-      hook: `Por que a linha ${brand} virou referência em ${terms[0] || vertical.label.toLowerCase()}? Veja o teste na prática!`,
-      bodyCopy: `1. Demonstração visual imediata destacando ${terms.slice(0, 2).join(' e ')}; 2. Prova de ${vertical.mandatoryProductFeatures[0] || 'qualidade'}; 3. Chamada para pronta entrega nos tamanhos/opções ${vertical.coreDemandSizes.join(', ')} com desconto no Pix.`,
+      hook: healthyHero
+        ? `Por que "${healthyHero.productTitle}" da ${brand} virou referência em ${terms[0] || vertical.label.toLowerCase()}? Veja na prática!`
+        : `Por que a linha ${brand} virou referência em ${terms[0] || vertical.label.toLowerCase()}? Veja o teste na prática!`,
+      bodyCopy: `1. Demonstração visual imediata destacando ${terms.slice(0, 2).join(' e ')}; 2. Prova de ${vertical.mandatoryProductFeatures[0] || 'qualidade'}; 3. Chamada para pronta entrega nos tamanhos/opções ${vertical.coreDemandSizes.join(', ')} com desconto no Pix (Ticket Médio: ${finances.formattedAverageTicket}).`,
       cta: `Conferir Estoque Disponível na ${brand}`
     },
     {
-      angleName: `Carrossel Dinâmico de Campeões de Giro (Blindado contra Ruptura)`,
+      angleName: brokenIssues.length > 0
+        ? `Realocação de Verba (Pausar ${brokenIssues.length} SKU${brokenIssues.length > 1 ? 's' : ''} Rompido${brokenIssues.length > 1 ? 's' : ''} -> Escalar Curva A)`
+        : `Carrossel Dinâmico de Campeões de Giro (Blindado contra Ruptura)`,
       targetAudience: `Visitantes dos últimos 14 dias e compradores do nicho ${vertical.label}`,
       format: 'Carrossel de Produto',
-      hook: `Os itens mais desejados da ${brand} com grade verificada e envio imediato.`,
+      hook: brokenIssues.length > 0
+        ? `Estanque os ${finances.financialRisk.formattedAdWaste}/mês em cliques perdidos e concentre a verba nos campeões com grade 100% ativa da ${brand}.`
+        : `Os itens mais desejados da ${brand} com grade verificada e envio imediato.`,
       bodyCopy: `Cards 1 a 4 destacando ${terms.slice(1, 4).join(', ')}, garantia oficial e condição especial no Pix.`,
       cta: 'Garantir o Meu com Envio Rápido'
     }
@@ -377,7 +434,7 @@ export async function buildAdsAgentSkill(worker: WorkerInspectionResult, input: 
   return {
     targetRoas: vertical.verticalId === 'CALCADOS_COURO' ? 4.5 : 4.2,
     maxCacAllowed: Math.round(aov * 0.28),
-    monthlyAdBudgetSuggested: 6000,
+    monthlyAdBudgetSuggested: Math.round(finances.estimatedAdSpend.monthly),
     budgetAllocation: {
       coldProspecting: 60,
       retargeting: 25,
@@ -391,6 +448,18 @@ export async function buildSeoAgentSkill(worker: WorkerInspectionResult, input: 
   const nicheContext = buildNicheContextString(worker, input);
   const vertical = resolveDynamicVertical(nicheContext);
   const verticalPrompt = getVerticalizedAgentPrompt('agent-12', nicheContext, agentKnowledgeBases.seo.systemPrompt);
+
+  const hasMetaDesc = Boolean(worker.siteData.metaDescription && worker.siteData.metaDescription.trim().length > 20);
+  const missingAltCount = worker.siteData.imagesWithoutAlt || 0;
+  const loadTimeSec = worker.siteData.estimatedLoadTime || 2.1;
+  const gShoppingDiscrepant = worker.siteData.googleShoppingShield?.discrepantProductsCount || 0;
+
+  let dynamicSeoScore = 88;
+  if (!hasMetaDesc) dynamicSeoScore -= 8;
+  if (missingAltCount > 0) dynamicSeoScore -= Math.min(12, missingAltCount * 2);
+  if (loadTimeSec > 2.8) dynamicSeoScore -= 6;
+  if (gShoppingDiscrepant > 0) dynamicSeoScore -= Math.min(10, gShoppingDiscrepant * 3);
+  dynamicSeoScore = Math.max(48, Math.min(96, dynamicSeoScore));
 
   const llmResponse = await askGeminiAgent<{
     healthStatus: string;
@@ -406,7 +475,7 @@ export async function buildSeoAgentSkill(worker: WorkerInspectionResult, input: 
 
   if (llmResponse && llmResponse.topKeywords && Array.isArray(llmResponse.topKeywords)) {
     return {
-      score: 78,
+      score: dynamicSeoScore,
       ...llmResponse
     };
   }
@@ -442,16 +511,30 @@ export async function buildSeoAgentSkill(worker: WorkerInspectionResult, input: 
     }
   ];
 
+  const onPageFixes: string[] = [];
+  if (missingAltCount > 0) {
+    onPageFixes.push(`Corrigir ${missingAltCount} imagem(ns) detectada(s) sem atributo alt descritivo em ${worker.siteData.domain} (${vertical.vocabulary.industryTerms.slice(0, 2).join(', ')}).`);
+  } else {
+    onPageFixes.push(`Enriquecer atributos alt nas fotos de produtos com termos transacionais (${vertical.vocabulary.industryTerms.slice(0, 2).join(', ')}).`);
+  }
+  if (!hasMetaDesc) {
+    onPageFixes.push(`Inserir Meta Description otimizada (150-160 caracteres) na página inicial de ${worker.siteData.domain}.`);
+  }
+  if (gShoppingDiscrepant > 0) {
+    onPageFixes.push(`Sincronizar Schema.org JSON-LD (availability: OutOfStock) nos ${gShoppingDiscrepant} produto(s) com grade esgotada para evitar reprovação no Google Merchant Center.`);
+  } else {
+    onPageFixes.push(`Destacar ${vertical.mandatoryProductFeatures[0]} nos subtítulos H2 das páginas de produto.`);
+  }
+  onPageFixes.push(`Otimizar tempo de carregamento mobile (atual: ${loadTimeSec.toFixed(1)}s) comprimindo imagens acima de 200KB para WebP/AVIF.`);
+
   return {
-    score: 76,
-    healthStatus: 'BOM COM OPORTUNIDADES',
-    schemaMarkupRecommendation: 'Implementar Schema.org JSON-LD de Product, AggregateRating e Organization com URL canônica e status InStock dinâmico.',
+    score: dynamicSeoScore,
+    healthStatus: dynamicSeoScore >= 80 ? 'SAUDÁVEL & INDEXADO' : 'BOM COM OPORTUNIDADES TÉCNICAS',
+    schemaMarkupRecommendation: gShoppingDiscrepant > 0
+      ? `Urgente: Corrigir discrepância de Schema Product Offer em ${gShoppingDiscrepant} SKU(s) esgotados e adicionar AggregateRating dinâmico em ${worker.siteData.domain}.`
+      : 'Implementar Schema.org JSON-LD de Product, AggregateRating e Organization com URL canônica e status InStock dinâmico.',
     topKeywords,
-    onPageFixes: [
-      `Inserir atributo alt descritivo com termos do nicho (${vertical.vocabulary.industryTerms.slice(0, 2).join(', ')}) nas fotos dos produtos.`,
-      `Destacar ${vertical.mandatoryProductFeatures[0]} nos subtítulos H2 das páginas de produto.`,
-      'Ativar compressão WebP em todos os banners e fotos de catálogo (< 200KB).'
-    ]
+    onPageFixes
   };
 }
 
@@ -481,12 +564,16 @@ export async function buildPmGrowthAgentSkill(worker: WorkerInspectionResult, in
 
   const mandatoryFeature = vertical.mandatoryProductFeatures[0] || 'Tabela de Especificações';
   const exemptionExample = vertical.catalogExemptionPatterns[0] || 'item complementar';
+  const finances = calculateStoreFinancialGrounding(worker.siteData, input, worker.social);
+  const brokenCount = finances.brokenSkusCount;
 
   return {
     iceMatrix: [
       {
         id: 'ice-1',
-        title: `Blindagem de Tráfego nos Itens de Giro Central (${vertical.coreDemandSizes.join(', ')})`,
+        title: brokenCount > 0
+          ? `Pausar/Redirecionar ${brokenCount} SKU(s) c/ Grade Furada (${finances.financialRisk.formattedAdWaste}/mês em Risco)`
+          : `Blindagem Preventiva de Tráfego nos Itens de Giro Central (${vertical.coreDemandSizes.join(', ')})`,
         category: 'Ads',
         impact: 10,
         confidence: 9,
@@ -496,7 +583,7 @@ export async function buildPmGrowthAgentSkill(worker: WorkerInspectionResult, in
       },
       {
         id: 'ice-2',
-        title: `Implementar ${mandatoryFeature} na Primeira Dobra do PDP`,
+        title: `Implementar ${mandatoryFeature} na Primeira Dobra do PDP (${worker.siteData.brandName})`,
         category: 'CRO',
         impact: 9,
         confidence: 9,
@@ -518,14 +605,18 @@ export async function buildPmGrowthAgentSkill(worker: WorkerInspectionResult, in
     funnelGaps: [
       {
         stage: 'Ativação',
-        currentScore: 68,
-        bottleneck: `Ausência de destaque imediato para ${mandatoryFeature} na página do produto.`,
-        actionItem: `Inserir widget de ${mandatoryFeature} acima do botão de compra.`
+        currentScore: brokenCount > 0 ? 62 : 76,
+        bottleneck: brokenCount > 0
+          ? `${brokenCount} produto(s) com tamanhos centrais esgotados drenando tráfego qualificado em ${worker.siteData.domain}.`
+          : `Ausência de destaque imediato para ${mandatoryFeature} na página do produto.`,
+        actionItem: brokenCount > 0
+          ? `Ativar Stock-Shield e inserir widget de ${mandatoryFeature} acima do botão de compra.`
+          : `Inserir widget de ${mandatoryFeature} acima do botão de compra.`
       },
       {
         stage: 'Receita',
         currentScore: 72,
-        bottleneck: `Ausência de Order Bump no checkout com item complementar (${exemptionExample}) para elevar o ticket médio de R$ ${vertical.averageTicketBRL.toFixed(0)}.`,
+        bottleneck: `Ausência de Order Bump no checkout com item complementar (${exemptionExample}) para elevar o ticket médio auditado de ${finances.formattedAverageTicket}.`,
         actionItem: 'Ativar oferta complementar de 1 clique no carrinho antes do pagamento.'
       }
     ],

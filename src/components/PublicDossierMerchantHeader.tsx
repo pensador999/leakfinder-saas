@@ -18,6 +18,7 @@ import {
 import { AgentDiagnosticResult } from '../types';
 import { calculateStoreFinancialGrounding } from '../services/ai/storeFinancialGroundingEngine';
 import { getWhiteLabelConfig } from '../services/whiteLabelService';
+import { useAuditStore } from '../store/auditStore';
 import { WhatsAppIcon } from './common/WhatsAppIcon';
 
 interface PublicDossierMerchantHeaderProps {
@@ -33,8 +34,9 @@ export const PublicDossierMerchantHeader: React.FC<PublicDossierMerchantHeaderPr
 }) => {
   const { realSiteData, growthScore, estimatedRevenueLiftMin, social } = diagnostic;
   const whiteLabel = getWhiteLabelConfig();
+  const customMonthlyAdSpend = useAuditStore(state => state.customMonthlyAdSpend);
 
-  const finances = calculateStoreFinancialGrounding(realSiteData, diagnostic.input, social);
+  const finances = calculateStoreFinancialGrounding(realSiteData, diagnostic.input, social, customMonthlyAdSpend);
   const brokenSkusCount = finances.brokenSkusCount;
 
   const cleanConsultantPhone = (whiteLabel.consultantWhatsApp || '5511999999999').replace(/\D/g, '');

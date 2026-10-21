@@ -7,6 +7,7 @@
 import type { AgentDiagnosticResult } from '../../types/index.ts';
 import type { CatalogProductIssue } from '../siteInspector.ts';
 import { isCatalogProductBroken } from '../siteInspector.ts';
+import { calculateStoreFinancialGrounding } from './storeFinancialGroundingEngine.ts';
 
 export interface ReasoningHypothesisBranch {
   id: string;
@@ -158,26 +159,26 @@ export function executeTreeOfThoughtReasoning(
   const isAgro = domainLower.includes('agro') || domainLower.includes('campo') || (diagnostic.input.niche || '').toLowerCase().includes('agro');
   const isEnterprise = realSiteData.isEnterpriseBrand;
 
-  // Dynamic Average Ticket and daily ad spend
-  const baseTicket = diagnostic.input.averageOrderValue || (isMotorsOrAuto ? 385 : isAgro ? 220 : isEnterprise ? 520 : 165);
+  // Canonical Financial Grounding (Single Source of Truth)
+  const finances = calculateStoreFinancialGrounding(realSiteData, diagnostic.input, diagnostic.social);
+  const baseTicket = finances.groundedAverageTicket;
   const realBrokenIssues = issues.filter(isCatalogProductBroken);
   const activeBrokenCount = realBrokenIssues.length;
-  const dailyAdSpend = isEnterprise ? 2500 : isMotorsOrAuto ? 680 : isAgro ? 450 : 250;
+  const dailyAdSpend = finances.estimatedAdSpend.daily;
   
-  // Real dynamic daily and monthly loss (Zero Hallucination: 0 broken SKUs = R$ 0 loss; anchored to Deep SKU Audit when available)
-  const auditedCatalogMonthlyLoss = realSiteData.catalogAudit?.monthlyLossEstimateBRL || 0;
+  // Real dynamic daily and monthly loss anchored to Canonical Financial Grounding
   const monthlyLoss = activeBrokenCount > 0
-    ? (auditedCatalogMonthlyLoss > 0
-        ? Math.round(auditedCatalogMonthlyLoss)
-        : Math.round(dailyAdSpend * 0.38 * (activeBrokenCount / Math.max(1, activeBrokenCount + 1))) * 30)
+    ? (finances.financialRisk.adWasteMonthly > 0
+        ? Math.round(finances.financialRisk.adWasteMonthly)
+        : Math.round(realSiteData.catalogAudit?.monthlyLossEstimateBRL || 0))
     : 0;
   const dailyLoss = activeBrokenCount > 0 ? Math.round(monthlyLoss / 30) : 0;
 
   // Dynamic competitor duel prices
-  const storePrice = Math.round(baseTicket * 1.12);
-  const competitorPrice = Math.round(storePrice * 0.88);
-  const pixDiscountPrice = (storePrice * 0.93).toFixed(2).replace('.', ',');
-  const marginLiftPerOrder = (baseTicket * 0.042).toFixed(2).replace('.', ',');
+  const storePrice = Math.round(finances.recoveryProjection.storeCompetitorDuel.storePrice);
+  const competitorPrice = Math.round(finances.recoveryProjection.storeCompetitorDuel.competitorPrice);
+  const pixDiscountPrice = finances.recoveryProjection.storeCompetitorDuel.pixDiscountPrice.toFixed(2).replace('.', ',');
+  const marginLiftPerOrder = finances.recoveryProjection.pixMarginLiftPerOrder.toFixed(2).replace('.', ',');
   const monthlyRecoveredAds = Math.round(monthlyLoss);
   const monthlyRecoveredSales = Math.round(monthlyLoss * 0.62);
 

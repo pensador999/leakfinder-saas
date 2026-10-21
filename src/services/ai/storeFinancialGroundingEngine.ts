@@ -44,6 +44,7 @@ export interface StoreFinancialGrounding {
     checkoutFrictionMonthly: number;
     totalMonthlyLoss: number;
     annualizedLoss: number;
+    brokenRatio: number;
     formattedMonthlyLoss: string;
     formattedAnnualizedLoss: string;
     formattedAdWaste: string;
@@ -92,7 +93,8 @@ export function formatBRLDecimals(value: number): string {
 export function calculateStoreFinancialGrounding(
   realSiteData: RealSiteData,
   input?: Partial<AuditInput>,
-  socialAudit?: SocialAuditResult
+  socialAudit?: SocialAuditResult,
+  customMonthlyAdSpend?: number | null
 ): StoreFinancialGrounding {
   const domain = realSiteData.domain.toLowerCase();
   const brandName = realSiteData.brandName || 'Sua Loja';
@@ -216,12 +218,24 @@ export function calculateStoreFinancialGrounding(
     }
   }
 
-  // 6. PROPORTIONATE FINANCIAL RISK CALCULATION — ZERO ALUCINAÇÃO (Sem Math.round quebrando centavos)
+  // Override explícito pelo simulador dinâmico do lojista
+  const hasCustomSpendOverride = typeof customMonthlyAdSpend === 'number' && customMonthlyAdSpend > 0;
+  if (hasCustomSpendOverride) {
+    dailyAdSpend = Number((customMonthlyAdSpend / 30).toFixed(2));
+  }
+
+  const effectiveMonthlyAdSpend = hasCustomSpendOverride
+    ? Number(customMonthlyAdSpend.toFixed(2))
+    : Number((dailyAdSpend * 30).toFixed(2));
+
+  // 6. PROPORTIONATE FINANCIAL RISK CALCULATION — ZERO ALUCINAÇÃO (Fonte Única da Verdade)
+  const hasPaidTrafficSignal = hasMeta || hasGtm || Boolean(realSiteData.hasTiktokPixel) || hasCustomSpendOverride;
+  let brokenRatio = 0;
   let adWasteMonthly = 0;
-  if (brokenSkusCount > 0 && hasMeta) {
-    // Proporção real dos SKUs rompidos sobre o total auditado
-    const brokenRatio = Math.min(0.40, brokenSkusCount / Math.max(1, catalogVolumeCount));
-    adWasteMonthly = Number((dailyAdSpend * 30 * brokenRatio).toFixed(2));
+  if (brokenSkusCount > 0 && hasPaidTrafficSignal) {
+    // Proporção real dos SKUs rompidos sobre o total auditado (ponderado pelo fator 65% da Curva ABC P/M/G)
+    brokenRatio = Number(Math.min(0.45, (brokenSkusCount / Math.max(1, catalogVolumeCount)) * 1.5).toFixed(4));
+    adWasteMonthly = Number((effectiveMonthlyAdSpend * brokenRatio * 0.65).toFixed(2));
   } else {
     adWasteMonthly = 0;
   }
@@ -327,7 +341,7 @@ export function calculateStoreFinancialGrounding(
           'Gravações de sessões individuais (requer conexão Microsoft Clarity / Hotjar)'
         ]
       },
-      isUserOverridden: !!(input?.averageOrderValue || input?.monthlyRevenue)
+      isUserOverridden: Boolean(input?.averageOrderValue || input?.monthlyRevenue || hasCustomSpendOverride)
     },
     estimatedMonthlyRevenue: {
       min: baseMonthlyRevenueMin,
@@ -336,21 +350,22 @@ export function calculateStoreFinancialGrounding(
     },
     estimatedAdSpend: {
       daily: dailyAdSpend,
-      monthly: Number((dailyAdSpend * 30).toFixed(2)),
-      formattedMonthly: `${formatBRL(Number((dailyAdSpend * 30).toFixed(2)))}/mês (${formatBRL(dailyAdSpend)}/dia)`
+      monthly: effectiveMonthlyAdSpend,
+      formattedMonthly: `${formatBRL(effectiveMonthlyAdSpend)}/mês (${formatBRL(dailyAdSpend)}/dia)`
     },
     financialRisk: {
       adWasteMonthly,
       checkoutFrictionMonthly,
       totalMonthlyLoss,
       annualizedLoss,
+      brokenRatio,
       formattedMonthlyLoss: formatBRL(totalMonthlyLoss),
       formattedAnnualizedLoss: formatBRL(annualizedLoss),
       formattedAdWaste: formatBRL(adWasteMonthly),
       formattedCheckoutFriction: formatBRL(checkoutFrictionMonthly),
       methodologyExplanation: brokenSkusCount === 0
         ? `Cálculo transparente: 0 SKUs rompidos detectados = R$ 0 de perda em anúncios.${checkoutFrictionMonthly > 0 ? ` Oportunidade em checkout simulada em ${formatBRL(checkoutFrictionMonthly)}/mês por falta de desconto no Pix.` : ' Vitrine e checkout 100% íntegros.'}`
-        : `Cálculo proporcional: ${brokenSkusCount} SKU(s) com grade esgotada detectados sob tráfego Meta Ads ativo, resultando em ~${formatBRL(adWasteMonthly)}/mês em cliques perdidos.${checkoutFrictionMonthly > 0 ? ` Mais ${formatBRL(checkoutFrictionMonthly)}/mês de oportunidade no Pix/checkout.` : ''}`
+        : `Cálculo proporcional unificado: ${brokenSkusCount} SKU(s) com grade esgotada detectados sob investimento de ${formatBRL(effectiveMonthlyAdSpend)}/mês, resultando em ~${formatBRL(adWasteMonthly)}/mês em cliques perdidos.${checkoutFrictionMonthly > 0 ? ` Mais ${formatBRL(checkoutFrictionMonthly)}/mês de oportunidade no Pix/checkout.` : ''}`
     },
     recoveryProjection: {
       projectedMonthlyRecovery,

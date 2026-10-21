@@ -363,6 +363,27 @@ describe('MVP Core Flow Validation', () => {
     expect(stockShieldSnippet?.code).toContain('camiseta-pima-preta');
     expect(stockShieldSnippet?.code).toContain('998877665544');
     expect(stockShieldSnippet?.code).toContain('Camiseta Pima Preta');
+
+    // 6. Fonte Única da Verdade Financeira (Header + Dossiê Triplo + Consenso + ToT + Simulador Reativo)
+    const { calculateStoreFinancialGrounding } = await import('../services/ai/storeFinancialGroundingEngine');
+    const { executeDualAgentCrossVerification } = await import('../services/ai/dualAgentConsensusGatekeeper');
+    const { executeTreeOfThoughtReasoning } = await import('../services/ai/treeOfThoughtReasoningEngine');
+
+    fullMockDiag.realSiteData.hasMetaPixel = true;
+    const baseFinances = calculateStoreFinancialGrounding(fullMockDiag.realSiteData, fullMockDiag.input, fullMockDiag.social);
+    const dualReport = executeDualAgentCrossVerification(fullMockDiag);
+    const totReport = executeTreeOfThoughtReasoning(fullMockDiag);
+
+    const dualCatalogFinding = dualReport.verifiedFindings.find(f => f.category === 'CATALOGO_ESTOQUE');
+    expect(dualCatalogFinding?.financialImpactMonthly).toBe(baseFinances.financialRisk.adWasteMonthly);
+    expect(totReport.crossInterrogation.clashes.length).toBeGreaterThan(0);
+
+    // Simulador Reativo de Verba Real (ex: R$ 30.000/mês)
+    const customFinances = calculateStoreFinancialGrounding(fullMockDiag.realSiteData, fullMockDiag.input, fullMockDiag.social, 30000);
+    expect(customFinances.estimatedAdSpend.monthly).toBe(30000);
+    expect(customFinances.estimatedAdSpend.daily).toBe(1000);
+    expect(customFinances.transparency.isUserOverridden).toBe(true);
+    expect(customFinances.financialRisk.adWasteMonthly).toBeGreaterThan(baseFinances.financialRisk.adWasteMonthly);
   });
 });
 

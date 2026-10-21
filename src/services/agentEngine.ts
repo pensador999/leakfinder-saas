@@ -182,27 +182,27 @@ async function generateDiagnosticFromWorker(input: AuditInput, worker: WorkerIns
     competitorGap: [
       {
         metric: 'Tempo de Carregamento (LCP)',
-        you: `${siteData.estimatedLoadTime || 2.5}s`,
-        competitor: `${Math.max(1.2, (siteData.estimatedLoadTime || 2.5) - 0.8).toFixed(1)}s`,
-        status: 'DESVANTAGEM'
+        you: `${(siteData.estimatedLoadTime || 2.5).toFixed(1)}s`,
+        competitor: '2.1s (Benchmark Líder)',
+        status: (siteData.estimatedLoadTime || 2.5) <= 1.9 ? 'VANTAGEM' : (siteData.estimatedLoadTime || 2.5) <= 2.3 ? 'EMPATE' : 'DESVANTAGEM'
       },
       {
-        metric: 'Clutter Score (UX)',
-        you: `${visionAnalysis.uiux.visualClutterScore}/100`,
-        competitor: `${Math.max(30, visionAnalysis.uiux.visualClutterScore - 20)}/100`,
-        status: input.targetRegion === 'Ásia' ? 'VANTAGEM' : 'DESVANTAGEM'
+        metric: 'Disponibilidade de Grade Curva A',
+        you: brokenSizeCount === 0 ? '100% Blindada (0 Rupturas)' : `${brokenSizeCount} SKU(s) c/ Grade Furada`,
+        competitor: 'Grade Central Ativa',
+        status: brokenSizeCount === 0 ? 'VANTAGEM' : 'DESVANTAGEM'
       },
       {
-        metric: 'Calculadora de Frete (Conversão)',
-        you: visionAnalysis.logistics?.hasShippingCalculator ? 'Presente' : 'Ausente',
-        competitor: 'Presente',
-        status: visionAnalysis.logistics?.hasShippingCalculator ? 'EMPATE' : 'DESVANTAGEM'
+        metric: 'Incentivo Pix & Calculadora de Frete',
+        you: siteData.detectedCheckoutTerms?.hasPix ? 'Pix + Frete na 1ª Dobra' : visionAnalysis.logistics?.hasShippingCalculator ? 'Frete Presente (Sem Pix)' : 'Ausente na 1ª Dobra',
+        competitor: 'Presente c/ Desconto Pix',
+        status: siteData.detectedCheckoutTerms?.hasPix && visionAnalysis.logistics?.hasShippingCalculator ? 'VANTAGEM' : visionAnalysis.logistics?.hasShippingCalculator ? 'EMPATE' : 'DESVANTAGEM'
       },
       {
-        metric: 'Daltonismo a11y (WCAG)',
-        you: visionAnalysis.a11y?.colorBlindnessContrastGood ? 'Aprovado' : 'Reprovado',
-        competitor: 'Aprovado',
-        status: visionAnalysis.a11y?.colorBlindnessContrastGood ? 'EMPATE' : 'DESVANTAGEM'
+        metric: 'Contraste & Acessibilidade (WCAG)',
+        you: visionAnalysis.contrastAudit?.wcagAaPassed ? `Aprovado (${visionAnalysis.contrastAudit.contrastRatio}:1)` : `Alerta (${visionAnalysis.contrastAudit?.contrastRatio || 3.8}:1)`,
+        competitor: 'Aprovado (>= 4.5:1)',
+        status: visionAnalysis.contrastAudit?.wcagAaPassed ? 'EMPATE' : 'DESVANTAGEM'
       }
     ],
     competitorIntelligence: await buildCompetitorAgentSkill(input, worker)
@@ -212,11 +212,26 @@ async function generateDiagnosticFromWorker(input: AuditInput, worker: WorkerIns
   const guardrailReport = runGuardrailAudit(initialDiagnostic, siteData);
   initialDiagnostic.guardrailReport = guardrailReport;
 
-  // 🧬 Ciclo de Automelhoria Contínua: O enxame aprende padrões estruturais e calibra benchmarks a cada loja auditada
+  // 💰 Sincronização Canônica da Verdade Financeira entre CatalogAudit e StoreFinancialGroundingEngine
+  const canonicalFinances = calculateStoreFinancialGrounding(
+    initialDiagnostic.realSiteData,
+    initialDiagnostic.input,
+    initialDiagnostic.social
+  );
+  if (initialDiagnostic.realSiteData.catalogAudit) {
+    initialDiagnostic.realSiteData.catalogAudit.monthlyLossEstimateBRL =
+      canonicalFinances.brokenSkusCount > 0
+        ? canonicalFinances.financialRisk.adWasteMonthly
+        : 0;
+  }
+
+  // 🧬 Ciclo de Automelhoria Contínua + Autocura Inter-Agentes Nativos no Pipeline
   learnFromStoreDiagnostic(initialDiagnostic);
+  verifyAndHealAgentOutputConsistency({ diagnostic: initialDiagnostic });
 
   return initialDiagnostic;
 }
 
-import { learnFromStoreDiagnostic } from './memory/swarmEvolutionaryLearningEngine.ts';
+import { learnFromStoreDiagnostic, verifyAndHealAgentOutputConsistency } from './memory/swarmEvolutionaryLearningEngine.ts';
+import { calculateStoreFinancialGrounding } from './ai/storeFinancialGroundingEngine.ts';
 

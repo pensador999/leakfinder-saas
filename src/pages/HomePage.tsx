@@ -356,17 +356,18 @@ export function HomePage() {
             {/* 🎛️ EXECUTIVE CONTROL & MODE CENTER (PROGRESSIVE DISCLOSURE) */}
             <div className="p-2.5 bg-[#141716] rounded-2xl border border-white/10 shadow-2xl flex flex-wrap items-center justify-between gap-3 relative z-30">
               
-              {/* Left: Modern Segmented Mode Switcher */}
+              {/* Left: Unified 1-Click Mode Switcher (Merchant Executive vs War Room 18 Agents) */}
               <div className="flex items-center bg-[#101211] p-1 rounded-xl border border-white/10 text-xs font-bold font-mono">
                 <button
                   onClick={() => {
                     setViewMode('merchant');
-                    if (['orchestrator', 'scraper_dossier', 'truth_auditor', 'swarm_control', 'vitals', 'vision', 'telemetry', 'competitor', 'kanban'].includes(activeTab)) {
+                    setIsAdvancedMode(false);
+                    if (!['summary', 'catalog', 'ads', 'kanban', 'calculator'].includes(activeTab)) {
                       setActiveTab('summary');
                     }
                   }}
                   className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
-                    viewMode === 'merchant'
+                    !isAdvancedMode
                       ? 'bg-[#0AE448]/20 text-[#0AE448] border border-[#0AE448]/40 shadow-sm'
                       : 'text-slate-400 hover:text-white'
                   }`}
@@ -376,15 +377,18 @@ export function HomePage() {
                 </button>
 
                 <button
-                  onClick={() => setViewMode('war_room')}
+                  onClick={() => {
+                    setViewMode('war_room');
+                    setIsAdvancedMode(true);
+                  }}
                   className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
-                    viewMode === 'war_room'
-                      ? 'bg-white/15 text-[#FFFCE1] border border-white/25 shadow-sm'
+                    isAdvancedMode
+                      ? 'bg-[#00BAE2]/20 text-[#00BAE2] border border-[#00BAE2]/40 shadow-sm'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   <Cpu className="w-3.5 h-3.5 text-[#00BAE2]" />
-                  <span>War Room Técnico</span>
+                  <span>War Room Técnico (18 Agentes)</span>
                 </button>
               </div>
 
@@ -394,6 +398,8 @@ export function HomePage() {
                 {/* 🎯 Lead Sniper B2B (Meta Ads & WhatsApp Closer) */}
                 <button
                   onClick={() => {
+                    setViewMode('war_room');
+                    setIsAdvancedMode(true);
                     setActivePillar('SWARM_LAB');
                     setActiveTab('market_hunter');
                   }}
@@ -444,6 +450,8 @@ export function HomePage() {
                     <div className="absolute right-0 top-full mt-2 w-64 bg-[#141716] rounded-2xl border border-white/10 shadow-2xl p-1.5 z-50 animate-fadeIn space-y-0.5 font-sans backdrop-blur-md">
                       <button
                         onClick={() => { 
+                          setViewMode('war_room');
+                          setIsAdvancedMode(true);
                           setActivePillar('SWARM_LAB');
                           setActiveTab('market_hunter'); 
                           setIsToolsMenuOpen(false); 
@@ -542,7 +550,12 @@ export function HomePage() {
                         </button>
                       ) : (
                         <button
-                          onClick={() => { setActiveTab('founder_hq'); setIsToolsMenuOpen(false); }}
+                          onClick={() => {
+                            setViewMode('war_room');
+                            setIsAdvancedMode(true);
+                            setActiveTab('founder_hq');
+                            setIsToolsMenuOpen(false);
+                          }}
                           className="w-full px-3 py-2 text-left rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-xs font-bold text-amber-400 flex items-center gap-2.5 transition-colors cursor-pointer border border-amber-500/20"
                         >
                           <Crown className="w-4 h-4 text-amber-400 shrink-0" />
@@ -573,21 +586,6 @@ export function HomePage() {
               isAdvancedMode={isAdvancedMode}
             />
 
-            {/* BOTÃO TOGGLE MODO AVANÇADO (MVP) */}
-            <div className="flex justify-center mt-2">
-              <button
-                onClick={() => setIsAdvancedMode(!isAdvancedMode)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-sm ${
-                  isAdvancedMode 
-                    ? 'bg-[#191C1B] text-[#0AE448] border border-[#0AE448]/30 hover:bg-[#202422]' 
-                    : 'bg-[#141716] text-[#BBBAA6] border border-white/10 hover:text-white hover:bg-[#191C1B]'
-                }`}
-              >
-                { isAdvancedMode ? <ChevronDown className="w-4 h-4 rotate-180 transition-transform" /> : <Sparkles className="w-4 h-4 text-[#00BAE2]" />}
-                🔬 Modo Avançado (War Room & 18 Agentes)
-              </button>
-            </div>
-
             {/* Content Area Rendering */}
             <div className="animate-in fade-in duration-200">
               <ErrorBoundary>
@@ -595,9 +593,26 @@ export function HomePage() {
                   <Suspense fallback={<TabLoadingSkeleton />}>
                     {activeTab === 'summary' && (
                       <div className="space-y-6">
+                        <MerchantTripleImpactDossier
+                          diagnostic={diagnostic}
+                          onOpenPricing={() => setActiveModal('pricing')}
+                          onOpenWhatsAppLead={() => setActiveModal('whatsappLead')}
+                          onOpenMetaAutoKill={() => setActiveModal('metaAutoKill')}
+                          onSwitchToWarRoom={() => {
+                            setViewMode('war_room');
+                            setIsAdvancedMode(true);
+                            setActiveTab('tree_of_thought');
+                          }}
+                        />
                         <ExecutiveSummary
                           diagnostic={diagnostic}
-                          onSelectAgentTab={(tab) => setActiveTab(tab)}
+                          onSelectAgentTab={(tab) => {
+                            if (!['summary', 'catalog', 'ads', 'kanban', 'calculator'].includes(tab)) {
+                              setViewMode('war_room');
+                              setIsAdvancedMode(true);
+                            }
+                            setActiveTab(tab);
+                          }}
                         />
                         {diagnostic && <BlindspotAuditView diagnostic={diagnostic} />}
                       </div>
@@ -620,7 +635,11 @@ export function HomePage() {
                 {/* Lazy Loaded Analytical Tabs with Skeleton Fallback */}
                 <Suspense fallback={<TabLoadingSkeleton />}>
                   {activeTab === 'summary' && (
-                    viewMode === 'merchant' ? (
+                    <div className="space-y-6">
+                      <ExecutiveSummary
+                        diagnostic={diagnostic}
+                        onSelectAgentTab={(tab) => setActiveTab(tab)}
+                      />
                       <MerchantTripleImpactDossier
                         diagnostic={diagnostic}
                         onOpenPricing={() => setActiveModal('pricing')}
@@ -628,15 +647,11 @@ export function HomePage() {
                         onOpenMetaAutoKill={() => setActiveModal('metaAutoKill')}
                         onSwitchToWarRoom={() => {
                           setViewMode('war_room');
+                          setIsAdvancedMode(true);
                           setActiveTab('tree_of_thought');
                         }}
                       />
-                    ) : (
-                      <ExecutiveSummary
-                        diagnostic={diagnostic}
-                        onSelectAgentTab={(tab) => setActiveTab(tab)}
-                      />
-                    )
+                    </div>
                   )}
 
                   {activeTab === 'founder_hq' && (
