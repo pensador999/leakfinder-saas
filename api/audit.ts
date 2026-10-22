@@ -242,6 +242,7 @@ export default async function handler(request: any, response: any) {
     });
 
     let httpStatus = 200;
+    let responseHeaders: Record<string, string> = {};
     try {
       const navRes = await page.goto(targetUrl, {
         waitUntil: 'domcontentloaded',
@@ -249,6 +250,7 @@ export default async function handler(request: any, response: any) {
       });
       if (navRes) {
         httpStatus = navRes.status();
+        responseHeaders = navRes.headers() || {};
       }
     } catch (navErr: any) {
       console.warn(`[Vercel Serverless Audit] Timeout parcial em ${targetUrl}:`, navErr.message);
@@ -358,7 +360,7 @@ export default async function handler(request: any, response: any) {
             price,
             availableSizes: availableSizes.length > 0 ? availableSizes : [],
             missingSizes: missingSizes.length > 0 ? missingSizes : [],
-            hasRupture: missingSizes.length > 0
+            hasRupture
           });
         }
       });
@@ -376,6 +378,16 @@ export default async function handler(request: any, response: any) {
       if (itemTitleEl) {
         marketplaceItemTitle = itemTitleEl.textContent?.trim();
       }
+
+      // Métricas reais do DOM hidratado
+      const h1List = Array.from(document.querySelectorAll('h1'))
+        .map(h => h.textContent?.trim() || '')
+        .filter(Boolean);
+      const h2Count = document.querySelectorAll('h2').length;
+      const allImgs = Array.from(document.querySelectorAll('img'));
+      const totalImages = allImgs.length;
+      const imagesWithoutAlt = allImgs.filter(img => !img.getAttribute('alt')?.trim()).length;
+      const formCount = document.querySelectorAll('form').length;
 
       const fullHtml = document.documentElement ? document.documentElement.outerHTML : (document.body.innerHTML || '');
       const footerEl = document.querySelector('footer, [class*="footer"], [id*="footer"]');
@@ -402,6 +414,11 @@ export default async function handler(request: any, response: any) {
         sampleProducts,
         marketplaceSellerName,
         marketplaceItemTitle,
+        h1List,
+        h2Count,
+        totalImages,
+        imagesWithoutAlt,
+        formCount,
         rawHtmlSnippet: preservedHtmlSnippet
       };
     });
@@ -434,6 +451,19 @@ export default async function handler(request: any, response: any) {
         loadTimeMs,
         httpStatus,
         rawHtmlSnippet: rawAudit.rawHtmlSnippet || '',
+        securityHeaders: {
+          contentSecurityPolicy: responseHeaders['content-security-policy'],
+          xFrameOptions: responseHeaders['x-frame-options'],
+          strictTransportSecurity: responseHeaders['strict-transport-security'],
+          headersCaptured: Object.keys(responseHeaders).length > 0
+        },
+        domMetrics: {
+          h1List: rawAudit.h1List,
+          h2Count: rawAudit.h2Count,
+          totalImages: rawAudit.totalImages,
+          imagesWithoutAlt: rawAudit.imagesWithoutAlt,
+          formCount: rawAudit.formCount
+        },
         headTags: {
           hasMetaPixel: rawAudit.hasMetaPixel,
           metaPixelId: rawAudit.metaPixelId,

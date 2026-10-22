@@ -147,4 +147,17 @@ export class MetaAdsGraphClient {
       };
     }
   }
+
+  /**
+   * Action: Stock-Shield Stop-Loss — Pausa automaticamente conjunto de anúncios / anúncio em ruptura física
+   */
+  public static async pauseAdOnStockout(targetId: string, accessToken?: string): Promise<MetaGraphApiResponse> {
+    if (targetId.startsWith('adset_')) {
+      return this.pauseAdSet(targetId, accessToken);
+    }
+    return this.pauseAd(targetId, accessToken);
+  }
 }
+
+export const metaAdsGraphClient = MetaAdsGraphClient;
+

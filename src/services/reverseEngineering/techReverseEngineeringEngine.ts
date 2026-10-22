@@ -181,7 +181,18 @@ export function reverseEngineerStoreTechStack(
   }
 
   // 4. Telemetria e Pixels
-  const hasMeta = lowerHtml.includes('connect.facebook.net') || lowerHtml.includes('fbevents.js') || lowerHtml.includes('tr(init') || true;
+  const pixelIdMatch =
+    htmlContent.match(/fbq\s*\(\s*['"]init['"]\s*,\s*['"](\d+)['"]/i) ||
+    htmlContent.match(/pixel_id\\?["']\s*:\s*\\?["'](\d+)\\?["']/i) ||
+    htmlContent.match(/fbevents\.js\?id=(\d+)/i);
+  const extractedMetaPixelId = pixelIdMatch ? pixelIdMatch[1] : undefined;
+
+  const hasMeta =
+    Boolean(extractedMetaPixelId) ||
+    lowerHtml.includes('connect.facebook.net') ||
+    lowerHtml.includes('fbevents.js') ||
+    lowerHtml.includes('fbq(') ||
+    lowerHtml.includes('tr(init');
   const hasGtm = lowerHtml.includes('googletagmanager.com') || lowerHtml.includes('gtm-');
   const hasGa4 = lowerHtml.includes('gtag') || lowerHtml.includes('google-analytics');
   const hasClarity = lowerHtml.includes('clarity.ms') || lowerHtml.includes('ms_clarity');
@@ -222,7 +233,7 @@ export function reverseEngineerStoreTechStack(
     },
     telemetryAndPixels: {
       hasMetaPixel: hasMeta,
-      metaPixelId: hasMeta ? `pixel_${domain.replace(/[^a-z0-9]/g, '').slice(0, 10)}` : undefined,
+      metaPixelId: extractedMetaPixelId,
       hasGoogleTagManager: hasGtm,
       hasGoogleAnalytics4: hasGa4,
       hasMicrosoftClarity: hasClarity,
@@ -233,3 +244,6 @@ export function reverseEngineerStoreTechStack(
     architectureFindings: findings
   };
 }
+
+export const reverseEngineerStoreArchitecture = reverseEngineerStoreTechStack;
+

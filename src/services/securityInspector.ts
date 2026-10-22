@@ -80,16 +80,54 @@ export function auditSiteSecurity(siteData: RealSiteData): SecurityAuditResult {
     });
   }
 
-  // Check 3: Missing Security Headers (X-Frame-Options)
-  checks.push({
-    id: 'sec-3',
-    category: 'Headers de Segurança',
-    severity: 'ALTO',
-    title: 'Ausência de Header X-Frame-Options (Proteção contra Clickjacking)',
-    description: `Não foi detectada a instrução de bloqueio de frame para o domínio ${siteData.domain}.`,
-    riskImpact: 'Páginas maliciosas de terceiros podem embutir o checkout ou vitrine do seu site dentro de um iframe transparente para roubar cliques e dados do usuário.',
-    recommendation: 'Adicionar o header HTTP "X-Frame-Options: SAMEORIGIN" e "Content-Security-Policy: frame-ancestors \'self\'" no servidor web (Nginx/Cloudflare).'
-  });
+  // Check 3: Security Headers (X-Frame-Options / Content-Security-Policy)
+  const headersCaptured = Boolean(siteData.securityHeaders?.headersCaptured);
+  const hasCspFromHeaders = Boolean(siteData.securityHeaders?.contentSecurityPolicy);
+  const hasXfoFromHeaders =
+    Boolean(siteData.securityHeaders?.xFrameOptions) ||
+    Boolean(siteData.securityHeaders?.contentSecurityPolicy?.toLowerCase().includes('frame-ancestors'));
+  const hasCspInMeta =
+    /http-equiv\s*=\s*["']content-security-policy["']/i.test(siteData.rawHtmlSnippet || '') ||
+    htmlStr.includes('http-equiv="content-security-policy"') ||
+    htmlStr.includes("http-equiv='content-security-policy'");
+  const hasXfoInMeta =
+    /http-equiv\s*=\s*["']x-frame-options["']/i.test(siteData.rawHtmlSnippet || '') ||
+    htmlStr.includes('frame-ancestors');
+
+  const hasCspHeader = hasCspFromHeaders || hasCspInMeta;
+  const hasXFrameOptions = hasXfoFromHeaders || hasXfoInMeta;
+
+  if (hasXFrameOptions || hasCspHeader) {
+    checks.push({
+      id: 'sec-3-ok',
+      category: 'Headers de Segurança',
+      severity: 'BAIXO',
+      title: 'Proteção contra Clickjacking / CSP Detectada',
+      description: `Política de segurança (${hasXFrameOptions ? 'X-Frame-Options / frame-ancestors' : ''}${hasXFrameOptions && hasCspHeader ? ' + ' : ''}${hasCspHeader ? 'Content-Security-Policy' : ''}) verificada para ${siteData.domain}.`,
+      riskImpact: 'Checkout e vitrine protegidos contra injeção de scripts e iframes maliciosos de terceiros.',
+      recommendation: 'Manter diretivas CSP e X-Frame-Options atualizadas na borda (CDN/WAF).'
+    });
+  } else if (headersCaptured) {
+    checks.push({
+      id: 'sec-3',
+      category: 'Headers de Segurança',
+      severity: 'ALTO',
+      title: 'Ausência de Header X-Frame-Options / CSP na Resposta HTTP',
+      description: `Os headers HTTP de ${siteData.domain} foram inspecionados ao vivo e não contêm X-Frame-Options nem Content-Security-Policy.`,
+      riskImpact: 'Páginas maliciosas de terceiros podem embutir o checkout ou vitrine do seu site dentro de um iframe transparente para roubar cliques e dados do usuário.',
+      recommendation: 'Adicionar o header HTTP "X-Frame-Options: SAMEORIGIN" e "Content-Security-Policy: frame-ancestors \'self\'" no servidor web (Nginx/Cloudflare).'
+    });
+  } else {
+    checks.push({
+      id: 'sec-3-cors-info',
+      category: 'Headers de Segurança',
+      severity: 'BAIXO',
+      title: 'Meta CSP Ausente no HTML (Headers HTTP Ocultos via Proxy CORS)',
+      description: `Não foi detectada a tag <meta http-equiv="Content-Security-Policy"> no DOM de ${siteData.domain}. Os headers de resposta HTTP requerem leitura direta server-side sem bloqueio CORS.`,
+      riskImpact: 'Sem penalização automática de score por limitação de proxy CORS; recomenda-se validar X-Frame-Options e HSTS no painel do Cloudflare/CDN.',
+      recommendation: 'Incluir <meta http-equiv="Content-Security-Policy"> no <head> ou garantir X-Frame-Options: SAMEORIGIN no CDN.'
+    });
+  }
 
   // Check 4: Legal & Compliance E-commerce Brasil (Decreto nº 7.962/2013 + CDC Art. 49)
   const hasCnpjInFooter = /cnpj|\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/.test(htmlStr);
@@ -167,8 +205,8 @@ export function auditSiteSecurity(siteData: RealSiteData): SecurityAuditResult {
   return {
     securityScore,
     isHttps: siteData.isHttps,
-    hasCspHeader: false,
-    hasXFrameOptions: false,
+    hasCspHeader,
+    hasXFrameOptions,
     exposedKeysCount: 0,
     unsafeLinksCount: unsafeCount,
     legalComplianceScore,

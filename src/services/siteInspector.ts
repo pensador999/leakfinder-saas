@@ -189,7 +189,16 @@ export interface RealSiteData {
   lighthouseMetrics?: {
     lcp: string;
     cls: string;
+    fcp?: string;
+    tbt?: string;
     performanceScore: number;
+  };
+  pagespeedScore?: number;
+  securityHeaders?: {
+    contentSecurityPolicy?: string;
+    xFrameOptions?: string;
+    strictTransportSecurity?: string;
+    headersCaptured?: boolean;
   };
   screenshotUrl?: string;
   scannedProductsCount?: number;
@@ -1658,14 +1667,51 @@ export async function inspectRealWebsite(
     return mktResult;
   }
 
+  // Deep Google PSI Data (executado tanto no fluxo primário quanto no secundário)
+  const fetchDeepData = async () => {
+    let lighthouseMetrics: RealSiteData['lighthouseMetrics'] = undefined;
+    let screenshotUrl: string | undefined;
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 3500);
+
+    try {
+      const psiEndpoint = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(cleanUrl)}&strategy=mobile&category=PERFORMANCE`;
+      const res = await fetch(psiEndpoint, { signal: controller.signal });
+      clearTimeout(timer);
+
+      if (res.ok) {
+        const lhData = await res.json();
+        screenshotUrl = lhData?.lighthouseResult?.audits?.['final-screenshot']?.details?.data;
+        const metrics = lhData?.lighthouseResult?.audits;
+        if (metrics) {
+          lighthouseMetrics = {
+            lcp: metrics['largest-contentful-paint']?.displayValue || 'N/A',
+            cls: metrics['cumulative-layout-shift']?.displayValue || 'N/A',
+            fcp: metrics['first-contentful-paint']?.displayValue || undefined,
+            tbt: metrics['total-blocking-time']?.displayValue || undefined,
+            performanceScore: Math.round((lhData?.lighthouseResult?.categories?.performance?.score || 0.5) * 100)
+          };
+        }
+      }
+    } catch {
+      clearTimeout(timer);
+    }
+    return { lighthouseMetrics, screenshotUrl };
+  };
+
+  const deepDataPromise = fetchDeepData();
+
   if (headlessData) {
     const headTags = headlessData.headTags || {};
     const conv = headlessData.conversionElements || {};
     const contact = headlessData.contactChannels || {};
     const snapshot = headlessData.catalogSnapshot || {};
+    const domMetrics = headlessData.domMetrics || {};
+    const rawHtml = headlessData.rawHtmlSnippet || '';
 
     // Detecção adaptativa de plataforma e tier
-    const { platform, isEnterprise, brandTier } = detectEcommercePlatform(headlessData.rawHtmlSnippet || '', domain, cleanUrl);
+    const { platform, isEnterprise, brandTier } = detectEcommercePlatform(rawHtml, domain, cleanUrl);
 
     // 🛡️ Higienização de Título de Marketplace: Evita adotar cegamente o título SPA institucional da Shopee / Meli
     let resolvedTitle = headlessData.pageTitle || `${brandName} — Loja Oficial`;
@@ -1688,28 +1734,31 @@ export async function inspectRealWebsite(
     // 🔍 SEMPRE executa o mapeamento completo 100% de produtos e SKUs reais (/products.json, Schema.org ou DOM)
     // Nunca trunca para 8 SKUs sintéticos quando a loja possui milhares de SKUs reais!
     let docFromHeadless: Document | undefined = undefined;
-    if (headlessData.rawHtmlSnippet && typeof DOMParser !== 'undefined') {
+    if (rawHtml && typeof DOMParser !== 'undefined') {
       try {
-        docFromHeadless = new DOMParser().parseFromString(headlessData.rawHtmlSnippet, 'text/html');
+        docFromHeadless = new DOMParser().parseFromString(rawHtml, 'text/html');
       } catch {
         docFromHeadless = undefined;
       }
     }
 
-    const realLiveCatalogAudit = await fetchRealLiveCatalogAudit(
-      cleanUrl,
-      domain,
-      brandName,
-      isEnterprise,
-      docFromHeadless,
-      headlessData.rawHtmlSnippet || '',
-      {
-        crawlDepth: 'COMPLETA_100_PORCENTO',
-        maxPages: 25,
-        directProductHandle: productHandle,
-        operationMode: options?.operationMode
-      }
-    );
+    const [realLiveCatalogAudit, deepData] = await Promise.all([
+      fetchRealLiveCatalogAudit(
+        cleanUrl,
+        domain,
+        brandName,
+        isEnterprise,
+        docFromHeadless,
+        rawHtml,
+        {
+          crawlDepth: 'COMPLETA_100_PORCENTO',
+          maxPages: 25,
+          directProductHandle: productHandle,
+          operationMode: options?.operationMode
+        }
+      ),
+      deepDataPromise
+    ]);
 
     const hasRealExtractedCatalog =
       realLiveCatalogAudit.totalProductsScanned > 0 &&
@@ -1762,6 +1811,40 @@ export async function inspectRealWebsite(
           issues: headlessIssues.length > 0 ? headlessIssues : realLiveCatalogAudit.issues
         };
 
+    // Contagens reais extraídas do DOM/rawHtml (Sem números fixos h2Count: 6, totalImages: 18, imagesWithoutAlt: 2)
+    const imgElements = docFromHeadless ? Array.from(docFromHeadless.querySelectorAll('img')) : [];
+    const regexImgs = !docFromHeadless ? (rawHtml.match(/<img\b[^>]*>/gi) || []) : [];
+
+    const realH1List: string[] = Array.isArray(domMetrics.h1List) && domMetrics.h1List.length > 0
+      ? domMetrics.h1List
+      : docFromHeadless
+      ? Array.from(docFromHeadless.querySelectorAll('h1')).map(h => h.textContent?.trim() || '').filter(Boolean)
+      : [resolvedTitle];
+
+    const realH2Count: number = typeof domMetrics.h2Count === 'number'
+      ? domMetrics.h2Count
+      : docFromHeadless
+      ? docFromHeadless.querySelectorAll('h2').length
+      : (rawHtml.match(/<h2[\s>]/gi) || []).length;
+
+    const realTotalImages: number = typeof domMetrics.totalImages === 'number'
+      ? domMetrics.totalImages
+      : imgElements.length > 0
+      ? imgElements.length
+      : regexImgs.length;
+
+    const realImagesWithoutAlt: number = typeof domMetrics.imagesWithoutAlt === 'number'
+      ? domMetrics.imagesWithoutAlt
+      : imgElements.length > 0
+      ? imgElements.filter(img => !img.getAttribute('alt')?.trim()).length
+      : regexImgs.filter((tag: string) => !/\balt=["'][^"']+["']/i.test(tag)).length;
+
+    const realFormCount: number = typeof domMetrics.formCount === 'number'
+      ? domMetrics.formCount
+      : docFromHeadless
+      ? docFromHeadless.querySelectorAll('form').length
+      : (rawHtml.match(/<form[\s>]/gi) || []).length;
+
     const hasWa = Boolean(contact.detectedWhatsApp || contact.whatsAppLink);
     const result: RealSiteData = {
       url: cleanUrl,
@@ -1778,16 +1861,16 @@ export async function inspectRealWebsite(
       metaDescription: isMarketplaceSeller
         ? `Auditoria especializada do vendedor ${sellerIdentifier || brandName} no marketplace ${platform}. Análise de Buy Box, SEO de Título e Ficha Técnica.`
         : `Confira os produtos e ofertas exclusivas na loja oficial ${brandName}.`,
-      h1List: [resolvedTitle],
-      h2Count: 6,
-      totalImages: 18,
-      imagesWithoutAlt: 2,
+      h1List: realH1List.length > 0 ? realH1List : [resolvedTitle],
+      h2Count: realH2Count,
+      totalImages: realTotalImages,
+      imagesWithoutAlt: realImagesWithoutAlt,
       brokenProductImages: [],
       typoAlerts: [],
       catalogAudit: effectiveCatalogAudit,
-      hasSchemaJsonLd: true,
-      hasViewportMeta: true,
-      hasOgTags: true,
+      hasSchemaJsonLd: docFromHeadless ? !!docFromHeadless.querySelector('script[type="application/ld+json"]') : /application\/ld\+json/i.test(rawHtml),
+      hasViewportMeta: docFromHeadless ? !!docFromHeadless.querySelector('meta[name="viewport"]') : /name=["']viewport["']/i.test(rawHtml),
+      hasOgTags: docFromHeadless ? !!docFromHeadless.querySelector('meta[property^="og:"]') : /property=["']og:/i.test(rawHtml),
       detectedKeywords: ['comprar', brandName.toLowerCase(), 'loja'],
       detectedCheckoutTerms: {
         hasPix: Boolean(conv.hasPixDiscount),
@@ -1796,20 +1879,23 @@ export async function inspectRealWebsite(
         hasCheckoutTransparente: true,
         hasCart: true
       },
-      formCount: 2,
+      formCount: realFormCount,
       buttonCount: conv.ctaCount || 8,
       estimatedLoadTime: Number(((headlessData.loadTimeMs || 1800) / 1000).toFixed(1)),
       inspectionStatus: 'SUCCESS',
       executionTimeMs: Math.round(performance.now() - startTime),
-      rawHtmlSnippet: headlessData?.rawHtmlSnippet || '',
+      rawHtmlSnippet: rawHtml,
       hasMetaPixel: Boolean(headTags.hasMetaPixel),
       metaPixelId: headTags.metaPixelId,
       hasTiktokPixel: Boolean(headTags.hasTikTokPixel),
       hasGtm: Boolean(headTags.hasGoogleTagManager),
       hasWhatsapp: hasWa,
       detectedWhatsapp: contact.detectedWhatsApp,
-      screenshotUrl: headlessData.screenshotBase64,
-      legalCompliance: auditBrazilianLegalCompliance(headlessData.rawHtmlSnippet || '', isMarketplaceSeller),
+      lighthouseMetrics: deepData.lighthouseMetrics,
+      pagespeedScore: deepData.lighthouseMetrics?.performanceScore,
+      securityHeaders: headlessData.securityHeaders,
+      screenshotUrl: headlessData.screenshotBase64 || deepData.screenshotUrl,
+      legalCompliance: auditBrazilianLegalCompliance(rawHtml, isMarketplaceSeller),
       googleShoppingShield: auditGoogleShoppingShield(
         (effectiveCatalogAudit?.issues || []).map(iss => ({
           title: iss.productTitle,
@@ -1829,41 +1915,9 @@ export async function inspectRealWebsite(
   }
 
   // 2. Provedor Secundário: Edge Proxy & DOM Parser local
-  const htmlText = await fetchHtmlWithTimeout(cleanUrl, 6500);
+  const htmlProxyRes = await EdgeProxyService.fetchResilient(cleanUrl, 6500);
+  const htmlText = htmlProxyRes.ok && htmlProxyRes.data ? htmlProxyRes.data : '';
   const { platform, isEnterprise, brandTier } = detectEcommercePlatform(htmlText, domain, cleanUrl);
-
-  // Deep Google PSI Data
-  const fetchDeepData = async () => {
-    let lighthouseMetrics: any = null;
-    let screenshotUrl: string | undefined;
-
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 3500);
-
-    try {
-      const psiEndpoint = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(cleanUrl)}&strategy=mobile&category=PERFORMANCE`;
-      const res = await fetch(psiEndpoint, { signal: controller.signal });
-      clearTimeout(timer);
-
-      if (res.ok) {
-        const lhData = await res.json();
-        screenshotUrl = lhData?.lighthouseResult?.audits?.['final-screenshot']?.details?.data;
-        const metrics = lhData?.lighthouseResult?.audits;
-        if (metrics) {
-          lighthouseMetrics = {
-            lcp: metrics['largest-contentful-paint']?.displayValue || 'N/A',
-            cls: metrics['cumulative-layout-shift']?.displayValue || 'N/A',
-            performanceScore: Math.round((lhData?.lighthouseResult?.categories?.performance?.score || 0.5) * 100)
-          };
-        }
-      }
-    } catch {
-      clearTimeout(timer);
-    }
-    return { lighthouseMetrics, screenshotUrl };
-  };
-
-  const deepDataPromise = fetchDeepData();
   const jinaMarkdownPromise = fetchJinaMarkdown(cleanUrl);
 
   const dynamicTotalImages = isEnterprise ? 34 : ((domainHash * 3) % 22) + 7;
@@ -1955,6 +2009,7 @@ export async function inspectRealWebsite(
     
     const deepData = await deepDataPromise;
     result.lighthouseMetrics = deepData.lighthouseMetrics;
+    result.pagespeedScore = deepData.lighthouseMetrics?.performanceScore;
     result.screenshotUrl = deepData.screenshotUrl;
     
     const scrapedMarkdown = await jinaMarkdownPromise;
@@ -2134,6 +2189,7 @@ export async function inspectRealWebsite(
       hasWhatsapp,
       hasEmail,
       hasPhone,
+      securityHeaders: htmlProxyRes.securityHeaders,
       legalCompliance: auditBrazilianLegalCompliance(htmlText || '', isMarketplaceSeller),
       googleShoppingShield: auditGoogleShoppingShield(
         (catalogAudit?.issues || []).map(iss => ({
@@ -2148,6 +2204,7 @@ export async function inspectRealWebsite(
 
     const deepData = await deepDataPromise;
     result.lighthouseMetrics = deepData.lighthouseMetrics;
+    result.pagespeedScore = deepData.lighthouseMetrics?.performanceScore;
     result.screenshotUrl = deepData.screenshotUrl;
 
     const scrapedMarkdown = await jinaMarkdownPromise;

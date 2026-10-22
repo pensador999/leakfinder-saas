@@ -9,22 +9,41 @@ export const config = {
   maxDuration: 60,
 };
 
-function sendJsonOrText(response: any, statusCode: number, body: string, contentType: string = 'application/json; charset=utf-8') {
+function sendJsonOrText(
+  response: any,
+  statusCode: number,
+  body: string,
+  contentType: string = 'application/json; charset=utf-8',
+  securityHeaders?: { csp?: string; xfo?: string; hsts?: string }
+) {
+  const exposeHeaders = 'X-Target-Headers-Captured, X-Target-CSP, X-Target-XFO, X-Target-HSTS, Content-Security-Policy, X-Frame-Options, Strict-Transport-Security';
   if (response?.status && typeof response.status === 'function') {
     response.setHeader('Access-Control-Allow-Origin', '*');
     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    response.setHeader('Access-Control-Expose-Headers', exposeHeaders);
     response.setHeader('Content-Type', contentType);
     response.setHeader('Cache-Control', 's-maxage=120, stale-while-revalidate=300');
+    if (securityHeaders) response.setHeader('X-Target-Headers-Captured', 'true');
+    if (securityHeaders?.csp) response.setHeader('X-Target-CSP', securityHeaders.csp);
+    if (securityHeaders?.xfo) response.setHeader('X-Target-XFO', securityHeaders.xfo);
+    if (securityHeaders?.hsts) response.setHeader('X-Target-HSTS', securityHeaders.hsts);
     return response.status(statusCode).send(body);
   }
+  const headersObj: Record<string, string> = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Expose-Headers': exposeHeaders,
+    'Content-Type': contentType,
+    'Cache-Control': 's-maxage=120, stale-while-revalidate=300'
+  };
+  if (securityHeaders) headersObj['X-Target-Headers-Captured'] = 'true';
+  if (securityHeaders?.csp) headersObj['X-Target-CSP'] = securityHeaders.csp;
+  if (securityHeaders?.xfo) headersObj['X-Target-XFO'] = securityHeaders.xfo;
+  if (securityHeaders?.hsts) headersObj['X-Target-HSTS'] = securityHeaders.hsts;
+
   return new Response(body, {
     status: statusCode,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Content-Type': contentType,
-      'Cache-Control': 's-maxage=120, stale-while-revalidate=300'
-    }
+    headers: headersObj
   });
 }
 
@@ -61,7 +80,10 @@ function isSafePublicUrl(rawUrl: string): { valid: boolean; cleanUrl: string; er
   }
 }
 
-const proxyMemoryCache = new Map<string, { body: string; contentType: string; expiresAt: number }>();
+const proxyMemoryCache = new Map<
+  string,
+  { body: string; contentType: string; securityHeaders?: { csp?: string; xfo?: string; hsts?: string }; expiresAt: number }
+>();
 
 function toggleWwwUrl(urlStr: string): string | null {
   try {
@@ -102,7 +124,7 @@ export default async function handler(request: any, response: any) {
 
   const cached = proxyMemoryCache.get(check.cleanUrl);
   if (cached && Date.now() < cached.expiresAt) {
-    return sendJsonOrText(response, 200, cached.body, cached.contentType);
+    return sendJsonOrText(response, 200, cached.body, cached.contentType, cached.securityHeaders);
   }
 
   const isJsonReq = /\.json(\?|$)/i.test(check.cleanUrl);
@@ -121,7 +143,12 @@ export default async function handler(request: any, response: any) {
       clearTimeout(timeoutId);
       const text = await res.text();
       const contentType = res.headers.get('content-type') || 'application/json; charset=utf-8';
-      return { status: res.status, ok: res.ok, text, contentType };
+      const securityHeaders = {
+        csp: res.headers.get('content-security-policy') || undefined,
+        xfo: res.headers.get('x-frame-options') || undefined,
+        hsts: res.headers.get('strict-transport-security') || undefined
+      };
+      return { status: res.status, ok: res.ok, text, contentType, securityHeaders };
     } catch (err: any) {
       clearTimeout(timeoutId);
       throw err;
@@ -152,11 +179,12 @@ export default async function handler(request: any, response: any) {
       proxyMemoryCache.set(check.cleanUrl, {
         body: result.text,
         contentType: result.contentType,
+        securityHeaders: result.securityHeaders,
         expiresAt: Date.now() + 10 * 60 * 1000
       });
     }
 
-    return sendJsonOrText(response, result.status, result.text, result.contentType);
+    return sendJsonOrText(response, result.status, result.text, result.contentType, result.securityHeaders);
   } catch (err: any) {
     return sendJsonOrText(
       response,

@@ -14,6 +14,9 @@ export interface AuditedProductSkuItem {
   price: number;
   compareAtPrice?: number;
   available: boolean;
+  inventoryQuantity?: number;
+  inventoryPolicy?: 'continue' | 'deny';
+  inventoryManagement?: string | null;
   barcode?: string;
   isFullExempt: boolean;
   sizeDemandWeight: number; // Percent of Brazilian D2C fashion demand
@@ -294,6 +297,9 @@ export function auditProductDeepSkus(
       price,
       compareAtPrice,
       available,
+      inventoryQuantity: typeof v.inventory_quantity === 'number' ? v.inventory_quantity : undefined,
+      inventoryPolicy: v.inventory_policy === 'continue' ? 'continue' : v.inventory_policy === 'deny' ? 'deny' : undefined,
+      inventoryManagement: v.inventory_management !== undefined ? v.inventory_management : undefined,
       barcode: v.barcode || '',
       isFullExempt: isSkuLevelFull,
       sizeDemandWeight: rawDemandWeight,

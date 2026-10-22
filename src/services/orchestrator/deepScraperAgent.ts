@@ -34,6 +34,7 @@ export interface ScrapedHeadTags {
 
 export interface ScrapedLegalCompliance {
   cnpjFound?: string;
+  cnpjNumber?: string;
   hasCnpjInFooter: boolean;
   hasReturnPolicyLink: boolean;
   hasPrivacyPolicyLink: boolean;
@@ -76,6 +77,7 @@ export interface CollectedEvidenceDossier {
   isHttpsSecured: boolean;
   collectionDurationMs: number;
   evidenceQualityIndex: number;
+  rawHtmlSnippet?: string;
 }
 
 /**
@@ -179,7 +181,8 @@ export class DeepScraperAgent {
       schemaOrgJsonLdFound,
       isHttpsSecured,
       collectionDurationMs: duration,
-      evidenceQualityIndex: Math.min(100, qualityIndex)
+      evidenceQualityIndex: Math.min(100, qualityIndex),
+      rawHtmlSnippet: activeHtml
     };
   }
 
@@ -208,6 +211,7 @@ export class DeepScraperAgent {
 
     return {
       cnpjFound: cnpjMatch ? cnpjMatch[0] : undefined,
+      cnpjNumber: cnpjMatch ? cnpjMatch[0] : undefined,
       hasCnpjInFooter: !!cnpjMatch || htmlLower.includes('cnpj'),
       hasReturnPolicyLink: htmlLower.includes('troca') || htmlLower.includes('devolu') || htmlLower.includes('reembolso'),
       hasPrivacyPolicyLink: htmlLower.includes('privacidade') || htmlLower.includes('lgpd'),

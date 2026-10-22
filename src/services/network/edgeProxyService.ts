@@ -18,6 +18,12 @@ export interface ProxyFetchResult {
   source: 'DIRECT_FETCH' | 'JINA_AI_EDGE_READER' | 'ALLORIGINS_PROXY' | 'CORSPROXY_FALLBACK' | 'SIMULATION_CACHE';
   latencyMs: number;
   error?: string;
+  securityHeaders?: {
+    contentSecurityPolicy?: string;
+    xFrameOptions?: string;
+    strictTransportSecurity?: string;
+    headersCaptured?: boolean;
+  };
 }
 
 export class EdgeProxyService {
@@ -107,12 +113,22 @@ export class EdgeProxyService {
           const text = await response.text();
           if (isValidExpectedPayload(text)) {
             cacheIfValidJson(text);
+            const csp = response.headers?.get?.('X-Target-CSP') || response.headers?.get?.('content-security-policy') || undefined;
+            const xfo = response.headers?.get?.('X-Target-XFO') || response.headers?.get?.('x-frame-options') || undefined;
+            const hsts = response.headers?.get?.('X-Target-HSTS') || response.headers?.get?.('strict-transport-security') || undefined;
+            const captured = response.headers?.get?.('X-Target-Headers-Captured') === 'true' || Boolean(csp || xfo || hsts);
             return {
               ok: true,
               status: response.status,
               data: text,
               source: 'DIRECT_FETCH',
-              latencyMs: Date.now() - startTime
+              latencyMs: Date.now() - startTime,
+              securityHeaders: {
+                contentSecurityPolicy: csp,
+                xFrameOptions: xfo,
+                strictTransportSecurity: hsts,
+                headersCaptured: captured
+              }
             };
           }
         }
@@ -150,12 +166,21 @@ export class EdgeProxyService {
           const text = await response.text();
           if (isValidExpectedPayload(text)) {
             cacheIfValidJson(text);
+            const csp = response.headers?.get?.('content-security-policy') || response.headers?.get?.('X-Target-CSP') || undefined;
+            const xfo = response.headers?.get?.('x-frame-options') || response.headers?.get?.('X-Target-XFO') || undefined;
+            const hsts = response.headers?.get?.('strict-transport-security') || response.headers?.get?.('X-Target-HSTS') || undefined;
             return {
               ok: true,
               status: response.status,
               data: text,
               source: 'DIRECT_FETCH',
-              latencyMs: Date.now() - startTime
+              latencyMs: Date.now() - startTime,
+              securityHeaders: {
+                contentSecurityPolicy: csp,
+                xFrameOptions: xfo,
+                strictTransportSecurity: hsts,
+                headersCaptured: !isBrowser || Boolean(csp || xfo || hsts)
+              }
             };
           }
         }

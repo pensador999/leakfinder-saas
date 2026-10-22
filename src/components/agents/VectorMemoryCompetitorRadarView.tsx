@@ -25,7 +25,8 @@ import {
   ProvenSolutionPlaybook 
 } from '../../services/ai/supabaseVectorMemoryBank';
 import { 
-  computeCompetitorRadarBenchmark, 
+  computeCompetitorRadarBenchmark,
+  computeLiveCompetitorRadarBenchmarkAsync,
   CompetitorRadarReport 
 } from '../../services/ai/liveCompetitorBenchmarkingEngine';
 
@@ -46,10 +47,13 @@ export const VectorMemoryCompetitorRadarView: React.FC<VectorMemoryCompetitorRad
   const loadData = async (query = '') => {
     setIsSearching(true);
     try {
-      const rag = await queryVectorMemoryBank(query);
-      const radar = computeCompetitorRadarBenchmark(diagnostic);
+      setRadarData(computeCompetitorRadarBenchmark(diagnostic));
+      const [rag, liveRadar] = await Promise.all([
+        queryVectorMemoryBank(query),
+        computeLiveCompetitorRadarBenchmarkAsync(diagnostic)
+      ]);
       setRagData(rag);
-      setRadarData(radar);
+      setRadarData(liveRadar);
     } finally {
       setIsSearching(false);
     }

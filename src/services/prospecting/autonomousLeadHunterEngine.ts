@@ -312,7 +312,7 @@ export async function startAutonomousHuntingSession(
       const scraper = new DeepScraperAgent(cleanUrl);
       const evidence = await scraper.executeDeepScrape();
 
-      const hasMetaPixel = evidence.headTags?.hasMetaPixel ?? true;
+      const hasMetaPixel = Boolean(evidence.headTags?.hasMetaPixel);
       if (hasMetaPixel) {
         emitEvent(
           'META_PIXEL_FOUND',
@@ -324,14 +324,20 @@ export async function startAutonomousHuntingSession(
         );
       }
 
-      // 1. DELEGAÇÃO: Mineração de Contato & CNPJ ao Agente CommercialContactSniper
-      const simulatedHtml = `<title>${brandName}</title><footer>CNPJ 12.345.678/0001-90 - Atendimento SAC wa.me/${evidence.ui?.whatsAppNumberFound || '5534991351122'}</footer>`;
-      const contactTarget = extractCommercialContactsFromHtml(simulatedHtml, domain, brandName);
+      // 1. DELEGAÇÃO: Mineração de Contato & CNPJ ao Agente CommercialContactSniper (100% Dados Reais Observados)
+      const observedCnpj = evidence.legal?.cnpjNumber || evidence.legal?.cnpjFound;
+      const observedWhatsApp = evidence.ui?.whatsAppNumberFound;
+      const realEvidenceHtml = [
+        evidence.rawHtmlSnippet || `<title>${brandName}</title>`,
+        observedCnpj ? `<footer>CNPJ ${observedCnpj}</footer>` : '',
+        observedWhatsApp ? `<a href="https://wa.me/${observedWhatsApp}">Atendimento SAC</a>` : ''
+      ].filter(Boolean).join('\n');
+      const contactTarget = extractCommercialContactsFromHtml(realEvidenceHtml, domain, brandName);
 
       if (contactTarget.e164InternationalPhone) {
         emitEvent(
           'WHATSAPP_MINED',
-          `Canal oficial ${contactTarget.cleanFormattedPhone} extraído. Decreto 7.962/13: CNPJ ${contactTarget.legalCompliance.detectedCnpj || 'Verificado'}.`,
+          `Canal oficial ${contactTarget.cleanFormattedPhone} extraído. Decreto 7.962/13: CNPJ ${contactTarget.legalCompliance.detectedCnpj || 'Não detectado no rodapé'}.`,
           cleanUrl,
           brandName,
           undefined,
@@ -402,8 +408,8 @@ export async function startAutonomousHuntingSession(
           const detectedWhatsApp = contactTarget.cleanFormattedPhone || evidence.ui?.whatsAppNumberFound;
 
           const tierAnalysis = calculateLeadHuntingTier({
-            hasMetaPixel: true,
-            activeAdsCountEstimated: Math.max(6, Math.round(price / 12)),
+            hasMetaPixel,
+            activeAdsCountEstimated: hasMetaPixel ? Math.max(6, Math.round(price / 12)) : 0,
             totalMonthlyWasteEstimated: estimatedMonthlyLoss,
             detectedWhatsApp,
             contactTargetPhone: detectedWhatsApp || '',
@@ -418,10 +424,10 @@ export async function startAutonomousHuntingSession(
             domain,
             niche: target.nicheLabel,
             detectedAt: new Date().toISOString(),
-            hasMetaPixel: true,
+            hasMetaPixel,
             metaPixelId: evidence.headTags?.metaPixelId,
             metaAdsLibraryUrl: generateMetaAdsLibraryUrl(evidence.targetBrand || brandName),
-            activeAdsCountEstimated: Math.max(6, Math.round(price / 12)),
+            activeAdsCountEstimated: hasMetaPixel ? Math.max(6, Math.round(price / 12)) : 0,
             detectedWhatsApp,
             contactTargetPhone: detectedWhatsApp || '',
             brokenSkus: [primarySku],

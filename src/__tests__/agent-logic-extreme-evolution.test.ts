@@ -25,7 +25,13 @@ import {
 import { analyzeComputerVision } from '../services/visionCoreEngine';
 import { auditSiteSecurity } from '../services/securityInspector';
 import { auditSocialConversion } from '../services/socialInspector';
-import { analyzeOsint } from '../services/osintEngine';
+import { analyzeOsint, isValidCnpjModulo11 } from '../services/osintEngine';
+import { reverseEngineerStoreArchitecture } from '../services/reverseEngineering/techReverseEngineeringEngine';
+import { computeCompetitorRadarBenchmark, fetchLiveCompetitorPublicData } from '../services/ai/liveCompetitorBenchmarkingEngine';
+import { conductMarketPriceStudy } from '../services/ai/productPriceMarketBenchmarkEngine';
+import { extractCommercialContactsFromHtml } from '../services/prospecting/commercialContactSniperEngine';
+import { EdgeProxyService } from '../services/network/edgeProxyService';
+import crossAuditHandler from '../../api/omnichannel/cross-audit';
 import {
   extractUniversalPlatformProducts,
   buildIssuesFromUniversalProducts
@@ -963,5 +969,347 @@ describe('🧠 BATERIA EXTREMA DE LÓGICA MULTI-AMBIENTE & AUTOMELHORIA EVOLUTIV
     expect(importResult.restoredDomainsCount).toBe(3);
     expect(getSwarmEvolutionSummary().swarmMaturityScore).toBe(summaryBeforeExport.swarmMaturityScore);
     expect(getSwarmEvolutionSummary().learnedPatterns['GRADE_CALCADOS_34_44']).toBeDefined();
+  });
+
+  it('Ambiente 10 (Integridade de Dados, Módulo 11 CNPJ, Telemetria Real, Headers HTTP e Benchmark Multi-Vertical): Zero falso-positivo fixo e zero alucinação de pixels', async () => {
+    // 1. Validação Módulo 11 de CNPJ
+    expect(isValidCnpjModulo11('11.222.333/0001-81')).toBe(true);
+    expect(isValidCnpjModulo11('12.345.678/0001-95')).toBe(true);
+    expect(isValidCnpjModulo11('12.345.678/0001-90')).toBe(false); // dígito verificador incorreto
+    expect(isValidCnpjModulo11('11.111.111/1111-11')).toBe(false); // dígitos repetidos
+
+    // 2. Tech Reverse Engineering: sem curto-circuito || true e extração real de Pixel ID
+    const noPixelReport = reverseEngineerStoreArchitecture('https://lojinhapopular.com.br', '<html><head><title>Loja</title></head><body></body></html>');
+    expect(noPixelReport.telemetryAndPixels.hasMetaPixel).toBe(false);
+    expect(noPixelReport.telemetryAndPixels.metaPixelId).toBeUndefined();
+
+    const withPixelReport = reverseEngineerStoreArchitecture(
+      'https://lojacompixel.com.br',
+      `<html><head><script>fbq('init', '987654321098765');</script></head><body></body></html>`
+    );
+    expect(withPixelReport.telemetryAndPixels.hasMetaPixel).toBe(true);
+    expect(withPixelReport.telemetryAndPixels.metaPixelId).toBe('987654321098765');
+
+    // 3. Security Inspector: respeita Meta CSP / securityHeaders reais e não dispara falso-positivo ALTO quando CORS oculta headers
+    const corsHiddenSec = auditSiteSecurity({
+      domain: 'lojad2c.com.br',
+      isHttps: true,
+      rawHtmlSnippet: '<html><footer>CNPJ 11.222.333/0001-81 Trocas Privacidade Rua A</footer></html>',
+      formCount: 1
+    } as any);
+    expect(corsHiddenSec.checks.some(c => c.id === 'sec-3' && c.severity === 'ALTO')).toBe(false);
+    expect(corsHiddenSec.checks.some(c => c.id === 'sec-3-cors-info')).toBe(true);
+
+    const withMetaCspSec = auditSiteSecurity({
+      domain: 'lojasegura.com.br',
+      isHttps: true,
+      rawHtmlSnippet: '<html><head><meta http-equiv="Content-Security-Policy" content="frame-ancestors \'self\'"></head><footer>CNPJ 11.222.333/0001-81 Trocas Privacidade</footer></html>',
+      formCount: 1
+    } as any);
+    expect(withMetaCspSec.hasCspHeader).toBe(true);
+    expect(withMetaCspSec.hasXFrameOptions).toBe(true);
+    expect(withMetaCspSec.checks.some(c => c.id === 'sec-3-ok')).toBe(true);
+
+    const serverConfirmedMissingSec = auditSiteSecurity({
+      domain: 'lojasemxfo.com.br',
+      isHttps: true,
+      rawHtmlSnippet: '<html><footer>CNPJ 11.222.333/0001-81</footer></html>',
+      formCount: 1,
+      securityHeaders: { headersCaptured: true }
+    } as any);
+    expect(serverConfirmedMissingSec.checks.some(c => c.id === 'sec-3' && c.severity === 'ALTO')).toBe(true);
+
+    // 4. Product Price Market Benchmark: não cai no fallback de "Camisa Manga Longa UV50+" para produtos fora de Pesca/Agro
+    const studySkincare = conductMarketPriceStudy([
+      {
+        id: 'sk-1',
+        sku: 'SERUM-VITC',
+        productTitle: 'Sérum Facial Vitamina C 20% Antioxidante',
+        productUrl: 'https://lumaskincare.com.br/products/serum',
+        price: 94.90,
+        imageSrc: '',
+        hasValidImage: true,
+        imageResolutionStatus: 'ALTA',
+        availableSizes: ['30ML'],
+        missingSizes: [],
+        isFullPrintExempt: true,
+        hasDescription: true,
+        descriptionLength: 200,
+        hasSizeGuide: true,
+        imageWeightKb: 120,
+        criticalIssuesCount: 0,
+        recommendedAction: 'OK'
+      },
+      {
+        id: 'custom-1',
+        sku: 'CAD-ERG-01',
+        productTitle: 'Cadeira Ergonômica Office Mesh Pro',
+        productUrl: 'https://ergostore.com.br/products/cadeira',
+        price: 1290.00,
+        imageSrc: '',
+        hasValidImage: true,
+        imageResolutionStatus: 'ALTA',
+        availableSizes: ['Único'],
+        missingSizes: [],
+        isFullPrintExempt: true,
+        hasDescription: true,
+        descriptionLength: 200,
+        hasSizeGuide: true,
+        imageWeightKb: 120,
+        criticalIssuesCount: 0,
+        recommendedAction: 'OK'
+      }
+    ], 'lumaskincare.com.br', 'Luma Skincare');
+
+    expect(studySkincare.items[0].category).toContain('Dermocosméticos');
+    expect(studySkincare.items[1].category).not.toContain('UV50+');
+    expect(studySkincare.items[1].category).toContain('Cadeira Ergonômica');
+
+    // 5. Competitor Radar Benchmark: scores calculados dinamicamente (nunca fixos 66 vs 91)
+    const workerHealthy = await buildFieldAccurateWorkerPayload({
+      domain: 'lojapremium.com.br',
+      brandName: 'Loja Premium',
+      platform: 'Shopify',
+      niche: 'Moda Contemporânea',
+      title: 'Loja Premium Oficial',
+      rawHtmlSnippet: '<html><footer>CNPJ: 11.222.333/0001-81 Desconto Pix Frete Grátis Troca Privacidade</footer></html>',
+      products: [
+        {
+          id: 'p-1',
+          title: 'Camiseta Pima Premium',
+          handle: 'camiseta-pima',
+          variants: [
+            { id: 'v1', sku: 'PIMA-P', title: 'P', price: '199.00', available: true, inventory_quantity: 15, inventory_policy: 'deny' },
+            { id: 'v2', sku: 'PIMA-M', title: 'M', price: '199.00', available: true, inventory_quantity: 20, inventory_policy: 'deny' },
+            { id: 'v3', sku: 'PIMA-G', title: 'G', price: '199.00', available: true, inventory_quantity: 18, inventory_policy: 'deny' }
+          ]
+        }
+      ]
+    });
+    const diagHealthy = await runAgentDiagnostic(
+      {
+        businessName: 'Loja Premium',
+        siteUrl: 'https://lojapremium.com.br',
+        niche: 'Moda Contemporânea',
+        targetRegion: 'Brasil',
+        averageOrderValue: 199,
+        grossMargin: 65,
+        competitorsUrl: 'https://oficinareserva.com'
+      } as any,
+      workerHealthy
+    );
+    const radar = computeCompetitorRadarBenchmark(diagHealthy);
+    expect(radar.competitorDomain).toBe('oficinareserva.com');
+    expect(radar.overallCompetitiveScoreYou).toBeGreaterThan(80);
+    expect(radar.overallCompetitiveScoreYou).not.toBe(66);
+
+    // 6. CommercialContactSniper: Não confunde Meta Pixel ID (14-15 dígitos) ou asset version (?v=1719823456) com telefone/CNPJ
+    const htmlWithPixelOnly = `
+      <html>
+        <head>
+          <script>fbq('init', '349912345678901');</script>
+          <link rel="stylesheet" href="https://cdn.shopify.com/s/files/1/0559/files/theme.css?v=1719823456" />
+        </head>
+        <body><h1>Loja Sem Contato</h1></body>
+      </html>
+    `;
+    const contactFromPixelOnly = extractCommercialContactsFromHtml(htmlWithPixelOnly, 'lojasemcontato.com.br', 'Loja Sem Contato');
+    expect(contactFromPixelOnly.channelType).toBe('CONTACT_NOT_FOUND');
+    expect(contactFromPixelOnly.e164InternationalPhone).toBeUndefined();
+    expect(contactFromPixelOnly.legalCompliance.hasCnpjInFooter).toBe(false);
+
+    const htmlWithRealFooter = `
+      <html>
+        <body>
+          <footer>Atendimento: (34) 99888-7766 | Razão Social: Agro Exemplo Ltda - CNPJ: 11.222.333/0001-81</footer>
+        </body>
+      </html>
+    `;
+    const contactFromRealFooter = extractCommercialContactsFromHtml(htmlWithRealFooter, 'agroexemplo.com.br', 'Agro Exemplo');
+    expect(contactFromRealFooter.channelType).toBe('WHATSAPP_VERIFIED_MOBILE');
+    expect(contactFromRealFooter.e164InternationalPhone).toBe('5534998887766');
+    expect(contactFromRealFooter.legalCompliance.detectedCnpj).toBe('11.222.333/0001-81');
+
+    // 7. OSINT RDAP Registro.br + BrasilAPI Cross-Reference (quando o rodapé omite CNPJ) e proteção contra Pixel ID de 14 dígitos
+    const origFetch = globalThis.fetch;
+    try {
+      globalThis.fetch = (async (inputUrl: any) => {
+        const urlStr = String(inputUrl);
+        if (urlStr.includes('rdap.registro.br/domain/lojasemrodape.com.br')) {
+          return new Response(
+            JSON.stringify({
+              handle: 'lojasemrodape.com.br',
+              events: [{ eventAction: 'registration', eventDate: '2018-05-10T00:00:00Z' }],
+              entities: [
+                {
+                  roles: ['registrant'],
+                  entities: [
+                    {
+                      handle: '11222333000181',
+                      publicIds: [{ type: 'cnpj', identifier: '11.222.333/0001-81' }],
+                      vcardArray: ['vcard', [['version', {}, 'text', '4.0'], ['fn', {}, 'text', 'LOJA SEM RODAPE COMERCIO LTDA']]]
+                    }
+                  ]
+                }
+              ]
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/rdap+json' } }
+          );
+        }
+        if (urlStr.includes('brasilapi.com.br/api/cnpj/v1/11222333000181')) {
+          return new Response(
+            JSON.stringify({
+              razao_social: 'LOJA SEM RODAPE COMERCIO LTDA',
+              nome_fantasia: 'LOJA SEM RODAPE',
+              descricao_situacao_cadastral: 'ATIVA',
+              data_inicio_atividade: '2018-05-01',
+              capital_social: 150000
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } }
+          );
+        }
+        return new Response('Not Found', { status: 404 });
+      }) as any;
+
+      const osintCrossRef = await analyzeOsint(
+        '<html><head><script>fbq("init", "12345678901234");</script></head><body>Sem CNPJ no rodape</body></html>',
+        'lojasemrodape.com.br'
+      );
+      expect(osintCrossRef.domainAge.rdapSource).toBe('rdap.registro.br');
+      expect(osintCrossRef.domainAge.registeredYears).toBeGreaterThanOrEqual(7);
+      expect(osintCrossRef.cnpjData.found).toBe(true);
+      expect(osintCrossRef.cnpjData.source).toBe('RDAP_REGISTRO_BR');
+      expect(osintCrossRef.cnpjData.rawCnpj).toBe('11.222.333/0001-81');
+      expect(osintCrossRef.cnpjData.razaoSocial).toBe('LOJA SEM RODAPE COMERCIO LTDA');
+      expect(osintCrossRef.cnpjData.situacaoCadastral).toBe('ATIVA');
+      expect(osintCrossRef.reputation.reclameAquiVerifiedLive).toBe(false);
+    } finally {
+      globalThis.fetch = origFetch;
+    }
+
+    // 8. Competitor Public Data: Fallback HTML Universal quando /products.json retorna 404 (ex: Nuvemshop / Tray)
+    const origFetchResilient = EdgeProxyService.fetchResilient.bind(EdgeProxyService);
+    try {
+      EdgeProxyService.fetchResilient = async (targetUrl: string) => {
+        if (targetUrl.includes('/products.json')) {
+          return { ok: false, status: 404, data: '', source: 'DIRECT_FETCH', latencyMs: 10 };
+        }
+        return {
+          ok: true,
+          status: 200,
+          source: 'DIRECT_FETCH',
+          latencyMs: 120,
+          data: `
+            <html>
+              <head><script src="https://connect.facebook.net/en_US/fbevents.js"></script><script src="https://www.googletagmanager.com/gtm.js?id=GTM-ABC"></script></head>
+              <body>
+                <p>5% de desconto no Pix • Frete Grátis acima de R$ 299</p>
+                <script>
+                  LS.variants = [
+                    {"id": 1, "product_id": 10, "option0": "P", "stock": 5, "available": true, "price_number": 249.90, "sku": "NV-P"},
+                    {"id": 2, "product_id": 10, "option0": "M", "stock": 0, "available": false, "price_number": 249.90, "sku": "NV-M"}
+                  ];
+                </script>
+              </body>
+            </html>
+          `
+        };
+      };
+
+      const nonShopifyComp = await fetchLiveCompetitorPublicData('https://concorrentenuvem.com.br');
+      expect(nonShopifyComp.isLiveScraped).toBe(true);
+      expect(nonShopifyComp.dataOrigin).toBe('LIVE_PUBLIC_SCRAPE');
+      expect(nonShopifyComp.averagePriceBRL).toBe(249.9);
+      expect(nonShopifyComp.totalProductsSampled).toBe(1);
+      expect(nonShopifyComp.brokenGridCount).toBe(1);
+      expect(nonShopifyComp.hasPixDiscount).toBe(true);
+      expect(nonShopifyComp.hasMetaPixel).toBe(true);
+    } finally {
+      EdgeProxyService.fetchResilient = origFetchResilient;
+    }
+
+    // 9. Omnichannel Cross-Audit API: recalcula veredito dinamicamente a partir dos conectores reais (mesmo se Magis5 falhar parcialmente)
+    const origFetchOmni = globalThis.fetch;
+    try {
+      let metaPausedAdset = '';
+      globalThis.fetch = (async (inputUrl: any) => {
+        const urlStr = String(inputUrl);
+        if (urlStr.includes('DbExplorerSP.executeQuery')) {
+          return new Response(
+            JSON.stringify({
+              responseBody: {
+                rows: [['SKU-HEALTHY-INIT', 0, 2]] // Galpão físico zerado com 2 reservados (-2 disponível)!
+              }
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } }
+          );
+        }
+        if (urlStr.includes('api.magis5.com.br')) {
+          // Simula falha parcial no conector Magis5 (HTTP 503) enquanto Sankhya responde OK
+          return new Response('Service Unavailable', { status: 503 });
+        }
+        if (urlStr.includes('graph.facebook.com')) {
+          metaPausedAdset = urlStr;
+          return new Response(JSON.stringify({ success: true }), { status: 200 });
+        }
+        return new Response('{}', { status: 200 });
+      }) as any;
+
+      let statusCode = 0;
+      let responsePayload: any = null;
+      await crossAuditHandler(
+        {
+          method: 'POST',
+          body: {
+            executeKillSwitch: true,
+            storeName: 'Loja Teste ERP',
+            sankhyaCredentials: { baseUrl: 'https://erp.lojateste.com.br', token: 'tok-sankhya-real' },
+            magis5ApiToken: 'magis5-token-123456',
+            metaAccessToken: 'EAA_REAL_META_TOKEN_1234567890123456',
+            customItems: [
+              {
+                sku: 'SKU-HEALTHY-INIT',
+                nome: 'Bota Couro Teste',
+                handle: 'bota-couro-teste',
+                preco: 399.9,
+                shopifyStatus: { disponivelFront: true, inventoryPolicy: 'continue', tracked: true, estoqueFront: 10 },
+                sankhyaStatus: { estoqueFisicoGalpao: 10, reservado: 0, disponivelReal: 10, emCortePcp: false, leadTimeDias: 2 },
+                magis5Status: { statusMercadoLivre: 'ATIVO', statusShopee: 'ATIVO', pausadoPorEstoque: false },
+                metaAdsStatus: { anuncioAtivo: true, adsetId: '2385111222333', nomeCampanha: 'Campanha Bota', verbaDiariaReais: 300, cpcMedioReais: 1.5 },
+                veredito: {
+                  temEstoqueFantasma: false,
+                  nivelRisco: 'SEGURO',
+                  motivoDiscrepancia: 'Inicialmente seguro',
+                  desperdicioDiarioEstimado: 0,
+                  desperdicioMensalProjetado: 0,
+                  acaoKillSwitchRecomendada: false,
+                  statusKillSwitch: 'NAO_NECESSARIO'
+                }
+              }
+            ]
+          }
+        },
+        {
+          status: (code: number) => ({
+            json: (data: unknown) => {
+              statusCode = code;
+              responsePayload = data;
+              return data;
+            }
+          })
+        }
+      );
+
+      expect(statusCode).toBe(200);
+      expect(responsePayload.dataMode).toBe('LIVE_ERP_INTEGRATED');
+      expect(responsePayload.dataOrigin).toBe('LIVE_API');
+      expect(responsePayload.items[0].sankhyaStatus.disponivelReal).toBe(-2);
+      expect(responsePayload.items[0].veredito.temEstoqueFantasma).toBe(true);
+      expect(responsePayload.items[0].veredito.nivelRisco).toBe('CRITICO');
+      expect(responsePayload.items[0].veredito.statusKillSwitch).toBe('EXECUTADO');
+      expect(metaPausedAdset).toContain('2385111222333');
+    } finally {
+      globalThis.fetch = origFetchOmni;
+    }
   });
 });

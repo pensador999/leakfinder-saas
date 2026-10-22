@@ -5,6 +5,7 @@ import { askGeminiAgent } from './llmService';
 import { agentKnowledgeBases, getVerticalizedAgentPrompt } from '../agents';
 import { resolveDynamicVertical } from './ai/dynamicVerticalContext';
 import { calculateStoreFinancialGrounding, formatBRL } from './ai/storeFinancialGroundingEngine';
+import { fetchLiveCompetitorPublicData } from './ai/liveCompetitorBenchmarkingEngine';
 
 function buildNicheContextString(worker: WorkerInspectionResult, input: AuditInput): string {
   const primaryContext = `${worker.detectedNiche || ''} ${input.niche || ''} ${worker.siteData.domain || ''} ${worker.siteData.title || ''}`.toLowerCase();
@@ -640,17 +641,19 @@ export async function buildCompetitorAgentSkill(input: AuditInput, worker: Worke
 
   const nicheContext = buildNicheContextString(worker, input);
   const vertical = resolveDynamicVertical(nicheContext);
+  const liveComp = await fetchLiveCompetitorPublicData(input.competitorsUrl);
 
   const prompt = `
   Atue como Analista de Inteligência Competitiva Sênior especializado na vertical: ${vertical.label}.
   Empresa do cliente: ${input.businessName} (URL: ${input.siteUrl})
-  Concorrente direto fornecido: ${input.competitorsUrl}
+  Concorrente direto fornecido: ${input.competitorsUrl} (${liveComp.brandName})
+  Dados públicos reais extraídos ao vivo do concorrente: ${JSON.stringify(liveComp)}
   Nicho: ${vertical.label}
   Termos-chave do setor: ${vertical.vocabulary.industryTerms.join(', ')}
 
-  Deduza com base nas URLs e no mercado o comportamento provável desse concorrente.
+  Cruze os dados extraídos ao vivo da loja auditada e do concorrente.
   Liste pontos fortes deles, fraquezas que podemos atacar e oportunidades de roubar mercado.
-  Preencha as métricas de comparação (ex: 'Tráfego Estimado', 'Autoridade de Domínio', 'Agressividade de Oferta') e defina quem tem a vantagem.
+  Preencha as métricas de comparação e defina quem tem a vantagem.
   
   Retorne APENAS um JSON válido seguindo esta estrutura:
   {
@@ -672,7 +675,7 @@ export async function buildCompetitorAgentSkill(input: AuditInput, worker: Worke
   if (llmResponse && llmResponse.threatLevel) {
     return {
       competitorUrl: llmResponse.competitorUrl || input.competitorsUrl,
-      competitorBrandName: llmResponse.competitorBrandName || 'Concorrente',
+      competitorBrandName: llmResponse.competitorBrandName || liveComp.brandName || 'Concorrente',
       threatLevel: llmResponse.threatLevel,
       strengths: llmResponse.strengths || [],
       weaknesses: llmResponse.weaknesses || [],
@@ -681,23 +684,98 @@ export async function buildCompetitorAgentSkill(input: AuditInput, worker: Worke
     };
   }
 
-  const compClean = (input.competitorsUrl || '').replace(/^https?:\/\//, '').split('/')[0].replace(/^www\./, '');
-  const compBrand = compClean ? compClean.split('.')[0].toUpperCase() : 'Concorrente';
+  const compBrand = liveComp.brandName || 'Concorrente';
+  const finances = calculateStoreFinancialGrounding(worker.siteData, input, worker.social);
+  const yourAov = finances.groundedAverageTicket;
+  const yourBroken = finances.brokenSkusCount;
+  const yourPix = Boolean(worker.siteData.detectedCheckoutTerms?.hasPix);
+  const yourPixels = [worker.siteData.hasMetaPixel, worker.siteData.hasGtm, worker.siteData.hasTiktokPixel].filter(Boolean).length;
+
+  const compPixels = liveComp.isLiveScraped
+    ? [liveComp.hasMetaPixel, liveComp.hasGtm, liveComp.hasTikTokPixel].filter(Boolean).length
+    : 2;
+
+  const strengths: string[] = [];
+  const weaknesses: string[] = [];
+
+  if (liveComp.isLiveScraped) {
+    if (liveComp.hasMetaPixel) strengths.push(`Tráfego pago ativo (Meta Pixel detectado em ${liveComp.domain})`);
+    if (liveComp.hasPixDiscount) strengths.push('Incentivo de desconto no Pix ativo na vitrine');
+    if (typeof liveComp.brokenGridCount === 'number' && liveComp.brokenGridCount > 0) {
+      weaknesses.push(`${liveComp.brokenGridCount} de ${liveComp.totalProductsSampled || 1} produtos auditados com ruptura de grade em ${liveComp.domain}`);
+    } else if (typeof liveComp.totalProductsSampled === 'number' && liveComp.totalProductsSampled > 0) {
+      strengths.push(`Grade ativa verificada em ${liveComp.totalProductsSampled} produtos públicos`);
+    }
+    if (!liveComp.hasPixDiscount) {
+      weaknesses.push(`Sem destaque explícito de desconto Pix na vitrine de ${liveComp.domain}`);
+    }
+  }
+
+  if (strengths.length === 0) strengths.push('Presença de mercado consolidada', 'Variedade de catálogo');
+  if (weaknesses.length === 0) {
+    weaknesses.push(
+      `Ruptura recorrente nas opções de maior giro (${vertical.coreDemandSizes.join(', ')})`,
+      'Ausência de atendimento consultivo imediato no PDP'
+    );
+  }
+
   const compAction = `Criar anúncios destacando ${vertical.vocabulary.industryTerms.slice(0, 2).join(', ')}, pronta entrega nos tamanhos/opções ${vertical.coreDemandSizes.join('/')} e ${vertical.mandatoryProductFeatures[0] || 'garantia oficial'}`;
 
   return {
     competitorUrl: input.competitorsUrl,
     competitorBrandName: compBrand,
-    threatLevel: 'MÉDIO',
-    strengths: ['Presença de mercado consolidada', 'Variedade de catálogo'],
-    weaknesses: [`Ruptura recorrente nas opções de maior giro (${vertical.coreDemandSizes.join(', ')})`, 'Ausência de atendimento consultivo via WhatsApp'],
+    threatLevel: compPixels >= 2 && (liveComp.brokenGridCount || 0) === 0 ? 'ALTO' : 'MÉDIO',
+    strengths,
+    weaknesses,
     opportunitiesToSteal: [
       { title: 'Velocidade de Checkout & Pix', action: 'Garantir compra rápida com desconto no Pix para converter quem desiste na concorrência', effort: 'FÁCIL' },
       { title: `Diferenciação em ${vertical.label}`, action: compAction, effort: 'MÉDIO' }
     ],
     comparisons: [
-      { metric: 'Agilidade de Oferta & Pix', you: 'Ativo e Instantâneo', competitor: 'Lento / Checkout Padrão', status: 'VANTAGEM' },
-      { metric: 'Atendimento Consultivo', you: 'WhatsApp VIP Integrado', competitor: 'Formulário Lento', status: 'VANTAGEM' }
+      {
+        metric: 'Ticket Médio & Posicionamento',
+        you: formatBRL(yourAov),
+        competitor: liveComp.averagePriceBRL ? `${formatBRL(liveComp.averagePriceBRL)} [Extraído ao Vivo]` : 'Benchmark Setorial',
+        status: liveComp.averagePriceBRL
+          ? Math.abs(yourAov - liveComp.averagePriceBRL) <= yourAov * 0.15
+            ? 'EMPATE'
+            : yourAov < liveComp.averagePriceBRL
+            ? 'VANTAGEM'
+            : 'DESVANTAGEM'
+          : 'EMPATE'
+      },
+      {
+        metric: 'Disponibilidade de Grade',
+        you: yourBroken === 0 ? 'Grade 100% Ativa' : `${yourBroken} SKU(s) c/ Ruptura`,
+        competitor:
+          typeof liveComp.brokenGridCount === 'number'
+            ? liveComp.brokenGridCount === 0
+              ? `Grade 100% Ativa (${liveComp.totalProductsSampled} itens)`
+              : `${liveComp.brokenGridCount}/${liveComp.totalProductsSampled} c/ Ruptura`
+            : 'Monitoramento Setorial',
+        status:
+          typeof liveComp.brokenGridCount === 'number'
+            ? yourBroken < liveComp.brokenGridCount
+              ? 'VANTAGEM'
+              : yourBroken > liveComp.brokenGridCount
+              ? 'DESVANTAGEM'
+              : 'EMPATE'
+            : yourBroken === 0
+            ? 'VANTAGEM'
+            : 'DESVANTAGEM'
+      },
+      {
+        metric: 'Agilidade de Oferta & Pix',
+        you: yourPix ? 'Desconto Pix Ativo' : 'Sem Destaque Pix',
+        competitor: liveComp.isLiveScraped ? (liveComp.hasPixDiscount ? 'Desconto Pix Ativo' : 'Sem Destaque Pix') : 'Checkout Padrão',
+        status: yourPix && !liveComp.hasPixDiscount ? 'VANTAGEM' : !yourPix && liveComp.hasPixDiscount ? 'DESVANTAGEM' : 'EMPATE'
+      },
+      {
+        metric: 'Stack de Pixels & Tráfego',
+        you: `${yourPixels}/3 Pixels Ativos`,
+        competitor: liveComp.isLiveScraped ? `${compPixels}/3 Pixels Ativos` : 'Benchmark (2/3 Pixels)',
+        status: yourPixels > compPixels ? 'VANTAGEM' : yourPixels < compPixels ? 'DESVANTAGEM' : 'EMPATE'
+      }
     ]
   };
 }

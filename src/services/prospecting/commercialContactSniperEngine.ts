@@ -120,10 +120,35 @@ export function extractCommercialContactsFromHtml(
     }
   }
 
-  // 2. Se não encontrou link direto, procura por padrões de telefone com DDD no rodapé/HTML
+  // 1b. Procura por links tel: explícitos no HTML
   if (!rawPhoneFound) {
-    const phonePattern = /(?:\+?55\s?)?(?:\(?([1-9]{2})\)?\s?)?(?:9\s?)?([2-9]\d{3})[-.\s]?(\d{4})/g;
-    const matches = [...htmlContent.matchAll(phonePattern)];
+    const telLinkRegex = /href=["']tel:([^"']+)["']/gi;
+    const telMatches = [...htmlContent.matchAll(telLinkRegex)];
+    for (const tm of telMatches) {
+      const sanitized = sanitizeBrazilianPhoneNumber(tm[1]);
+      if (sanitized.isValid) {
+        rawPhoneFound = tm[1];
+        cleanFormattedPhone = sanitized.cleanFormatted;
+        e164Phone = sanitized.e164;
+        isMobile = sanitized.isMobile;
+        dddFound = sanitized.ddd;
+        sourceLocation = sanitized.isMobile ? 'DOM:mobile_in_footer' : 'DOM:landline_sac';
+        if (sanitized.isMobile) break;
+      }
+    }
+  }
+
+  // 2. Se não encontrou link direto, procura por padrões de telefone formatados no texto visível (sem <script>/<style>/atributos)
+  if (!rawPhoneFound) {
+    const visibleText = htmlContent
+      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+      .replace(/<noscript[\s\S]*?<\/noscript>/gi, ' ')
+      .replace(/\b\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}\b/g, ' ')
+      .replace(/<[^>]+>/g, ' ');
+
+    const phonePattern = /(?<!\d)(?:\+?55[\s.-]*)?(?:\(([1-9]{2})\)[\s.-]*(?:9[\s.-]*)?([2-9]\d{3})[-.\s]?(\d{4})|([1-9]{2})[\s.-]+(?:9[\s.-]*)?([2-9]\d{3})[-.\s](\d{4}))(?!\d)/g;
+    const matches = [...visibleText.matchAll(phonePattern)];
 
     for (const m of matches) {
       const fullText = m[0];

@@ -8,8 +8,14 @@ import { OmnichannelAuditItem } from '../../../api/omnichannel/cross-audit';
 import { useAuditStore } from '../../store/auditStore';
 import { resolveDynamicVertical } from '../ai/dynamicVerticalContext';
 import { isCatalogProductBroken } from '../siteInspector';
+import { getSavedSankhyaConfig } from '../integrations/sankhyaErpService';
+import { getSavedMagis5Config } from '../integrations/magis5HubService';
+import { metaAdsGraphClient } from '../ads/metaAdsGraphClient';
 
-function buildDynamicOmnichannelItemsFromStore(executeKillSwitch: boolean = false): {
+function buildDynamicOmnichannelItemsFromStore(
+  executeKillSwitch: boolean = false,
+  hasPrivateErpConnected: boolean = false
+): {
   storeName: string;
   items: OmnichannelAuditItem[];
 } | null {
@@ -35,11 +41,58 @@ function buildDynamicOmnichannelItemsFromStore(executeKillSwitch: boolean = fals
 
   const items: OmnichannelAuditItem[] = targetPool.map((issue: any, idx: number) => {
     const isBroken = isCatalogProductBroken(issue);
-    const isCritical = Boolean(issue.isGhostInventorySuspect) || issue.missingSizes.includes('ESGOTADO') || (isBroken && issue.missingSizes.length >= 2);
+    const detailedSkus = Array.isArray(issue.detailedSkus) ? issue.detailedSkus : [];
+    const skusWithRealQty = detailedSkus.filter((s: any) => typeof s.inventoryQuantity === 'number');
+    const realTotalInventoryQty =
+      skusWithRealQty.length > 0
+        ? skusWithRealQty.reduce((sum: number, s: any) => sum + Number(s.inventoryQuantity || 0), 0)
+        : undefined;
+
+    const realInventoryPolicy: 'continue' | 'deny' =
+      issue.isGhostInventorySuspect ||
+      issue.ghostInventoryRisk?.hasContinuePolicy ||
+      detailedSkus.some((s: any) => s.inventoryPolicy === 'continue')
+        ? 'continue'
+        : 'deny';
+
+    const realTracked: boolean =
+      detailedSkus.length > 0
+        ? detailedSkus.some((s: any) => s.inventoryManagement !== null)
+        : true;
+
+    const isCritical =
+      Boolean(issue.isGhostInventorySuspect) ||
+      issue.missingSizes.includes('ESGOTADO') ||
+      (typeof realTotalInventoryQty === 'number' && realTotalInventoryQty <= 0) ||
+      (isBroken && issue.missingSizes.length >= 2);
     const isAlert = !isCritical && isBroken;
     const dailySpend = isCritical ? 250 : isAlert ? 180 : 200;
     const dailyWaste = isCritical ? Math.round(dailySpend * 0.65) : isAlert ? Math.round(dailySpend * 0.30) : 0;
     const realPrice = issue.price && issue.price > 0 ? issue.price : aov;
+
+    const resolvedFrontStock =
+      typeof realTotalInventoryQty === 'number'
+        ? Math.max(0, realTotalInventoryQty)
+        : isCritical
+        ? 0
+        : isAlert
+        ? Math.max(1, (issue.availableSizes || []).length)
+        : Math.max(5, (issue.availableSizes || []).length * 3);
+
+    const resolvedPhysicalStock =
+      typeof realTotalInventoryQty === 'number'
+        ? realTotalInventoryQty
+        : isCritical
+        ? 0
+        : isAlert
+        ? 2
+        : 10;
+
+    const modeBadge = hasPrivateErpConnected
+      ? `[Integração ${erpName}/${hubName} Ativa]`
+      : typeof realTotalInventoryQty === 'number'
+      ? `[Estoque Vitrine Extraído: ${realTotalInventoryQty} un. • Simulação de Demonstração p/ ERP ${erpName}]`
+      : `[Simulação de Demonstração — Conecte API ${erpName} para Saldo Físico Exato]`;
 
     return {
       sku: issue.sku || `SKU-${idx + 1}`,
@@ -48,14 +101,14 @@ function buildDynamicOmnichannelItemsFromStore(executeKillSwitch: boolean = fals
       preco: realPrice,
       shopifyStatus: {
         disponivelFront: !issue.missingSizes.includes('ESGOTADO'),
-        inventoryPolicy: issue.isGhostInventorySuspect ? 'continue' : 'deny',
-        tracked: true,
-        estoqueFront: isCritical ? 0 : isAlert ? 2 : 10
+        inventoryPolicy: realInventoryPolicy,
+        tracked: realTracked,
+        estoqueFront: resolvedFrontStock
       },
       sankhyaStatus: {
-        estoqueFisicoGalpao: isCritical ? 0 : isAlert ? 2 : 10,
-        reservado: isCritical ? 1 : 0,
-        disponivelReal: isCritical ? 0 : isAlert ? 2 : 10,
+        estoqueFisicoGalpao: Math.max(0, resolvedPhysicalStock),
+        reservado: isCritical && resolvedPhysicalStock <= 0 ? 1 : 0,
+        disponivelReal: resolvedPhysicalStock,
         emCortePcp: isAlert && issue.manufacturingType !== 'REVENDA',
         leadTimeDias: issue.manufacturingType === 'REVENDA' ? 18 : 4
       },
@@ -75,10 +128,10 @@ function buildDynamicOmnichannelItemsFromStore(executeKillSwitch: boolean = fals
         temEstoqueFantasma: isCritical,
         nivelRisco: isCritical ? 'CRITICO' : isAlert ? 'ALERTA' : 'SEGURO',
         motivoDiscrepancia: isCritical
-          ? `Ruptura verificada na vitrine nas opções [${issue.missingSizes.join(', ')}] (${erpName} / ${hubName}) com pixel de tráfego ativo (~R$ ${dailyWaste}/dia em risco). [Projeção via Vitrine Pública — Conecte API ${erpName} para Saldo Físico Exato]`
+          ? `Ruptura verificada na vitrine nas opções [${issue.missingSizes.join(', ')}] (Policy: ${realInventoryPolicy}${typeof realTotalInventoryQty === 'number' ? `, Saldo extraído: ${realTotalInventoryQty}` : ''}) com pixel de tráfego ativo (~R$ ${dailyWaste}/dia em risco). ${modeBadge}`
           : isAlert
-          ? `Ruptura parcial na grade (${issue.missingSizes.join(', ')}). Recomendado ajuste de criativo no Meta Ads.`
-          : `Alinhamento operacional saudável verificado na vitrine pública (${erpName} / ${hubName}).`,
+          ? `Ruptura parcial na grade (${issue.missingSizes.join(', ')}). Recomendado ajuste de criativo no Meta Ads. ${modeBadge}`
+          : `Alinhamento operacional saudável verificado na vitrine pública (${erpName} / ${hubName}). ${modeBadge}`,
         desperdicioDiarioEstimado: siteData.hasMetaPixel ? dailyWaste : 0,
         desperdicioMensalProjetado: siteData.hasMetaPixel ? dailyWaste * 30 : 0,
         acaoKillSwitchRecomendada: isCritical && Boolean(siteData.hasMetaPixel),
@@ -101,6 +154,8 @@ export async function runOmnichannelCrossAudit(options?: {
 }): Promise<{
   ok: boolean;
   engine: string;
+  dataMode?: 'LIVE_ERP_INTEGRATED' | 'PUBLIC_STOREFRONT_GROUNDED_SIMULATION' | 'DEMO_REFERENCE_SIMULATION';
+  simulationDisclosure?: string;
   metrics: {
     totalAudited: number;
     criticalGhostInventoryCount: number;
@@ -114,7 +169,10 @@ export async function runOmnichannelCrossAudit(options?: {
   };
   items: OmnichannelAuditItem[];
 }> {
-  const dynamicStoreData = buildDynamicOmnichannelItemsFromStore(options?.executeKillSwitch);
+  const savedSankhya = getSavedSankhyaConfig();
+  const savedMagis5 = getSavedMagis5Config();
+  const hasPrivateErpConnected = Boolean(savedSankhya?.isConnected || savedMagis5?.isConnected);
+  const dynamicStoreData = buildDynamicOmnichannelItemsFromStore(options?.executeKillSwitch, hasPrivateErpConnected);
 
   try {
     if (typeof window === 'undefined' || !window.location?.origin?.startsWith('http')) {
@@ -126,7 +184,16 @@ export async function runOmnichannelCrossAudit(options?: {
       body: JSON.stringify({
         ...options,
         storeName: dynamicStoreData?.storeName,
-        customItems: dynamicStoreData?.items
+        customItems: dynamicStoreData?.items,
+        sankhyaCredentials: savedSankhya?.isConnected
+          ? {
+              baseUrl: savedSankhya.baseUrl,
+              token: savedSankhya.token,
+              username: savedSankhya.username,
+              password: savedSankhya.password
+            }
+          : undefined,
+        magis5ApiToken: savedMagis5?.isConnected ? savedMagis5.apiToken : undefined
       })
     });
 
@@ -142,7 +209,7 @@ export async function runOmnichannelCrossAudit(options?: {
     const fallbackItems: OmnichannelAuditItem[] = dynamicStoreData?.items || [
       {
         sku: "SKU-REF-001",
-        nome: "Produto Monitorado (Caso de Referência Estoque Fantasma)",
+        nome: "Produto Monitorado [Simulação de Demonstração — Sem Loja Ativa]",
         handle: "produto-monitorado-referencia",
         preco: 159.90,
         shopifyStatus: {
@@ -173,7 +240,7 @@ export async function runOmnichannelCrossAudit(options?: {
         veredito: {
           temEstoqueFantasma: true,
           nivelRisco: 'CRITICO',
-          motivoDiscrepancia: "Hub pausou nos marketplaces e ERP acusa saldo zero, mas a vitrine continua vendendo em backorder com anúncio ativo!",
+          motivoDiscrepancia: "[Simulação de Demonstração] Hub pausou nos marketplaces e ERP acusa saldo zero, mas a vitrine continua vendendo em backorder com anúncio ativo!",
           desperdicioDiarioEstimado: 350.00,
           desperdicioMensalProjetado: 10500.00,
           acaoKillSwitchRecomendada: true,
@@ -182,6 +249,15 @@ export async function runOmnichannelCrossAudit(options?: {
       }
     ];
 
+    if (options?.executeKillSwitch) {
+      for (const item of fallbackItems) {
+        if (item.veredito.acaoKillSwitchRecomendada && item.metaAdsStatus.adsetId) {
+          await metaAdsGraphClient.pauseAdOnStockout(item.metaAdsStatus.adsetId);
+          item.veredito.statusKillSwitch = 'EXECUTADO';
+        }
+      }
+    }
+
     const criticalCount = fallbackItems.filter(i => i.veredito.nivelRisco === 'CRITICO').length;
     const dailyTotal = fallbackItems.reduce((acc, i) => acc + i.veredito.desperdicioDiarioEstimado, 0);
     const monthlyTotal = fallbackItems.reduce((acc, i) => acc + i.veredito.desperdicioMensalProjetado, 0);
@@ -189,6 +265,12 @@ export async function runOmnichannelCrossAudit(options?: {
     return {
       ok: true,
       engine: 'adshield_omnichannel_truth_matrix_client_fallback',
+      dataMode: dynamicStoreData
+        ? (hasPrivateErpConnected ? 'LIVE_ERP_INTEGRATED' : 'PUBLIC_STOREFRONT_GROUNDED_SIMULATION')
+        : 'DEMO_REFERENCE_SIMULATION',
+      simulationDisclosure: hasPrivateErpConnected
+        ? undefined
+        : '[Simulação / Projeção Baseada em Catálogo Público — Conecte Sankhya ERP / Magis5 / Shopify Admin para Saldo Físico Privado]',
       metrics: {
         totalAudited: fallbackItems.length,
         criticalGhostInventoryCount: criticalCount,
@@ -204,4 +286,5 @@ export async function runOmnichannelCrossAudit(options?: {
     };
   }
 }
+
 
