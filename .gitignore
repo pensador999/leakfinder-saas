@@ -43,6 +43,7 @@ serviceAccountKey.json
 
 # Database Dumps & Local Backups
 *.sql
+!supabase/migrations/*.sql
 *.dump
 *.backup
 *.sqlite
