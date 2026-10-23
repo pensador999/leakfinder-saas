@@ -539,6 +539,348 @@ describe('MVP Core Flow Validation', () => {
     const learningCycle = await executeLiveSelfLearningCycle('MODA_VESTUARIO');
     expect(learningCycle.outcomeLearned).toContain('[Simulação / Benchmark]');
   });
+
+  // ============================================================================
+  // 🌍 TEST 6: Sprints 1–5 End-to-End Verification (PDF/WhatsApp i18n, Multi-Currency
+  //            Plans, Default Variant Bleed, ADA/EAA Accessibility, Hybrid DB)
+  // ============================================================================
+  it('verifies PDF/WhatsApp 6-locale i18n, multi-currency Stripe plans, default variant bleed, ADA/EAA accessibility, and hybrid DB persistence', async () => {
+    const { PdfExportService } = await import('../services/export/pdfExportService');
+    const { formatDailyWhatsAppExecutiveSummary } = await import('../services/workers/whatsappAlertWorker');
+    const { getLocalizedPlans } = await import('../services/billing/checkoutService');
+    const { auditProductDeepSkus, auditDeepCatalog } = await import('../services/catalog/deepSkuAuditEngine');
+    const { auditBrazilianLegalCompliance } = await import('../services/audits/brazilianLegalComplianceEngine');
+    const { supabase } = await import('../lib/supabase');
+
+    // 1. PDF Export Service in en-US and de-DE (Zero PT-BR leakage)
+    const mockSiteData: any = {
+      url: 'https://www.gymshark.com',
+      domain: 'gymshark.com',
+      brandName: 'Gymshark',
+      ecommercePlatform: 'Shopify',
+      detectedMarketLocale: 'en-US',
+      detectedCurrencyCode: 'USD',
+      catalogAudit: {
+        totalProductsScanned: 10,
+        totalSkusAudited: 40,
+        totalSkusInStock: 32,
+        totalSkusInStockout: 8,
+        productsWithBrokenGrid: 2,
+        productsWithMissingImages: 0,
+        productsWithoutSizeGuide: 1,
+        heavyImagesCount: 0,
+        catalogHealthScore: 82,
+        monthlyLossEstimateBRL: 4250,
+        issues: [
+          {
+            id: 'sku-us-1',
+            sku: 'GS-APEX-S',
+            productTitle: 'Apex Seamless T-Shirt',
+            productUrl: 'https://www.gymshark.com/products/apex-seamless-t-shirt',
+            availableSizes: ['L', 'XL'],
+            missingSizes: ['S', 'M'],
+            isFullPrintExempt: false,
+            hasSizeGuide: true,
+            imageWeightKb: 140,
+            recommendedAction: 'Restock core sizes (S, M).'
+          }
+        ]
+      }
+    };
+
+    const enPdfHtml = PdfExportService.buildExecutiveDossierHtml({
+      brandName: 'Gymshark',
+      targetUrl: 'https://www.gymshark.com',
+      overallScore: 82,
+      monthlyFinancialLoss: '$4,250',
+      recoverableRevenue: '$51,000',
+      siteData: mockSiteData,
+      locale: 'en-US'
+    });
+    expect(enPdfHtml).toContain('<html lang="en-US">');
+    expect(enPdfHtml).toContain('Executive E-Commerce, Catalog & Paid Media Dossier');
+    expect(enPdfHtml).toContain('Paid Media Bleed');
+    expect(enPdfHtml).toContain('100% FACTUAL GROUNDING CERTIFICATE');
+    expect(enPdfHtml).not.toContain('Dossiê Executivo de E-Commerce');
+    expect(enPdfHtml).not.toContain('Sangria Tráfego Pago');
+
+    const dePdfHtml = PdfExportService.buildExecutiveDossierHtml({
+      brandName: 'SNOCKS',
+      targetUrl: 'https://www.snocks.de',
+      overallScore: 79,
+      monthlyFinancialLoss: '3.800 €',
+      recoverableRevenue: '45.600 €',
+      siteData: { ...mockSiteData, domain: 'snocks.de', detectedMarketLocale: 'de-DE', detectedCurrencyCode: 'EUR' },
+      locale: 'de-DE'
+    });
+    expect(dePdfHtml).toContain('<html lang="de-DE">');
+    expect(dePdfHtml).toContain('Executive E-Commerce-, Katalog- & Paid-Media-Dossier');
+    expect(dePdfHtml).toContain('Paid-Media-Verlust');
+    expect(dePdfHtml).not.toContain('Dossiê Executivo de E-Commerce');
+
+    // 2. WhatsApp Executive Summary in en-US and de-DE
+    const mockStore: any = {
+      id: 'store-us-1',
+      storeName: 'Gymshark US',
+      storeUrl: 'https://www.gymshark.com',
+      platform: 'Shopify',
+      niche: 'MODA_VESTUARIO',
+      monthlyAdSpendBrl: 15000,
+      whatsappTargetNumber: '+15550192834',
+      alertFrequency: 'DAILY_08AM',
+      isActive: true
+    };
+    const mockDiag: any = {
+      overallHealthScore: 76,
+      totalMonthlyBleedBrl: 4250,
+      recoverableAnnualBrl: 51000,
+      siteData: {
+        ...mockSiteData,
+        legalCompliance: {
+          isFullyCompliant: false,
+          hasCnpjInFooter: false,
+          isCnpjValid: false
+        }
+      }
+    };
+    const mockDelta: any = {
+      hasPreviousRecord: true,
+      newBrokenProductsCount: 1,
+      newBrokenSkusList: ['Apex Seamless T-Shirt (S, M)'],
+      fixedProductsCount: 0,
+      fixedSkusList: [],
+      bleedDeltaBrl: 850,
+      scoreDelta: -4,
+      daysSinceFirstAudit: 7,
+      accumulatedBleedSinceFirstAuditBrl: 990
+    };
+
+    const enWaMsg = formatDailyWhatsAppExecutiveSummary(mockStore, mockDiag, mockDelta, 'en-US');
+    expect(enWaMsg).toContain('ADSHIELD INTEL • DAILY EXECUTIVE BRIEFING');
+    expect(enWaMsg).toContain('Compliance Alert (FTC / CCPA / ADA)');
+    expect(enWaMsg).not.toContain('BRIEFING EXECUTIVO DIÁRIO');
+    expect(enWaMsg).not.toContain('Decreto 7.962/13');
+
+    const deWaMsg = formatDailyWhatsAppExecutiveSummary(
+      { ...mockStore, storeName: 'SNOCKS DE', storeUrl: 'https://www.snocks.de' },
+      { ...mockDiag, siteData: { ...mockDiag.siteData, domain: 'snocks.de', detectedMarketLocale: 'de-DE' } },
+      mockDelta,
+      'de-DE'
+    );
+    expect(deWaMsg).toContain('ADSHIELD INTEL • TÄGLICHER EXECUTIVE-BERICHT');
+    expect(deWaMsg).toContain('Impressumspflicht / DSGVO / BFSG');
+    expect(deWaMsg).not.toContain('BRIEFING EXECUTIVO DIÁRIO');
+
+    // 2b. Edge Cases: ESGOTADO token translation, undefined missingSizes guard, delta={} guard, and E.164 international phone URL
+    const { buildWhatsAppDirectUrl } = await import('../services/workers/whatsappAlertWorker');
+    expect(buildWhatsAppDirectUrl('+15550192834', 'Hello')).toContain('phone=15550192834');
+    expect(buildWhatsAppDirectUrl('11999999999', 'Oi')).toContain('phone=5511999999999');
+
+    const edgePdfHtml = PdfExportService.buildExecutiveDossierHtml({
+      brandName: 'Gymshark',
+      targetUrl: 'https://www.gymshark.com',
+      overallScore: 75,
+      siteData: {
+        ...mockSiteData,
+        catalogAudit: {
+          ...mockSiteData.catalogAudit,
+          issues: [
+            {
+              id: 'sku-edge-1',
+              sku: 'GS-GHOST-1',
+              productTitle: 'Ghost Hoodie',
+              isGhostInventorySuspect: true,
+              missingSizes: undefined,
+              recommendedAction: 'Produto de Revenda / Acessório verificado em Tamanho Único. Em conformidade. [ALERTA VARIANTE PADRÃO ESGOTADA]'
+            },
+            {
+              id: 'sku-edge-2',
+              sku: 'GS-SOLDOUT-1',
+              productTitle: 'Sold Out Tee',
+              missingSizes: ['ESGOTADO'],
+              recommendedAction: 'Ativar widget ou inserir Tabela de Medidas na descrição.'
+            }
+          ]
+        }
+      },
+      locale: 'en-US'
+    });
+    expect(edgePdfHtml).toContain('SOLD OUT');
+    expect(edgePdfHtml).toContain('Default entry variant Sold Out');
+    expect(edgePdfHtml).not.toContain('ESGOTADO');
+    expect(edgePdfHtml).not.toContain('Tabela de Medidas');
+
+    const emptyDeltaWaMsg = formatDailyWhatsAppExecutiveSummary(
+      mockStore,
+      {
+        ...mockDiag,
+        siteData: {
+          ...mockDiag.siteData,
+          catalogAudit: {
+            ...mockSiteData.catalogAudit,
+            issues: [{ id: 's1', sku: 'S1', productTitle: 'Sold Out Tee', missingSizes: ['ESGOTADO'] }]
+          }
+        }
+      },
+      {} as any,
+      'en-US'
+    );
+    expect(emptyDeltaWaMsg).toContain('SOLD OUT');
+    expect(emptyDeltaWaMsg).not.toContain('ESGOTADO');
+    expect(emptyDeltaWaMsg).not.toContain('undefined');
+
+    // 3. Multi-Currency Stripe Plans (USD, GBP, EUR, BRL across all 6 locales)
+    const usPlans = getLocalizedPlans('en-US');
+    const ukPlans = getLocalizedPlans('en-GB');
+    const dePlans = getLocalizedPlans('de-DE');
+    const frPlans = getLocalizedPlans('fr-FR');
+    const esPlans = getLocalizedPlans('es-ES');
+    const brPlans = getLocalizedPlans('pt-BR');
+    expect(usPlans.STARTER.currency).toBe('USD');
+    expect(usPlans.STARTER.currencySymbol).toBe('$');
+    expect(ukPlans.STARTER.currency).toBe('GBP');
+    expect(ukPlans.STARTER.currencySymbol).toBe('£');
+    expect(dePlans.STARTER.currency).toBe('EUR');
+    expect(dePlans.STARTER.currencySymbol).toBe('€');
+    expect(frPlans.STARTER.currency).toBe('EUR');
+    expect(frPlans.STARTER.description).toContain('marques D2C');
+    expect(esPlans.STARTER.currency).toBe('EUR');
+    expect(esPlans.STARTER.description).toContain('marcas D2C');
+    expect(brPlans.STARTER.currency).toBe('BRL');
+    expect(brPlans.STARTER.currencySymbol).toBe('R$');
+
+    // 4. Default Variant Bleed Detection (1st variant Sold Out while other variants have stock)
+    const defaultBleedRawProduct = {
+      id: 'prod-default-bleed',
+      title: 'Performance Hoodie Black',
+      url: 'https://www.gymshark.com/products/performance-hoodie-black',
+      handle: 'performance-hoodie-black',
+      variants: [
+        { id: 'v-xs', sku: 'HD-BLK-XS', title: 'XS', option1: 'XS', price: '65.00', available: false, inventory_quantity: 0 },
+        { id: 'v-m', sku: 'HD-BLK-M', title: 'M', option1: 'M', price: '65.00', available: true, inventory_quantity: 12 },
+        { id: 'v-l', sku: 'HD-BLK-L', title: 'L', option1: 'L', price: '65.00', available: true, inventory_quantity: 15 }
+      ]
+    };
+    const defaultBleedAudit = auditProductDeepSkus(defaultBleedRawProduct, {
+      storeDomain: 'gymshark.com',
+      dailyAdSpend: 100,
+      isAdRunning: true
+    });
+    expect(defaultBleedAudit.isDefaultVariantUnavailable).toBe(true);
+    expect(defaultBleedAudit.defaultVariantTitle).toBe('XS');
+
+    const deepSummary = auditDeepCatalog([defaultBleedRawProduct], {
+      storeDomain: 'gymshark.com',
+      dailyAdSpend: 100
+    });
+    expect(deepSummary.defaultVariantBleedCount).toBe(1);
+
+    // 5. ADA Title III (US) & EAA 2025 / BFSG (EU) Accessibility Compliance
+    const nonCompliantA11yHtml = `
+      <html>
+        <body>
+          <img src="/hero1.jpg">
+          <img src="/hero2.jpg">
+          <img src="/hero3.jpg" alt="Valid Alt">
+          <button></button>
+          <footer>Privacy Policy | CCPA | Terms of Service | 30-Day Returns | support@brand.com | 100 Broadway, NY 10005</footer>
+        </body>
+      </html>
+    `;
+    const usA11yAudit = auditBrazilianLegalCompliance(nonCompliantA11yHtml, 'brand.com', 'en-US');
+    expect(usA11yAudit.accessibilityCompliance).toBeDefined();
+    expect(usA11yAudit.accessibilityCompliance?.isCompliant).toBe(false);
+    expect(usA11yAudit.accessibilityCompliance?.hasHtmlLangAttribute).toBe(false);
+    expect(usA11yAudit.accessibilityCompliance?.imagesMissingAlt).toBe(2);
+    expect(usA11yAudit.accessibilityCompliance?.unlabeledButtonsCount).toBe(1);
+    expect(usA11yAudit.violations.some(v => v.rule.includes('ADA Title III'))).toBe(true);
+
+    const deA11yAudit = auditBrazilianLegalCompliance(nonCompliantA11yHtml, 'shop.de', 'de-DE');
+    expect(deA11yAudit.accessibilityCompliance?.isCompliant).toBe(false);
+    expect(deA11yAudit.violations.some(v => v.rule.includes('BFSG 2025'))).toBe(true);
+
+    // 6. Hybrid Supabase Persistence Round-Trip + UPSERT Deduplication
+    const testAuditId = 'audit-sprint5-test';
+    await supabase.from('audits').insert({
+      id: testAuditId,
+      user_id: 'usr-test-1',
+      store_url: 'https://www.gymshark.com',
+      store_name: 'Gymshark',
+      overall_score: 88,
+      monthly_loss: 4250,
+      recoverable_revenue: 51000,
+      report_data: { test: true }
+    });
+    await supabase.from('audits').upsert({
+      id: testAuditId,
+      user_id: 'usr-test-1',
+      store_url: 'https://www.gymshark.com',
+      store_name: 'Gymshark Updated',
+      overall_score: 91,
+      report_data: { test: true, updated: true }
+    });
+    const { data: allMatchingAudits } = await supabase
+      .from('audits')
+      .select('*')
+      .eq('id', testAuditId);
+    expect(allMatchingAudits?.length).toBe(1);
+    expect(allMatchingAudits?.[0].store_name).toBe('Gymshark Updated');
+    expect(allMatchingAudits?.[0].overall_score).toBe(91);
+
+    // 7. Serverless /api/cron/swarm-runner Timeout Guard & WhatsApp Alert Queue Flushing + /api/shopify/webhooks/inventory Kill-Switch
+    const { enqueueWhatsAppAlert } = await import('../services/database/swarmDatabaseService');
+    const swarmRunnerModule = await import('../../api/cron/swarm-runner');
+    const inventoryWebhookHandler = (await import('../../api/shopify/webhooks/inventory')).default;
+
+    // Enqueue a pending alert and verify swarm-runner flushes it while handling slow store timeout guard cleanly
+    await enqueueWhatsAppAlert({
+      to: '+15550192834',
+      message: 'Queued Executive Alert Test',
+      priority: 'HIGH',
+      metadata: { storeId: 'store-test-1', storeUrl: 'https://www.gymshark.com', score: 85 }
+    });
+
+    process.env.CRON_SECRET = 'test_cron_secret_2026';
+    process.env.VITE_SUPABASE_URL = 'https://local-test.supabase.co';
+    process.env.VITE_SUPABASE_ANON_KEY = 'test_anon_key';
+    swarmRunnerModule.__resetSwarmRunnerRateLimitForTests();
+
+    const cronReq = new Request(
+      'http://localhost/api/cron/swarm-runner?maxStores=1&timeoutMs=60',
+      {
+        method: 'GET',
+        headers: { authorization: 'Bearer test_cron_secret_2026' }
+      }
+    );
+    const cronRes = await swarmRunnerModule.default(cronReq, null);
+    expect(cronRes.status).toBe(200);
+    const cronBody = await cronRes.json();
+    expect(cronBody.success).toBe(true);
+    expect(cronBody.auditedCount).toBe(1);
+    expect(cronBody.alertsDispatched).toBeGreaterThanOrEqual(1);
+
+    // Verify Shopify Inventory Webhook triggers Meta Kill-Switch and queues WhatsApp alert when available <= 0
+    const webhookReq = new Request('http://localhost/api/shopify/webhooks/inventory', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-shopify-topic': 'inventory_levels/update',
+        'x-shopify-shop-domain': 'gymshark.myshopify.com'
+      },
+      body: JSON.stringify({
+        inventory_item_id: 998877,
+        available: 0,
+        sku: 'GS-APEX-S',
+        ad_id: 'ad_123456'
+      })
+    });
+    const webhookRes = await inventoryWebhookHandler(webhookReq, null);
+    expect(webhookRes.status).toBe(200);
+    const webhookBody = await webhookRes.json();
+    expect(webhookBody.killSwitchTriggered).toBe(true);
+    expect(webhookBody.metaKillSwitchResult?.status).toBe('PAUSED');
+    expect(webhookBody.whatsappAlertQueued).toBe(true);
+  });
 });
 
 

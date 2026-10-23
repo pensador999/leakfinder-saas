@@ -73,6 +73,8 @@ export interface CatalogProductIssue {
   isBestSellerCurveA?: boolean;
   curveACollections?: string[];
   bestSellerRank?: number;
+  isDefaultVariantUnavailable?: boolean;
+  defaultVariantTitle?: string;
 }
 
 /**
@@ -134,6 +136,7 @@ export interface CatalogAuditSummary {
   monthlyLossEstimateBRL?: number;
   curveATotalProducts?: number;
   curveABrokenProducts?: number;
+  productsWithDefaultVariantBleed?: number;
   issues: CatalogProductIssue[];
   deepSkuAudit?: DeepCatalogAuditSummary;
   paginationInfo?: {
@@ -1261,12 +1264,20 @@ async function fetchRealLiveCatalogAudit(
           const detailedSkus = auditedProd?.skus || [];
           const ghostRisk = auditedProd?.ghostInventoryRisk;
           const isGhostSuspect = Boolean(ghostRisk?.isGhostInventorySuspect || (ghostRisk?.riskScore && ghostRisk.riskScore >= 35));
+          const isDefaultVariantUnavailable = Boolean(
+            auditedProd?.isDefaultVariantUnavailable ||
+            (variants.length > 1 && variants[0] && variants[0].available === false && !allVariantsUnavailable)
+          );
+          const defaultVariantTitle = auditedProd?.defaultVariantTitle || (isDefaultVariantUnavailable ? String(variants[0]?.title || variants[0]?.option1 || 'Default') : undefined);
 
           if (isGhostSuspect) {
             criticalIssuesCount += 3;
             if (!missingSizes.includes('ESTOQUE_FANTASMA_SUSPEITO') && !missingSizes.includes('ESGOTADO')) {
               missingSizes.push('ESTOQUE_FANTASMA_SUSPEITO');
             }
+          }
+          if (isDefaultVariantUnavailable) {
+            criticalIssuesCount += 1;
           }
 
           let recommendedAction = 'Catálogo em conformidade.';
@@ -1306,6 +1317,9 @@ async function fetchRealLiveCatalogAudit(
           if (curveInfo?.isCurveA && !isFullPrintExempt && missingSizes.length > 0) {
             recommendedAction = `🚨 RUPTURA NA CURVA A [${curveInfo.badges[0]}]: Repor grade central (${missingSizes.join(', ')}) com urgência ou pausar tráfego!`;
           }
+          if (isDefaultVariantUnavailable && !allVariantsUnavailable) {
+            recommendedAction = `${recommendedAction} [ALERTA VARIANTE PADRÃO ESGOTADA: A 1ª variante (${defaultVariantTitle}) abre pré-selecionada como "Sold Out" no anúncio — reordenar variantes com estoque para o topo!]`;
+          }
 
           issues.push({
             id: `real-sku-${p.id || i}`,
@@ -1341,7 +1355,9 @@ async function fetchRealLiveCatalogAudit(
             ghostInventoryRisk: ghostRisk,
             isBestSellerCurveA: Boolean(curveInfo?.isCurveA),
             curveACollections: curveInfo?.badges || [],
-            bestSellerRank: curveInfo?.bestSellerRank
+            bestSellerRank: curveInfo?.bestSellerRank,
+            isDefaultVariantUnavailable,
+            defaultVariantTitle
           });
         }
       } catch {
@@ -1442,6 +1458,7 @@ async function fetchRealLiveCatalogAudit(
   const productsWithBrokenGrid = brokenCatalogItems.length;
   const curveATotalProducts = issues.filter(i => i.isBestSellerCurveA).length;
   const curveABrokenProducts = brokenCatalogItems.filter(i => i.isBestSellerCurveA).length;
+  const productsWithDefaultVariantBleed = issues.filter(i => i.isDefaultVariantUnavailable).length;
   const productsWithMissingImages = issues.filter(i => !i.hasValidImage).length;
   const productsWithFullExemption = issues.filter(i => i.isFullPrintExempt).length;
   const productsWithoutDescription = issues.filter(i => !i.hasDescription).length;
@@ -1471,6 +1488,7 @@ async function fetchRealLiveCatalogAudit(
     monthlyLossEstimateBRL,
     curveATotalProducts,
     curveABrokenProducts,
+    productsWithDefaultVariantBleed,
     issues,
     deepSkuAudit,
     paginationInfo: {

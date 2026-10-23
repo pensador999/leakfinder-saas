@@ -350,13 +350,11 @@ export async function enqueueWhatsAppAlert(payload: WhatsAppAlertPayload): Promi
     created_at: new Date().toISOString()
   };
 
-  if (isSupabaseConfigured) {
-    try {
-      const { error } = await supabase.from('alert_dispatch_queue').insert([alertRecord]);
-      if (!error) return true;
-    } catch {
-      // Fallback
-    }
+  try {
+    const { error } = await supabase.from('alert_dispatch_queue').insert([alertRecord]);
+    if (!error) return true;
+  } catch {
+    // Fallback
   }
 
   return true;

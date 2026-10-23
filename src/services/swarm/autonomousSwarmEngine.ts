@@ -175,3 +175,6 @@ export async function runSwarmQueueBatch(stores: MonitoredStore[]): Promise<Swar
 
   return results;
 }
+
+export const runSingleStoreSwarmAudit = executeAutonomousStoreAudit;
+

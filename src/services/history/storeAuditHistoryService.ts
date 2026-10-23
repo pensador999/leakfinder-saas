@@ -249,7 +249,28 @@ export async function saveAuditToDatabase(result: AgentDiagnosticResult): Promis
     console.warn('[storeAuditHistoryService] LocalStorage write warning:', err);
   }
 
-  // 2. Sincronização opcional em segundo plano com Supabase
+  // 2. Sincroniza na tabela unificada `audits` (híbrida Local-First + Cloud para /dashboard e /report/:id)
+  try {
+    const prunedPayload: AgentDiagnosticResult = {
+      ...result,
+      realSiteData: {
+        ...result.realSiteData,
+        rawHtmlSnippet: undefined,
+        scrapedMarkdown: undefined
+      }
+    };
+    await supabase.from('audits').insert({
+      id: auditRecord.id,
+      site_url: result.realSiteData.url || `https://${domain}`,
+      business_name: auditRecord.brand_name,
+      result_data: prunedPayload,
+      created_at: auditRecord.created_at
+    });
+  } catch {
+    // Non-fatal
+  }
+
+  // 3. Sincronização opcional em segundo plano com Supabase (audit_reports)
   if (isSupabaseConfigured && !circuitBreaker.isCircuitOpen()) {
     try {
       await supabase

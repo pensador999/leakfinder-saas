@@ -161,7 +161,15 @@ export default async function handler(request: any, response: any) {
   let accessToken = `shpat_simulated_${crypto.randomBytes(12).toString('hex')}`;
   let grantedScopes = 'read_products,read_inventory,read_orders';
 
-  // If real Shopify App Secret is configured, exchange code for real access token
+  // Determine App Host for Webhook & UI Redirect
+  const host = isWebRequest
+    ? (request.headers.get('x-forwarded-host') || request.headers.get('host') || 'leakfinder-green.vercel.app')
+    : (request.headers?.['x-forwarded-host'] || request.headers?.host || 'leakfinder-green.vercel.app');
+  
+  const protocol = host.includes('localhost') ? 'http' : 'https';
+  let webhookRegistered = false;
+
+  // If real Shopify App Secret is configured, exchange code for real access token and register inventory webhook
   if (apiSecret && apiKey && !apiSecret.includes('placeholder')) {
     try {
       const tokenExchangeResponse = await fetch(`https://${shop}/admin/oauth/access_token`, {
@@ -186,6 +194,29 @@ export default async function handler(request: any, response: any) {
       const tokenData = await tokenExchangeResponse.json();
       accessToken = tokenData.access_token;
       grantedScopes = tokenData.scope || grantedScopes;
+
+      // Register real-time inventory_levels/update webhook for Kill-Switch
+      try {
+        const webhookEndpoint = `https://${shop}/admin/api/2024-10/webhooks.json`;
+        const webhookAddress = `${protocol}://${host}/api/shopify/webhooks/inventory`;
+        const webhookRes = await fetch(webhookEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Shopify-Access-Token': accessToken
+          },
+          body: JSON.stringify({
+            webhook: {
+              topic: 'inventory_levels/update',
+              address: webhookAddress,
+              format: 'json'
+            }
+          })
+        });
+        webhookRegistered = webhookRes.ok || webhookRes.status === 422; // 422 if already registered
+      } catch (whErr) {
+        console.warn('[Shopify OAuth] Webhook registration warning (non-blocking):', whErr);
+      }
     } catch (err: any) {
       console.error('[Shopify OAuth] Failed to exchange code for token:', err);
       return sendResponse(response, 500, {
@@ -214,7 +245,8 @@ export default async function handler(request: any, response: any) {
           access_token: accessToken,
           scopes: grantedScopes,
           installed_at: new Date().toISOString(),
-          status: 'ACTIVE'
+          status: 'ACTIVE',
+          webhook_registered: webhookRegistered
         })
       });
     } catch (dbErr) {
@@ -224,13 +256,6 @@ export default async function handler(request: any, response: any) {
 
   // Clear CSRF cookie
   const clearCookieHeader = 'shopify_oauth_state=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0;';
-
-  // Determine App Host for UI Redirect
-  const host = isWebRequest
-    ? (request.headers.get('x-forwarded-host') || request.headers.get('host') || 'leakfinder-green.vercel.app')
-    : (request.headers?.['x-forwarded-host'] || request.headers?.host || 'leakfinder-green.vercel.app');
-  
-  const protocol = host.includes('localhost') ? 'http' : 'https';
   const successRedirectUrl = `${protocol}://${host}/?shopify_connected=true&shop=${encodeURIComponent(shop)}&timestamp=${Date.now()}`;
 
   return sendRedirect(response, successRedirectUrl, clearCookieHeader);

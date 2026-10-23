@@ -116,9 +116,10 @@ export function auditSupplyChainDiscrepancy(
   // 1. Process broken SKUs with strict vertical ABC curve weighting
   if (brokenSkus.length > 0) {
     brokenSkus.forEach((skuItem, idx) => {
+      const missingSizes = Array.isArray(skuItem.missingSizes) ? skuItem.missingSizes : [];
       const verticalCoreSizes = vertical.coreDemandSizes.map(s => s.toUpperCase());
       const defaultCriticalSizes = ['P', 'M', 'G', 'GG', '39', '40', '41', '42', 'UNITARIO', 'ESGOTADO'];
-      const isCriticalSizes = skuItem.missingSizes.some(s => {
+      const isCriticalSizes = Boolean(skuItem.isGhostInventorySuspect) || missingSizes.some(s => {
         const up = s.toUpperCase();
         return verticalCoreSizes.includes(up) || defaultCriticalSizes.includes(up);
       });
@@ -157,7 +158,7 @@ export function auditSupplyChainDiscrepancy(
           ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' 
           : 'bg-amber-500/20 text-amber-300 border-amber-500/40',
         symptom: isGrau1 
-          ? `Produto ativo recebendo tráfego com ruptura nas opções de alto giro (${vertical.label}): ${skuItem.missingSizes.join(', ')}.`
+          ? `Produto ativo recebendo tráfego com ruptura nas opções de alto giro (${vertical.label}): ${missingSizes.join(', ') || 'ESTOQUE_FANTASMA'}.`
           : `Saldo virtual de ${skuItem.sku} está em nível limítrofe (≤ 2 un), com risco iminente de venda concorrente sem peça física no ${erpDisplayName}.`,
         operationalCause: isGrau1
           ? `O lote de reposição no ${erpDisplayName} finalizou apenas parte da grade, ou a fila de sincronização (${hubDisplayName}) não atualizou o estoque na vitrine antes do tráfego disparar os cliques.`
@@ -169,9 +170,9 @@ export function auditSupplyChainDiscrepancy(
           ? `Pausar o criativo no Meta Ads ou sincronizar imediatamente o lote de reposição no ${erpDisplayName} via ${hubDisplayName}.`
           : `Ativar trava de Buffer de Segurança (mínimo 2 unidades) no ${hubDisplayName} para evitar venda sem estoque.`,
         playbookScript: {
-          trafficManagerWhatsApp: `🚨 *ALERTA DE TRÁFEGO & ESTOQUE • ADSHIELD INTEL*\n\nFala Gestor! O produto *${skuItem.productTitle}* (SKU: ${skuItem.sku}) está com ${isGrau1 ? `as opções de maior giro (*${skuItem.missingSizes.join(', ')}*) esgotadas` : 'estoque crítico (≤ 2 unidades)'} na vitrine de ${domain}.\n\n💸 *Risco Estimado:* ${isGrau1 ? `~${formatBRL(adWaste)}/mês em cliques perdidos` : `~${formatBRL(cancellationRisk)}/mês em estornos e cancelamentos`}.\n👉 *Ação:* ${isGrau1 ? 'Pausar campanha no Meta Ads ou trocar URL de destino' : `Não escalar orçamento neste criativo até o lote ser atualizado no ${erpDisplayName}`}.`,
+          trafficManagerWhatsApp: `🚨 *ALERTA DE TRÁFEGO & ESTOQUE • ADSHIELD INTEL*\n\nFala Gestor! O produto *${skuItem.productTitle}* (SKU: ${skuItem.sku}) está com ${isGrau1 ? `as opções de maior giro (*${missingSizes.join(', ') || 'ESTOQUE_FANTASMA'}*) esgotadas` : 'estoque crítico (≤ 2 unidades)'} na vitrine de ${domain}.\n\n💸 *Risco Estimado:* ${isGrau1 ? `~${formatBRL(adWaste)}/mês em cliques perdidos` : `~${formatBRL(cancellationRisk)}/mês em estornos e cancelamentos`}.\n👉 *Ação:* ${isGrau1 ? 'Pausar campanha no Meta Ads ou trocar URL de destino' : `Não escalar orçamento neste criativo até o lote ser atualizado no ${erpDisplayName}`}.`,
           magis5OperatorAction: `🔄 *CHECKLIST DO OPERADOR DE HUB (${hubDisplayName}):*\n1. Acessar painel de Catálogo / Integração no ${hubDisplayName}.\n2. Localizar SKU: *${skuItem.sku}*.\n3. Aplicar *Trava de Saldo Mínimo de Segurança = 2 unidades*.\n4. Forçar reindexação de saldo e atualizar foto principal para WebP otimizado.\n5. Confirmar se a fila de sincronização com o ${erpDisplayName} está saudável.`,
-          sankhyaPcpProductionNote: `🏭 *PROGRAMAÇÃO DE REPOSIÇÃO • ${erpDisplayName.toUpperCase()}:*\nProduto: *${skuItem.productTitle}* (SKU: ${skuItem.sku})\nDemanda Digital: Ativa no tráfego pago.\nStatus de Estoque Físico: ${isGrau1 ? `Ruptura na curva ABC (${skuItem.missingSizes.join(', ')})` : 'Estoque em nível de esgotamento'}.\nRecomendação: Priorizar ordem de reposição/produção para reabastecimento imediato.`
+          sankhyaPcpProductionNote: `🏭 *PROGRAMAÇÃO DE REPOSIÇÃO • ${erpDisplayName.toUpperCase()}:*\nProduto: *${skuItem.productTitle}* (SKU: ${skuItem.sku})\nDemanda Digital: Ativa no tráfego pago.\nStatus de Estoque Físico: ${isGrau1 ? `Ruptura na curva ABC (${missingSizes.join(', ') || 'ESTOQUE_FANTASMA'})` : 'Estoque em nível de esgotamento'}.\nRecomendação: Priorizar ordem de reposição/produção para reabastecimento imediato.`
         }
       });
     });

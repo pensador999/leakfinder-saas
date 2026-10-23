@@ -39,6 +39,8 @@ export interface AuditedProductWithSkus {
   activeSkusCount: number;
   rupturedSkusCount: number;
   brokenCoreSizes?: string[];
+  isDefaultVariantUnavailable?: boolean;
+  defaultVariantTitle?: string;
   skus: AuditedProductSkuItem[];
   criticalBleedBrlDay: number;
   criticalBleedBrlMonth: number;
@@ -56,6 +58,7 @@ export interface DeepCatalogAuditSummary {
   totalInStockSkus: number;
   totalRupturedSkus: number;
   totalFullExemptSkus: number;
+  defaultVariantBleedCount?: number;
   globalCatalogHealthScore: number;
   totalMonthlyBleedBrl: number;
   criticalProducts: AuditedProductWithSkus[];
@@ -396,6 +399,20 @@ export function auditProductDeepSkus(
     }
   }
 
+  const isDefaultVariantUnavailable = Boolean(
+    rawVariants.length > 1 &&
+      rawVariants[0] &&
+      rawVariants[0].available === false &&
+      activeSkus > 0
+  );
+  const defaultVariantTitle = rawVariants[0]
+    ? String(rawVariants[0].title || rawVariants[0].option1 || 'Default').trim()
+    : undefined;
+
+  if (isDefaultVariantUnavailable) {
+    healthScore = Math.min(healthScore, 72);
+  }
+
   const ghostInventoryRisk = assessGhostInventoryRisk({
     product,
     operationMode,
@@ -417,6 +434,8 @@ export function auditProductDeepSkus(
     activeSkusCount: activeSkus,
     rupturedSkusCount: rupturedSkus,
     brokenCoreSizes: Array.from(brokenCoreSet),
+    isDefaultVariantUnavailable,
+    defaultVariantTitle,
     skus: auditedSkus,
     criticalBleedBrlDay: productDailyBleed,
     criticalBleedBrlMonth: Number((productDailyBleed * 30).toFixed(2)),
@@ -439,6 +458,7 @@ export function auditDeepCatalog(
   let totalInStock = 0;
   let totalRuptured = 0;
   let totalFullExempt = 0;
+  let defaultVariantBleedCount = 0;
   let totalMonthlyBleed = 0;
   const seenProductKeys = new Set<string>();
 
@@ -458,6 +478,9 @@ export function auditDeepCatalog(
     totalInStock += audited.activeSkusCount;
     totalRuptured += audited.rupturedSkusCount;
     totalFullExempt += audited.skus.filter(s => s.isFullExempt).length;
+    if (audited.isDefaultVariantUnavailable) {
+      defaultVariantBleedCount++;
+    }
     totalMonthlyBleed += audited.criticalBleedBrlMonth;
     auditedProducts.push(audited);
   }
@@ -507,6 +530,7 @@ export function auditDeepCatalog(
     totalInStockSkus: totalInStock,
     totalRupturedSkus: totalRuptured,
     totalFullExemptSkus: totalFullExempt,
+    defaultVariantBleedCount,
     globalCatalogHealthScore: Math.min(100, Math.max(30, globalHealthScore)),
     totalMonthlyBleedBrl: Number(totalMonthlyBleed.toFixed(2)),
     criticalProducts,

@@ -89,13 +89,53 @@ export default async function handler(request: any, response: any) {
   console.log(`[Shopify Webhook] Item ${inventoryItemId} on ${shopDomain}: Available = ${availableQty}`);
 
   let killSwitchTriggered = false;
+  let metaKillSwitchResult: any = null;
+  let whatsappAlertQueued = false;
 
   // When stock is depleted (available <= 0), activate Kill-Switch
   if (typeof availableQty === 'number' && availableQty <= 0) {
     killSwitchTriggered = true;
+    const targetAdId = eventPayload.ad_id || `ad_auto_kill_${inventoryItemId}`;
+    const targetSku = eventPayload.sku || `INV_ITEM_${inventoryItemId}`;
     console.log(`[🚨 KILL-SWITCH TRIGGERED] Item ${inventoryItemId} reached ZERO inventory on ${shopDomain}!`);
 
-    // Record event to Supabase or notify founder
+    // 1. Trigger Meta Ads Graph API Stop-Loss Pause
+    try {
+      const { metaAdsGraphClient } = await import('../../../src/services/ads/metaAdsGraphClient');
+      const metaToken = process.env.META_ACCESS_TOKEN || process.env.META_SYSTEM_USER_ACCESS_TOKEN || '';
+      metaKillSwitchResult = await metaAdsGraphClient.pauseAdOnStockout(targetAdId, metaToken);
+    } catch (metaErr: any) {
+      metaKillSwitchResult = {
+        success: false,
+        status: 'ERROR',
+        error: metaErr?.message || 'Meta Graph Client invocation error'
+      };
+    }
+
+    // 2. Enqueue Critical WhatsApp Alert
+    try {
+      const { enqueueWhatsAppAlert } = await import('../../../src/services/database/swarmDatabaseService');
+      const alertPhone = process.env.ALERT_WHATSAPP_PHONE || '5511999999999';
+      whatsappAlertQueued = await enqueueWhatsAppAlert({
+        to: alertPhone,
+        message:
+          `🚨 *ADSHIELD KILL-SWITCH ATIVADO (<30s)*\n\n` +
+          `Loja: *${shopDomain || 'Shopify Store'}*\n` +
+          `SKU / Inventory Item: *${targetSku}*\n` +
+          `Estoque Físico: *0 unidades*\n` +
+          `Ação Automática: Anúncio *${targetAdId}* pausado (${metaKillSwitchResult?.isSimulated ? 'Simulação Segura' : 'Meta Graph API Live'}).\n`,
+        priority: 'CRITICAL',
+        metadata: {
+          storeId: shopDomain || 'shopify-webhook',
+          storeUrl: shopDomain ? `https://${shopDomain}` : '',
+          score: 65
+        }
+      });
+    } catch (wppErr) {
+      console.warn('[Shopify Webhook] Could not enqueue WhatsApp alert:', wppErr);
+    }
+
+    // 3. Record event to Supabase
     const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
@@ -110,10 +150,11 @@ export default async function handler(request: any, response: any) {
           },
           body: JSON.stringify({
             shop_domain: shopDomain || 'unknown.myshopify.com',
-            ad_id: `ad_auto_kill_${inventoryItemId}`,
-            sku: `INV_ITEM_${inventoryItemId}`,
-            action_taken: 'PAUSED',
+            ad_id: targetAdId,
+            sku: targetSku,
+            action_taken: metaKillSwitchResult?.status || 'PAUSED',
             reason: 'Ruptura física de estoque via Webhook Shopify Admin API',
+            whatsapp_alert_dispatched: whatsappAlertQueued,
             created_at: new Date().toISOString()
           })
         });
@@ -129,6 +170,8 @@ export default async function handler(request: any, response: any) {
     shopDomain,
     inventoryItemId,
     availableQty,
-    killSwitchTriggered
+    killSwitchTriggered,
+    metaKillSwitchResult,
+    whatsappAlertQueued
   });
 }

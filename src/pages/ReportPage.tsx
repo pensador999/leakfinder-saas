@@ -60,7 +60,7 @@ export function ReportPage() {
       }
 
       const storeDiag = useAuditStore.getState().diagnostic;
-      if (!isSupabaseConfigured || id.startsWith('fallback-') || id === 'latest') {
+      if (id.startsWith('fallback-') || id === 'latest') {
         if (storeDiag) {
           setDiagnostic(storeDiag);
         } else {
@@ -80,19 +80,28 @@ export function ReportPage() {
       try {
         const { data, error } = await supabase
           .from('audits')
-          .select('result_data')
+          .select('*')
           .eq('id', id)
           .single();
 
-        if (error || !data) {
-          if (storeDiag) {
-            setDiagnostic(storeDiag);
+        const rawPayload = data?.result_data ?? data?.report_data ?? data?.raw_payload;
+        if (!error && rawPayload) {
+          const parsedResult = typeof rawPayload === 'string'
+            ? JSON.parse(rawPayload)
+            : rawPayload;
+          setDiagnostic(parsedResult);
+          useAuditStore.getState().setDiagnostic(parsedResult);
+        } else if (storeDiag) {
+          setDiagnostic(storeDiag);
+        } else {
+          const saved = localStorage.getItem('latestAudit');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            setDiagnostic(parsed);
+            useAuditStore.getState().setDiagnostic(parsed);
           } else {
             navigate('/');
           }
-        } else {
-          setDiagnostic(data.result_data);
-          useAuditStore.getState().setDiagnostic(data.result_data);
         }
       } catch {
         if (storeDiag) {

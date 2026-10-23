@@ -23,6 +23,15 @@ export interface LegalComplianceReport {
   hasReturnPolicy7Days: boolean;
   hasPrivacyPolicyLgpd: boolean;
   hasVisibleSacPhoneOrEmail: boolean;
+  accessibilityCompliance?: {
+    framework: string;
+    isCompliant: boolean;
+    totalImagesChecked: number;
+    imagesMissingAlt: number;
+    missingAltRatio: number;
+    hasHtmlLangAttribute: boolean;
+    unlabeledButtonsCount: number;
+  };
   violations: {
     rule: string;
     description: string;
@@ -30,6 +39,57 @@ export interface LegalComplianceReport {
     adAccountRisk: string;
   }[];
   pitchOutboundAngle: string;
+}
+
+function evaluateDomAccessibility(html: string, localeId: string): NonNullable<LegalComplianceReport['accessibilityCompliance']> {
+  const imgTags = html.match(/<img\b[^>]*>/gi) || [];
+  const totalImagesChecked = imgTags.length;
+  const imagesMissingAlt = imgTags.filter(tag => !/\balt\s*=\s*["'][^"']+["']/i.test(tag)).length;
+  const missingAltRatio = totalImagesChecked > 0
+    ? Math.round((imagesMissingAlt / totalImagesChecked) * 100) / 100
+    : 0;
+
+  const htmlOpenTagMatch = html.match(/<html\b[^>]*>/i);
+  const hasHtmlLangAttribute = htmlOpenTagMatch
+    ? /\blang\s*=\s*["'][^"']+["']/i.test(htmlOpenTagMatch[0])
+    : true;
+
+  const buttonMatches = html.match(/<button\b[^>]*>[\s\S]*?<\/button>/gi) || [];
+  let unlabeledButtonsCount = 0;
+  for (const btn of buttonMatches) {
+    const openTag = btn.match(/<button\b[^>]*>/i)?.[0] || '';
+    const hasAriaOrTitle = /\b(aria-label|aria-labelledby|title)\s*=\s*["'][^"']+["']/i.test(openTag);
+    const innerText = btn.replace(/<[^>]*>/g, '').trim();
+    const hasImgWithAltInside = /<img\b[^>]*\balt\s*=\s*["'][^"']+["'][^>]*>/i.test(btn);
+    if (!hasAriaOrTitle && !innerText && !hasImgWithAltInside) {
+      unlabeledButtonsCount++;
+    }
+  }
+
+  const frameworkMap: Record<string, string> = {
+    'en-US': 'ADA Title III & WCAG 2.1 Level AA',
+    'en-GB': 'UK Equality Act 2010 & WCAG 2.1 Level AA',
+    'de-DE': 'Barrierefreiheitsstärkungsgesetz (BFSG 2025) & EAA',
+    'fr-FR': 'European Accessibility Act (EAA 2025) & RGAA',
+    'es-ES': 'European Accessibility Act (EAA 2025) & UNE-EN 301549',
+    'pt-BR': 'Lei Brasileira de Inclusão (LBI Art. 63) & WCAG 2.1',
+  };
+
+  const isCompliant = !(
+    (totalImagesChecked > 0 && missingAltRatio > 0.3) ||
+    !hasHtmlLangAttribute ||
+    unlabeledButtonsCount > 0
+  );
+
+  return {
+    framework: frameworkMap[localeId] || frameworkMap['en-US'],
+    isCompliant,
+    totalImagesChecked,
+    imagesMissingAlt,
+    missingAltRatio,
+    hasHtmlLangAttribute,
+    unlabeledButtonsCount,
+  };
 }
 
 /**
@@ -104,8 +164,9 @@ export function auditBrazilianLegalCompliance(
 
   const htmlLower = (html || '').toLowerCase();
   const marketProfile = detectStoreMarketProfile(domain, html, explicitLocale);
+  const accessibilityCompliance = evaluateDomAccessibility(html || '', marketProfile.id);
 
-  // Internacional (US, UK, DE, FR, ES): avalia conformidade legal da jurisdição local sem penalizar por falta de CNPJ brasileiro
+  // Internacional (US, UK, DE, FR, ES): avalia conformidade legal da jurisdição local + Acessibilidade (ADA Title III / EAA 2025 / BFSG) sem penalizar por falta de CNPJ brasileiro
   if (marketProfile.id !== 'pt-BR') {
     const violations: LegalComplianceReport['violations'] = [];
     const hasEntityDisclosure = marketProfile.legalEntityKeywords.some(kw => htmlLower.includes(kw.toLowerCase()));
@@ -138,12 +199,33 @@ export function auditBrazilianLegalCompliance(
         adAccountRisk: 'Ad pixel compliance risk under GDPR/CCPA.'
       });
     }
+    if (!accessibilityCompliance.isCompliant) {
+      const a11yDetails: string[] = [];
+      if (accessibilityCompliance.totalImagesChecked > 0 && accessibilityCompliance.missingAltRatio > 0.3) {
+        a11yDetails.push(`${accessibilityCompliance.imagesMissingAlt}/${accessibilityCompliance.totalImagesChecked} images missing alt text (${Math.round(accessibilityCompliance.missingAltRatio * 100)}%)`);
+      }
+      if (!accessibilityCompliance.hasHtmlLangAttribute) {
+        a11yDetails.push('missing lang attribute on <html> root');
+      }
+      if (accessibilityCompliance.unlabeledButtonsCount > 0) {
+        a11yDetails.push(`${accessibilityCompliance.unlabeledButtonsCount} unlabeled interactive <button> element(s)`);
+      }
+      violations.push({
+        rule: `${accessibilityCompliance.framework} (Digital Accessibility Compliance)`,
+        description: `Storefront DOM exhibits screen-reader accessibility barriers: ${a11yDetails.join(', ')}.`,
+        legalSeverity: 'ALTA',
+        adAccountRisk: marketProfile.id === 'en-US'
+          ? 'High risk of ADA Title III demand letters / class-action litigation and reduced ad landing page quality score.'
+          : 'Risk of regulatory penalties under the European Accessibility Act (EAA 2025 / BFSG) and reduced ad quality score.'
+      });
+    }
 
     let intlScore = 100;
     if (!hasEntityDisclosure) intlScore -= 25;
     if (!hasReturnRight) intlScore -= 15;
     if (!hasPrivacy) intlScore -= 15;
     if (!hasContact) intlScore -= 10;
+    if (!accessibilityCompliance.isCompliant) intlScore -= 15;
     intlScore = Math.max(0, Math.min(100, intlScore));
 
     return {
@@ -157,10 +239,11 @@ export function auditBrazilianLegalCompliance(
       hasReturnPolicy7Days: hasReturnRight,
       hasPrivacyPolicyLgpd: hasPrivacy,
       hasVisibleSacPhoneOrEmail: hasContact,
+      accessibilityCompliance,
       violations,
       pitchOutboundAngle: violations.length === 0
-        ? `Store complies with ${marketProfile.legalFrameworkName} requirements.`
-        : `Store has ${violations.length} compliance gap(s) under ${marketProfile.legalFrameworkName} that may impact Google Merchant Center & Meta Ads approval.`
+        ? `Store complies with ${marketProfile.legalFrameworkName} and ${accessibilityCompliance.framework} requirements.`
+        : `Store has ${violations.length} compliance gap(s) under ${marketProfile.legalFrameworkName} / ${accessibilityCompliance.framework} that may impact Google Merchant Center & Meta Ads approval.`
     };
   }
 
@@ -302,6 +385,7 @@ export function auditBrazilianLegalCompliance(
     hasReturnPolicy7Days,
     hasPrivacyPolicyLgpd,
     hasVisibleSacPhoneOrEmail,
+    accessibilityCompliance,
     violations,
     pitchOutboundAngle
   };

@@ -4,10 +4,12 @@
 // Replaces the fake localStorage-based checkout flow for production
 // ==============================================================================
 
-export type StripePlanId = 'STARTER' | 'PRO' | 'AGENCY';
+export type StripePlanId = 'STARTER' | 'PRO' | 'AGENCY' | 'GROWTH_PRO' | 'AGENCY_ENTERPRISE';
 
 export interface StripeCheckoutRequest {
   planId: StripePlanId;
+  currency?: 'USD' | 'GBP' | 'EUR' | 'BRL';
+  locale?: string;
   customerEmail?: string;
   successUrl?: string;
   cancelUrl?: string;
@@ -18,6 +20,8 @@ export interface StripeCheckoutResponse {
   checkoutUrl: string;
   sessionId: string;
   planName: string;
+  currency?: 'USD' | 'GBP' | 'EUR' | 'BRL';
+  unitPrice?: number;
   priceBrl: number;
 }
 
@@ -50,12 +54,15 @@ export async function createRealStripeCheckout(req: StripeCheckoutRequest): Prom
 export async function redirectToStripeCheckout(
   planId: StripePlanId,
   customerEmail?: string,
-  openInNewTab = false
+  openInNewTab = false,
+  options?: { currency?: 'USD' | 'GBP' | 'EUR' | 'BRL'; locale?: string }
 ): Promise<boolean> {
   try {
     const { checkoutUrl } = await createRealStripeCheckout({
       planId,
       customerEmail,
+      currency: options?.currency,
+      locale: options?.locale,
     });
 
     if (openInNewTab) {
