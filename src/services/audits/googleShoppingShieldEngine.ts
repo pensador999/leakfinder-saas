@@ -81,10 +81,16 @@ export function evaluateGoogleShoppingDiscrepancy(
     schemaAvailability = 'InStock';
   }
 
-  // 3. Detecção de Botão de Compra / Encomenda no Front-end
+  // 3. Detecção de Botão de Compra / Encomenda no Front-end (Multi-Market PT/EN/DE/FR/ES)
   const hasBuyButton = product.hasBuyButtonInDom ?? (
     html.includes('comprar') || 
     html.includes('adicionar') || 
+    html.includes('add to cart') ||
+    html.includes('add to bag') ||
+    html.includes('buy now') ||
+    html.includes('in den warenkorb') ||
+    html.includes('ajouter au panier') ||
+    html.includes('añadir al carrito') ||
     html.includes('btn-add-cart') || 
     html.includes('js-prod-submit-form')
   );
@@ -92,7 +98,14 @@ export function evaluateGoogleShoppingDiscrepancy(
   const isOrderable = product.isPreOrderOrBackorder || 
                       html.includes('sob encomenda') || 
                       html.includes('pronta entrega vs sob encomenda') || 
-                      html.includes('produção sob demanda');
+                      html.includes('produção sob demanda') ||
+                      html.includes('pre-order') ||
+                      html.includes('preorder') ||
+                      html.includes('backorder') ||
+                      html.includes('made to order') ||
+                      html.includes('vorbestellen') ||
+                      html.includes('précommande') ||
+                      html.includes('bajo pedido');
 
   // 🔥 O Caso 7M Boots: Schema declara OutOfStock, mas a loja vende sob encomenda ou com botão ativo
   if (schemaAvailability === 'OutOfStock' && (hasBuyButton || isOrderable)) {

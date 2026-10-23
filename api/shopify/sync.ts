@@ -163,13 +163,18 @@ export default async function handler(request: any, response: any) {
       }
     ];
 
+    const isDemoMode = Boolean(request?.query?.demo === 'true' || urlObj.searchParams.get('demo') === 'true');
     return sendResponse(response, 200, {
+      status: isDemoMode ? 'DEMO_SIMULATION' : 'REQUIRES_ERP_CREDENTIALS',
+      requiresCredentials: !isDemoMode,
       mode: 'GROUNDED_BENCHMARK_AUDIT',
-      shop: shop || 'brkagro.myshopify.com',
-      totalSkusAudited: simulatedAuditedSkus.length,
-      ghostInventoryCount: simulatedAuditedSkus.filter(s => s.isGhostInventory).length,
-      ruptureCount: simulatedAuditedSkus.filter(s => s.status === 'RUPTURA_FISICA').length,
-      skus: simulatedAuditedSkus
+      transparencyNote: 'Esta métrica é privada e requer conexão via API da Shopify Admin (read_inventory) para saldo físico do galpão.',
+      shop: shop || 'unconnected-store.myshopify.com',
+      totalSkusAudited: isDemoMode ? simulatedAuditedSkus.length : 0,
+      ghostInventoryCount: isDemoMode ? simulatedAuditedSkus.filter(s => s.isGhostInventory).length : 0,
+      ruptureCount: isDemoMode ? simulatedAuditedSkus.filter(s => s.status === 'RUPTURA_FISICA').length : 0,
+      skus: isDemoMode ? simulatedAuditedSkus : [],
+      demoSampleSkus: simulatedAuditedSkus
     });
   }
 

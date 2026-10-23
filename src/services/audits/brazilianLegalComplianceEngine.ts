@@ -1,7 +1,15 @@
 // ==============================================================================
-// ⚖️ MOTOR DE AUDITORIA DE CONFORMIDADE LEGAL BRASILEIRA (ADSHIELD LEGAL)
-// Regulamentação: Decreto Federal nº 7.962/2013 (Lei do E-commerce) + CDC Art. 49
+// ⚖️ MOTOR DE AUDITORIA DE CONFORMIDADE LEGAL MULTI-MERCADO (ADSHIELD LEGAL)
+// Regulamentações:
+// - BR: Decreto Federal nº 7.962/2013 + CDC Art. 49 + LGPD
+// - US: FTC Act + CCPA/CPRA Privacy + Return Policy
+// - UK: UK Consumer Contracts Regulations (14-Day Return) + UK GDPR + Company Reg/VAT
+// - DE: Impressumspflicht (§ 5 TMG/DDG) + 14 Tage Widerrufsrecht + DSGVO
+// - FR: Mentions Légales (LCEN / SIRET) + 14 Jours Rétractation + RGPD
+// - ES: LSSI-CE (Aviso Legal / NIF-CIF) + 14 Días Desistimiento + RGPD
 // ==============================================================================
+
+import { detectStoreMarketProfile } from '../../i18n/marketProfiles.ts';
 
 export interface LegalComplianceReport {
   isFullyCompliant: boolean;
@@ -63,9 +71,21 @@ export function validateCnpj(cnpjStr: string): boolean {
 
 /**
  * Inspeciona o HTML público (em especial rodapé e headers) para avaliar
- * conformidade com a Lei do E-commerce Brasileira.
+ * conformidade com a legislação de e-commerce aplicável ao mercado da loja.
  */
-export function auditBrazilianLegalCompliance(html: string, isMarketplace: boolean = false): LegalComplianceReport {
+export function auditBrazilianLegalCompliance(
+  html: string,
+  isMarketplaceOrDomain: boolean | string = false,
+  domainOrLocale?: string
+): LegalComplianceReport {
+  const isMarketplace = typeof isMarketplaceOrDomain === 'boolean' ? isMarketplaceOrDomain : false;
+  const domain = typeof isMarketplaceOrDomain === 'string'
+    ? isMarketplaceOrDomain
+    : (domainOrLocale || '');
+  const explicitLocale = typeof isMarketplaceOrDomain === 'string' && domainOrLocale
+    ? domainOrLocale
+    : undefined;
+
   if (isMarketplace) {
     return {
       isFullyCompliant: true,
@@ -83,6 +103,67 @@ export function auditBrazilianLegalCompliance(html: string, isMarketplace: boole
   }
 
   const htmlLower = (html || '').toLowerCase();
+  const marketProfile = detectStoreMarketProfile(domain, html, explicitLocale);
+
+  // Internacional (US, UK, DE, FR, ES): avalia conformidade legal da jurisdição local sem penalizar por falta de CNPJ brasileiro
+  if (marketProfile.id !== 'pt-BR') {
+    const violations: LegalComplianceReport['violations'] = [];
+    const hasEntityDisclosure = marketProfile.legalEntityKeywords.some(kw => htmlLower.includes(kw.toLowerCase()));
+    const hasPrivacy = marketProfile.privacyLawKeywords.some(kw => htmlLower.includes(kw.toLowerCase()));
+    const hasReturnRight = marketProfile.returnRightKeywords.some(kw => htmlLower.includes(kw.toLowerCase()));
+    const hasContact = htmlLower.includes('contact') || htmlLower.includes('support') || htmlLower.includes('help') || htmlLower.includes('impressum') || htmlLower.includes('@');
+    const hasAddress = /\b\d{5}\b/.test(html) || htmlLower.includes('street') || htmlLower.includes('road') || htmlLower.includes('ave') || htmlLower.includes('straße') || htmlLower.includes('rue') || htmlLower.includes('calle') || hasEntityDisclosure;
+
+    if (!hasEntityDisclosure) {
+      violations.push({
+        rule: `${marketProfile.legalFrameworkName} (Corporate / Legal Entity Disclosure)`,
+        description: `Missing corporate entity disclosure (${marketProfile.legalEntityKeywords.slice(0, 3).join(', ')}) in store footer.`,
+        legalSeverity: 'ALTA',
+        adAccountRisk: 'Risk of Google Merchant Center misrepresentation suspension and Meta Ads trust score penalty.'
+      });
+    }
+    if (!hasReturnRight) {
+      violations.push({
+        rule: `${marketProfile.legalFrameworkName} (Consumer Return / Withdrawal Policy)`,
+        description: 'Return & refund window not clearly disclosed in storefront footer.',
+        legalSeverity: 'MEDIA',
+        adAccountRisk: 'Elevated chargeback rate and Google Shopping policy warnings.'
+      });
+    }
+    if (!hasPrivacy) {
+      violations.push({
+        rule: `${marketProfile.legalFrameworkName} (Privacy & Data Protection Policy)`,
+        description: 'Privacy policy / data protection notice not detected in footer.',
+        legalSeverity: 'MEDIA',
+        adAccountRisk: 'Ad pixel compliance risk under GDPR/CCPA.'
+      });
+    }
+
+    let intlScore = 100;
+    if (!hasEntityDisclosure) intlScore -= 25;
+    if (!hasReturnRight) intlScore -= 15;
+    if (!hasPrivacy) intlScore -= 15;
+    if (!hasContact) intlScore -= 10;
+    intlScore = Math.max(0, Math.min(100, intlScore));
+
+    return {
+      isFullyCompliant: violations.length === 0,
+      complianceScore: intlScore,
+      cnpjFound: hasEntityDisclosure ? `${marketProfile.country} Registered Entity` : undefined,
+      hasCnpjInFooter: hasEntityDisclosure,
+      isCnpjValid: hasEntityDisclosure,
+      hasCompanyName: hasEntityDisclosure,
+      hasPhysicalAddress: hasAddress,
+      hasReturnPolicy7Days: hasReturnRight,
+      hasPrivacyPolicyLgpd: hasPrivacy,
+      hasVisibleSacPhoneOrEmail: hasContact,
+      violations,
+      pitchOutboundAngle: violations.length === 0
+        ? `Store complies with ${marketProfile.legalFrameworkName} requirements.`
+        : `Store has ${violations.length} compliance gap(s) under ${marketProfile.legalFrameworkName} that may impact Google Merchant Center & Meta Ads approval.`
+    };
+  }
+
   const violations: LegalComplianceReport['violations'] = [];
 
   // 1. Extração de CNPJ (Apenas formato oficial XX.XXX.XXX/XXXX-XX ou 14 dígitos explicitamente precedidos por "CNPJ")

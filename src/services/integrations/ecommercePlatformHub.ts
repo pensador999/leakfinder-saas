@@ -107,18 +107,26 @@ export async function connectPlatformOneClick(
 ): Promise<ConnectedIntegrationRecord> {
   const existing = getStoredIntegrations();
 
+  const domainClean = storeDomain.replace(/^https?:\/\//, '');
+  let hash = 0;
+  for (let i = 0; i < domainClean.length; i++) {
+    hash = ((hash << 5) - hash) + domainClean.charCodeAt(i);
+    hash |= 0;
+  }
+  const tokenSuffix = Math.abs(hash).toString(16).padStart(4, '0').slice(0, 4);
+
   const newRecord: ConnectedIntegrationRecord = {
     id: `conn-${platform.toLowerCase()}-${Date.now()}`,
     platform,
     storeName: storeName || 'Minha Loja Virtual',
-    storeDomain: storeDomain.replace(/^https?:\/\//, ''),
-    myshopifyDomain: platform === 'SHOPIFY' ? `${storeDomain.split('.')[0]}.myshopify.com` : undefined,
-    accessTokenMasked: `${platform === 'SHOPIFY' ? 'shpat_' : 'nvm_'}${Math.random().toString(36).substring(2, 10)}••••`,
+    storeDomain: domainClean,
+    myshopifyDomain: platform === 'SHOPIFY' ? `${domainClean.split('.')[0]}.myshopify.com` : undefined,
+    accessTokenMasked: `${platform === 'SHOPIFY' ? 'shpat_' : 'nvm_'}••••••••${tokenSuffix}`,
     connectedAt: new Date().toISOString(),
     lastSyncedAt: new Date().toISOString(),
-    totalSyncedProducts: 36,
-    totalSyncedVariants: 192,
-    warehouseStockRupturesDetected: 2,
+    totalSyncedProducts: 0,
+    totalSyncedVariants: 0,
+    warehouseStockRupturesDetected: 0,
     scriptTagActive: true,
     scriptTagId: `st_${Date.now()}`,
     status: 'CONNECTED',
@@ -159,11 +167,11 @@ export async function syncWarehouseStockLive(integrationId: string): Promise<{
   const target = list.find(i => i.id === integrationId);
 
   // Heuristic stock sync delay
-  await new Promise(r => setTimeout(r, 1200));
+  await new Promise(r => setTimeout(r, 400));
 
-  const ruptures = Math.floor(Math.random() * 3) + 1;
-  const products = target?.totalSyncedProducts || 48;
-  const variants = target?.totalSyncedVariants || 284;
+  const ruptures = target?.warehouseStockRupturesDetected ?? 0;
+  const products = target?.totalSyncedProducts ?? 0;
+  const variants = target?.totalSyncedVariants ?? 0;
 
   if (target) {
     target.lastSyncedAt = new Date().toISOString();

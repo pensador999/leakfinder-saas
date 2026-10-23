@@ -6,6 +6,8 @@
 
 import { assessGhostInventoryRisk, type GhostInventoryRiskAssessment } from './ghostInventoryShieldEngine.ts';
 import { resolveDynamicVertical } from '../ai/dynamicVerticalContext.ts';
+import { parsePriceByMarket } from '../pricing/currencyUtils.ts';
+import { detectStoreMarketProfile } from '../../i18n/marketProfiles.ts';
 
 export interface AuditedProductSkuItem {
   skuId: string;
@@ -60,8 +62,9 @@ export interface DeepCatalogAuditSummary {
   allProducts: AuditedProductWithSkus[];
 }
 
-// 🇧🇷 Brazilian Fashion & Apparel Demand Weights (CoALA Market Calibrated)
+// 🌍 Global & Brazilian Fashion & Apparel Demand Weights (CoALA Market Calibrated)
 const APPAREL_SIZE_WEIGHTS: Record<string, number> = {
+  // BR Apparel
   'PP': 5,
   'P': 15,
   'M': 25,
@@ -73,7 +76,22 @@ const APPAREL_SIZE_WEIGHTS: Record<string, number> = {
   'G1': 5,
   'G2': 2,
   'G3': 1,
-  // Footwear, Tailoring & Jeans Numbers
+  // US / UK / EU Apparel
+  'XXS': 3,
+  'XS': 8,
+  'S': 18,
+  'L': 28,
+  'XL': 18,
+  'XXL': 10,
+  '2XL': 8,
+  '3XL': 4,
+  'UK 6': 6,
+  'UK 8': 14,
+  'UK 10': 22,
+  'UK 12': 24,
+  'UK 14': 18,
+  'UK 16': 10,
+  // BR / EU Footwear, Tailoring & Jeans Numbers
   '34': 4,
   '35': 6,
   '36': 8,
@@ -85,9 +103,33 @@ const APPAREL_SIZE_WEIGHTS: Record<string, number> = {
   '42': 22,
   '43': 10,
   '44': 8,
+  '45': 5,
   '46': 5,
   '48': 3,
   '50': 2,
+  // US / UK Footwear Numbers (including half sizes)
+  '3': 3,
+  '3.5': 3,
+  '4': 4,
+  '4.5': 5,
+  '5': 6,
+  '5.5': 7,
+  '6': 10,
+  '6.5': 10,
+  '7': 14,
+  '7.5': 14,
+  '8': 18,
+  '8.5': 18,
+  '9': 22,
+  '9.5': 20,
+  '10': 22,
+  '10.5': 18,
+  '11': 16,
+  '11.5': 12,
+  '12': 10,
+  '12.5': 6,
+  '13': 5,
+  '14': 3,
   // Supplements & Cosmetics Volumetric / Flavor / Shade Weights
   '900G': 45,
   '300G': 25,
@@ -104,7 +146,9 @@ const APPAREL_SIZE_WEIGHTS: Record<string, number> = {
   'MEDIO': 40,
   'MÉDIO': 40,
   'ÚNICO': 10,
-  'UNICO': 10
+  'UNICO': 10,
+  'ONE SIZE': 10,
+  'OS': 10
 };
 
 /**
@@ -179,6 +223,7 @@ export function auditProductDeepSkus(
 
   const allVariantsOut = rawVariants.length > 0 && rawVariants.every((v: any) => !v.available);
 
+  const marketProfile = detectStoreMarketProfile(storeDomain);
   const vertical = resolveDynamicVertical(`${title} ${productType} ${tags.join(' ')} ${storeDomain}`);
   const primaryErpName = vertical.dominantTechStack.primaryErp.split('/')[0].trim();
   const manufacturingType = classifyManufacturing(title, rawVariants[0]?.sku || '', tags, productType, cleanDomain);
@@ -186,10 +231,13 @@ export function auditProductDeepSkus(
   // Pré-computa a distribuição de tamanhos dentro do produto (para normalizar produtos com múltiplas cores por tamanho)
   const extractSizeKeyFromVariant = (v: any): string => {
     const vTitle = String(v?.title || '').toUpperCase();
+    const ukMatch = vTitle.match(/\bUK\s+\d+\b/);
     const tokens = [
       String(v?.option1 || '').toUpperCase().trim(),
       String(v?.option2 || '').toUpperCase().trim(),
       String(v?.option3 || '').toUpperCase().trim(),
+      ...(ukMatch ? [ukMatch[0].replace(/\s+/g, ' ')] : []),
+      ...vTitle.split(/[\/\-|]+/).map(s => s.trim()),
       ...vTitle.split(/[\/\-|\s]+/).map(s => s.trim())
     ].filter(Boolean);
     return (
@@ -214,6 +262,7 @@ export function auditProductDeepSkus(
   let rupturedSkus = 0;
   let productDailyBleed = 0;
   const seenVariantSkus = new Set<string>();
+  const usedRawSkuCodes = new Set<string>();
   const brokenCoreSet = new Set<string>();
 
   const auditedSkus: AuditedProductSkuItem[] = [];
@@ -221,20 +270,37 @@ export function auditProductDeepSkus(
   for (const v of rawVariants) {
     const rawSku = String(v.sku || '').trim();
     const cleanVariantSkuKey = rawSku.toUpperCase();
+    const variantTitleKey = String(v.title || v.option1 || v.id || '')
+      .replace(/\b(r[eé]plica|duplicata|clone|c[oó]pia)\b/gi, '')
+      .trim()
+      .toUpperCase();
+    const dedupKey = cleanVariantSkuKey ? `${cleanVariantSkuKey}::${variantTitleKey}` : '';
 
-    // 🔍 DEDUPLICAÇÃO DE CÓDIGO SKU: Se duas variantes tiverem o mesmo código SKU, valida apenas uma
-    if (cleanVariantSkuKey && seenVariantSkus.has(cleanVariantSkuKey)) {
-      continue; // Pula duplicata
+    // 🔍 DEDUPLICAÇÃO DE CÓDIGO SKU + VARIANTE: Se duas variantes tiverem o mesmo código SKU e mesmo tamanho/título (ou réplica), valida apenas uma, preservando variantes distintas que compartilham parent SKU
+    if (dedupKey && seenVariantSkus.has(dedupKey)) {
+      continue; // Pula duplicata exata
     }
-    if (cleanVariantSkuKey) {
-      seenVariantSkus.add(cleanVariantSkuKey);
+    if (dedupKey) {
+      seenVariantSkus.add(dedupKey);
     }
 
     totalSkus++;
     const variantTitle = String(v.title || '').trim() || 'Padrão';
-    const skuCode = rawSku || `SKU-${v.id || totalSkus}`;
-    const price = typeof v.price === 'string' ? parseFloat(v.price) || 169.90 : v.price || 169.90;
-    const compareAtPrice = v.compare_at_price ? parseFloat(String(v.compare_at_price)) : undefined;
+    let skuCode = rawSku || `SKU-${v.id || totalSkus}`;
+    if (cleanVariantSkuKey && usedRawSkuCodes.has(cleanVariantSkuKey)) {
+      skuCode = `${rawSku}-${variantTitleKey || totalSkus}`;
+    }
+    if (cleanVariantSkuKey) {
+      usedRawSkuCodes.add(cleanVariantSkuKey);
+    }
+    const parsedPrice = typeof v.price === 'number' ? v.price : parsePriceByMarket(v.price, marketProfile.locale);
+    const price = parsedPrice > 0 ? parsedPrice : 169.90;
+    const parsedCompare = v.compare_at_price
+      ? typeof v.compare_at_price === 'number'
+        ? v.compare_at_price
+        : parsePriceByMarket(v.compare_at_price, marketProfile.locale)
+      : 0;
+    const compareAtPrice = parsedCompare > 0 ? parsedCompare : undefined;
     const available = Boolean(v.available);
 
     const isSkuLevelFull =
@@ -267,7 +333,14 @@ export function auditProductDeepSkus(
       rupturedSkus++;
       const isCoreDemandForVertical =
         vertical.coreDemandSizes.includes(matchedSizeKey) ||
-        ['P', 'M', 'G', 'GG', '37', '38', '39', '40', '41', '42', '900G', '300G', '450G', '1KG', '30ML', '50ML', 'CHOCOLATE', 'BAUNILHA'].includes(matchedSizeKey) ||
+        [
+          'P', 'M', 'G', 'GG',
+          'S', 'L', 'XL',
+          'UK 8', 'UK 10', 'UK 12', 'UK 14',
+          '37', '38', '39', '40', '41', '42',
+          '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5',
+          '900G', '300G', '450G', '1KG', '30ML', '50ML', 'CHOCOLATE', 'BAUNILHA'
+        ].includes(matchedSizeKey) ||
         (matchedSizeKey === '44' && vertical.verticalId !== 'CALCADOS_COURO');
       if (isSizeCompletelyOutAcrossAllColors && isCoreDemandForVertical) {
         brokenCoreSet.add(matchedSizeKey);

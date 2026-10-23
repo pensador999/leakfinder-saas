@@ -45,15 +45,20 @@ export interface NormalizedPlatformProduct {
 
 const PERIPHERAL_SIZES = new Set([
   'PP', 'XG', 'EG', 'XGG', 'G1', 'G2', 'G3', 'G4',
+  'XXS', 'XS', 'XXL', '2XL', '3XL', '4XL', 'UK 6', 'UK 16',
   '33', '34', '35', '45', '46', '48', '50', '52', '54',
+  '3', '3.5', '4', '4.5', '5', '5.5', '12', '12.5', '13', '14',
   'ARQUIVO (ESGOTADO)'
 ]);
 
 const KNOWN_SIZE_TOKENS = new Set([
   'PP', 'P', 'M', 'G', 'GG', 'XG', 'EG', 'XGG', 'G1', 'G2', 'G3', 'G4',
+  'XXS', 'XS', 'S', 'L', 'XL', 'XXL', '2XL', '3XL', '4XL',
+  'UK 6', 'UK 8', 'UK 10', 'UK 12', 'UK 14', 'UK 16',
   '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '48', '50',
+  '3', '3.5', '4', '4.5', '5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12', '12.5', '13', '14',
   '300G', '450G', '500G', '900G', '1KG', '2KG', '30ML', '50ML', '100ML', '200ML',
-  'ÚNICO', 'UNICO', 'TAMANHO ÚNICO'
+  'ÚNICO', 'UNICO', 'TAMANHO ÚNICO', 'ONE SIZE', 'OS'
 ]);
 
 function decodeHtmlEntities(raw: string): string {
@@ -780,10 +785,12 @@ export function buildIssuesFromUniversalProducts(
       missingSizes.unshift('ESGOTADO');
     }
 
-    const isAccessory = /bon[eé]|chap[eé]u|bandana|manguito|carteira|cinto|meia|[oó]culos|isca|vara|carretilha|molinete|anzol/i.test(p.title);
+    const isAccessory =
+      /bon[eé]|chap[eé]u|bandana|manguito|carteira|cinto|meia|[oó]culos|isca|vara|carretilha|molinete|anzol/i.test(p.title) ||
+      /\b(caps?|hats?|beanies?|visors?|sunglasses|glasses|watch(?:es)?|socks?|bags?|backpacks?|wallets?|belts?|gloves|casquettes?|chapea(?:u|ux)|lunettes|sacs?|ceintures?|gorras?|sombreros?|gafas|mochilas?|cintur[oó]n(?:es)?)\b|(mützen?|sonnenbrillen?|rucks(?:ack|äcke)|gürtel)/i.test(p.title);
     const isOneSizeProduct =
       p.variants.length === 1 &&
-      ['ÚNICO', 'UNICO', 'TAMANHO ÚNICO'].includes(normalizeSizeToken(p.variants[0]?.title || 'ÚNICO'));
+      ['ÚNICO', 'UNICO', 'TAMANHO ÚNICO', 'ONE SIZE', 'OS'].includes(normalizeSizeToken(p.variants[0]?.title || 'ÚNICO'));
     const isFullPrintExempt =
       handleUpper.includes('_FULL') ||
       titleUpper.includes('_FULL') ||

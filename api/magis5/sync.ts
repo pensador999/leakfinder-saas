@@ -204,14 +204,19 @@ export default async function handler(req: MinimalServerlessRequest, res: Minima
     }
   ];
 
+  const isDemoMode = Boolean((req as any)?.query?.demo === 'true' || (body as any)?.isDemoMode);
+
   return sendResponse(res, 200, {
     ok: true,
+    status: isDemoMode ? 'DEMO_SIMULATION' : 'REQUIRES_ERP_CREDENTIALS',
+    requiresCredentials: !isDemoMode,
     source: 'magis5_grounded_simulation',
-    simulationBadge: '[Modo Simulação Grounded - Magis5 Hub]',
-    transparencyNote: 'Auditoria de status de anúncios sincronizados nos canais Mercado Livre e Shopee.',
-    totalAudited: groundedMagis5Catalog.length,
-    discrepanciesCount: groundedMagis5Catalog.filter(p => p.discrepanciaComShopify).length,
-    products: groundedMagis5Catalog,
+    simulationBadge: '[Modo Simulação Grounded - Magis5 Hub — Requer Credenciais Privadas]',
+    transparencyNote: 'Esta métrica é privada e requer conexão via API do Magis5 Hub para status real de anúncios em marketplaces.',
+    totalAudited: isDemoMode ? groundedMagis5Catalog.length : 0,
+    discrepanciesCount: isDemoMode ? groundedMagis5Catalog.filter(p => p.discrepanciaComShopify).length : 0,
+    products: isDemoMode ? groundedMagis5Catalog : [],
+    demoSampleProducts: groundedMagis5Catalog,
     timestamp: new Date().toISOString()
   });
 }

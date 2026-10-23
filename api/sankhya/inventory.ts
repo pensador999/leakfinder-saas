@@ -130,7 +130,11 @@ export default async function handler(req: MinimalServerlessRequest, res: Minima
         }
       }
 
-      // Passo 2: Execução de query via DbExplorerSP.executeQuery
+      // Passo 2: Execução de query via DbExplorerSP.executeQuery (Sanitizado contra SQL Injection)
+      const safeEmpresa = Number.isInteger(Number(empresa)) ? Number(empresa) : 1;
+      const safeCodprod = codprod !== undefined && codprod !== '' && Number.isInteger(Number(codprod)) ? Number(codprod) : null;
+      const safeRef = String(referencia || '').replace(/[^a-zA-Z0-9_-]/g, '');
+
       const queryUrl = `${sanitizedUrl}/mge/service.sbr?serviceName=DbExplorerSP.executeQuery&outputType=json`;
       const sqlQuery = `
         SELECT 
@@ -144,9 +148,9 @@ export default async function handler(req: MinimalServerlessRequest, res: Minima
             (NVL(EST.ESTOQUE, 0) - NVL(EST.RESERVADO, 0)) AS DISPONIVEL
         FROM TGFEST EST
         INNER JOIN TGFPRO PRO ON PRO.CODPROD = EST.CODPROD
-        WHERE EST.CODEMP = ${empresa}
-          ${codprod ? `AND EST.CODPROD = ${Number(codprod)}` : ''}
-          ${referencia ? `AND PRO.REFERENCIA LIKE '%${referencia.replace(/'/g, '')}%'` : ''}
+        WHERE EST.CODEMP = ${safeEmpresa}
+          ${safeCodprod !== null ? `AND EST.CODPROD = ${safeCodprod}` : ''}
+          ${safeRef ? `AND PRO.REFERENCIA LIKE '%${safeRef}%'` : ''}
         ORDER BY EST.CODPROD, EST.CONTROLE
       `;
 
@@ -312,19 +316,24 @@ export default async function handler(req: MinimalServerlessRequest, res: Minima
     }
   ];
 
+  const isDemoMode = Boolean((req as any)?.query?.demo === 'true' || (body as any)?.isDemoMode);
+
   return sendResponse(res, 200, {
     ok: true,
+    status: isDemoMode ? 'DEMO_SIMULATION' : 'REQUIRES_ERP_CREDENTIALS',
+    requiresCredentials: !isDemoMode,
     source: 'sankhya_grounded_simulation',
-    simulationBadge: '[Modo Simulação Grounded - Sankhya ERP]',
-    transparencyNote: 'Auditoria de saldo físico real baseada na estrutura de tabelas TGFEST e TGFPRO do Sankhya.',
+    simulationBadge: '[Modo Simulação Grounded - Sankhya ERP — Requer Credenciais Privadas para Saldo Real]',
+    transparencyNote: 'Esta métrica é privada e requer conexão via API do Sankhya ERP (TGFEST/TGFPRO) para saldo físico real.',
     company: {
-      name: 'BRK Agro / BRK Fishing',
-      empresaId: empresa,
+      name: isDemoMode ? 'BRK Agro / BRK Fishing (Demo)' : 'ERP Não Conectado (Simulação)',
+      empresaId: Number.isInteger(Number(empresa)) ? Number(empresa) : 1,
       erpSystem: 'Sankhya ERP (Java/MGE Gateway)'
     },
-    totalAudited: groundedBrkCatalog.length,
-    criticalRupturesCount: groundedBrkCatalog.filter(p => p.emRupturaGeral).length,
-    products: groundedBrkCatalog,
+    totalAudited: isDemoMode ? groundedBrkCatalog.length : 0,
+    criticalRupturesCount: isDemoMode ? groundedBrkCatalog.filter(p => p.emRupturaGeral).length : 0,
+    products: isDemoMode ? groundedBrkCatalog : [],
+    demoSampleProducts: groundedBrkCatalog,
     timestamp: new Date().toISOString()
   });
 }

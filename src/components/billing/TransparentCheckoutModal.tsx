@@ -60,15 +60,6 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
     document: ''
   });
 
-  const [card, setCard] = useState<CreditCardFormData>({
-    cardNumber: '',
-    holderName: '',
-    expiryMonth: '12',
-    expiryYear: '28',
-    cvv: '',
-    installments: 1
-  });
-
   const [isProcessing, setIsProcessing] = useState(false);
   const [pixResult, setPixResult] = useState<PaymentTransactionResult | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -118,15 +109,12 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
       window.open(externalCheckoutUrl, '_blank', 'noopener,noreferrer');
       return;
     }
-    if (!buyer.fullName || !buyer.email || !buyer.document) {
-      setErrorMessage('Por favor, preencha seus dados de contato.');
-      return;
-    }
-    if (!card.cardNumber || !card.holderName || !card.cvv) {
-      setErrorMessage('Por favor, preencha os dados do cartão de crédito.');
+    if (!buyer.fullName || !buyer.email) {
+      setErrorMessage('Por favor, preencha seu nome e e-mail corporativo para prosseguir ao Stripe Checkout.');
       return;
     }
     setErrorMessage('');
+    setIsProcessing(true);
     // Map local plan ID to Stripe plan ID
     const stripePlanMap: Record<PlanTierId, StripePlanId> = {
       STARTER: 'STARTER',
@@ -136,22 +124,15 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
     const targetStripePlan = stripePlanMap[selectedPlanId] || 'PRO';
 
     try {
-      // 💳 Tentativa 1: Stripe Checkout Real Oficial (Seguro, PCI-Compliant)
+      // 💳 PCI-DSS SAQ-A: Redireciona para Stripe Hosted Checkout (sem tocar em PAN/CVV no DOM local)
       const redirected = await redirectToStripeCheckout(targetStripePlan, buyer.email);
       if (redirected) {
         return; // Navegador redirecionado para a Stripe
       }
+      setErrorMessage('Gateway Stripe Hosted Session requer chave STRIPE_SECRET_KEY configurada no ambiente ou link de pagamento oficial.');
     } catch (stripeErr) {
-      console.warn('[CheckoutModal] Stripe Real indisponível, caindo para processamento local:', stripeErr);
-    }
-
-    try {
-      const result = await processCreditCardPayment(selectedPlan, billingCycle, buyer, card);
-      if (result.status === 'APPROVED') {
-        setIsSuccess(true);
-      }
-    } catch {
-      setErrorMessage('Erro ao processar o pagamento. Tente novamente.');
+      console.warn('[CheckoutModal] Stripe Real indisponível:', stripeErr);
+      setErrorMessage('Gateway Stripe indisponível no momento. Utilize o link oficial ou ativação assistida.');
     } finally {
       setIsProcessing(false);
     }
@@ -537,43 +518,14 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
                       </button>
                     </div>
                   ) : (
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-xs font-bold text-[#BBBAA6] mb-1">Número do Cartão</label>
-                        <input
-                          type="text"
-                          placeholder="0000 0000 0000 0000"
-                          maxLength={19}
-                          value={card.cardNumber}
-                          onChange={(e) => setCard({ ...card, cardNumber: e.target.value })}
-                          className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 rounded-xl text-xs font-mono text-[#FFFCE1] placeholder-[#BBBAA6]/40 focus:border-[#0AE448] font-medium"
-                        />
+                    <div className="p-4 bg-[#141716] rounded-2xl border border-[#00BAE2]/30 space-y-3">
+                      <div className="flex items-center gap-2 text-xs text-[#00BAE2] font-bold">
+                        <Lock className="w-4 h-4 text-[#00BAE2]" />
+                        <span>Ambiente Seguro Stripe Checkout (PCI-DSS SAQ-A Compliant)</span>
                       </div>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="block text-xs font-bold text-[#BBBAA6] mb-1">Nome no Cartão</label>
-                          <input
-                            type="text"
-                            placeholder="Como impresso no cartão"
-                            value={card.holderName}
-                            onChange={(e) => setCard({ ...card, holderName: e.target.value })}
-                            className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 rounded-xl text-xs text-[#FFFCE1] placeholder-[#BBBAA6]/40 focus:border-[#0AE448] font-medium uppercase"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-bold text-[#BBBAA6] mb-1">CVV</label>
-                          <input
-                            type="password"
-                            placeholder="123"
-                            maxLength={4}
-                            value={card.cvv}
-                            onChange={(e) => setCard({ ...card, cvv: e.target.value })}
-                            className="w-full px-3.5 py-2.5 bg-[#0E100F] border border-white/10 rounded-xl text-xs font-mono text-[#FFFCE1] placeholder-[#BBBAA6]/40 focus:border-[#0AE448] font-medium"
-                          />
-                        </div>
-                      </div>
+                      <p className="text-[11px] text-[#BBBAA6] leading-relaxed">
+                        Por segurança bancária internacional (PCI-DSS), o AdShield nunca armazena ou coleta números de cartão ou CVV localmente. Você será redirecionado ao ambiente criptografado oficial da Stripe.
+                      </p>
 
                       <button
                         onClick={handleProcessCard}
@@ -583,12 +535,12 @@ export const TransparentCheckoutModal: React.FC<TransparentCheckoutModalProps> =
                         {isProcessing ? (
                           <div className="flex items-center gap-2">
                             <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            <span>Processando com Gateway...</span>
+                            <span>Iniciando Sessão Segura Stripe...</span>
                           </div>
                         ) : (
                           <>
-                            <span>Pagar {formatBRL(finalPrice)} no Cartão</span>
-                            <ArrowRight className="w-4 h-4" />
+                            <span>Prosseguir para Stripe Checkout ({formatBRL(finalPrice)})</span>
+                            <ExternalLink className="w-4 h-4" />
                           </>
                         )}
                       </button>

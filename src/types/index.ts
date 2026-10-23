@@ -15,7 +15,7 @@ export type MainChallenge =
   | 'low_repurchase' 
   | 'pricing_friction';
 
-export type TargetRegion = 'Brasil' | 'Ásia' | 'Europa' | 'EUA' | 'Global';
+export type TargetRegion = 'Brasil' | 'Ásia' | 'Europa' | 'EUA' | 'Global' | string;
 
 export type StoreOperationMode = 
   | 'AUTO_DETECT'                 // Detecção Automática via IA / Heurísticas

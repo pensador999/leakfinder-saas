@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowRight, ShieldCheck, Globe, Sparkles, Zap, Factory, Boxes, Tag, Bot, Info, X, Shirt, Flame, Sprout, SlidersHorizontal } from 'lucide-react';
+import { ArrowRight, Globe, Sparkles, Factory, Boxes, Tag, Bot, Info, X, Shirt, Flame, Sprout, SlidersHorizontal } from 'lucide-react';
 import gsap from 'gsap';
 import { AuditInput, StoreOperationMode } from '../types';
 import { getWhiteLabelConfig, WhiteLabelConfig } from '../services/whiteLabelService';
 import { extractCleanDomainAndBrand } from '../services/siteInspector';
 import { GSAPMagneticButton } from './ui/GSAPMagneticButton';
+import { useTranslation } from '../i18n/useTranslation';
 
 interface HeroUrlBarProps {
   onAnalyze: (input: AuditInput) => void;
@@ -31,8 +32,9 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
   const [aovInput, setAovInput] = useState(180);
   const [instagramInput, setInstagramInput] = useState('');
   const [operationMode, setOperationMode] = useState<StoreOperationMode>('AUTO_DETECT');
-  const [whiteLabel, setWhiteLabel] = useState<WhiteLabelConfig>(getWhiteLabelConfig());
+  const [_whiteLabel] = useState<WhiteLabelConfig>(getWhiteLabelConfig());
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const { t, uiLocale, marketProfile } = useTranslation();
 
   const presets: CompanyPreset[] = [
     {
@@ -126,7 +128,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
       averageOrderValue: preset.aov,
       mainChallenge: 'low_conversion',
       instagramHandle: preset.instagram,
-      targetRegion: 'Brasil',
+      targetRegion: marketProfile.countryName,
       grossMargin: 45,
       competitorsUrl: 'https://concorrente.com.br',
       operationMode: mode
@@ -154,7 +156,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
       averageOrderValue: Number(aovInput) || 180,
       mainChallenge: 'low_conversion',
       instagramHandle: instagramInput.trim(),
-      targetRegion: 'Brasil',
+      targetRegion: marketProfile.countryName,
       grossMargin: 45,
       competitorsUrl: 'https://concorrente.com.br',
       operationMode
@@ -173,13 +175,13 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
           className="inline-flex items-center gap-1.5 px-3 py-1 border border-[#0AE448]/30 bg-[#0AE448]/10 text-[#0AE448] rounded-full text-[11px] font-mono font-bold uppercase tracking-wider shadow-sm"
         >
           <Sparkles className="w-3.5 h-3.5 text-[#0AE448]" />
-          <span>AUDITORIA INTELIGENTE DE E-COMMERCE</span>
+          <span>{t.hero.badge}</span>
         </div>
         <h1 className="text-2xl sm:text-4xl font-extrabold text-[#FFFCE1] tracking-tight leading-tight">
-          Auditoria Autônoma de Conversão & Rupturas no Meta Ads
+          {t.hero.title}
         </h1>
         <p className="text-xs sm:text-sm text-[#BBBAA6] max-w-2xl mx-auto leading-relaxed">
-          Inspecione instantaneamente o catálogo público da sua loja ou de qualquer concorrente. Nossos agentes cruzam estoque real, criativos ativos e checkout para estancar desperdício de verba.
+          {t.hero.subtitle}
         </p>
       </div>
 
@@ -194,7 +196,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
           <input
             type="text"
             required
-            placeholder="cole o link da loja (ex: minimalclub.com.br, sallve.com.br ou concorrente)"
+            placeholder={t.hero.inputPlaceholder}
             value={urlInput}
             onChange={(e) => setUrlInput(e.target.value)}
             className="flex-1 px-2 py-3 bg-transparent text-sm font-semibold text-[#FFFCE1] placeholder-slate-500 outline-none w-full font-mono tracking-tight"
@@ -205,7 +207,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
               type="button"
               onClick={() => setUrlInput('')}
               className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors mr-1 cursor-pointer shrink-0"
-              title="Limpar link da loja para digitar outro"
+              title="Clear URL"
             >
               <X className="w-4 h-4" />
             </button>
@@ -218,7 +220,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
             className="w-full sm:w-auto text-xs sm:text-sm px-6 py-3 cursor-pointer shrink-0"
             icon={<ArrowRight className="w-4 h-4 ml-1" />}
           >
-            {isAnalyzing ? 'Inspecionando...' : 'Auditar Loja'}
+            {isAnalyzing ? t.hero.inspecting : t.hero.ctaButton}
           </GSAPMagneticButton>
         </div>
 
@@ -229,7 +231,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
           className="flex items-center gap-1.5 mx-auto px-3 py-1.5 text-[11px] font-medium text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
         >
           <Factory className="w-3 h-3" />
-          <span>{showAdvanced ? 'Ocultar calibração' : 'Calibrar tipo da loja (opcional)'}</span>
+          <span>{showAdvanced ? t.hero.hideCalibration : t.hero.calibrateType}</span>
         </button>
 
         {/* 🏭 Seletor de Modelo Operacional da Loja (Calibração Anti-Falso-Positivo) */}
@@ -238,7 +240,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
         <div className="p-3 bg-[#101211] border border-white/10 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs">
           <div className="flex items-center gap-1.5 text-slate-400 font-semibold text-[11px] uppercase tracking-wider font-mono">
             <Factory className="w-3.5 h-3.5 text-[#0AE448]" />
-            <span>Modelo Operacional:</span>
+            <span>{t.hero.operationalModel}:</span>
           </div>
 
           <div className="flex items-center gap-1.5 flex-wrap w-full sm:w-auto">
@@ -250,10 +252,9 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
                   ? 'bg-[#00BAE2]/20 text-[#00BAE2] border-[#00BAE2]/50 shadow-sm'
                   : 'bg-[#191C1B] text-slate-400 hover:text-white border-white/5 hover:border-white/20'
               }`}
-              title="A inteligência artificial detecta automaticamente as regras de catálogo da loja"
             >
               <Bot className="w-3 h-3" />
-              <span>Auto-Detect</span>
+              <span>{t.hero.autoDetect}</span>
             </button>
 
             <button
@@ -264,10 +265,9 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
                   ? 'bg-[#0AE448]/20 text-[#0AE448] border-[#0AE448]/50 shadow-sm'
                   : 'bg-[#191C1B] text-slate-400 hover:text-white border-white/5 hover:border-white/20'
               }`}
-              title="Fabricação própria / Sublimação sob demanda. Isenta falsas rupturas de grade física de vestuário."
             >
               <Factory className="w-3 h-3" />
-              <span>Fabricação Própria (Sob Demanda)</span>
+              <span>{t.hero.ownManufacturing}</span>
             </button>
 
             <button
@@ -278,10 +278,9 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
                   ? 'bg-[#FF8709]/20 text-[#FF8709] border-[#FF8709]/50 shadow-sm'
                   : 'bg-[#191C1B] text-slate-400 hover:text-white border-white/5 hover:border-white/20'
               }`}
-              title="Estoque físico tradicional em depósito. Audita furos de grade PP ao G2 e tráfego para itens zerados."
             >
               <Boxes className="w-3 h-3" />
-              <span>Estoque Físico (Galpão)</span>
+              <span>{t.hero.physicalWarehouse}</span>
             </button>
 
             <button
@@ -292,10 +291,9 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
                   ? 'bg-[#F100CB]/20 text-[#F100CB] border-[#F100CB]/50 shadow-sm'
                   : 'bg-[#191C1B] text-slate-400 hover:text-white border-white/5 hover:border-white/20'
               }`}
-              title="Revenda multimarcas, importação e acessórios de tamanho único. Foco em margem e fornecedor."
             >
               <Tag className="w-3 h-3" />
-              <span>Revenda / Multimarcas</span>
+              <span>{t.hero.resaleMultibrand}</span>
             </button>
           </div>
         </div>
@@ -304,19 +302,52 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
         {operationMode === 'OWN_MANUFACTURING_ON_DEMAND' && (
           <div className="px-3.5 py-2 bg-[#0AE448]/10 border border-[#0AE448]/30 rounded-xl text-[11px] text-[#0AE448] flex items-center gap-2 animate-fadeIn font-medium">
             <Info className="w-4 h-4 text-[#0AE448] shrink-0" />
-            <span><strong>Modo Fabricação Própria Ativo:</strong> O motor isentará alertas falsos de ruptura de tamanho físico, priorizando SLA de produção, Tabela de Medidas e Títulos (SEO).</span>
+            <span>
+              <strong>{t.hero.ownManufacturing}:</strong>{' '}
+              {uiLocale === 'pt-BR'
+                ? 'Foco em SLA de produção, Tabela de Medidas e SEO (isento de falso-positivo de estoque físico).'
+                : uiLocale === 'de-DE'
+                ? 'Fokus auf Produktions-SLA, Größentabelle & SEO.'
+                : uiLocale === 'fr-FR'
+                ? 'Focus sur SLA de production, Guide des Tailles & SEO.'
+                : uiLocale === 'es-ES'
+                ? 'Foco en SLA de producción, Guía de Tallas y SEO.'
+                : 'SLA, Size Chart & SEO.'}
+            </span>
           </div>
         )}
         {operationMode === 'PHYSICAL_WAREHOUSE_STOCK' && (
           <div className="px-3.5 py-2 bg-[#FF8709]/10 border border-[#FF8709]/30 rounded-xl text-[11px] text-[#FF8709] flex items-center gap-2 animate-fadeIn font-medium">
             <Info className="w-4 h-4 text-[#FF8709] shrink-0" />
-            <span><strong>Modo Estoque Físico Ativo:</strong> O motor auditará furos de grade nos tamanhos mais vendidos (PP ao G2) e risco de estoque fantasma no Meta Ads.</span>
+            <span>
+              <strong>{t.hero.physicalWarehouse}:</strong>{' '}
+              {uiLocale === 'pt-BR'
+                ? 'Auditoria rigorosa da grade central (P/M/G) e proteção contra estoque fantasma no Meta Ads.'
+                : uiLocale === 'de-DE'
+                ? 'Kerngrößen-Prüfung (S/M/L/XL) & Meta Ads Schutz vor Geisterbestand.'
+                : uiLocale === 'fr-FR'
+                ? 'Audit des tailles centrales (S/M/L/XL) & protection stock fantôme Meta Ads.'
+                : uiLocale === 'es-ES'
+                ? 'Auditoría de tallas centrales (S/M/L/XL) y protección contra stock fantasma en Meta Ads.'
+                : 'Core size grid & Meta Ads ghost inventory protection.'}
+            </span>
           </div>
         )}
         {operationMode === 'RESALE_MULTIBRAND' && (
           <div className="px-3.5 py-2 bg-[#F100CB]/10 border border-[#F100CB]/30 rounded-xl text-[11px] text-[#F100CB] flex items-center gap-2 animate-fadeIn font-medium">
             <Info className="w-4 h-4 text-[#F100CB] shrink-0" />
-            <span><strong>Modo Revenda Ativo:</strong> O motor focará em margem, competitividade de Buy Box e produtos de tamanho único.</span>
+            <span>
+              <strong>{t.hero.resaleMultibrand}:</strong>{' '}
+              {uiLocale === 'pt-BR'
+                ? 'Foco em margem comercial, Buy Box e isenção inteligente para acessórios de tamanho único.'
+                : uiLocale === 'de-DE'
+                ? 'Handelsmarge, Buy Box & Einheitsgrößen-Zubehör.'
+                : uiLocale === 'fr-FR'
+                ? 'Marge commerciale, Buy Box & accessoires taille unique.'
+                : uiLocale === 'es-ES'
+                ? 'Margen comercial, Buy Box y accesorios de talla única.'
+                : 'Margin, Buy Box & single-size accessories.'}
+            </span>
           </div>
         )}
         </>
@@ -325,7 +356,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
         {/* Sleek Preset Chips & Advanced Controls Trigger */}
         <div className="flex flex-wrap items-center justify-between gap-2 px-1 text-xs">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[11px] font-mono text-slate-500 uppercase font-semibold">Atalhos:</span>
+            <span className="text-[11px] font-mono text-slate-500 uppercase font-semibold">{t.hero.shortcuts}:</span>
             {presets.map((preset) => {
               const PresetIcon = preset.icon;
               const isCurrent = urlInput.includes(preset.url.replace('https://', ''));
@@ -341,7 +372,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
                       ? 'bg-white/15 text-[#FFFCE1] border-white/40 shadow-sm'
                       : 'bg-[#191C1B] text-slate-400 hover:text-[#FFFCE1] border-white/10 hover:border-white/20'
                   }`}
-                  title={`Auditoria instantânea de ${preset.name}`}
+                  title={`Instant audit: ${preset.name}`}
                 >
                   <PresetIcon className="w-3 h-3 text-[#0AE448]" />
                   <span>{preset.name}</span>
@@ -356,7 +387,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
             className="text-[11px] font-semibold text-[#0AE448] hover:text-[#09c93f] transition-colors cursor-pointer flex items-center gap-1 font-mono"
           >
             <SlidersHorizontal className="w-2.5 h-2.5" />
-            <span>{showAdvanced ? 'Ocultar parâmetros' : 'Parâmetros de nicho'}</span>
+            <span>{showAdvanced ? t.hero.hideParams : t.hero.nicheParams}</span>
           </button>
         </div>
 
@@ -364,10 +395,10 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
         {showAdvanced && (
           <div className="p-4 bg-[#101211] border border-white/10 rounded-2xl flex flex-wrap items-center justify-center gap-4 text-xs text-slate-300 animate-fadeIn">
             <div className="flex items-center gap-1.5">
-              <span className="font-medium text-slate-400">Nicho:</span>
+              <span className="font-medium text-slate-400">{t.hero.nicheLabel}:</span>
               <input
                 type="text"
-                placeholder="Auto (IA detecta)"
+                placeholder="Auto"
                 value={nicheInput}
                 onChange={(e) => setNicheInput(e.target.value)}
                 className="px-2.5 py-1.5 bg-[#191C1B] border border-white/10 rounded-lg text-[#FFFCE1] font-semibold outline-none text-xs w-44 placeholder-slate-500"
@@ -375,7 +406,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
             </div>
 
             <div className="flex items-center gap-1.5">
-              <span className="font-medium text-slate-400">Ticket Médio (R$):</span>
+              <span className="font-medium text-slate-400">{t.hero.aovLabel}</span>
               <input
                 type="number"
                 value={aovInput}
@@ -388,7 +419,7 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
               <span className="font-medium text-slate-400">Instagram:</span>
               <input
                 type="text"
-                placeholder="@marca"
+                placeholder="@brand"
                 value={instagramInput}
                 onChange={(e) => setInstagramInput(e.target.value)}
                 className="px-2.5 py-1.5 bg-[#191C1B] border border-white/10 rounded-lg text-[#FFFCE1] font-semibold outline-none text-xs w-32 placeholder-slate-500"
@@ -400,3 +431,4 @@ export const HeroUrlBar: React.FC<HeroUrlBarProps> = ({ onAnalyze, isAnalyzing, 
     </div>
   );
 };
+

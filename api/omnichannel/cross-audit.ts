@@ -517,6 +517,8 @@ export default async function handler(req: MinimalServerlessRequest, res: Minima
 
   return sendResponse(res, 200, {
     ok: true,
+    status: hasLiveErpCredentials ? 'LIVE_ERP_INTEGRATED' : 'REQUIRES_ERP_CREDENTIALS',
+    requiresCredentials: !hasLiveErpCredentials,
     engine: 'adshield_omnichannel_truth_matrix_v2',
     dataMode: hasLiveErpCredentials ? 'LIVE_ERP_INTEGRATED' : 'PUBLIC_STOREFRONT_GROUNDED_SIMULATION',
     dataOrigin: hasLiveErpCredentials ? 'LIVE_API' : 'HEURISTIC_PUBLIC_FALLBACK',

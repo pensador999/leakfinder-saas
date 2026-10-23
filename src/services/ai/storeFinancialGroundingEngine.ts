@@ -2,6 +2,7 @@ import { hashString, isCatalogProductBroken } from '../siteInspector.ts';
 import type { RealSiteData } from '../siteInspector.ts';
 import type { AuditInput } from '../../types/index.ts';
 import type { SocialAuditResult } from '../socialInspector.ts';
+import { formatStoreCurrency } from '../pricing/currencyUtils.ts';
 
 export type StoreScaleTier = 'DTC_INICIANTE' | 'ECOMMERCE_MEDIO' | 'ESCALA_ALTO_TICKET' | 'ENTERPRISE_GLOBAL';
 
@@ -162,6 +163,9 @@ export function calculateStoreFinancialGrounding(
     directSalesChannelType = 'CHECKOUT_AUTOMATIZADO_100';
   }
 
+  const storeLocale = realSiteData.detectedMarketLocale || 'pt-BR';
+  const isPtBrStore = storeLocale === 'pt-BR';
+
   // 5. STORE SCALE TIER CLASSIFICATION COM BASES ORGÂNICAS QUEBRADAS
   let storeTier: StoreScaleTier;
   let tierLabel: string;
@@ -171,31 +175,33 @@ export function calculateStoreFinancialGrounding(
 
   if (isMarketplace) {
     storeTier = 'DTC_INICIANTE';
-    tierLabel = isShopee ? 'Seller Shopee Brasil (Loja Marketplace)' : 'Seller Mercado Livre (Loja Marketplace)';
+    tierLabel = isPtBrStore
+      ? (isShopee ? 'Seller Shopee Brasil (Loja Marketplace)' : 'Seller Mercado Livre (Loja Marketplace)')
+      : `Official Marketplace Seller (${realSiteData.ecommercePlatform || 'Marketplace'})`;
     baseMonthlyRevenueMin = Number((24680.50 + ((domainHash % 14) * 1150.35)).toFixed(2));
     baseMonthlyRevenueMax = Number((baseMonthlyRevenueMin * 2.75).toFixed(2));
     dailyAdSpend = Number((124.60 + ((domainHash % 8) * 16.40)).toFixed(2));
   } else if (isEnterprise) {
     storeTier = 'ENTERPRISE_GLOBAL';
-    tierLabel = 'Enterprise & Grande Porte (R$ 1M+/mês)';
+    tierLabel = isPtBrStore ? 'Enterprise & Grande Porte (R$ 1M+/mês)' : 'Global Enterprise ($1M+/mo)';
     baseMonthlyRevenueMin = Number((1240000.00 + ((domainHash % 25) * 14200.50)).toFixed(2));
     baseMonthlyRevenueMax = Number((baseMonthlyRevenueMin * 3.45).toFixed(2));
     dailyAdSpend = Number((2840.50 + ((domainHash % 15) * 45.20)).toFixed(2));
   } else if (isMotorsOrAuto || isJewelryLuxury || (hasMeta && hasGtm && catalogVolumeCount >= 60)) {
     storeTier = 'ESCALA_ALTO_TICKET';
-    tierLabel = 'E-commerce em Escala & Alto Ticket';
+    tierLabel = isPtBrStore ? 'E-commerce em Escala & Alto Ticket' : 'High-Velocity Scale & High-Ticket D2C';
     baseMonthlyRevenueMin = Number((182400.00 + ((domainHash % 18) * 2350.40)).toFixed(2));
     baseMonthlyRevenueMax = Number((baseMonthlyRevenueMin * 2.65).toFixed(2));
     dailyAdSpend = Number((684.50 + ((domainHash % 12) * 21.30)).toFixed(2));
   } else if (hasMeta || catalogVolumeCount >= 20 || isAgro) {
     storeTier = 'ECOMMERCE_MEDIO';
-    tierLabel = 'E-commerce Médio Consolidado';
+    tierLabel = isPtBrStore ? 'E-commerce Médio Consolidado' : 'Consolidated Mid-Market D2C';
     baseMonthlyRevenueMin = Number((66350.00 + ((domainHash % 15) * 1240.20)).toFixed(2));
     baseMonthlyRevenueMax = Number((baseMonthlyRevenueMin * 2.85).toFixed(2));
     dailyAdSpend = Number((424.30 + ((domainHash % 10) * 15.60)).toFixed(2));
   } else {
     storeTier = 'DTC_INICIANTE';
-    tierLabel = 'DTC em Fase Inicial / Crescimento';
+    tierLabel = isPtBrStore ? 'DTC em Fase Inicial / Crescimento' : 'Growth-Stage D2C Store';
     baseMonthlyRevenueMin = Number((18420.00 + ((domainHash % 12) * 850.50)).toFixed(2));
     baseMonthlyRevenueMax = Number((baseMonthlyRevenueMin * 2.95).toFixed(2));
     dailyAdSpend = Number((164.80 + ((domainHash % 8) * 12.40)).toFixed(2));
@@ -240,13 +246,24 @@ export function calculateStoreFinancialGrounding(
     adWasteMonthly = 0;
   }
 
-  // Checkout Friction Loss: falta de Pix com desconto real, ausência de tabela de medidas ou lentidão severa
+  // Checkout Friction Loss: falta de Pix com desconto real (ou incentivo local Shop Pay/Klarna/Apple Pay), ausência de tabela de medidas ou lentidão severa
   const snippet = (realSiteData.rawHtmlSnippet || '').toLowerCase();
+  const rawConvSignals = (realSiteData as any).conversionSignals;
+  const rawCheckout = (realSiteData as any).Checkout;
+  const conversionSignalsText = [
+    snippet,
+    ...(realSiteData.detectedKeywords || []),
+    ...(Array.isArray(rawConvSignals) ? rawConvSignals : rawConvSignals ? [String(rawConvSignals)] : []),
+    ...(Array.isArray(rawCheckout) ? rawCheckout : rawCheckout ? [String(rawCheckout)] : [])
+  ].join(' ').toLowerCase();
+
   const hasPixDiscount = 
-    /\b\d{1,2}%\s*(?:off|desconto)?\s*(?:no|com|via)?\s*pix\b/i.test(snippet) ||
-    /\bpix\s*(?:com)?\s*\d{1,2}%\s*(?:off|desconto)\b/i.test(snippet) ||
-    /\beconomize\b.*\bpix\b/i.test(snippet) ||
-    /\bà\s*vista\s*(?:no|via)?\s*pix\b/i.test(snippet);
+    Boolean(realSiteData.detectedCheckoutTerms?.hasPix) ||
+    /\b(shop\s*pay|apple\s*pay|klarna|clearpay|afterpay|affirm|alma|bizum|paypal|pix)\b/i.test(conversionSignalsText) ||
+    /\b\d{1,2}%\s*(?:off|desconto)?\s*(?:no|com|via)?\s*pix\b/i.test(conversionSignalsText) ||
+    /\bpix\s*(?:com)?\s*\d{1,2}%\s*(?:off|desconto)\b/i.test(conversionSignalsText) ||
+    /\beconomize\b.*\bpix\b/i.test(conversionSignalsText) ||
+    /\bà\s*vista\s*(?:no|via)?\s*pix\b/i.test(conversionSignalsText);
 
   // Determina se os produtos/loja auditada exigem tabela de medidas (exclui iscas, cutelaria, molinetes, varas, cosméticos, autopeças e itens de tamanho único)
   const isNonApparelCatalog = 
@@ -262,24 +279,35 @@ export function calculateStoreFinancialGrounding(
     (input?.niche || '').toLowerCase().includes('isca') ||
     (input?.niche || '').toLowerCase().includes('auto') ||
     (input?.niche || '').toLowerCase().includes('cosmético') ||
-    (realSiteData.catalogAudit?.issues || []).every(i => {
+    (catalogIssues.length > 0 && catalogIssues.every(i => {
       const title = (i.productTitle || '').toLowerCase();
       return title.includes('isca') || title.includes('vara') || title.includes('molinete') || title.includes('carretilha') || title.includes('anzol') || title.includes('faca') || title.includes('canivete') || title.includes('bone') || title.includes('boné');
-    });
+    }));
 
   const requiresSizeGuide = !isNonApparelCatalog && !realSiteData.isMarketplaceSeller;
 
   const hasSizeGuide = 
-    snippet.includes('guia de tamanhos') || 
-    snippet.includes('tabela de medidas') ||
-    snippet.includes('size_chart') ||
-    snippet.includes('size-chart') ||
-    snippet.includes('product-addons') ||
-    snippet.includes('kiwisizing') ||
-    snippet.includes('sizebay') ||
-    snippet.includes('provador virtual') ||
-    snippet.includes('cleansizechart') ||
+    conversionSignalsText.includes('guia de tamanhos') || 
+    conversionSignalsText.includes('tabela de medidas') ||
+    conversionSignalsText.includes('size_chart') ||
+    conversionSignalsText.includes('size-chart') ||
+    conversionSignalsText.includes('size chart') ||
+    conversionSignalsText.includes('size guide') ||
+    conversionSignalsText.includes('fit guide') ||
+    conversionSignalsText.includes('größentabelle') ||
+    conversionSignalsText.includes('grössentabelle') ||
+    conversionSignalsText.includes('größenberater') ||
+    conversionSignalsText.includes('guide des tailles') ||
+    conversionSignalsText.includes('guía de tallas') ||
+    conversionSignalsText.includes('guia de tallas') ||
+    conversionSignalsText.includes('tabla de tallas') ||
+    conversionSignalsText.includes('product-addons') ||
+    conversionSignalsText.includes('kiwisizing') ||
+    conversionSignalsText.includes('sizebay') ||
+    conversionSignalsText.includes('provador virtual') ||
+    conversionSignalsText.includes('cleansizechart') ||
     Boolean(realSiteData.catalogAudit?.issues.some(i => i.hasSizeGuide)) ||
+    Boolean((realSiteData.catalogAudit?.totalProductsScanned || 0) > 0 && realSiteData.catalogAudit?.productsWithoutSizeGuide === 0) ||
     Boolean(realSiteData.isMarketplaceSeller) ||
     !requiresSizeGuide; // Se for artigo de pesca/equipamento, é 100% isento de tabela de medidas
 
@@ -308,13 +336,17 @@ export function calculateStoreFinancialGrounding(
   const competitorPrice = Number((storePrice * 0.885).toFixed(2));
   const pixDiscountPrice = Number((storePrice * 0.932).toFixed(2));
 
+  const fmt = (val: number) => formatStoreCurrency(val, storeLocale);
+  const perMonthUnit = isPtBrStore ? '/mês' : '/mo';
+  const perDayUnit = isPtBrStore ? '/dia' : '/day';
+
   return {
     storeDomain: domain,
     brandName,
     storeTier,
     tierLabel,
     groundedAverageTicket,
-    formattedAverageTicket: formatBRL(groundedAverageTicket),
+    formattedAverageTicket: fmt(groundedAverageTicket),
     catalogVolumeCount,
     brokenSkusCount,
     hasMetaPixelActive: hasMeta,
@@ -322,23 +354,33 @@ export function calculateStoreFinancialGrounding(
     directSalesChannelType,
     transparency: {
       dataGroundingType: 'PROJECAO_ESTATISTICA_BENCHMARK',
-      transparencyNotice: 'Esta análise projeta o risco financeiro a partir dos preços reais dos produtos, dados públicos do catálogo e presença de pixels. O faturamento e verba de anúncios são estimativas baseadas em benchmark de mercado e podem ser ajustados pelo lojista.',
+      transparencyNotice: isPtBrStore
+        ? 'Esta análise projeta o risco financeiro a partir dos preços reais dos produtos, dados públicos do catálogo e presença de pixels. O faturamento e verba de anúncios são estimativas baseadas em benchmark de mercado e podem ser ajustados pelo lojista.'
+        : 'This analysis projects financial risk from live product prices, public catalog data, and pixel signals. Revenue and ad spend are market-benchmark simulations adjustable by the merchant.',
       sourceGroundingSummary: {
         groundedCatalogFacts: [
-          `Preços das variantes auditados ao vivo no DOM e no endpoint /products.json`,
+          isPtBrStore
+            ? `Preços das variantes auditados ao vivo no DOM e no endpoint /products.json`
+            : `Variant prices audited live from DOM and /products.json endpoint`,
           brokenSkusCount > 0
-            ? `${brokenSkusCount} produto(s) com variantes centrais indisponíveis (estoque zerado comprovado)`
-            : `100% dos produtos auditados com grade íntegra (0 rupturas comprovadas)`,
-          hasMeta ? 'Meta Pixel ativo no cabeçalho (<head>)' : 'Meta Pixel ausente no cabeçalho'
+            ? (isPtBrStore ? `${brokenSkusCount} produto(s) com variantes centrais indisponíveis (estoque zerado comprovado)` : `${brokenSkusCount} product(s) with core variants out of stock (verified stockout)`)
+            : (isPtBrStore ? `100% dos produtos auditados com grade íntegra (0 rupturas comprovadas)` : `100% of audited products have intact size grids (0 verified stockouts)`),
+          hasMeta
+            ? (isPtBrStore ? 'Meta Pixel ativo no cabeçalho (<head>)' : 'Meta Pixel active in <head>')
+            : (isPtBrStore ? 'Meta Pixel ausente no cabeçalho' : 'Meta Pixel absent in <head>')
         ],
         projectedSimulations: [
-          `Verba diária estimada de anúncios (${formatBRL(dailyAdSpend)}/dia baseada no nicho ${tierLabel})`,
-          `Taxa de abandono projetada em 38% por falta de grade e fricção de checkout`
+          isPtBrStore
+            ? `Verba diária estimada de anúncios (${fmt(dailyAdSpend)}${perDayUnit} baseada no nicho ${tierLabel})`
+            : `Estimated daily ad spend (${fmt(dailyAdSpend)}${perDayUnit} based on ${tierLabel} tier)`,
+          isPtBrStore
+            ? `Taxa de abandono projetada em 38% por falta de grade e fricção de checkout`
+            : `Projected 38% abandonment rate due to size stockouts and checkout friction`
         ],
         privateMetricsRequiringApi: [
-          'Faturamento diário confidencial da loja (requer conexão Shopify Admin API)',
-          'Custo real exato por clique (requer conexão Meta Ads Marketing API)',
-          'Gravações de sessões individuais (requer conexão Microsoft Clarity / Hotjar)'
+          isPtBrStore ? 'Faturamento diário confidencial da loja (requer conexão Shopify Admin API)' : 'Confidential daily store revenue (requires Shopify Admin API connection)',
+          isPtBrStore ? 'Custo real exato por clique (requer conexão Meta Ads Marketing API)' : 'Exact CPC and ad spend (requires Meta Ads Marketing API connection)',
+          isPtBrStore ? 'Gravações de sessões individuais (requer conexão Microsoft Clarity / Hotjar)' : 'Individual session recordings (requires Microsoft Clarity / Hotjar connection)'
         ]
       },
       isUserOverridden: Boolean(input?.averageOrderValue || input?.monthlyRevenue || hasCustomSpendOverride)
@@ -346,12 +388,14 @@ export function calculateStoreFinancialGrounding(
     estimatedMonthlyRevenue: {
       min: baseMonthlyRevenueMin,
       max: baseMonthlyRevenueMax,
-      formatted: `${formatBRL(baseMonthlyRevenueMin)} a ${formatBRL(baseMonthlyRevenueMax)}/mês`
+      formatted: isPtBrStore
+        ? `${fmt(baseMonthlyRevenueMin)} a ${fmt(baseMonthlyRevenueMax)}${perMonthUnit}`
+        : `${fmt(baseMonthlyRevenueMin)} – ${fmt(baseMonthlyRevenueMax)}${perMonthUnit}`
     },
     estimatedAdSpend: {
       daily: dailyAdSpend,
       monthly: effectiveMonthlyAdSpend,
-      formattedMonthly: `${formatBRL(effectiveMonthlyAdSpend)}/mês (${formatBRL(dailyAdSpend)}/dia)`
+      formattedMonthly: `${fmt(effectiveMonthlyAdSpend)}${perMonthUnit} (${fmt(dailyAdSpend)}${perDayUnit})`
     },
     financialRisk: {
       adWasteMonthly,
@@ -359,28 +403,32 @@ export function calculateStoreFinancialGrounding(
       totalMonthlyLoss,
       annualizedLoss,
       brokenRatio,
-      formattedMonthlyLoss: formatBRL(totalMonthlyLoss),
-      formattedAnnualizedLoss: formatBRL(annualizedLoss),
-      formattedAdWaste: formatBRL(adWasteMonthly),
-      formattedCheckoutFriction: formatBRL(checkoutFrictionMonthly),
+      formattedMonthlyLoss: fmt(totalMonthlyLoss),
+      formattedAnnualizedLoss: fmt(annualizedLoss),
+      formattedAdWaste: fmt(adWasteMonthly),
+      formattedCheckoutFriction: fmt(checkoutFrictionMonthly),
       methodologyExplanation: brokenSkusCount === 0
-        ? `Cálculo transparente: 0 SKUs rompidos detectados = R$ 0 de perda em anúncios.${checkoutFrictionMonthly > 0 ? ` Oportunidade em checkout simulada em ${formatBRL(checkoutFrictionMonthly)}/mês por falta de desconto no Pix.` : ' Vitrine e checkout 100% íntegros.'}`
-        : `Cálculo proporcional unificado: ${brokenSkusCount} SKU(s) com grade esgotada detectados sob investimento de ${formatBRL(effectiveMonthlyAdSpend)}/mês, resultando em ~${formatBRL(adWasteMonthly)}/mês em cliques perdidos.${checkoutFrictionMonthly > 0 ? ` Mais ${formatBRL(checkoutFrictionMonthly)}/mês de oportunidade no Pix/checkout.` : ''}`
+        ? (isPtBrStore
+            ? `Cálculo transparente: 0 SKUs rompidos detectados = ${fmt(0)} de perda em anúncios.${checkoutFrictionMonthly > 0 ? ` Oportunidade em checkout simulada em ${fmt(checkoutFrictionMonthly)}/mês por falta de desconto à vista / incentivo de checkout.` : ' Vitrine e checkout 100% íntegros.'}`
+            : `Transparent calculation: 0 broken SKUs detected = ${fmt(0)} ad waste.${checkoutFrictionMonthly > 0 ? ` Simulated checkout opportunity of ${fmt(checkoutFrictionMonthly)}/mo due to missing express checkout / size guide.` : ' Storefront and checkout 100% intact.'}`)
+        : (isPtBrStore
+            ? `Cálculo proporcional unificado: ${brokenSkusCount} SKU(s) com grade esgotada detectados sob investimento de ${fmt(effectiveMonthlyAdSpend)}/mês, resultando em ~${fmt(adWasteMonthly)}/mês em cliques perdidos.${checkoutFrictionMonthly > 0 ? ` Mais ${fmt(checkoutFrictionMonthly)}/mês de oportunidade no checkout.` : ''}`
+            : `Unified proportional calculation: ${brokenSkusCount} broken-grid SKU(s) detected under ${fmt(effectiveMonthlyAdSpend)}/mo ad spend, resulting in ~${fmt(adWasteMonthly)}/mo wasted clicks.${checkoutFrictionMonthly > 0 ? ` Plus ${fmt(checkoutFrictionMonthly)}/mo in checkout friction.` : ''}`)
     },
     recoveryProjection: {
       projectedMonthlyRecovery,
       projectedAnnualRecovery,
-      formattedMonthlyRecovery: formatBRL(projectedMonthlyRecovery),
+      formattedMonthlyRecovery: fmt(projectedMonthlyRecovery),
       pixMarginLiftPerOrder,
-      formattedPixMarginLift: formatBRLDecimals(pixMarginLiftPerOrder),
+      formattedPixMarginLift: fmt(pixMarginLiftPerOrder),
       storeCompetitorDuel: {
         storePrice,
         competitorPrice,
         pixDiscountPrice,
-        formattedStorePrice: formatBRL(storePrice),
-        formattedCompetitorPrice: formatBRL(competitorPrice),
-        formattedPixDiscountPrice: formatBRLDecimals(pixDiscountPrice),
-        marginAdvantageBRL: formatBRLDecimals(pixMarginLiftPerOrder)
+        formattedStorePrice: fmt(storePrice),
+        formattedCompetitorPrice: fmt(competitorPrice),
+        formattedPixDiscountPrice: fmt(pixDiscountPrice),
+        marginAdvantageBRL: fmt(pixMarginLiftPerOrder)
       }
     },
     groundingConfidenceScore: 98.6,

@@ -19,6 +19,7 @@ import {
   StoreEvolutionSummary, 
   AuditHistoryEntry 
 } from '../../services/history/storeAuditHistoryService';
+import { useTranslation } from '../../i18n/useTranslation';
 
 interface AuditScoreEvolutionTimelineProps {
   diagnostic: AgentDiagnosticResult;
@@ -29,6 +30,8 @@ export const AuditScoreEvolutionTimeline: React.FC<AuditScoreEvolutionTimelinePr
   diagnostic,
   onRefresh 
 }) => {
+  const { uiLocale, formatMoney } = useTranslation();
+  const isPt = uiLocale === 'pt-BR';
   const [evolution, setEvolution] = useState<StoreEvolutionSummary | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -74,18 +77,22 @@ export const AuditScoreEvolutionTimeline: React.FC<AuditScoreEvolutionTimelinePr
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-mono font-bold uppercase tracking-wider border border-indigo-500/30 flex items-center gap-1.5">
               <Database className="w-3 h-3 text-indigo-400" />
-              Persistência Supabase PostgreSQL
+              {isPt ? 'Persistência Supabase PostgreSQL' : 'Supabase PostgreSQL Persistence'}
             </span>
             <span className="text-xs text-slate-400 font-mono">
-              • {evolution.totalAuditsRan} registro(s) auditado(s)
+              • {evolution.totalAuditsRan} {isPt ? 'registro(s) auditado(s)' : 'audited record(s)'}
             </span>
           </div>
           <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
             <History className="w-5 h-5 text-indigo-400" />
-            Linha do Tempo & Evolução de Saúde do E-commerce
+            {isPt ? 'Linha do Tempo & Evolução de Saúde do E-commerce' : 'E-commerce Health Evolution & Timeline'}
           </h3>
           <p className="text-xs text-slate-400">
-            Acompanhamento histórico contínuo da marca <strong>{evolution.brandName}</strong> ({evolution.domain}).
+            {isPt ? (
+              <>Acompanhamento histórico contínuo da marca <strong>{evolution.brandName}</strong> ({evolution.domain}).</>
+            ) : (
+              <>Continuous historical tracking for <strong>{evolution.brandName}</strong> ({evolution.domain}).</>
+            )}
           </p>
         </div>
 
@@ -100,7 +107,7 @@ export const AuditScoreEvolutionTimeline: React.FC<AuditScoreEvolutionTimelinePr
               {evolution.netScoreGain >= 0 ? <ArrowUpRight className="w-5 h-5" /> : <ArrowDownRight className="w-5 h-5" />}
             </div>
             <div>
-              <p className="text-[10px] font-mono uppercase font-bold text-slate-400">Evolução do Score</p>
+              <p className="text-[10px] font-mono uppercase font-bold text-slate-400">{isPt ? 'Evolução do Score' : 'Score Evolution'}</p>
               <p className="text-lg font-black leading-none">
                 {evolution.netScoreGain >= 0 ? `+${evolution.netScoreGain}` : evolution.netScoreGain} pts
               </p>
@@ -114,7 +121,7 @@ export const AuditScoreEvolutionTimeline: React.FC<AuditScoreEvolutionTimelinePr
         <div className="p-4 rounded-2xl bg-[#141716] border border-white/10 space-y-1">
           <p className="text-[10px] font-mono uppercase font-bold text-[#BBBAA6] flex items-center gap-1">
             <Sparkles className="w-3.5 h-3.5 text-[#00BAE2]" />
-            Score Inicial vs Atual
+            {isPt ? 'Score Inicial vs Atual' : 'Initial vs Current Score'}
           </p>
           <div className="flex items-baseline gap-2">
             <span className="text-xl font-bold text-slate-500 line-through">
@@ -126,36 +133,38 @@ export const AuditScoreEvolutionTimeline: React.FC<AuditScoreEvolutionTimelinePr
             <span className="text-xs text-[#BBBAA6]">/ 100</span>
           </div>
           <p className="text-[11px] text-[#BBBAA6]">
-            {hasMultipleAudits ? `Primeira auditoria em ${new Date(evolution.firstAuditDate).toLocaleDateString('pt-BR')}` : 'Primeira auditoria da loja'}
+            {hasMultipleAudits
+              ? (isPt ? `Primeira auditoria em ${new Date(evolution.firstAuditDate).toLocaleDateString('pt-BR')}` : `First audit on ${new Date(evolution.firstAuditDate).toLocaleDateString(uiLocale)}`)
+              : (isPt ? 'Primeira auditoria da loja' : 'First store audit')}
           </p>
         </div>
 
         <div className="p-4 rounded-2xl bg-[#141716] border border-white/10 space-y-1">
           <p className="text-[10px] font-mono uppercase font-bold text-[#BBBAA6] flex items-center gap-1">
             <ShieldCheck className="w-3.5 h-3.5 text-[#0AE448]" />
-            Sangria em Mídia Estancada
+            {isPt ? 'Sangria em Mídia Estancada' : 'Ad Spend Bleed Prevented'}
           </p>
           <p className="text-2xl font-black text-[#0AE448] font-mono">
             {evolution.totalMonthlyWastePrevented > 0 
-              ? `+R$ ${evolution.totalMonthlyWastePrevented.toLocaleString('pt-BR')}/mês` 
-              : 'Grade Blindada'}
+              ? `+${formatMoney(evolution.totalMonthlyWastePrevented)}${isPt ? '/mês' : '/mo'}` 
+              : (isPt ? 'Grade Blindada' : 'Shielded Grid')}
           </p>
           <p className="text-[11px] text-[#BBBAA6]">
-            Economia contínua de verba de tráfego
+            {isPt ? 'Economia contínua de verba de tráfego' : 'Continuous paid traffic savings'}
           </p>
         </div>
 
         <div className="p-4 rounded-2xl bg-[#141716] border border-white/10 space-y-1">
           <p className="text-[10px] font-mono uppercase font-bold text-[#BBBAA6] flex items-center gap-1">
             <Clock className="w-3.5 h-3.5 text-[#00BAE2]" />
-            Status da Telemetria
+            {isPt ? 'Status da Telemetria' : 'Telemetry Status'}
           </p>
           <p className="text-lg font-bold text-white flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-[#0AE448] animate-pulse" />
-            Sincronizado ao Vivo
+            {isPt ? 'Sincronizado ao Vivo' : 'Synced Live'}
           </p>
           <p className="text-[11px] text-[#BBBAA6] font-mono">
-            Última checagem: {new Date(evolution.latestAuditDate).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+            {isPt ? 'Última checagem:' : 'Last check:'} {new Date(evolution.latestAuditDate).toLocaleTimeString(uiLocale, { hour: '2-digit', minute: '2-digit' })}
           </p>
         </div>
       </div>
@@ -163,7 +172,7 @@ export const AuditScoreEvolutionTimeline: React.FC<AuditScoreEvolutionTimelinePr
       {/* Visual Timeline Nodes */}
       <div className="space-y-3 relative z-10">
         <p className="text-[10px] font-mono uppercase font-bold text-[#BBBAA6] tracking-wider">
-          Histórico Granular de Varreduras
+          {isPt ? 'Histórico Granular de Varreduras' : 'Granular Scan History'}
         </p>
         
         <div className="space-y-2">
@@ -189,18 +198,18 @@ export const AuditScoreEvolutionTimeline: React.FC<AuditScoreEvolutionTimelinePr
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-bold text-white">
-                        {isToday ? 'Hoje' : auditDate.toLocaleDateString('pt-BR')} às {auditDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                        {isToday ? (isPt ? 'Hoje' : 'Today') : auditDate.toLocaleDateString(uiLocale)} {isPt ? 'às' : 'at'} {auditDate.toLocaleTimeString(uiLocale, { hour: '2-digit', minute: '2-digit' })}
                       </p>
                       {audit.isCurrent && (
                         <span className="px-2 py-0.5 rounded-md bg-[#0AE448]/20 text-[#0AE448] text-[10px] font-mono font-bold border border-[#0AE448]/30">
-                          AUDITORIA ATIVA
+                          {isPt ? 'AUDITORIA ATIVA' : 'ACTIVE AUDIT'}
                         </span>
                       )}
                     </div>
                     <p className="text-xs text-[#BBBAA6]">
                       {audit.brokenSkusCount > 0 
-                        ? `${audit.brokenSkusCount} SKU(s) com ruptura de grade` 
-                        : 'Grade 100% Blindada e Saudável'}
+                        ? (isPt ? `${audit.brokenSkusCount} SKU(s) com ruptura de grade` : `${audit.brokenSkusCount} SKU(s) with size grid stockouts`)
+                        : (isPt ? 'Grade 100% Blindada e Saudável' : '100% Shielded & Healthy Size Grid')}
                     </p>
                   </div>
                 </div>

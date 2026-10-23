@@ -12,6 +12,7 @@ import type {
 import { auditBrazilianLegalCompliance, type LegalComplianceReport } from './audits/brazilianLegalComplianceEngine.ts';
 import { auditGoogleShoppingShield, type GoogleShoppingShieldSummary } from './audits/googleShoppingShieldEngine.ts';
 import { parseBRLPrice } from './pricing/currencyUtils.ts';
+import { detectStoreMarketProfile, type StoreLocaleId, type StoreCurrencyCode } from '../i18n/marketProfiles.ts';
 import {
   extractUniversalPlatformProducts,
   buildIssuesFromUniversalProducts
@@ -79,7 +80,7 @@ export interface CatalogProductIssue {
  * Harmoniza todas as regras de auditoria em um único ponto de verdade:
  * 1. Produto com suspeita de Estoque Fantasma (Backorder sem estoque físico no galpão).
  * 2. Produto esgotado (tamanho único ou todas variantes zeradas).
- * 3. Vestuário de grade ativa com furos em tamanhos centrais (PP ao G2).
+ * 3. Vestuário de grade ativa com furos em tamanhos centrais (PP ao G2 / S ao XL).
  */
 export function isCatalogProductBroken(item?: {
   isFullPrintExempt?: boolean;
@@ -103,9 +104,14 @@ export function isCatalogProductBroken(item?: {
   if (item.isFullPrintExempt) {
     return false;
   }
-  // 🇧🇷 Se faltarem APENAS tamanhos periféricos de ponta de grade (ex: PP, XG, G1, G2, G3, 33, 34, 45, 48, 50)
-  // enquanto a curva central (P, M, G, GG ou 36-44) está 100% em estoque, o produto NÃO está com grade quebrada!
-  const peripheralSizesOnly = ['PP', 'XG', 'EG', 'XGG', 'G1', 'G2', 'G3', 'G4', '33', '34', '35', '45', '46', '48', '50', '52', '54'];
+  // 🌍 Se faltarem APENAS tamanhos periféricos de ponta de grade (ex: PP, XG, G1, G2, G3, XXS, XS, XXL, 2XL, 3XL, 33, 34, 45, 48, 50)
+  // enquanto a curva central (P, M, G, GG / S, M, L, XL ou 36-44 / 7-11) está 100% em estoque, o produto NÃO está com grade quebrada!
+  const peripheralSizesOnly = [
+    'PP', 'XG', 'EG', 'XGG', 'G1', 'G2', 'G3', 'G4',
+    'XXS', 'XS', 'XXL', '2XL', '3XL', '4XL', 'UK 6', 'UK 16',
+    '33', '34', '35', '45', '46', '48', '50', '52', '54',
+    '3', '3.5', '4', '4.5', '5', '5.5', '12', '12.5', '13', '14'
+  ];
   const isOnlyPeripheralMissing = missing.every(s => peripheralSizesOnly.includes(s.toUpperCase().trim()));
   if (isOnlyPeripheralMissing) {
     return false;
@@ -149,6 +155,8 @@ export interface RealSiteData {
   isEnterpriseBrand: boolean;
   brandTier: 'GLOBAL_ENTERPRISE' | 'MID_MARKET' | 'DTC_LINE_STORE';
   operationMode?: StoreOperationMode;
+  detectedMarketLocale?: StoreLocaleId;
+  detectedCurrencyCode?: StoreCurrencyCode;
   isMarketplaceSeller?: boolean;
   sellerIdentifier?: string;
   marketplaceShieldData?: MarketplaceAccessShieldData;
@@ -821,7 +829,7 @@ async function fetchRealLiveCatalogAudit(
     };
   }
 
-  // Theme Level Size Guide Addon Check (Universal e-commerce inspection: <product-addons>, Sizebay, Kiwi Sizing, VFR, Clean Size Chart)
+  // Theme Level Size Guide Addon Check (Universal e-commerce inspection: <product-addons>, Sizebay, Kiwi Sizing, VFR, Clean Size Chart, Fit Finder, True Fit)
   // Salvaguarda anti-timeout: Se o HTML não carregou via proxy mas o /products.json respondeu, não acusamos ausência de widget do tema
   const rawHtml = (htmlText || '').toLowerCase();
   const isHtmlUnavailableByTimeout = rawHtml.length < 200;
@@ -829,6 +837,14 @@ async function fetchRealLiveCatalogAudit(
                                  rawHtml.includes('guia de tamanhos') || 
                                  rawHtml.includes('size_chart') || 
                                  rawHtml.includes('size-chart') || 
+                                 rawHtml.includes('size guide') ||
+                                 rawHtml.includes('size chart') ||
+                                 rawHtml.includes('fit finder') ||
+                                 rawHtml.includes('true fit') ||
+                                 rawHtml.includes('größenberater') ||
+                                 rawHtml.includes('grössentabelle') ||
+                                 rawHtml.includes('guide des tailles') ||
+                                 rawHtml.includes('guía de tallas') ||
                                  rawHtml.includes('product-addons') || 
                                  rawHtml.includes('tabela de medidas') ||
                                  rawHtml.includes('tabelademedidas') ||
@@ -840,7 +856,7 @@ async function fetchRealLiveCatalogAudit(
                                  rawHtml.includes('cleansizechart') ||
                                  rawHtml.includes('clean-size-chart') ||
                                  rawHtml.includes('globo-size-chart') ||
-                                 (doc ? !!doc.querySelector('product-addons, .size_chart, [data-custom-class="size_chart"], [data-text-header*="Guia"], [data-text-header*="guia"], [data-sizebay], .vfr-app, [class*="size-chart"], [id*="size-chart"], [class*="tabela-medidas"], [id*="tabela-medidas"], a[href*="tabela-de-medidas"], a[href*="guia-de-tamanhos"]') : false);
+                                 (doc ? !!doc.querySelector('product-addons, .size_chart, [data-custom-class="size_chart"], [data-text-header*="Guia"], [data-text-header*="guia"], [data-sizebay], .vfr-app, [class*="size-chart"], [id*="size-chart"], [class*="size-guide"], [id*="size-guide"], [class*="tabela-medidas"], [id*="tabela-medidas"], a[href*="tabela-de-medidas"], a[href*="guia-de-tamanhos"], a[href*="size-guide"], a[href*="size-chart"]') : false);
 
   // Crawl Shopify products (100% full sweep pagination) + Public Curva A Best-Sellers Map in parallel
   const [catalogFetch, publicCurveAMap] = await Promise.all([
@@ -935,7 +951,9 @@ async function fetchRealLiveCatalogAudit(
             fishingRegex.test(productTypeUpper) ||
             tagsUpper.some((t: string) => fishingRegex.test(t));
 
+          const intlAccessoryRegex = /\b(CAPS?|HATS?|BEANIES?|VISORS?|SUNGLASSES|GLASSES|WATCH(?:ES)?|SOCKS?|BAGS?|BACKPACKS?|WALLETS?|BELTS?|GLOVES|CASQUETTES?|CHAPEA(?:U|UX)|LUNETTES|SACS?|CEINTURES?|GORRAS?|SOMBREROS?|GAFAS|MOCHILAS?|CINTUR[OÓ]N(?:ES)?)\b|(MÜTZEN?|SONNENBRILLEN?|RUCKS(?:ACK|ÄCKE)|GÜRTEL)/i;
           const isAccessoryOrResale = !isFishingGear && (
+            intlAccessoryRegex.test(`${titleUpper} ${handleUpper.replace(/[-_]/g, ' ')} ${productTypeUpper} ${tagsUpper.join(' ')}`) ||
             titleUpper.includes('BANDANA') ||
             handleUpper.includes('BANDANA') ||
             titleUpper.includes('MANGUITO') ||
@@ -976,13 +994,14 @@ async function fetchRealLiveCatalogAudit(
             titleUpper.includes('MOCHILA') ||
             productTypeUpper.includes('ACESSORIO') ||
             productTypeUpper.includes('ACESSÓRIO') ||
+            productTypeUpper.includes('ACCESSOR') ||
             productTypeUpper.includes('BRINCO') ||
             productTypeUpper.includes('BOLSA') ||
             productTypeUpper.includes('BIJOUTERIA') ||
             productTypeUpper.includes('BIJUTERIA') ||
             productTypeUpper.includes('NECESS') ||
             productTypeUpper.includes('REVENDA') ||
-            tagsUpper.some((t: string) => t.includes('REVENDA') || t.includes('ACESSORIO') || t.includes('ACESSÓRIO') || t.includes('BANDANA') || t.includes('UNICO') || t.includes('BOLSA') || t.includes('BRINCO'))
+            tagsUpper.some((t: string) => t.includes('REVENDA') || t.includes('ACESSORIO') || t.includes('ACESSÓRIO') || t.includes('ACCESSOR') || t.includes('BANDANA') || t.includes('UNICO') || t.includes('ONE SIZE') || t.includes('BOLSA') || t.includes('BRINCO'))
           );
 
           // Extract variants & sizes
@@ -1011,8 +1030,15 @@ async function fetchRealLiveCatalogAudit(
           const availableLetterSizes = new Set<string>();
           const registeredNumericSizes = new Set<string>();
           const availableNumericSizes = new Set<string>();
-          const apparelTokens = ['PP', 'P', 'M', 'G', 'GG', 'XG', 'EG', 'XGG', 'G1', 'G2', 'G3', 'G4'];
-          const numericSizeTokens = ['33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '48', '50', '52', '54'];
+          const apparelTokens = [
+            'PP', 'P', 'M', 'G', 'GG', 'XG', 'EG', 'XGG', 'G1', 'G2', 'G3', 'G4',
+            'XXS', 'XS', 'S', 'L', 'XL', 'XXL', '2XL', '3XL',
+            'UK 6', 'UK 8', 'UK 10', 'UK 12', 'UK 14', 'UK 16'
+          ];
+          const numericSizeTokens = [
+            '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '48', '50', '52', '54',
+            '3', '3.5', '4', '4.5', '5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12', '12.5', '13', '14'
+          ];
 
           if (variants.length > 0) {
             mainSku = variants[0].sku || mainSku;
@@ -1091,13 +1117,13 @@ async function fetchRealLiveCatalogAudit(
             registeredLetterSizes.size === 0 &&
             registeredNumericSizes.size === 0 &&
             ((availableSizes.length === 0 && unavailableVariantTitles.length === 0) ||
-              availableSizes.every(sz => ['ÚNICO', 'UNICO', 'ONE SIZE', 'DEFAULT TITLE', 'TAMANHO ÚNICO', 'TAMANHO UNICO'].includes(sz)));
+              availableSizes.every(sz => ['ÚNICO', 'UNICO', 'ONE SIZE', 'OS', 'DEFAULT TITLE', 'TAMANHO ÚNICO', 'TAMANHO UNICO'].includes(sz)));
 
-          // Verifica se o produto é genuinamente vestuário/calçado com grade de tamanhos
-          const isApparelKeywords = /camis|blus|cal[cç]a|jaqueta|moletom|vestido|short|bermuda|conjunto|biqu[ií]ni|mai[oô]|legging|top|casaco|colete|polo|regata|macac[aã]o|jardineira|saia|kimono|cueca|suti[aã]|lingerie|pijama|su[eé]ter|tric[oô]/i.test(
+          // Verifica se o produto é genuinamente vestuário/calçado com grade de tamanhos (PT / EN / DE / FR / ES)
+          const isApparelKeywords = /camis|blus|cal[cç]a|jaqueta|moletom|vestido|short|bermuda|conjunto|biqu[ií]ni|mai[oô]|legging|top|casaco|colete|polo|regata|macac[aã]o|jardineira|saia|kimono|cueca|suti[aã]|lingerie|pijama|su[eé]ter|tric[oô]|shirt|t-shirt|tee|hoodie|jacket|sweater|sweatshirt|pants|trousers|jeans|dress|skirt|bra|coat|vest|cardigan|pullover|blazer|jumpsuit|romper|swimsuit|hose|kleid|hemd|robe|pantalon/i.test(
             `${title} ${productTypeUpper} ${tagsUpper.join(' ')}`
           );
-          const isFootwearKeywords = /bota|botina|t[eê]nis|sapato|sand[aá]lia|chinelo|coturno|mocassim|scarpin|sapatilha/i.test(
+          const isFootwearKeywords = /bota|botina|t[eê]nis|sapato|sand[aá]lia|chinelo|coturno|mocassim|scarpin|sapatilha|shoe|shoes|sneaker|sneakers|boot|boots|sandal|sandals|loafer|loafers|heel|heels|trainer|trainers|runner|runners|footwear|schuhe|stiefel|chaussure|baskets|zapato|zapatilla/i.test(
             `${title} ${productTypeUpper} ${tagsUpper.join(' ')}`
           );
           const usesApparelLetterGrid = registeredLetterSizes.size > 0 && (isApparelKeywords || registeredLetterSizes.size >= 2);
@@ -1143,10 +1169,12 @@ async function fetchRealLiveCatalogAudit(
                   missingSizes.push(regSz);
                 }
               });
-              // 2) Se a peça de roupa tem grade residual truncada (ex: apenas 1 ou 2 tamanhos cadastrados como "Tamanho: P"),
-              // verifica se os tamanhos âncora centrais (M, G) foram suprimidos por esgotamento
+              // 2) Se a peça de roupa tem grade residual truncada (ex: apenas 1 ou 2 tamanhos cadastrados como "Tamanho: P" ou "Size: XS"),
+              // verifica se os tamanhos âncora centrais (M, G no BR ou M, L no exterior) foram suprimidos por esgotamento
               if (isApparelKeywords && registeredLetterSizes.size <= 2) {
-                ['M', 'G'].forEach(coreSz => {
+                const usesIntlSizing = ['XXS', 'XS', 'S', 'L', 'XL', 'XXL', '2XL', '3XL'].some(s => registeredLetterSizes.has(s));
+                const anchorCoreSizes = usesIntlSizing ? ['M', 'L'] : ['M', 'G'];
+                anchorCoreSizes.forEach(coreSz => {
                   if (!availableLetterSizes.has(coreSz) && !missingSizes.includes(coreSz)) {
                     missingSizes.push(coreSz);
                   }
@@ -1183,6 +1211,14 @@ async function fetchRealLiveCatalogAudit(
                                descLower.includes('tamanho') || 
                                descLower.includes('tabela') || 
                                descLower.includes('guia') || 
+                               descLower.includes('size') ||
+                               descLower.includes('fit') ||
+                               descLower.includes('inch') ||
+                               descLower.includes('chest') ||
+                               descLower.includes('waist') ||
+                               descLower.includes('größe') ||
+                               descLower.includes('taille') ||
+                               descLower.includes('talla') ||
                                descLower.includes('cm') ||
                                themeHasSizeGuideAddon;
 
@@ -1289,7 +1325,7 @@ async function fetchRealLiveCatalogAudit(
               ? availableSizes
               : ['Tamanho Único'],
             missingSizes,
-            brokenCoreSizes: missingSizes.filter(s => !['PP', 'XG', 'EG', 'XGG', 'G1', 'G2', 'G3', 'G4', '33', '34', '35', '45', '46', '48', '50', '52', '54', 'ARQUIVO (ESGOTADO)'].includes(s.toUpperCase().trim())),
+            brokenCoreSizes: missingSizes.filter(s => !['PP', 'XG', 'EG', 'XGG', 'G1', 'G2', 'G3', 'G4', 'XXS', 'XS', 'XXL', '2XL', '3XL', '4XL', 'UK 6', 'UK 16', '33', '34', '35', '45', '46', '48', '50', '52', '54', '3', '3.5', '4', '4.5', '12', '12.5', '13', '14', 'ARQUIVO (ESGOTADO)'].includes(s.toUpperCase().trim())),
             isFullPrintExempt,
             isResaleAccessory: isAccessoryOrResale || isOneSizeVariant || isSystemPromoOrGift,
             categoryType,
@@ -1846,6 +1882,7 @@ export async function inspectRealWebsite(
       : (rawHtml.match(/<form[\s>]/gi) || []).length;
 
     const hasWa = Boolean(contact.detectedWhatsApp || contact.whatsAppLink);
+    const headlessMarket = detectStoreMarketProfile(domain, rawHtml);
     const result: RealSiteData = {
       url: cleanUrl,
       domain,
@@ -1855,6 +1892,8 @@ export async function inspectRealWebsite(
       isEnterpriseBrand: isEnterprise,
       brandTier,
       operationMode: options?.operationMode || 'AUTO_DETECT',
+      detectedMarketLocale: headlessMarket.id,
+      detectedCurrencyCode: headlessMarket.currencyCode,
       isMarketplaceSeller: Boolean(isMarketplaceSeller),
       sellerIdentifier,
       title: resolvedTitle,
@@ -1873,8 +1912,8 @@ export async function inspectRealWebsite(
       hasOgTags: docFromHeadless ? !!docFromHeadless.querySelector('meta[property^="og:"]') : /property=["']og:/i.test(rawHtml),
       detectedKeywords: ['comprar', brandName.toLowerCase(), 'loja'],
       detectedCheckoutTerms: {
-        hasPix: Boolean(conv.hasPixDiscount),
-        hasFrete: Boolean(conv.hasFreeShippingMention),
+        hasPix: Boolean(conv.hasPixDiscount) || headlessMarket.localPaymentIncentiveKeywords.some(kw => rawHtml.toLowerCase().includes(kw.toLowerCase())),
+        hasFrete: Boolean(conv.hasFreeShippingMention) || headlessMarket.freeShippingKeywords.some(kw => rawHtml.toLowerCase().includes(kw.toLowerCase())),
         hasGarantia: true,
         hasCheckoutTransparente: true,
         hasCart: true
@@ -1895,7 +1934,7 @@ export async function inspectRealWebsite(
       pagespeedScore: deepData.lighthouseMetrics?.performanceScore,
       securityHeaders: headlessData.securityHeaders,
       screenshotUrl: headlessData.screenshotBase64 || deepData.screenshotUrl,
-      legalCompliance: auditBrazilianLegalCompliance(rawHtml, isMarketplaceSeller),
+      legalCompliance: auditBrazilianLegalCompliance(rawHtml, isMarketplaceSeller, domain),
       googleShoppingShield: auditGoogleShoppingShield(
         (effectiveCatalogAudit?.issues || []).map(iss => ({
           title: iss.productTitle,
@@ -1919,10 +1958,11 @@ export async function inspectRealWebsite(
   const htmlText = htmlProxyRes.ok && htmlProxyRes.data ? htmlProxyRes.data : '';
   const { platform, isEnterprise, brandTier } = detectEcommercePlatform(htmlText, domain, cleanUrl);
   const jinaMarkdownPromise = fetchJinaMarkdown(cleanUrl);
+  const marketProfile = detectStoreMarketProfile(domain, htmlText);
 
-  const dynamicTotalImages = isEnterprise ? 34 : ((domainHash * 3) % 22) + 7;
-  const dynamicImagesWithoutAlt = isEnterprise ? 1 : ((domainHash * 5) % 6) + 3;
-  const dynamicLoadTime = isEnterprise ? 1.2 : Number((1.3 + ((domainHash % 28) / 10)).toFixed(1));
+  const dynamicTotalImages = 0;
+  const dynamicImagesWithoutAlt = 0;
+  const dynamicLoadTime = isEnterprise ? 1.2 : 1.8;
 
   let parser: DOMParser | null = null;
   let doc: Document | null = null;
@@ -1957,7 +1997,7 @@ export async function inspectRealWebsite(
 
   let result: RealSiteData;
 
-  if (!htmlText) {
+  if (!htmlText || htmlText.trim().length <= 200) {
     result = {
       url: cleanUrl,
       domain,
@@ -1967,35 +2007,37 @@ export async function inspectRealWebsite(
       isEnterpriseBrand: isEnterprise,
       brandTier,
       operationMode: options?.operationMode || 'AUTO_DETECT',
+      detectedMarketLocale: marketProfile.id,
+      detectedCurrencyCode: marketProfile.currencyCode,
       title: `${brandName} — Site Oficial & Loja Online`,
       metaDescription: `Confira os produtos oficiais, lançamentos e ofertas exclusivas em ${domain}.`,
       h1List: [`${brandName} Oficial`],
-      h2Count: isEnterprise ? 12 : ((domainHash * 2) % 6) + 3,
-      totalImages: dynamicTotalImages,
-      imagesWithoutAlt: dynamicImagesWithoutAlt,
+      h2Count: 0,
+      totalImages: 0,
+      imagesWithoutAlt: 0,
       brokenProductImages,
       typoAlerts,
       catalogAudit,
-      hasSchemaJsonLd: isEnterprise ? true : (domainHash % 4) === 0,
-      hasViewportMeta: true,
-      hasOgTags: true,
+      hasSchemaJsonLd: false,
+      hasViewportMeta: false,
+      hasOgTags: false,
       detectedKeywords: ['comprar', brandName.toLowerCase(), 'loja', 'oficial'],
       detectedCheckoutTerms: {
-        hasPix: true,
-        hasFrete: true,
-        hasGarantia: true,
-        hasCheckoutTransparente: isEnterprise ? true : false,
-        hasCart: true
+        hasPix: false,
+        hasFrete: false,
+        hasGarantia: false,
+        hasCheckoutTransparente: false,
+        hasCart: false
       },
-      formCount: isEnterprise ? 2 : ((domainHash % 3) + 1),
-      buttonCount: isEnterprise ? 18 : ((domainHash * 4) % 10) + 4,
+      formCount: 0,
+      buttonCount: 0,
       estimatedLoadTime: dynamicLoadTime,
-      inspectionStatus: isEnterprise ? 'SUCCESS' : 'FALLBACK',
+      inspectionStatus: 'FALLBACK',
       executionTimeMs: Math.round(performance.now() - startTime),
       rawHtmlSnippet: htmlText,
-      hasMetaPixel: true,
-      hasGtm: true,
-      legalCompliance: auditBrazilianLegalCompliance(htmlText || '', isMarketplaceSeller),
+      hasMetaPixel: false,
+      hasGtm: false,
+      legalCompliance: auditBrazilianLegalCompliance(htmlText || '', isMarketplaceSeller, domain),
       googleShoppingShield: auditGoogleShoppingShield(
         (catalogAudit?.issues || []).map(iss => ({
           title: iss.productTitle,
@@ -2091,11 +2133,28 @@ export async function inspectRealWebsite(
     const bodyText = doc
       ? (doc.body?.textContent || '').toLowerCase()
       : htmlText.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ').toLowerCase();
-    const hasPix = bodyText.includes('pix');
-    const hasFrete = bodyText.includes('frete') || bodyText.includes('entrega');
-    const hasGarantia = bodyText.includes('garantia') || bodyText.includes('devolução') || bodyText.includes('troca');
+    const hasPix =
+      bodyText.includes('pix') ||
+      marketProfile.localPaymentIncentiveKeywords.some(kw => bodyText.includes(kw.toLowerCase()) || htmlText.toLowerCase().includes(kw.toLowerCase()));
+    const hasFrete =
+      bodyText.includes('frete') ||
+      bodyText.includes('entrega') ||
+      bodyText.includes('shipping') ||
+      bodyText.includes('delivery') ||
+      bodyText.includes('versand') ||
+      bodyText.includes('livraison') ||
+      bodyText.includes('envío') ||
+      marketProfile.freeShippingKeywords.some(kw => bodyText.includes(kw.toLowerCase()));
+    const hasGarantia =
+      bodyText.includes('garantia') ||
+      bodyText.includes('devolução') ||
+      bodyText.includes('troca') ||
+      bodyText.includes('warranty') ||
+      bodyText.includes('guarantee') ||
+      bodyText.includes('returns') ||
+      marketProfile.returnRightKeywords.some(kw => bodyText.includes(kw.toLowerCase()));
     const hasCheckoutTransparente = bodyText.includes('checkout transparente') || isEnterprise;
-    const hasCart = bodyText.includes('carrinho') || bodyText.includes('cart') || bodyText.includes('bag') || bodyText.includes('sacola');
+    const hasCart = bodyText.includes('carrinho') || bodyText.includes('cart') || bodyText.includes('bag') || bodyText.includes('sacola') || bodyText.includes('warenkorb') || bodyText.includes('panier') || bodyText.includes('carrito');
 
     const scriptTags = doc
       ? Array.from(doc.querySelectorAll('script')).map(s => (s.innerHTML + ' ' + (s.getAttribute('src') || '')).toLowerCase())
@@ -2153,6 +2212,8 @@ export async function inspectRealWebsite(
       isEnterpriseBrand: isEnterprise,
       brandTier,
       operationMode: options?.operationMode || 'AUTO_DETECT',
+      detectedMarketLocale: marketProfile.id,
+      detectedCurrencyCode: marketProfile.currencyCode,
       isMarketplaceSeller: Boolean(isMarketplaceSeller),
       sellerIdentifier,
       title: resolvedTitle,
@@ -2190,7 +2251,7 @@ export async function inspectRealWebsite(
       hasEmail,
       hasPhone,
       securityHeaders: htmlProxyRes.securityHeaders,
-      legalCompliance: auditBrazilianLegalCompliance(htmlText || '', isMarketplaceSeller),
+      legalCompliance: auditBrazilianLegalCompliance(htmlText || '', isMarketplaceSeller, domain),
       googleShoppingShield: auditGoogleShoppingShield(
         (catalogAudit?.issues || []).map(iss => ({
           title: iss.productTitle,

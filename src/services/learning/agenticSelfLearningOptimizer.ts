@@ -297,7 +297,17 @@ export async function executeLiveSelfLearningCycle(
   };
 
   const label = nicheLabels[nicheId] || 'E-commerce Geral';
-  const cycle = Math.floor(1058 + Math.random() * 15);
+  const matchingProfile = INITIAL_NICHE_LEARNING_PROFILES.find(p => p.nicheId === nicheId);
+  const precisionStr = matchingProfile ? `${matchingProfile.precisionAccuracyPct}%` : '98.9%';
+
+  let existing: AgentSelfReflectionLog[] = INITIAL_REFLECTION_LOGS;
+  try {
+    const saved = localStorage.getItem(LOCAL_REFLECTIONS_KEY);
+    if (saved) existing = JSON.parse(saved);
+  } catch {}
+
+  const maxCycle = existing.reduce((max, item) => Math.max(max, item.cycleNumber || 1058), 1058);
+  const cycle = maxCycle + 1;
 
   const newLog: AgentSelfReflectionLog = {
     id: `refl-live-${Date.now()}`,
@@ -306,14 +316,12 @@ export async function executeLiveSelfLearningCycle(
     agentName: `Orquestrador ML & Doutor de Nicho (${label})`,
     observation: `Processados novos dados históricos de ${label}. O algoritmo recalibrou as curvas de elasticidade de estoque e taxas de checkout.`,
     hypothesisTested: `Ajuste dinâmico de sensibilidade de conversão e proteção contra anúncios com grade esgotada.`,
-    outcomeLearned: `Precisão preditiva recalculada para 99.${Math.floor(Math.random() * 5 + 1)}% com zero falsos-positivos.`,
-    weightAdjustmentMade: `Pesos de conversão do nicho ${label} calibrados e sincronizados no PostgreSQL do Supabase.`,
+    outcomeLearned: `[Simulação / Benchmark] Precisão preditiva calibrada em ${precisionStr} com base nos pesos do perfil ${label}.`,
+    weightAdjustmentMade: `Pesos de conversão do nicho ${label} calibrados e sincronizados.`,
     timestamp: 'Agora'
   };
 
   try {
-    const saved = localStorage.getItem(LOCAL_REFLECTIONS_KEY);
-    const existing: AgentSelfReflectionLog[] = saved ? JSON.parse(saved) : INITIAL_REFLECTION_LOGS;
     const updated = [newLog, ...existing];
     localStorage.setItem(LOCAL_REFLECTIONS_KEY, JSON.stringify(updated.slice(0, 40)));
   } catch {}

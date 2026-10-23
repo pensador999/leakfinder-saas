@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Calculator, ShieldCheck, AlertCircle, Sparkles } from 'lucide-react';
 import { useAuditStore } from '../../store/auditStore';
 import { calculateStoreFinancialGrounding } from '../../services/ai/storeFinancialGroundingEngine';
+import { useTranslation } from '../../i18n/useTranslation';
 
 export const RoasCalculator: React.FC = () => {
   const diagnostic = useAuditStore(state => state.diagnostic);
   const customMonthlyAdSpend = useAuditStore(state => state.customMonthlyAdSpend);
   const setCustomMonthlyAdSpend = useAuditStore(state => state.setCustomMonthlyAdSpend);
+  const { t, uiLocale, formatMoney, marketProfile } = useTranslation();
 
   const finances = diagnostic
     ? calculateStoreFinancialGrounding(diagnostic.realSiteData, diagnostic.input, diagnostic.social, customMonthlyAdSpend)
@@ -47,16 +49,27 @@ export const RoasCalculator: React.FC = () => {
     <div className="space-y-6 text-[#FFFCE1]">
       
       {/* Tool Header */}
-      <div className="p-6 rounded-3xl bg-[#101211] border border-white/10 flex items-center justify-between shadow-2xl">
+      <div className="p-6 rounded-3xl bg-[#101211] border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xl">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <div className="p-2 bg-[#0AE448]/20 text-[#0AE448] rounded-xl border border-[#0AE448]/30">
               <Calculator className="w-5 h-5" />
             </div>
-            <h2 className="text-lg font-bold text-[#FFFCE1]">Simulador AdShield de Funil & ROAS de Equilíbrio</h2>
+            <h2 className="text-lg font-bold text-[#FFFCE1]">{t.calculator.title}</h2>
+            <span className="px-2.5 py-0.5 bg-amber-500/15 text-amber-300 border border-amber-500/30 rounded-full text-[10px] font-mono font-bold">
+              {uiLocale === 'pt-BR'
+                ? '[Simulação / Benchmark — Ajustável pelo Usuário]'
+                : uiLocale === 'de-DE'
+                ? '[Simulation / Benchmark — Vom Nutzer anpassbar]'
+                : uiLocale === 'fr-FR'
+                ? '[Simulation / Benchmark — Ajustable par le Marchand]'
+                : uiLocale === 'es-ES'
+                ? '[Simulación / Benchmark — Ajustable por el Usuario]'
+                : '[Simulation / Benchmark — User-Adjustable]'}
+            </span>
           </div>
           <p className="text-xs text-[#BBBAA6] mt-1 font-medium">
-            Simule variações de tráfego, taxa de conversão do site e margem bruta para prever o lucro real.
+            {t.calculator.subtitle}
           </p>
         </div>
       </div>
@@ -65,13 +78,13 @@ export const RoasCalculator: React.FC = () => {
         
         {/* Sliders Form */}
         <div className="lg:col-span-1 p-5 rounded-3xl bg-[#101211] border border-white/10 space-y-5 shadow-2xl font-medium">
-          <h3 className="text-xs font-bold text-[#BBBAA6] uppercase tracking-wider font-mono">Parâmetros do Seu Negócio</h3>
+          <h3 className="text-xs font-bold text-[#BBBAA6] uppercase tracking-wider font-mono">{t.calculator.businessParams}</h3>
 
           {/* Ad Spend Slider */}
           <div>
             <div className="flex justify-between items-center text-xs mb-1.5">
-              <span className="text-[#BBBAA6]">Investimento em Ads/Mês:</span>
-              <span className="font-mono font-bold text-[#0AE448]">R$ {adSpend.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              <span className="text-[#BBBAA6]">{t.calculator.monthlyAdSpend}:</span>
+              <span className="font-mono font-bold text-[#0AE448]">{formatMoney(adSpend)}</span>
             </div>
             <input
               type="range"
@@ -87,8 +100,8 @@ export const RoasCalculator: React.FC = () => {
           {/* CPC Slider */}
           <div>
             <div className="flex justify-between items-center text-xs mb-1.5">
-              <span className="text-[#BBBAA6]">Custo por Clique (CPC Médio):</span>
-              <span className="font-mono font-bold text-white">R$ {cpc.toFixed(2)}</span>
+              <span className="text-[#BBBAA6]">{t.calculator.avgCpc}:</span>
+              <span className="font-mono font-bold text-white">{marketProfile.currencySymbol} {cpc.toFixed(2)}</span>
             </div>
             <input
               type="range"
@@ -104,7 +117,7 @@ export const RoasCalculator: React.FC = () => {
           {/* Conversion Rate Slider */}
           <div>
             <div className="flex justify-between items-center text-xs mb-1.5">
-              <span className="text-[#BBBAA6]">Taxa de Conversão do Site:</span>
+              <span className="text-[#BBBAA6]">{t.calculator.conversionRate}:</span>
               <span className="font-mono font-bold text-[#00BAE2]">{conversionRate.toFixed(1)}%</span>
             </div>
             <input
@@ -121,8 +134,11 @@ export const RoasCalculator: React.FC = () => {
           {/* AOV Slider */}
           <div>
             <div className="flex justify-between items-center text-xs mb-1.5">
-              <span className="text-[#BBBAA6]">Ticket Médio (AOV):</span>
-              <span className="font-mono font-bold text-[#0AE448]">R$ {aov}</span>
+              <span className="text-[#BBBAA6]">
+                {t.calculator.aov}
+                {finances ? ` (${uiLocale === 'pt-BR' || uiLocale === 'es-ES' ? 'Auditado' : uiLocale === 'de-DE' ? 'Geprüft' : uiLocale === 'fr-FR' ? 'Audité' : 'Audited'}: ${formatMoney(finances.groundedAverageTicket)})` : ''}:
+              </span>
+              <span className="font-mono font-bold text-[#0AE448]">{formatMoney(aov)}</span>
             </div>
             <input
               type="range"
@@ -138,7 +154,7 @@ export const RoasCalculator: React.FC = () => {
           {/* Margin Percent Slider */}
           <div>
             <div className="flex justify-between items-center text-xs mb-1.5">
-              <span className="text-[#BBBAA6]">Margem Bruta do Produto:</span>
+              <span className="text-[#BBBAA6]">{t.calculator.grossMargin}:</span>
               <span className="font-mono font-bold text-amber-400">{marginPercent}%</span>
             </div>
             <input
@@ -159,31 +175,33 @@ export const RoasCalculator: React.FC = () => {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             
             <div className="p-4 bg-[#101211] border border-white/10 rounded-2xl shadow-xl">
-              <span className="text-[10px] text-[#BBBAA6] uppercase font-semibold font-mono">ROAS Obtido</span>
+              <span className="text-[10px] text-[#BBBAA6] uppercase font-semibold font-mono">{t.calculator.roasAchieved}</span>
               <p className={`text-2xl font-bold font-mono mt-0.5 ${Number(roas) >= Number(breakEvenRoas) ? 'text-[#0AE448]' : 'text-rose-400'}`}>
                 {roas}x
               </p>
-              <span className="text-[10px] text-slate-500 font-medium">Equilíbrio: {breakEvenRoas}x</span>
+              <span className="text-[10px] text-slate-500 font-medium">{t.calculator.breakEven}: {breakEvenRoas}x</span>
             </div>
 
             <div className="p-4 bg-[#101211] border border-white/10 rounded-2xl shadow-xl">
-              <span className="text-[10px] text-[#BBBAA6] uppercase font-semibold font-mono">Faturamento Bruto</span>
-              <p className="text-2xl font-bold font-mono text-[#00BAE2] mt-0.5">R$ {grossRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-              <span className="text-[10px] text-slate-500 font-medium">{estimatedOrders} vendas</span>
+              <span className="text-[10px] text-[#BBBAA6] uppercase font-semibold font-mono">{t.calculator.grossRevenue}</span>
+              <p className="text-2xl font-bold font-mono text-[#00BAE2] mt-0.5">{formatMoney(grossRevenue)}</p>
+              <span className="text-[10px] text-slate-500 font-medium">
+                {estimatedOrders} {uiLocale === 'pt-BR' || uiLocale === 'es-ES' ? 'pedidos' : uiLocale === 'de-DE' ? 'Bestellungen' : uiLocale === 'fr-FR' ? 'commandes' : 'orders'}
+              </span>
             </div>
 
             <div className="p-4 bg-[#101211] border border-white/10 rounded-2xl shadow-xl">
-              <span className="text-[10px] text-[#BBBAA6] uppercase font-semibold font-mono">Lucro Líquido Est.</span>
+              <span className="text-[10px] text-[#BBBAA6] uppercase font-semibold font-mono">{t.calculator.estNetProfit}</span>
               <p className={`text-2xl font-bold font-mono mt-0.5 ${netProfit >= 0 ? 'text-[#0AE448]' : 'text-rose-400'}`}>
-                R$ {netProfit.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {formatMoney(netProfit)}
               </p>
-              <span className="text-[10px] text-slate-500 font-medium">Após Ads e Custos</span>
+              <span className="text-[10px] text-slate-500 font-medium">Net</span>
             </div>
 
             <div className="p-4 bg-[#101211] border border-white/10 rounded-2xl shadow-xl">
-              <span className="text-[10px] text-[#BBBAA6] uppercase font-semibold font-mono">CAC Médio</span>
-              <p className="text-2xl font-bold font-mono text-white mt-0.5">R$ {currentCac.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-              <span className="text-[10px] text-slate-500 font-medium">Custo por Cliente</span>
+              <span className="text-[10px] text-[#BBBAA6] uppercase font-semibold font-mono">{t.calculator.avgCac}</span>
+              <p className="text-2xl font-bold font-mono text-white mt-0.5">{formatMoney(currentCac)}</p>
+              <span className="text-[10px] text-slate-500 font-medium">CAC</span>
             </div>
 
           </div>
@@ -192,34 +210,74 @@ export const RoasCalculator: React.FC = () => {
           <div className="p-6 rounded-3xl bg-[#101211] border border-white/10 space-y-3 shadow-2xl">
             <h3 className="text-sm font-bold text-[#FFFCE1] flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-[#0AE448]" />
-              <span>Veredito Estratégico AdShield</span>
+              <span>{t.calculator.strategicVerdict}</span>
             </h3>
 
             {Number(roas) < Number(breakEvenRoas) ? (
               <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-xs text-amber-300 space-y-1 font-medium">
                 <p className="font-bold flex items-center gap-1.5 text-amber-400">
                   <AlertCircle className="w-4 h-4 text-amber-400" />
-                  Alerta: Campanha Operando no Prejuízo ou Margem Apertada
+                  {uiLocale === 'pt-BR'
+                    ? 'Alerta: Campanha Operando no Prejuízo ou Margem Apertada'
+                    : uiLocale === 'de-DE'
+                    ? 'Warnung: Kampagne unterhalb der Gewinnschwelle'
+                    : uiLocale === 'fr-FR'
+                    ? 'Alerte : Campagne sous le seuil de rentabilité'
+                    : uiLocale === 'es-ES'
+                    ? 'Alerta: Campaña operando en pérdida o margen ajustado'
+                    : 'Alert: Campaign Operating Below Break-Even or Tight Margin'}
                 </p>
                 <p className="text-[#BBBAA6]">
-                  Seu ROAS ({roas}x) está abaixo do ponto de equilíbrio ({breakEvenRoas}x). Ações para recuperar a margem:
+                  {uiLocale === 'pt-BR'
+                    ? `Seu ROAS (${roas}x) está abaixo do ponto de equilíbrio (${breakEvenRoas}x). Ações para recuperar a margem:`
+                    : `Your ROAS (${roas}x) is below the break-even threshold (${breakEvenRoas}x). Recommended actions to recover margin:`}
                 </p>
                 <ul className="list-disc pl-4 space-y-1 pt-1 text-[#FFFCE1]">
-                  <li>Aumente a Taxa de Conversão do site de {conversionRate}% para {(conversionRate + 0.8).toFixed(1)}% ativando o Sticky Buy Button mobile.</li>
-                  <li>Crie Bundles para subir o Ticket Médio de R$ {aov} para R$ {Math.round(aov * 1.3)}.</li>
+                  <li>
+                    {uiLocale === 'pt-BR'
+                      ? `Aumente a Taxa de Conversão do site de ${conversionRate}% para ${(conversionRate + 0.8).toFixed(1)}% ativando o Sticky Buy Button mobile.`
+                      : `Increase store conversion rate from ${conversionRate}% to ${(conversionRate + 0.8).toFixed(1)}% by enabling a mobile Sticky Add-to-Cart bar.`}
+                  </li>
+                  <li>
+                    {uiLocale === 'pt-BR'
+                      ? `Crie Bundles para subir o Ticket Médio de ${formatMoney(aov)} para ${formatMoney(Math.round(aov * 1.3))}.`
+                      : `Introduce product bundles to lift Average Order Value from ${formatMoney(aov)} to ${formatMoney(Math.round(aov * 1.3))}.`}
+                  </li>
                 </ul>
               </div>
             ) : (
               <div className="p-4 bg-[#0AE448]/10 border border-[#0AE448]/30 rounded-2xl text-xs text-[#0AE448] space-y-1 font-medium">
                 <p className="font-bold flex items-center gap-1.5 text-[#0AE448]">
                   <ShieldCheck className="w-4 h-4 text-[#0AE448]" />
-                  Operação Lucrativa com Escala Liberada!
+                  {uiLocale === 'pt-BR'
+                    ? 'Operação Lucrativa com Escala Liberada!'
+                    : uiLocale === 'de-DE'
+                    ? 'Profitabler Betrieb — Bereit zur Skalierung!'
+                    : uiLocale === 'fr-FR'
+                    ? 'Opération Rentable — Prête à Scaler !'
+                    : uiLocale === 'es-ES'
+                    ? '¡Operación Rentable lista para Escalar!'
+                    : 'Profitable Operation — Ready to Scale!'}
                 </p>
                 <p className="text-[#FFFCE1]">
-                  Seu ROAS atual de <strong className="text-[#0AE448]">{roas}x</strong> supera o limite de equilíbrio de <strong className="text-[#0AE448]">{breakEvenRoas}x</strong>, gerando um lucro líquido estimado de <strong className="text-[#0AE448]">R$ {netProfit.toLocaleString('pt-BR')}</strong>.
+                  {uiLocale === 'pt-BR' ? (
+                    <>
+                      Seu ROAS atual de <strong className="text-[#0AE448]">{roas}x</strong> supera o limite de equilíbrio de <strong className="text-[#0AE448]">{breakEvenRoas}x</strong>, gerando um lucro líquido estimado de <strong className="text-[#0AE448]">{formatMoney(netProfit)}</strong>.
+                    </>
+                  ) : (
+                    <>
+                      Your current ROAS of <strong className="text-[#0AE448]">{roas}x</strong> exceeds the break-even threshold of <strong className="text-[#0AE448]">{breakEvenRoas}x</strong>, generating an estimated net profit of <strong className="text-[#0AE448]">{formatMoney(netProfit)}</strong>.
+                    </>
+                  )}
                 </p>
               </div>
             )}
+
+            <div className="p-3 bg-[#141716] rounded-xl border border-white/10 text-[11px] font-mono text-[#BBBAA6]">
+              {uiLocale === 'pt-BR'
+                ? `Metodologia de Cálculo Transparente: Cliques (${estimatedClicks}) × Conversão (${conversionRate}%) = ${estimatedOrders} pedidos × Ticket (${formatMoney(aov)}) = ${formatMoney(grossRevenue)} Bruto.`
+                : `Transparent Calculation Methodology: Clicks (${estimatedClicks}) × Conv. Rate (${conversionRate}%) = ${estimatedOrders} orders × AOV (${formatMoney(aov)}) = ${formatMoney(grossRevenue)} Gross.`}
+            </div>
           </div>
 
         </div>
@@ -229,3 +287,4 @@ export const RoasCalculator: React.FC = () => {
     </div>
   );
 };
+

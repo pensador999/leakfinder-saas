@@ -4,7 +4,6 @@ import { Header, StorePreset } from '../components/Header';
 import { HeroUrlBar } from '../components/HeroUrlBar';
 import { AnalysisLoadingState } from '../components/AnalysisLoadingState';
 import { ErrorBoundary } from '../components/ErrorBoundary';
-import { CookieBanner } from '../components/CookieBanner';
 import { OnboardingWizard } from '../components/OnboardingWizard';
 import { TabLoadingSkeleton } from '../components/TabLoadingSkeleton';
 import { PublicDossierMerchantHeader } from '../components/PublicDossierMerchantHeader';
@@ -14,6 +13,8 @@ import { AuditInput, AgentDiagnosticResult } from '../types';
 import { detectMarketplace } from '../services/marketplaceInspector';
 import { saveAuditToDatabase, getCachedAuditByDomain } from '../services/history/storeAuditHistoryService';
 import { useAuditStore } from '../store/auditStore';
+import { useTranslation } from '../i18n/useTranslation';
+import { detectStoreMarketProfile } from '../i18n/marketProfiles';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   LayoutDashboard, Eye, ShoppingCart, Target, Calculator, ShieldCheck, Sword, 
@@ -102,6 +103,7 @@ export type ActiveModalId =
 export function HomePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { t, uiLocale } = useTranslation();
   // 🗄️ Hydrate state from Zustand auditStore (survives F5 / page reloads)
   const [diagnostic, setDiagnosticState] = useState<AgentDiagnosticResult | null>(() => useAuditStore.getState().diagnostic);
   const [activeTab, setActiveTabState] = useState<string>(() => useAuditStore.getState().activeTab || 'summary');
@@ -198,6 +200,7 @@ export function HomePage() {
       setIsPublicDossierMode(true);
       const storeToScan = targetQueryUrl.startsWith('http') ? targetQueryUrl : `https://${targetQueryUrl}`;
       const { cleanUrl, brandName } = extractCleanDomainAndBrand(storeToScan);
+      const detectedProfile = detectStoreMarketProfile(cleanUrl, '', undefined, uiLocale);
 
       const initialInput: AuditInput = {
         siteUrl: cleanUrl,
@@ -207,7 +210,7 @@ export function HomePage() {
         monthlyRevenue: 'R$ 50k a R$ 200k',
         averageOrderValue: 180,
         mainChallenge: 'low_conversion',
-        targetRegion: 'Brasil',
+        targetRegion: detectedProfile.countryName,
         grossMargin: 45,
         competitorsUrl: 'https://concorrente.com.br'
       };
@@ -306,6 +309,7 @@ export function HomePage() {
             setActiveTab(isMkt ? 'marketplace' : 'summary');
             return;
           }
+          const detectedProfile = detectStoreMarketProfile(preset.url, '', undefined, uiLocale);
           handleStartRealAudit({
             siteUrl: preset.url,
             businessName: preset.brandName,
@@ -314,7 +318,7 @@ export function HomePage() {
             monthlyRevenue: 'R$ 50k a R$ 200k',
             averageOrderValue: preset.aov,
             mainChallenge: 'low_conversion',
-            targetRegion: 'Brasil',
+            targetRegion: detectedProfile.countryName,
             grossMargin: 45,
             competitorsUrl: 'https://concorrente.com.br'
           });
@@ -373,7 +377,7 @@ export function HomePage() {
                   }`}
                 >
                   <ShoppingCart className="w-3.5 h-3.5 text-[#0AE448]" />
-                  <span>Visão Lojista (Lucro)</span>
+                  <span>{t.nav.merchantMode}</span>
                 </button>
 
                 <button
@@ -388,7 +392,7 @@ export function HomePage() {
                   }`}
                 >
                   <Cpu className="w-3.5 h-3.5 text-[#00BAE2]" />
-                  <span>War Room Técnico (18 Agentes)</span>
+                  <span>{t.nav.warRoomMode}</span>
                 </button>
               </div>
 
@@ -404,30 +408,30 @@ export function HomePage() {
                     setActiveTab('market_hunter');
                   }}
                   className="px-3 py-1.5 rounded-xl bg-[#101211] hover:bg-[#141716] text-[#00BAE2] border border-[#00BAE2]/30 hover:border-[#00BAE2]/60 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-                  title="Abrir Motor de Prospecção Outbound B2B e Lead Sniper"
+                  title={t.nav.leadSniperB2b}
                 >
                   <Target className="w-3.5 h-3.5 text-[#00BAE2]" />
-                  <span>Lead Sniper B2B</span>
+                  <span>{t.nav.leadSniperB2b}</span>
                 </button>
 
                 {/* 📲 Vigia WhatsApp 24/7 (High Priority Status Button) */}
                 <button
                   onClick={() => setActiveModal('whatsappWatchdog')}
                   className="px-3 py-1.5 rounded-xl bg-[#101211] hover:bg-[#141716] text-[#0AE448] border border-[#0AE448]/30 hover:border-[#0AE448]/60 text-xs font-bold flex items-center gap-2 transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-                  title="Configurar entrega diária dos relatórios executivos no WhatsApp"
+                  title={t.nav.whatsappWatchdog}
                 >
                   <span className="w-2 h-2 rounded-full bg-[#0AE448] animate-pulse inline-block shadow-[0_0_8px_#0AE448]" />
-                  <span>Vigia WhatsApp (07:00)</span>
+                  <span>{t.nav.whatsappWatchdog}</span>
                 </button>
 
                 {/* 🔌 Conectar Loja (1-Click) */}
                 <button
                   onClick={() => setActiveModal('integrations')}
                   className="px-3.5 py-1.5 rounded-xl bg-[#101211] hover:bg-[#191C1B] text-[#FFFCE1] border border-white/10 hover:border-white/20 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-                  title="Conectar Shopify, Mercado Livre ou VTEX"
+                  title={t.nav.connectStore}
                 >
                   <Plug className="w-3.5 h-3.5 text-[#0AE448]" />
-                  <span>Conectar Loja</span>
+                  <span>{t.nav.connectStore}</span>
                 </button>
 
                 {/* ⚡ Dropdown de Ferramentas & Dossiês */}
@@ -441,7 +445,7 @@ export function HomePage() {
                     }`}
                   >
                     <Layers className="w-3.5 h-3.5 text-[#00BAE2]" />
-                    <span>Ferramentas & Dossiês</span>
+                    <span>{t.nav.toolsAndDossiers}</span>
                     <ChevronDown className={`w-3.5 h-3.5 text-[#7C7C6F] transition-transform ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
 
@@ -843,7 +847,7 @@ export function HomePage() {
                 monthlyRevenue: 'R$ 50k a R$ 200k',
                 averageOrderValue: 180,
                 mainChallenge: 'low_conversion',
-                targetRegion: 'Brasil',
+                targetRegion: detectStoreMarketProfile(cleanUrl, '', undefined, uiLocale).countryName,
                 grossMargin: 45,
                 competitorsUrl: 'https://concorrente.com.br'
               });
@@ -883,7 +887,7 @@ export function HomePage() {
                 monthlyRevenue: 'R$ 50k a R$ 200k',
                 averageOrderValue: 180,
                 mainChallenge: 'low_conversion',
-                targetRegion: 'Brasil',
+                targetRegion: detectStoreMarketProfile(cleanUrl, '', undefined, uiLocale).countryName,
                 grossMargin: 45,
                 competitorsUrl: 'https://concorrente.com.br'
               });
@@ -930,7 +934,7 @@ export function HomePage() {
                 monthlyRevenue: 'R$ 50k a R$ 200k',
                 averageOrderValue: 180,
                 mainChallenge: 'low_conversion',
-                targetRegion: 'Brasil',
+                targetRegion: detectStoreMarketProfile(cleanUrl, '', undefined, uiLocale).countryName,
                 grossMargin: 45,
                 competitorsUrl: 'https://concorrente.com.br'
               });
@@ -960,7 +964,7 @@ export function HomePage() {
                 monthlyRevenue: 'R$ 50k a R$ 200k',
                 averageOrderValue: 180,
                 mainChallenge: 'low_conversion',
-                targetRegion: 'Brasil',
+                targetRegion: detectStoreMarketProfile(cleanUrl, '', undefined, uiLocale).countryName,
                 grossMargin: 45,
                 competitorsUrl: 'https://concorrente.com.br'
               });
@@ -1016,13 +1020,13 @@ export function HomePage() {
       {/* Footer Legal & Institucional Independente */}
       <footer className="max-w-7xl mx-auto py-8 px-4 border-t border-white/10 mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-[#7C7C6F] gap-4">
         <div>
-          <p className="font-bold text-[#FFFCE1]">AdShield Intelligence • Plataforma Independente de Auditoria de E-Commerce</p>
-          <p className="text-[11px] text-[#7C7C6F] font-mono">Diagnóstico Técnico 360º de Sites, Catálogos e Tráfego Pago • Marco Civil e LGPD.</p>
+          <p className="font-bold text-[#FFFCE1]">{t.footer.platformTitle}</p>
+          <p className="text-[11px] text-[#7C7C6F] font-mono">{t.footer.platformSubtitle}</p>
         </div>
         <div className="flex flex-wrap items-center gap-4 text-xs">
-          <button onClick={() => navigate('/about')} className="hover:text-[#0AE448] font-bold transition-colors cursor-pointer">Quem Somos</button>
-          <button onClick={() => navigate('/terms')} className="hover:text-[#0AE448] transition-colors cursor-pointer">Termos de Uso</button>
-          <button onClick={() => navigate('/privacy')} className="hover:text-[#0AE448] font-semibold transition-colors cursor-pointer">Política de Privacidade & LGPD</button>
+          <button onClick={() => navigate('/about')} className="hover:text-[#0AE448] font-bold transition-colors cursor-pointer">{t.footer.aboutUs}</button>
+          <button onClick={() => navigate('/terms')} className="hover:text-[#0AE448] transition-colors cursor-pointer">{t.footer.termsOfUse}</button>
+          <button onClick={() => navigate('/privacy')} className="hover:text-[#0AE448] font-semibold transition-colors cursor-pointer">{t.footer.privacyPolicy}</button>
         </div>
       </footer>
 
@@ -1032,8 +1036,6 @@ export function HomePage() {
           localStorage.setItem('adshield_onboarding_complete', 'true');
         }} />
       )}
-
-      <CookieBanner />
     </div>
   );
 }

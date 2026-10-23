@@ -1,5 +1,7 @@
 import { WorkerInspectionResult } from './siteInspectorWorker';
 import { AuditInput } from '../types';
+import { detectStoreMarketProfile, MARKET_PROFILES } from '../i18n/marketProfiles';
+import { useAuditStore } from '../store/auditStore';
 
 export const GEMINI_LOCAL_STORAGE_KEY = 'AGENTS_GEMINI_API_KEY';
 
@@ -43,11 +45,15 @@ export async function askGeminiAgent<T>(
 
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
+  const uiLocale = useAuditStore.getState?.()?.uiLocale || 'pt-BR';
+  const marketProfile = detectStoreMarketProfile(input.siteUrl, scrapedMarkdown, undefined, uiLocale) || MARKET_PROFILES[uiLocale];
+
   const userMessage = `
 DADOS DO CLIENTE:
 URL: ${input.siteUrl}
 Nicho: ${input.niche}
-Ticket Médio (AOV): R$ ${input.averageOrderValue}
+Mercado / Região Detectada: ${marketProfile.countryName} (${marketProfile.locale})
+Ticket Médio (AOV): ${marketProfile.currencySymbol} ${input.averageOrderValue} (${marketProfile.currency})
 Margem Bruta: ${input.grossMargin}%
 Alvo Concorrente: ${input.competitorsUrl || 'N/A'}
 
@@ -56,6 +62,9 @@ ${JSON.stringify(visionAnalysis, null, 2)}
 
 CONTEÚDO REAL DO SITE (MARKDOWN EXTRAÍDO):
 ${scrapedMarkdown || 'N/A'}
+
+IDIOMA E MOEDA DE RESPOSTA OBRIGATÓRIOS:
+Responda no idioma do painel/loja (${marketProfile.locale}) utilizando a moeda oficial (${marketProfile.currencySymbol} / ${marketProfile.currency}).
 
 Siga RIGOROSAMENTE as suas Rules of Engagement (System Prompt).
 Responda EXCLUSIVAMENTE com um array JSON válido, sem markdown (\`\`\`json), contendo os findings estruturados (id, category, title, description, impact, effort, recommendation). Se houver campos adicionais esperados (como iceMatrix ou budgetAllocation), retorne um objeto JSON que englobe as propriedades exigidas.

@@ -73,7 +73,7 @@ export async function probeAllPillarsLive(): Promise<FourPillarsHealthReport> {
       }
     });
   } catch {
-    localSnapshotsCount = 6;
+    localSnapshotsCount = 0;
   }
 
   const pillars: PillarHealthItem[] = [
@@ -121,7 +121,7 @@ export async function probeAllPillarsLive(): Promise<FourPillarsHealthReport> {
         ? 'Circuit Breaker ativo. Dados salvos com segurança em disco/localStorage.' 
         : 'Sincronizado com o Supabase PostgreSQL na nuvem.',
       metricLabel: 'Snapshots Protegidos',
-      metricValue: `${Math.max(localSnapshotsCount, 21)} Registros`
+      metricValue: `${localSnapshotsCount} Registros`
     }
   ];
 

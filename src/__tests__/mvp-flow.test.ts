@@ -385,6 +385,161 @@ describe('MVP Core Flow Validation', () => {
     expect(customFinances.transparency.isUserOverridden).toBe(true);
     expect(customFinances.financialRisk.adWasteMonthly).toBeGreaterThan(baseFinances.financialRisk.adWasteMonthly);
   });
+
+  it('should accurately parse international currencies, deduplicate parent-SKU multi-size variants, and audit multi-jurisdiction stores (en-US, en-GB, de-DE, pt-BR)', async () => {
+    const { parseBRLPrice, parsePriceByMarket, formatStoreCurrency } = await import('../services/pricing/currencyUtils');
+    const { detectStoreMarketProfile } = await import('../i18n/marketProfiles');
+    const { auditProductDeepSkus } = await import('../services/catalog/deepSkuAuditEngine');
+    const { auditBrazilianLegalCompliance } = await import('../services/audits/brazilianLegalComplianceEngine');
+    const { dispatchCommitToGitHubAndVercel, SAMPLE_CODE_PATCHES } = await import('../services/agents/autonomousCodePatchEngineerAgent');
+    const { executeLiveSelfLearningCycle } = await import('../services/learning/agenticSelfLearningOptimizer');
+
+    // 1. Multi-Market Currency Parsing ($1,250.90 vs £2,499.00 vs R$ 1.250,90 + range/compare-at + space separators)
+    expect(parseBRLPrice('$1,250.90')).toBe(1250.90);
+    expect(parseBRLPrice('£2,499.00')).toBe(2499.00);
+    expect(parseBRLPrice('R$ 1.250,90')).toBe(1250.90);
+    expect(parseBRLPrice('From $45.00 to $1,250.90')).toBe(45.00);
+    expect(parseBRLPrice('De R$ 199,90 por R$ 149,90')).toBe(149.90);
+    expect(parseBRLPrice('De R$ 199,90 por R$ 149,90 em 3x de R$ 49,96')).toBe(149.90);
+    expect(parseBRLPrice('Por R$ 149,90 em 3x de R$ 49,96')).toBe(149.90);
+    expect(parseBRLPrice('R$ 200 em 3x de R$ 66,67')).toBe(200);
+    expect(parseBRLPrice('Was $80.00 Now $55.00')).toBe(55.00);
+    expect(parseBRLPrice('Now $55.00 (Was $80.00)')).toBe(55.00);
+    expect(parsePriceByMarket('$1,250.90', 'en-US')).toBe(1250.90);
+    expect(parsePriceByMarket('£2,499.00', 'en-GB')).toBe(2499.00);
+    expect(parsePriceByMarket('1.250,90 €', 'de-DE')).toBe(1250.90);
+    expect(parsePriceByMarket('1\u00A0250,90 €', 'fr-FR')).toBe(1250.90);
+    expect(parsePriceByMarket('R$ 1.250,90', 'pt-BR')).toBe(1250.90);
+    expect(formatStoreCurrency(1250.9, 'en-US')).toContain('1,250.90');
+
+    // 1b. International Financial Grounding: Zero false Pix penalty & multi-language size guide recognition
+    const { calculateStoreFinancialGrounding } = await import('../services/ai/storeFinancialGroundingEngine');
+    const intlHealthyStoreFinances = calculateStoreFinancialGrounding({
+      url: 'https://www.gymshark.com',
+      domain: 'gymshark.com',
+      brandName: 'Gymshark',
+      title: 'Gymshark Official Store',
+      detectedMarketLocale: 'en-US',
+      hasMetaPixel: true,
+      Checkout: 'Shop Pay / Apple Pay / Klarna',
+      conversionSignals: ['Größentabelle'],
+      catalogAudit: {
+        totalProductsScanned: 10,
+        productsWithBrokenGrid: 0,
+        heavyImagesCount: 0,
+        productsWithoutSizeGuide: 0,
+        catalogHealthScore: 100,
+        issues: []
+      }
+    } as any);
+    expect(intlHealthyStoreFinances.financialRisk.checkoutFrictionMonthly).toBe(0);
+    expect(intlHealthyStoreFinances.financialRisk.formattedMonthlyLoss).toContain('$0.00');
+    expect(intlHealthyStoreFinances.tierLabel).not.toContain('Padrão');
+
+    // 2. Market Profile Detection (en-US, en-GB subdomain & HTML currency, de-DE, pt-BR)
+    expect(detectStoreMarketProfile('https://www.gymshark.com').locale).toBe('en-US');
+    expect(detectStoreMarketProfile('https://uk.gymshark.com').locale).toBe('en-GB');
+    expect(detectStoreMarketProfile('https://store.example.com', '<script>Shopify.currency = {"active":"GBP"};</script>').locale).toBe('en-GB');
+    expect(detectStoreMarketProfile('https://www.snocks.de').locale).toBe('de-DE');
+    expect(detectStoreMarketProfile('https://www.minimalclub.com.br').locale).toBe('pt-BR');
+
+    // 3. Parent-SKU Multi-Size Variant Deduplication & International Size Grids
+    const multiSizeParentSkuAudit = auditProductDeepSkus(
+      {
+        id: 'prod-intl-1',
+        title: 'Performance Running Tee',
+        url: 'https://www.gymshark.com/products/performance-running-tee',
+        handle: 'performance-running-tee',
+        variants: [
+          { id: 'v1', sku: 'TEE-001', title: 'S', option1: 'S', price: '$1,250.90', available: true, inventory_quantity: 12 },
+          { id: 'v2', sku: 'TEE-001', title: 'M', option1: 'M', price: '$1,250.90', available: false, inventory_quantity: 0 },
+          { id: 'v3', sku: 'TEE-001', title: 'Black / UK 10', price: '$1,250.90', available: false, inventory_quantity: 0 },
+          { id: 'v4-periph', sku: 'TEE-001', title: 'Black / UK 6', price: '$1,250.90', available: false, inventory_quantity: 0 },
+          // Exact duplicate variant (same parent SKU + same size title 'M') must be deduplicated
+          { id: 'v2-dup', sku: 'TEE-001', title: 'M', option1: 'M', price: '$1,250.90', available: false, inventory_quantity: 0 }
+        ]
+      },
+      { storeDomain: 'gymshark.com', dailyAdSpend: 250, isAdRunning: true }
+    );
+
+    expect(multiSizeParentSkuAudit.totalSkusCount).toBe(4);
+    expect(multiSizeParentSkuAudit.activeSkusCount).toBe(1);
+    expect(multiSizeParentSkuAudit.rupturedSkusCount).toBe(3);
+    expect(multiSizeParentSkuAudit.skus[0].price).toBe(1250.90);
+    expect(multiSizeParentSkuAudit.brokenCoreSizes).toContain('M');
+    expect(multiSizeParentSkuAudit.brokenCoreSizes).toContain('UK 10');
+    expect(multiSizeParentSkuAudit.brokenCoreSizes).not.toContain('UK 6');
+    expect(multiSizeParentSkuAudit.skus.map(s => s.skuCode)).toEqual([
+      'TEE-001',
+      'TEE-001-M',
+      'TEE-001-BLACK / UK 10',
+      'TEE-001-BLACK / UK 6'
+    ]);
+
+    // International US/UK Footwear Half-Size & UK Size 6 Support (Peripheral sizes 5 and 12 excluded from brokenCoreSizes)
+    const footwearAudit = auditProductDeepSkus(
+      {
+        id: 'prod-shoe-1',
+        title: 'Allbirds Tree Dasher Running Sneakers',
+        url: 'https://www.allbirds.com/products/mens-tree-dashers',
+        handle: 'mens-tree-dashers',
+        variants: [
+          { id: 's-periph-5', sku: 'SHOE-5', title: '5', option1: '5', price: '135.00', available: false, inventory_quantity: 0 },
+          { id: 's0', sku: 'SHOE-6', title: '6', option1: '6', price: '135.00', available: false, inventory_quantity: 0 },
+          { id: 's1', sku: 'SHOE-8', title: '8', option1: '8', price: '135.00', available: true, inventory_quantity: 5 },
+          { id: 's2', sku: 'SHOE-8.5', title: '8.5', option1: '8.5', price: '135.00', available: false, inventory_quantity: 0 },
+          { id: 's3', sku: 'SHOE-9.5', title: '9.5', option1: '9.5', price: '135.00', available: false, inventory_quantity: 0 },
+          { id: 's4', sku: 'SHOE-10', title: '10', option1: '10', price: '135.00', available: true, inventory_quantity: 4 },
+          { id: 's-periph-12', sku: 'SHOE-12', title: '12', option1: '12', price: '135.00', available: false, inventory_quantity: 0 }
+        ]
+      },
+      { storeDomain: 'allbirds.com', dailyAdSpend: 250, isAdRunning: true }
+    );
+    expect(footwearAudit.brokenCoreSizes).toEqual(['6', '8.5', '9.5']);
+
+    // 4. Multi-Jurisdiction Legal Compliance (US, UK, DE vs BR)
+    const usLegal = auditBrazilianLegalCompliance(
+      '<footer>Privacy Policy | Do Not Sell My Personal Information (CCPA) | Terms of Service | 30-Day Returns & Refunds | support@gymshark.com | 123 Main St, Suite 400, Denver, CO</footer>',
+      'gymshark.com',
+      'en-US'
+    );
+    expect(usLegal.isFullyCompliant).toBe(true);
+    expect(usLegal.complianceScore).toBe(100);
+
+    const deLegal = auditBrazilianLegalCompliance(
+      '<footer>Impressum | Handelsregister HRB 12345 | USt-IdNr. DE123456789 | Datenschutzerklärung (DSGVO) | AGB | 14 Tage Widerrufsrecht</footer>',
+      'snocks.de',
+      'de-DE'
+    );
+    expect(deLegal.isFullyCompliant).toBe(true);
+    expect(deLegal.complianceScore).toBe(100);
+
+    const brMissingCnpj = auditBrazilianLegalCompliance(
+      '<footer>Política de Privacidade LGPD e Trocas em 7 dias</footer>',
+      'lojaexemplo.com.br',
+      'pt-BR'
+    );
+    expect(brMissingCnpj.hasCnpjInFooter).toBe(false);
+    expect(brMissingCnpj.isFullyCompliant).toBe(false);
+
+    // 5. Code Health Grounding: No Math.random() PR fabrication & No hardcoded 'BRASIL' in Vision Engine
+    const { analyzeComputerVision } = await import('../services/visionCoreEngine');
+    const visionResult = await analyzeComputerVision(
+      'brkagro.com.br',
+      '<html><body><h1 style="background-color: #16A34A; color: #FFFFFF">Camisa Agro UV50+</h1><button class="btn-buy">Comprar Agora</button></body></html>'
+    );
+    expect(visionResult.ocr.detectedKeywords).not.toContain('BRASIL');
+    expect(visionResult.uiux.primaryColor).toBe('#16A34A');
+    expect(visionResult.thumbZone.recommendation).toContain('[Estimativa Topológica de DOM]');
+
+    const dispatchResult = await dispatchCommitToGitHubAndVercel(SAMPLE_CODE_PATCHES['inc-101']);
+    expect(dispatchResult.status).toBe('PATCH_BUNDLE_READY');
+    expect(dispatchResult.commitSha).toHaveLength(7);
+
+    const learningCycle = await executeLiveSelfLearningCycle('MODA_VESTUARIO');
+    expect(learningCycle.outcomeLearned).toContain('[Simulação / Benchmark]');
+  });
 });
+
 
 

@@ -2,7 +2,6 @@ import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Header } from '../components/Header';
 import { ExecutiveSummary } from '../components/ExecutiveSummary';
 import { ErrorBoundary } from '../components/ErrorBoundary';
-import { CookieBanner } from '../components/CookieBanner';
 import { TabLoadingSkeleton } from '../components/TabLoadingSkeleton';
 import { detectMarketplace } from '../services/marketplaceInspector';
 import { AgentDiagnosticResult } from '../types';
@@ -10,6 +9,7 @@ import { LayoutDashboard, Eye, ShoppingCart, Calculator, ShieldCheck, Sword, Kan
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { useAuditStore } from '../store/auditStore';
+import { useTranslation } from '../i18n/useTranslation';
 
 // ⚡ LAZY LOADED ANALYTICAL TABS (Demanded only when tab is active)
 const ComputerVisionInspectionView = lazy(() => import('../components/agents/ComputerVisionInspectionView').then(m => ({ default: m.ComputerVisionInspectionView })));
@@ -109,9 +109,14 @@ export function ReportPage() {
   }, [id, navigate]);
 
   const [viewMode, setViewMode] = useState<'merchant' | 'war_room'>('merchant');
+  const { t, uiLocale } = useTranslation();
 
   if (isLoading) {
-    return <div className="min-h-screen bg-[#0E100F] text-[#FFFCE1] flex items-center justify-center font-mono text-sm">Carregando Relatório AdShield...</div>;
+    return (
+      <div className="min-h-screen bg-[#0E100F] text-[#FFFCE1] flex items-center justify-center font-mono text-sm">
+        {uiLocale === 'pt-BR' ? 'Carregando Relatório AdShield...' : 'Loading AdShield Report...'}
+      </div>
+    );
   }
 
   const totalCatalogAlerts = ((diagnostic?.realSiteData.catalogAudit?.productsWithBrokenGrid || 0) + 
@@ -123,33 +128,41 @@ export function ReportPage() {
 
   // 🛍️ 1. MODO LOJISTA: As Abas Essenciais de Negócio & Lucro
   const merchantTabs = [
-    { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
-    ...(isMarketplaceStore ? [{ id: 'marketplace', label: 'Auditoria de Marketplace & Buy Box', icon: Store, highlight: true }] : []),
-    { id: 'rupture_monitor', label: 'Vigia 24h Ruptura', icon: Flame, highlight: true },
-    { id: 'pricing', label: 'Simulador Pix & Margem', icon: Calculator, highlight: true },
-    { id: 'catalog', label: 'Catálogo & Estoque', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
-    { id: 'trust_badge', label: 'Selo de Confiança', icon: ShieldCheck, highlight: true },
-    ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : [])
+    { id: 'summary', label: t.nav.executiveSummary, icon: LayoutDashboard },
+    ...(isMarketplaceStore
+      ? [{ id: 'marketplace', label: uiLocale === 'pt-BR' ? 'Auditoria de Marketplace & Buy Box' : 'Marketplace & Buy Box Audit', icon: Store, highlight: true }]
+      : []),
+    { id: 'rupture_monitor', label: uiLocale === 'pt-BR' ? 'Vigia 24h Ruptura' : '24/7 Stockout Watchdog', icon: Flame, highlight: true },
+    { id: 'pricing', label: uiLocale === 'pt-BR' ? 'Simulador Pix & Margem' : 'Checkout & Margin Simulator', icon: Calculator, highlight: true },
+    { id: 'catalog', label: t.nav.catalogSkus, icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
+    { id: 'trust_badge', label: uiLocale === 'pt-BR' ? 'Selo de Confiança' : 'Trust Badge', icon: ShieldCheck, highlight: true },
+    ...(!isMarketplaceStore
+      ? [{ id: 'scripts', label: uiLocale === 'pt-BR' ? 'Scripts Liquid & CSS' : 'Liquid & CSS Scripts', icon: Code2, highlight: true }]
+      : [])
   ];
 
   // 🔐 2. MODO ENGENHARIA / WAR ROOM: As Abas Profundas + Especialistas
   const warRoomTabs = [
-    { id: 'summary', label: 'Visão Executiva', icon: LayoutDashboard },
-    ...(isMarketplaceStore ? [{ id: 'marketplace', label: 'Auditoria de Marketplace & Buy Box', icon: Store, highlight: true }] : []),
-    { id: 'orchestrator', label: 'Torre do Maestro', icon: Cpu, highlight: true },
-    { id: 'scraper_dossier', label: 'Dossier de Evidências', icon: Search, highlight: true },
-    { id: 'truth_auditor', label: 'Tribunal de Veracidade', icon: Scale, highlight: true },
-    { id: 'swarm_control', label: 'Enxame Paralelo 24h', icon: BrainCircuit, highlight: true },
-    { id: 'rupture_monitor', label: 'Vigia 24h Ruptura', icon: Flame, highlight: true },
-    { id: 'pricing', label: 'Simulador Pix & Margem', icon: Calculator, highlight: true },
-    { id: 'catalog', label: 'Catálogo & Estoque', icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
+    { id: 'summary', label: t.nav.executiveSummary, icon: LayoutDashboard },
+    ...(isMarketplaceStore
+      ? [{ id: 'marketplace', label: uiLocale === 'pt-BR' ? 'Auditoria de Marketplace & Buy Box' : 'Marketplace & Buy Box Audit', icon: Store, highlight: true }]
+      : []),
+    { id: 'orchestrator', label: uiLocale === 'pt-BR' ? 'Torre do Maestro' : 'Maestro Control Tower', icon: Cpu, highlight: true },
+    { id: 'scraper_dossier', label: uiLocale === 'pt-BR' ? 'Dossier de Evidências' : 'Evidence Dossier', icon: Search, highlight: true },
+    { id: 'truth_auditor', label: uiLocale === 'pt-BR' ? 'Tribunal de Veracidade' : 'Truth Consensus Tribunal', icon: Scale, highlight: true },
+    { id: 'swarm_control', label: uiLocale === 'pt-BR' ? 'Enxame Paralelo 24h' : '24/7 Parallel Swarm', icon: BrainCircuit, highlight: true },
+    { id: 'rupture_monitor', label: uiLocale === 'pt-BR' ? 'Vigia 24h Ruptura' : '24/7 Stockout Watchdog', icon: Flame, highlight: true },
+    { id: 'pricing', label: uiLocale === 'pt-BR' ? 'Simulador Pix & Margem' : 'Checkout & Margin Simulator', icon: Calculator, highlight: true },
+    { id: 'catalog', label: t.nav.catalogSkus, icon: Layers, badge: totalCatalogAlerts > 0 ? totalCatalogAlerts : undefined },
     { id: 'vitals', label: 'Core Web Vitals 2026', icon: Gauge, highlight: true },
-    { id: 'vision', label: 'Visão & Heatmap', icon: Eye, badge: diagnostic?.visionAnalysis.warnings.length },
-    { id: 'telemetry', label: 'Telemetria & Clarity', icon: Activity },
-    { id: 'trust_badge', label: 'Selo de Confiança', icon: ShieldCheck, highlight: true },
-    ...(!isMarketplaceStore ? [{ id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2, highlight: true }] : []),
-    { id: 'competitor', label: 'Espião', icon: Sword },
-    { id: 'kanban', label: 'Plano de Ação', icon: KanbanSquare }
+    { id: 'vision', label: uiLocale === 'pt-BR' ? 'Visão & Heatmap' : 'Vision & Heatmap', icon: Eye, badge: diagnostic?.visionAnalysis.warnings.length },
+    { id: 'telemetry', label: uiLocale === 'pt-BR' ? 'Telemetria & Clarity' : 'Telemetry & Clarity', icon: Activity },
+    { id: 'trust_badge', label: uiLocale === 'pt-BR' ? 'Selo de Confiança' : 'Trust Badge', icon: ShieldCheck, highlight: true },
+    ...(!isMarketplaceStore
+      ? [{ id: 'scripts', label: uiLocale === 'pt-BR' ? 'Scripts Liquid & CSS' : 'Liquid & CSS Scripts', icon: Code2, highlight: true }]
+      : []),
+    { id: 'competitor', label: uiLocale === 'pt-BR' ? 'Espião' : 'Competitor Radar', icon: Sword },
+    { id: 'kanban', label: t.nav.actionPlan, icon: KanbanSquare }
   ];
 
   const tabs = viewMode === 'merchant' ? merchantTabs : warRoomTabs;
@@ -176,7 +189,9 @@ export function ReportPage() {
             {/* 🎛️ 3-MODE SELECTOR SWITCHER (PROGRESSIVE DISCLOSURE) */}
             <div className="p-3 bg-[#101211] rounded-2xl border border-white/10 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-mono font-bold text-[#BBBAA6] uppercase tracking-wider">Modo de Visualização:</span>
+                <span className="text-xs font-mono font-bold text-[#BBBAA6] uppercase tracking-wider">
+                  {uiLocale === 'pt-BR' ? 'Modo de Visualização:' : uiLocale === 'de-DE' ? 'Ansichtsmodus:' : uiLocale === 'fr-FR' ? "Mode d'Affichage :" : uiLocale === 'es-ES' ? 'Modo de Visualización:' : 'View Mode:'}
+                </span>
               </div>
 
               <div className="flex items-center bg-[#0E100F] p-1 rounded-xl border border-white/5 gap-1 text-xs font-bold w-full sm:w-auto">
@@ -194,7 +209,7 @@ export function ReportPage() {
                   }`}
                 >
                   <ShoppingCart className="w-3.5 h-3.5 text-[#0AE448]" />
-                  <span>🛍️ Modo Lojista (6 Abas de Lucro)</span>
+                  <span>🛍️ {t.nav.merchantMode}</span>
                 </button>
 
                 <button
@@ -206,7 +221,7 @@ export function ReportPage() {
                   }`}
                 >
                   <Cpu className="w-3.5 h-3.5" />
-                  <span>⚡ Modo Engenheiro / War Room</span>
+                  <span>⚡ {t.nav.warRoomMode}</span>
                 </button>
               </div>
             </div>
@@ -373,17 +388,15 @@ export function ReportPage() {
       {/* Footer Legal & Institucional Independente */}
       <footer className="max-w-7xl mx-auto py-8 px-4 border-t border-white/10 mt-12 flex flex-col sm:flex-row items-center justify-between text-xs text-[#BBBAA6] gap-4">
         <div>
-          <p className="font-bold text-[#FFFCE1]">AdShield Intelligence • Plataforma Independente de Auditoria de E-Commerce</p>
-          <p className="text-[11px] text-[#BBBAA6] font-mono">Diagnóstico Técnico 360º de Sites, Catálogos e Tráfego Pago • Marco Civil e LGPD.</p>
+          <p className="font-bold text-[#FFFCE1]">{t.footer.platformTitle}</p>
+          <p className="text-[11px] text-[#BBBAA6] font-mono">{t.footer.platformSubtitle}</p>
         </div>
         <div className="flex flex-wrap items-center gap-4 text-xs">
-          <button onClick={() => navigate('/about')} className="hover:text-[#0AE448] font-bold transition-colors cursor-pointer">Quem Somos</button>
-          <button onClick={() => navigate('/terms')} className="hover:text-[#0AE448] transition-colors cursor-pointer">Termos de Uso</button>
-          <button onClick={() => navigate('/privacy')} className="hover:text-[#0AE448] font-semibold transition-colors cursor-pointer">Política de Privacidade & LGPD</button>
+          <button onClick={() => navigate('/about')} className="hover:text-[#0AE448] font-bold transition-colors cursor-pointer">{t.footer.aboutUs}</button>
+          <button onClick={() => navigate('/terms')} className="hover:text-[#0AE448] transition-colors cursor-pointer">{t.footer.termsOfUse}</button>
+          <button onClick={() => navigate('/privacy')} className="hover:text-[#0AE448] font-semibold transition-colors cursor-pointer">{t.footer.privacyPolicy}</button>
         </div>
       </footer>
-
-      <CookieBanner />
     </div>
   );
 }

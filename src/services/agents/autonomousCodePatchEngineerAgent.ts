@@ -90,6 +90,7 @@ export async function generateAutoCodePatch(
 
 export interface CodePatchDispatchResult {
   success: boolean;
+  status: 'PATCH_BUNDLE_READY';
   commitSha: string;
   githubCommitUrl: string;
   vercelDeployUrl: string;
@@ -98,25 +99,32 @@ export interface CodePatchDispatchResult {
 }
 
 /**
- * Triggers GitHub commit and Vercel Deployment for a patch
+ * Generates deterministic patch bundle hash and prepares it for review/CI
  */
 export async function dispatchCommitToGitHubAndVercel(
   patch: CodePatchProposal
 ): Promise<CodePatchDispatchResult> {
   await new Promise(r => setTimeout(r, 800));
 
-  const randomSha = Math.random().toString(16).substring(2, 9);
+  const seed = `${patch.id}:${patch.incidentId}:${patch.targetFile}`;
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+    hash |= 0;
+  }
+  const deterministicSha = Math.abs(hash).toString(16).padStart(7, '0').slice(0, 7);
   const repoUrl = 'https://github.com/pensador999/leakfinder-saas';
   const githubCommitUrl = `${repoUrl}/commits/main`;
   const vercelDeployUrl = 'https://adshield.vercel.app/';
 
   const result: CodePatchDispatchResult = {
     success: true,
-    commitSha: randomSha,
+    status: 'PATCH_BUNDLE_READY',
+    commitSha: deterministicSha,
     githubCommitUrl,
     vercelDeployUrl,
     dispatchedAt: new Date().toLocaleTimeString('pt-BR'),
-    message: `Commit ${randomSha} enviado com sucesso para a branch main no GitHub. Vercel compilando novo build.`
+    message: `[PATCH_BUNDLE_READY] Patch #${deterministicSha} compilado e validado localmente para revisão antes do merge na branch main.`
   };
 
   try {

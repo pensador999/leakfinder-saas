@@ -34,6 +34,7 @@ import {
   LayoutDashboard,
   ShoppingCart
 } from 'lucide-react';
+import { useTranslation } from '../../i18n/useTranslation';
 
 export type MainNavPillar = 'PROFIT_DIAGNOSTIC' | 'CATALOG_STOCK' | 'ACTIONS_SHIELD' | 'SWARM_LAB';
 
@@ -63,10 +64,11 @@ export const SimplifiedPillarNav: React.FC<SimplifiedPillarNavProps> = ({
   isAdvancedMode = false
 }) => {
   const [isSwarmDrawerOpen, setIsSwarmDrawerOpen] = useState(false);
+  const { t } = useTranslation();
 
   // Sub-abas do Pilar 1: Diagnóstico & Lucro
   const diagnosticTabs = [
-    { id: 'summary', label: 'Dossiê Executivo', icon: ShieldCheck },
+    { id: 'summary', label: t.nav.executiveSummary, icon: ShieldCheck },
     { id: 'pricing', label: 'Simulador Pix & Margem', icon: Calculator },
     ...(isMarketplaceStore ? [{ id: 'marketplace', label: 'Marketplace & Buy Box', icon: Store }] : []),
     { id: 'collection_audit', label: 'Coleções & Banners', icon: Target },
@@ -76,7 +78,7 @@ export const SimplifiedPillarNav: React.FC<SimplifiedPillarNavProps> = ({
 
   // Sub-abas do Pilar 2: Grade & Ruptura
   const catalogTabs = [
-    { id: 'catalog', label: 'Grade PP ao G2', icon: Layers, badge: totalCatalogAlerts > 0 ? `${totalCatalogAlerts} falhas` : undefined },
+    { id: 'catalog', label: t.nav.catalogSkus, icon: Layers, badge: totalCatalogAlerts > 0 ? `${totalCatalogAlerts}` : undefined },
     { id: 'rupture_monitor', label: 'Vigia 24h Ruptura', icon: Flame },
     { id: 'sku_crossing', label: 'Cruzamento SKUs & Abandonos', icon: GitCompare },
     { id: 'supply_chain_discrepancy', label: 'Descompasso ERP Sankhya/Magis5', icon: Factory },
@@ -86,7 +88,7 @@ export const SimplifiedPillarNav: React.FC<SimplifiedPillarNavProps> = ({
   // Sub-abas do Pilar 3: Ações & Salvaguardas
   const actionTabs = [
     { id: 'scripts', label: 'Scripts Liquid & CSS', icon: Code2 },
-    { id: 'kanban', label: 'Plano de Ação (Kanban)', icon: KanbanSquare }
+    { id: 'kanban', label: t.nav.actionPlan, icon: KanbanSquare }
   ];
 
   // Cluster dos 18 Agentes no Laboratório
@@ -128,11 +130,11 @@ export const SimplifiedPillarNav: React.FC<SimplifiedPillarNavProps> = ({
 
   if (!isAdvancedMode) {
     const essentialTabs = [
-      { id: 'summary', label: 'Resumo Executivo', icon: LayoutDashboard },
-      { id: 'catalog', label: 'Catálogo & SKUs', icon: ShoppingCart },
-      { id: 'ads', label: 'Tráfego & Ads', icon: Target },
-      { id: 'kanban', label: 'Plano de Ação', icon: KanbanSquare },
-      { id: 'calculator', label: 'Calculadora', icon: Calculator }
+      { id: 'summary', label: t.nav.executiveSummary, icon: LayoutDashboard },
+      { id: 'catalog', label: t.nav.catalogSkus, icon: ShoppingCart },
+      { id: 'ads', label: t.nav.trafficAds, icon: Target },
+      { id: 'kanban', label: t.nav.actionPlan, icon: KanbanSquare },
+      { id: 'calculator', label: t.nav.calculator, icon: Calculator }
     ];
 
     return (
@@ -183,7 +185,7 @@ export const SimplifiedPillarNav: React.FC<SimplifiedPillarNavProps> = ({
             }`}
           >
             <ShieldCheck className="w-4 h-4 shrink-0" />
-            <span className="truncate">1. Diagnóstico & Lucro</span>
+            <span className="truncate">{t.nav.pillar1}</span>
           </button>
 
           <button
@@ -200,7 +202,7 @@ export const SimplifiedPillarNav: React.FC<SimplifiedPillarNavProps> = ({
             }`}
           >
             <Layers className="w-4 h-4 shrink-0" />
-            <span className="truncate">2. Grade & Ruptura</span>
+            <span className="truncate">{t.nav.pillar2}</span>
             {totalCatalogAlerts > 0 && (
               <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-black ${
                 activePillar === 'CATALOG_STOCK' && !isSwarmDrawerOpen ? 'bg-slate-950 text-[#0AE448]' : 'bg-[#FF4757] text-[#FFFCE1]'
@@ -224,7 +226,7 @@ export const SimplifiedPillarNav: React.FC<SimplifiedPillarNavProps> = ({
             }`}
           >
             <Zap className="w-4 h-4 shrink-0" />
-            <span className="truncate">3. Ações & Correção</span>
+            <span className="truncate">{t.nav.pillar3}</span>
           </button>
         </div>
 
@@ -240,7 +242,7 @@ export const SimplifiedPillarNav: React.FC<SimplifiedPillarNavProps> = ({
             }`}
           >
             <Bot className="w-4 h-4" />
-            <span>Laboratório IA (18 Agentes)</span>
+            <span>{t.nav.aiLab18Agents}</span>
             <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isSwarmDrawerOpen ? 'rotate-180' : ''}`} />
           </button>
         </div>

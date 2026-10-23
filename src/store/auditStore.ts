@@ -7,6 +7,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { AgentDiagnosticResult } from '../types';
+import { StoreLocaleId } from '../i18n/marketProfiles';
 
 export interface AuditStoreState {
   // Diagnostic data
@@ -19,6 +20,7 @@ export interface AuditStoreState {
   activeTab: string;
   isAdvancedMode: boolean;
   customMonthlyAdSpend: number | null;
+  uiLocale: StoreLocaleId;
   
   // Actions
   setDiagnostic: (result: AgentDiagnosticResult | null) => void;
@@ -28,6 +30,7 @@ export interface AuditStoreState {
   setActiveTab: (tab: string) => void;
   setIsAdvancedMode: (advanced: boolean) => void;
   setCustomMonthlyAdSpend: (spend: number | null) => void;
+  setUiLocale: (locale: StoreLocaleId) => void;
   clearAudit: () => void;
 }
 
@@ -129,6 +132,7 @@ export const useAuditStore = create<AuditStoreState>()(
       activeTab: 'summary',
       isAdvancedMode: false,
       customMonthlyAdSpend: null,
+      uiLocale: 'pt-BR',
 
       // Actions
       setDiagnostic: (result) => set({ diagnostic: result, auditError: null, customMonthlyAdSpend: null }),
@@ -138,6 +142,7 @@ export const useAuditStore = create<AuditStoreState>()(
       setActiveTab: (tab) => set({ activeTab: tab }),
       setIsAdvancedMode: (advanced) => set({ isAdvancedMode: advanced }),
       setCustomMonthlyAdSpend: (spend) => set({ customMonthlyAdSpend: spend }),
+      setUiLocale: (locale) => set({ uiLocale: locale }),
       clearAudit: () => set({ 
         diagnostic: null, 
         auditError: null, 
@@ -156,6 +161,7 @@ export const useAuditStore = create<AuditStoreState>()(
         diagnostic: compactDiagnosticForStorage(state.diagnostic),
         activeTab: state.activeTab,
         isAdvancedMode: state.isAdvancedMode,
+        uiLocale: state.uiLocale,
       }),
     }
   )
